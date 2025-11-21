@@ -1,10 +1,10 @@
 import AppLayout from "../layout/AppLayout";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Upload_page from "../pages/Upload_page";
-import Dashboard_page from "../pages/Dashboard_page";
-import Setting_page from "../pages/Setting_page";
-import Download_page from "../pages/Download_page";
-import Customize_page from "../pages/Customize_page";
+import Upload_page from "../pages/Uploads/Upload_page";
+import Dashboard_page from "../pages/Dashboard/Dashboard_page";
+import Setting_page from "../pages/Setting/Setting_page";
+import Download_page from "../pages/Download/Download_page";
+import Customize_page from "../pages/Customize/Customize_page";
 
 function AppRoutes() {
   return (
