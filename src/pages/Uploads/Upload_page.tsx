@@ -1,5 +1,5 @@
 import { useState, type DragEvent, type ChangeEvent } from 'react';
-import { useTheme } from '../theme';
+import { useTheme } from '../../theme';
 export default function Upload_page() {
   const [fileName, setFileName] = useState('');
   const [file, setFile] = useState<File | null>(null);

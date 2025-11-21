@@ -1,4 +1,4 @@
-import { useTheme } from "../theme";
+import { useTheme } from "../../theme";
 
 export default function Download_page() {
   const { theme } = useTheme();

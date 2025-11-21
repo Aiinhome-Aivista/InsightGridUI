@@ -1,4 +1,4 @@
-import { useTheme } from "../theme";
+import { useTheme } from "../../theme";
 
 export default function Setting_page() {
   const { theme } = useTheme();

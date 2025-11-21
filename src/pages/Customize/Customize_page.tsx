@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ThemeDefinition, ThemeOption, themes, useTheme } from '../theme';
+import { ThemeDefinition, ThemeOption, themes, useTheme } from '../../theme';
 
 const themeCards: ThemeDefinition[] = Object.values(themes);
 
