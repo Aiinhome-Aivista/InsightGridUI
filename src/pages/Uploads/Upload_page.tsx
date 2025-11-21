@@ -1,4 +1,5 @@
 import { useState, type DragEvent, type ChangeEvent } from 'react';
+import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined';
 import { useTheme } from '../../theme';
 export default function Upload_page() {
   const [fileName, setFileName] = useState('');
@@ -78,20 +79,7 @@ export default function Upload_page() {
 
             }
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-10 h-10 text-[#7E8489] mb-2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v12"
-              />
-            </svg>
+            <BackupOutlinedIcon className="w-15 h-15 text-[#7E8489] mb-2" />
 
             <p className="text-sm text-center"
               style={{ color: theme.secondaryText }}>
