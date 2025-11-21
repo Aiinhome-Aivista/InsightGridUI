@@ -34,7 +34,7 @@ export default function Upload_page() {
   return (
     <div
       className="flex flex-col items-start w-full h-full p-8 "
-      style={{ backgroundColor: theme.surface }}
+      style={{ backgroundColor: theme.background }}
     >
       <div className="w-full  rounded-lg"
         style={{ backgroundColor: theme.surface }}>
