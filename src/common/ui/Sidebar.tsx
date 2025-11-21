@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
-import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
-import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
-import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
+import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
+import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
+import { useTheme } from "../../theme";
 
 const menuItems = [
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "/upload" },
@@ -20,35 +21,39 @@ const menuItems = [
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(true);
   const [activeItem, setActiveItem] = useState("Upload");
+  const { theme } = useTheme();
 
   return (
     <aside
-      className={`${
-        collapsed ? "w-20" : "w-60"
-      } bg-white h-screen border-r border-[#BCC7D2] flex flex-col transition-all duration-200`}
+      className={`${collapsed ? "w-20" : "w-60"
+        } h-screen border-r flex flex-col transition-all duration-200`}
+      style={{ backgroundColor: theme.surface, borderColor: theme.border, color: theme.primaryText }}
     >
       {/* Header */}
       <div
-        className={`flex items-center border-b border-[#BCC7D2] h-14 ${
-          collapsed ? "px-3 justify-center" : "px-4"
-        }`}
+        className={`flex items-center border-b border-[#BCC7D2] h-14 ${collapsed ? "px-3 justify-center" : "px-4"
+          }`}
+        style={{ borderColor: theme.border }}
       >
-        <AccountCircleRoundedIcon sx={{ color: "#BCC7D2", fontSize: "2rem" }} />
+        <AccountCircleRoundedIcon sx={{ color: theme.secondaryText, fontSize: "2rem" }} />
 
         {!collapsed && (
-          <p className="ml-3 font-medium text-[#2C2E42]">User</p>
+          <p className="ml-3 font-medium" style={{ color: theme.primaryText }}>
+            User
+          </p>
         )}
 
         <button
-          className={`ml-auto text-gray-400 hover:text-gray-800 ${
-            collapsed ? "" : "ml-4"
-          }`}
+          type="button"
+          className={`ml-auto ${collapsed ? "" : "ml-4"}`}
+          style={{ color: theme.secondaryText }}
           onClick={() => setCollapsed((c) => !c)}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
-            <ArrowForwardIosRoundedIcon sx={{ fontSize: "small", color: "#8F96A9" }} />
+            <ArrowForwardIosRoundedIcon sx={{ fontSize: "small", color: theme.secondaryText }} />
           ) : (
-            <ArrowBackIosNewRoundedIcon sx={{ fontSize: "small", color: "#8F96A9" }} />
+            <ArrowBackIosNewRoundedIcon sx={{ fontSize: "small", color: theme.secondaryText }} />
           )}
         </button>
       </div>
@@ -63,13 +68,22 @@ export default function Sidebar() {
               <Link to={item.path} key={item.name} className="no-underline">
                 <div
                   onClick={() => setActiveItem(item.name)}
-                  className={`flex items-center ${
-                    collapsed ? "justify-center" : "justify-start"
-                  } h-12 cursor-pointer rounded-lg transition px-3 ${isActive ? "bg-[#182938]/10" : "hover:bg-[#182938]/10"}`}
+                  className={`flex items-center ${collapsed ? "justify-center" : "justify-start"
+                    } h-12 cursor-pointer rounded-lg transition px-3`}
+                  style={{
+                    backgroundColor: isActive ? theme.accent : "transparent",
+                    color: isActive ? theme.background : theme.primaryText,
+                    border: isActive ? `1px solid ${theme.accent}` : "1px solid transparent",
+                  }}
                 >
-                  <Icon sx={{ color: "#182938", fontSize: "1.5rem" }} />
+                  <Icon
+                    sx={{
+                      color: isActive ? theme.background : theme.primaryText,
+                      fontSize: "1.5rem",
+                    }}
+                  />
                   {!collapsed && (
-                    <span className="ml-3 text-sm font-medium text-[#2C2E42] capitalize">
+                    <span className="ml-3 text-sm font-medium capitalize">
                       {item.name}
                     </span>
                   )}

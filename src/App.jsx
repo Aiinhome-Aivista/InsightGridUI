@@ -1,5 +1,6 @@
 import { BrowserRouter } from 'react-router-dom'
 import AppRoutes from './routes/AppRoutes'
+import { ThemeProvider } from './theme'
 
 /**
  * Root App Component
@@ -7,9 +8,11 @@ import AppRoutes from './routes/AppRoutes'
  */
 function App() {
     return (
-        <BrowserRouter>
-            <AppRoutes />
-        </BrowserRouter>
+        <ThemeProvider>
+            <BrowserRouter>
+                <AppRoutes />
+            </BrowserRouter>
+        </ThemeProvider>
     )
 }
 

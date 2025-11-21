@@ -1,6 +1,7 @@
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import { useState, useEffect } from "react";
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip from "@mui/material/Tooltip";
+import { useTheme } from "../../theme";
 
 export default function Header() {
   const [formattedDate, setFormattedDate] = useState('');
@@ -37,34 +38,49 @@ export default function Header() {
     return () => clearInterval(intervalId);
   }, []);
 
+  const { theme } = useTheme();
+
   return (
-    <header className="flex justify-between items-center bg-white px-6 h-14 border-b border-[#E0E4E9] shadow-sm">
+    <header
+      className="flex justify-between items-center px-6 h-14 border-b shadow-sm"
+      style={{
+        backgroundColor: theme.surface,
+        borderColor: theme.border,
+        color: theme.primaryText,
+      }}
+    >
       <div className="flex justify-between items-center w-full">
         {/* Left Logo Section */}
         <div className="flex items-center">
-          <p className="text-base md:text-lg text-[#2C2E42] font-semibold tracking-tight">
-            <span className="text-[#2C2E42]">A</span>
-            <span className="text-[#3A37FF] font-bold">ii</span>
-            <span className="text-[#2C2E42]">nhome</span>
-            <span className="px-1 text-[#7E8489]">|</span>
-            <span className="font-extrabold text-[#2C2E42]">IG</span>
+          <p className="text-base md:text-lg font-semibold tracking-tight" style={{ color: theme.primaryText }}>
+            <span style={{ color: theme.primaryText }}>A</span>
+            <span style={{ color: theme.accent }} className="font-bold">
+              ii
+            </span>
+            <span style={{ color: theme.primaryText }}>nhome</span>
+            <span className="px-1" style={{ color: theme.secondaryText }}>
+              |
+            </span>
+            <span className="font-extrabold" style={{ color: theme.primaryText }}>
+              IG
+            </span>
           </p>
         </div>
 
         {/* Right Date & Time Section */}
-        <div className="flex items-center gap-3 text-sm text-[#7E8489]">
+        <div className="flex items-center gap-3 text-sm" style={{ color: theme.secondaryText }}>
           <p>
             {formattedDate} | {formattedTime}
           </p>
           <Tooltip title="Logout" arrow>
             <LogoutRoundedIcon
               sx={{
-                color: "#7E8489",
+                color: theme.secondaryText,
                 fontSize: "20px",
                 cursor: "pointer",
                 transition: "color 0.2s ease-in-out",
                 "&:hover": {
-                  color: "#4a4e51ff",
+                  color: theme.primaryText,
                 },
               }}
             />
