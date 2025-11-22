@@ -10,7 +10,7 @@ export default function Footer() {
 
   return (
     <footer
-      className="flex justify-between items-center h-[calc(10.5%)] text-sm font-medium px-[1%] border-t"
+      className="flex justify-between items-center h-14 text-sm font-medium px-[1%] border-t"
       style={{
         backgroundColor: theme.surface,
         borderColor: theme.border,
