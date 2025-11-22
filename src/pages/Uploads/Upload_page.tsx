@@ -34,8 +34,6 @@ export default function UploadPage() {
           onChange={(e) => setFileName(e.target.value)}
           theme={theme}
         />
-
-        {/* FileDropZone Component */}
         <FileDropZone file={file} setFile={setFile} theme={theme} />
       </div>
     </div>

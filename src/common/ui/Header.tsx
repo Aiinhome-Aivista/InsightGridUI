@@ -1,11 +1,13 @@
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import { useState, useEffect } from "react";
 import Tooltip from "@mui/material/Tooltip";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../theme";
 
 export default function Header() {
   const [formattedDate, setFormattedDate] = useState('');
   const [formattedTime, setFormattedTime] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -39,6 +41,10 @@ export default function Header() {
   }, []);
 
   const { theme } = useTheme();
+
+  const handleLogout = () => {
+    navigate('/login');
+  };
 
   return (
     <header
@@ -74,6 +80,7 @@ export default function Header() {
           </p>
           <Tooltip title="Logout" arrow>
             <LogoutRoundedIcon
+              onClick={handleLogout}
               sx={{
                 color: theme.secondaryText,
                 fontSize: "20px",
