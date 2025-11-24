@@ -9,14 +9,7 @@ export default function Login() {
   return (
     <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-[#2E5868] via-[#4C6FA0] to-[#3C84D3] overflow-hidden relative">
 
-      {/* GRID PATTERN RIGHT */}
-      <div className="absolute right-10 top-1/3 opacity-30">
-        <div className="grid grid-cols-6 gap-4">
-          {Array.from({ length: 24 }).map((_, i) => (
-            <div key={i} className="w-6 h-6 border border-white/20 rounded-sm"></div>
-          ))}
-        </div>
-      </div>
+     
 
       {/* TOP LEFT CORNER LOGO */}
       <div className="absolute top-8 left-10 flex items-center gap-2 text-white font-semibold text-lg">

@@ -4,6 +4,7 @@ import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import { InputText } from "primereact/inputtext";
 import CloseIcon from "@mui/icons-material/Close";
 import ColumnSelectionModal from "../../../Modal/ColumnSelectionModal";
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 
 interface HeaderProps {
   globalFilter: string;
@@ -18,7 +19,7 @@ export default function DashboardHeader({
 
   return (
     <>
-      <header className="bg-white shadow-sm">
+      <header className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 gap-4">
             {/* Left: Title + Subtitle */}
@@ -34,7 +35,7 @@ export default function DashboardHeader({
             {/* Center: Search */}
             <div className="flex-1 flex justify-center px-4">
               <div className="relative w-full max-w-2xl">
-                <i className="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+               <SearchRoundedIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <InputText
                   value={globalFilter}
                   onChange={(e) => setGlobalFilter(e.target.value)}
