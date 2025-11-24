@@ -22,12 +22,11 @@ export default function UploadPage() {
         </h2>
 
         <p
-          className="text-center text-sm mb-6"
+          className="text-center text-xs mb-6"
           style={{ color: theme.secondaryText }}
         >
           Start by uploading a data file to create your first view.
         </p>
-
         {/* File Name Input Component */}
         <FileNameInput
           value={fileName}
