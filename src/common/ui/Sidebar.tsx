@@ -11,11 +11,11 @@ import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import { useTheme } from "../../theme";
 
 const menuItems = [
-  { name: "Upload", icon: FileUploadOutlinedIcon, path: "/upload" },
-  { name: "Dashboard", icon: GridViewRoundedIcon, path: "/dashboard" },
-  { name: "Setting", icon: SettingsRoundedIcon, path: "/setting" },
-  { name: "Download", icon: FileDownloadOutlinedIcon, path: "/download" },
-  { name: "Customize", icon: TuneOutlinedIcon, path: "/customize" },
+  { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
+  { name: "Dashboard", icon: GridViewRoundedIcon, path: "dashboard" },
+  { name: "Setting", icon: SettingsRoundedIcon, path: "setting" },
+  { name: "Download", icon: FileDownloadOutlinedIcon, path: "download" },
+  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
 ];
 
 export default function Sidebar() {
