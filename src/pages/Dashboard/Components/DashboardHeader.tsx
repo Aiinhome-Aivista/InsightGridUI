@@ -1,4 +1,5 @@
-// Components/DashboardHeader.tsx
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import { InputText } from "primereact/inputtext";
 
 interface HeaderProps {
@@ -36,7 +37,7 @@ export default function DashboardHeader({
               />
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          {/* <div className="flex items-center gap-2 flex-shrink-0">
             <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
               <i className="pi pi-cog text-gray-600 text-lg"></i>
             </button>
@@ -44,6 +45,32 @@ export default function DashboardHeader({
             <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
               <i className="pi pi-refresh text-gray-600 text-lg"></i>
             </button>
+          </div> */}
+          <div
+            className={`relative text-center border border-[#BCC7D2] rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors `}
+          >
+            <ViewColumnRoundedIcon
+              className={`w-5 h-5`}
+              sx={{
+                transition: "color 0.2s ease-in-out",
+                "&:hover": {
+                  color: "#2C2E42",
+                },
+              }}
+            />
+          </div>
+          <div
+            className={`relative text-center border border-[#BCC7D2] rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors `}
+          >
+            <AutorenewRoundedIcon
+              className={`w-5 h-5`}
+              sx={{
+                transition: "color 0.2s ease-in-out",
+                "&:hover": {
+                  color: "#2C2E42",
+                },
+              }}
+            />
           </div>
         </div>
       </div>
