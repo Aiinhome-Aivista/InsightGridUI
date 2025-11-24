@@ -1,5 +1,7 @@
+// 
 import { useTheme } from "../../theme";
-export default function Filter_page() {
+
+export default function TableView() {
   const { theme } = useTheme();
   return (
     <div className="flex flex-col  justify-center items-center w-full h-full p-8 "

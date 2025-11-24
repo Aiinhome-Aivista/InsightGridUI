@@ -8,11 +8,13 @@ import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
+import ViewColumnRoundedIcon from '@mui/icons-material/ViewColumnRounded';
 import { useTheme } from "../../theme";
 
 const menuItems = [
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
   { name: "Dashboard", icon: GridViewRoundedIcon, path: "dashboard" },
+  {name: "Table-View", icon: ViewColumnRoundedIcon, path: "table" },
   { name: "Setting", icon: SettingsRoundedIcon, path: "setting" },
   { name: "Download", icon: FileDownloadOutlinedIcon, path: "download" },
   { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },

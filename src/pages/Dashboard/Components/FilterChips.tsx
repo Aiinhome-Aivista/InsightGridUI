@@ -6,7 +6,6 @@ interface FilterChipsProps {
   onAdd?: () => void;
   onRemove?: (chip: string) => void;
 }
-
 export default function FilterChips({ onAdd, onRemove }: FilterChipsProps) {
     const navigate = useNavigate();
 
