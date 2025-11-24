@@ -43,7 +43,7 @@ export default function Header() {
   const { theme } = useTheme();
 
   const handleLogout = () => {
-    navigate('/login');
+    navigate('/');
   };
 
   return (
