@@ -2,7 +2,8 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
 import { FilterMatchMode } from "primereact/api";
-import "./primereact-table.css"
+import "./primereact-table.css";
+import FilterChips from "./FilterChips";
 
 interface DashboardTableProps {
   data: any[];
@@ -20,21 +21,12 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
   return (
     <div className="p-6">
 
-      {/* Filter Chips */}
-      <div className="flex items-center gap-3 mb-6">
-        <span className="bg-gray-100 px-4 py-2 rounded-lg text-sm text-gray-700 border border-gray-200">
-          SQL
-        </span>
-        <span className="bg-gray-100 px-4 py-2 rounded-lg text-sm text-gray-700 border border-gray-200">
-          Filter
-        </span>
-        <span className="flex items-center bg-gray-100 px-4 py-2 rounded-lg text-sm text-gray-700 border border-gray-200 gap-2">
-          Product Filter
-          <i className="pi pi-times text-gray-500 text-xs cursor-pointer"></i>
-        </span>
-      </div>
+      {/* Filter Chips Component */}
+      <FilterChips
+        onAdd={() => console.log("Add new filter")}
+        onRemove={(chip:string) => console.log("Remove chip:", chip)}
+      />
 
-      {/* Table */}
       <div className="rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">
         <DataTable
           value={data}
