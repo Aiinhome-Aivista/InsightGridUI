@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
     const navigate = useNavigate()
-    function handleLogin() {
-        navigate('/')
+   function handleLogin() {
+        navigate('/layout/upload')
     }
   return (
     <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-[#2E5868] via-[#4C6FA0] to-[#3C84D3] overflow-hidden relative">
