@@ -1,4 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 interface ColumnSelectionModalProps {
   open: boolean;
@@ -11,17 +12,15 @@ export default function ColumnSelectionModal({ open, onClose }: ColumnSelectionM
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="bg-white w-[85%] h-[75%] rounded-2xl shadow-lg overflow-hidden flex flex-col">
-
-        {/* Top Header Section */}
         <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-4">
           <button
             onClick={onClose}
             className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-200"
           >
-            <i className="pi pi-arrow-left text-gray-700"></i>
+          <KeyboardBackspaceIcon />
           </button>
 
-          <h1 className="text-sm font-medium text-gray-800">Column Selection</h1>
+          <h1 className="text-sm flex-1 py-2 font-medium text-gray-800">Column Selection</h1>
 
           {/* Name the Collection */}
           <input
