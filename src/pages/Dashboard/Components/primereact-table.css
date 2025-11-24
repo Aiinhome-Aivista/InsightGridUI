@@ -1,0 +1,28 @@
+/* Table header */
+.p-datatable.custom-table .p-datatable-thead > tr > th {
+  background: #ffffff !important;
+  font-weight: 600;
+  color: #4b5563 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  padding: 16px 20px !important;
+  font-size: 14px;
+}
+
+/* Table rows */
+.p-datatable.custom-table .p-datatable-tbody > tr > td {
+  padding: 16px 20px !important;
+  border: none !important;
+  font-size: 14px;
+  color: #374151;
+}
+
+/* Hover row */
+.p-datatable.custom-table .p-datatable-tbody > tr:hover {
+  background: #f9fafb !important;
+}
+
+/* Remove inner lines */
+.p-datatable.custom-table .p-datatable-table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}

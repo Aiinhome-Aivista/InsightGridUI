@@ -20,23 +20,6 @@ font-family: "Ballo Da 2",;
     color: var(--theme-primary-text);
   }
 }
-
-.custom-table .p-datatable-thead > tr > th {
-  background: #fff;
-  font-weight: 600;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 14px 16px;
-}
-
-.custom-table .p-datatable-tbody > tr > td {
-  padding: 14px 16px;
-  border: none;
-}
-
-.custom-table .p-datatable-tbody > tr:hover {
-  background: #fafafa;
-}
-
 /* Custom component styles */
 @layer components {
   .btn-primary {
