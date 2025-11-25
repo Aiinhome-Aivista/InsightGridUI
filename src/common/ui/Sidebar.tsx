@@ -12,7 +12,7 @@ import ViewColumnRoundedIcon from '@mui/icons-material/ViewColumnRounded';
 import { useTheme } from "../../theme";
 
 const menuItems = [
-  { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
+  { name: "Upload", icon: FileUploadOutlinedIcon , path: "upload" },
   { name: "Dashboard", icon: GridViewRoundedIcon, path: "dashboard" },
   {name: "Table-View", icon: ViewColumnRoundedIcon, path: "table" },
   { name: "Setting", icon: SettingsRoundedIcon, path: "setting" },
@@ -81,7 +81,7 @@ export default function Sidebar() {
                   <Icon
                     sx={{
                       color: isActive ? theme.background : theme.primaryText,
-                      fontSize: "1.5rem",
+                      fontSize: "1.1rem",
                     }}
                   />
                   {!collapsed && (
