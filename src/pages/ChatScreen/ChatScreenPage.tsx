@@ -1,6 +1,6 @@
 import React from 'react'
 
-function ChatScreen_page() {
+function ChatScreenPage() {
   return (
     <div>
       <h1>This is ChatScreen Page</h1>
@@ -8,4 +8,4 @@ function ChatScreen_page() {
   )
 }
 
-export default ChatScreen_page
+export default ChatScreenPage

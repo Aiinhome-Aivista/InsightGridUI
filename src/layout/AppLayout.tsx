@@ -10,7 +10,7 @@ export default function AppLayout() {
   return (
     <>
       <div
-        className="flex h-screen"
+        className="flex h-full w-screen"
         style={{ backgroundColor: theme.background, color: theme.primaryText }}
       >
         <Sidebar />

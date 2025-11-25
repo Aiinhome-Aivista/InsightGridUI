@@ -9,7 +9,7 @@ import Login from "../pages/Auth/Login";
 import SQL_page from "../pages/Filters/SQL_page";
 import Filter_page from "../pages/Filters/Filter_page";
 import TableView from "../pages/TableView/TableView";
-import ChatScreen_page from "../pages/ChatScreen/ChatScreen_page";
+import ChatScreenPage from "../pages/ChatScreen/ChatScreenPage";
 
 function AppRoutes() {
   return (
@@ -35,7 +35,7 @@ function AppRoutes() {
         {/* ✅ Newly added routes */}
         <Route path="sql" element={<SQL_page />} />
         <Route path="filter" element={<Filter_page />} />
-        <Route path="chatScreen" element={<ChatScreen_page />} />
+        <Route path="chatScreen" element={<ChatScreenPage />} />
       </Route>
     </Routes>
   );
