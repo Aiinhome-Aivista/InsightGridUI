@@ -9,6 +9,7 @@ import Login from "../pages/Auth/Login";
 import SQL_page from "../pages/Filters/SQL_page";
 import Filter_page from "../pages/Filters/Filter_page";
 import TableView from "../pages/TableView/TableView";
+import ChatScreen_page from "../pages/ChatScreen/ChatScreen_page";
 
 function AppRoutes() {
   return (
@@ -20,6 +21,7 @@ function AppRoutes() {
       <Route path="/setting" element={<Navigate to="/layout/setting" replace />} />
       <Route path="/download" element={<Navigate to="/layout/download" replace />} />
       <Route path="/customize" element={<Navigate to="/layout/customize" replace />} />
+      <Route path="/chatScreen" element={<Navigate to="/layout/chatScreen" replace />} />
 
       <Route path="/layout" element={<AppLayout />}>
         <Route index element={<Navigate to="upload" replace />} />
@@ -33,6 +35,7 @@ function AppRoutes() {
         {/* ✅ Newly added routes */}
         <Route path="sql" element={<SQL_page />} />
         <Route path="filter" element={<Filter_page />} />
+        <Route path="chatScreen" element={<ChatScreen_page />} />
       </Route>
     </Routes>
   );
