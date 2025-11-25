@@ -12,7 +12,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className=" w-full h-full bg-gray-50">
+    <div className="h-full bg-gray-50">
       <DashboardHeader
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
