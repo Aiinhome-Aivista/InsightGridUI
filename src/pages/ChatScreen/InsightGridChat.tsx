@@ -9,7 +9,7 @@ interface InsightGridChatUIProps {
   onClose: () => void;
 }
 
-export default function InsightGridChatUI({ onClose }: InsightGridChatUIProps): JSX.Element {
+export default function InsightGridChat({ onClose }: InsightGridChatUIProps): JSX.Element {
   const [message, setMessage] = useState("");
 
   const handleSend = () => {
