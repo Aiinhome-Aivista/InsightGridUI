@@ -3,8 +3,8 @@ import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import { InputText } from "primereact/inputtext";
 import CloseIcon from "@mui/icons-material/Close";
-import ColumnSelectionModal from "../../../Modal/ColumnSelectionModal";
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import ColumnSectionPage from "../../../Modal/column-section-page";
 
 interface HeaderProps {
   globalFilter: string;
@@ -35,7 +35,7 @@ export default function DashboardHeader({
             {/* Center: Search */}
             <div className="flex-1 flex justify-center px-4">
               <div className="relative w-full max-w-2xl">
-               <SearchRoundedIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <SearchRoundedIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <InputText
                   value={globalFilter}
                   onChange={(e) => setGlobalFilter(e.target.value)}
@@ -60,6 +60,10 @@ export default function DashboardHeader({
                 }}
               />
             </div>
+            <ColumnSectionPage
+              open={showColumnModal}
+              onClose={() => setShowColumnModal(false)}
+            />
 
             <div
               className={`relative text-center border border-[#BCC7D2] rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors`}
@@ -78,10 +82,12 @@ export default function DashboardHeader({
         </div>
       </header>
 
- <ColumnSelectionModal
+
+
+      {/* <ColumnSelectionModal
         open={showColumnModal}
         onClose={() => setShowColumnModal(false)}
-      />
+      /> */}
 
     </>
   );

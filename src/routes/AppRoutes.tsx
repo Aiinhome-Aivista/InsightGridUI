@@ -10,6 +10,7 @@ import SQL_page from "../pages/Filters/SQL_page";
 import Filter_page from "../pages/Filters/Filter_page";
 import TableView from "../pages/TableView/TableView";
 import ChatScreenPage from "../pages/ChatScreen/ChatScreenPage";
+import ColumnSelectionPage from "../Modal/column-section-page";
 
 function AppRoutes() {
   return (
@@ -31,6 +32,7 @@ function AppRoutes() {
         <Route path="setting" element={<Setting_page />} />
         <Route path="download" element={<Download_page />} />
         <Route path="customize" element={<Customize_page />} />
+        <Route path="columns" element={<ColumnSelectionPage open={true} onClose={() => {}} />} />
 
         {/* ✅ Newly added routes */}
         <Route path="sql" element={<SQL_page />} />
