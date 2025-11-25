@@ -1,4 +1,4 @@
-import BackupOutlinedIcon from "@mui/icons-material/BackupOutlined";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 
 interface Props {
   fileName: string;
@@ -7,7 +7,7 @@ interface Props {
 export default function UploadSuccess({ fileName }: Props) {
   return (
     <div className="flex flex-col items-center">
-      <BackupOutlinedIcon className="w-8 h-8 text-gray-500 mb-2" />
+      <DescriptionOutlinedIcon className="w-8 h-8 text-gray-500 mb-2" />
 
       <p className="text-sm text-gray-700">{fileName}</p>
 

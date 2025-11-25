@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
@@ -22,8 +22,9 @@ const menuItems = [
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(true);
-  const [activeItem, setActiveItem] = useState("Upload");
   const { theme } = useTheme();
+  const location = useLocation();
+  const activePath = location.pathname.split("/").pop() || "upload";
 
   return (
     <aside
@@ -65,11 +66,10 @@ export default function Sidebar() {
         <nav className="flex flex-col gap-1 px-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = item.name === activeItem;
+            const isActive = item.path === activePath;
             return (
               <Link to={item.path} key={item.name} className="no-underline">
                 <div
-                  onClick={() => setActiveItem(item.name)}
                   className={`flex items-center ${collapsed ? "justify-center" : "justify-start"
                     } h-12 cursor-pointer rounded-lg transition px-3`}
                   style={{
