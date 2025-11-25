@@ -6,6 +6,7 @@ import Setting_page from "../pages/Setting/Setting_page";
 import Download_page from "../pages/Download/Download_page";
 import Customize_page from "../pages/Customize/Customize_page";
 import Login from "../pages/Auth/Login";
+import LandingPage from "../pages/LandingPage/LandingPage";
 import SQL_page from "../pages/Filters/SQL_page";
 import Filter_page from "../pages/Filters/Filter_page";
 import TableView from "../pages/TableView/TableView";
@@ -15,7 +16,8 @@ import InsightGridChat from "../pages/ChatScreen/InsightGridChat";
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/upload" element={<Navigate to="/layout/upload" replace />} />
       <Route path="/dashboard" element={<Navigate to="/layout/dashboard" replace />} />
       <Route path="/table" element={<Navigate to="/layout/table" replace />} />

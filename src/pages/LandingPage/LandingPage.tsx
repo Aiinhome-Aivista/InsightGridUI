@@ -2,12 +2,13 @@ import { colors } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Union from "../../assets/Union.svg";
-import view_quilt from "../../assets/view_quilt.svg";
+import LandingFeatureSection from "./LandingFeatureSection";
 export default function LandingPage() {
   const navigate = useNavigate();
   return (
+    <>
     <div
-      className="w-full h-screen flex items-center justify-center 
+      className="w-full h-[600px] flex items-center justify-center 
     bg-gradient-to-br from-[#4C6685] via-[#5479A1] to-[#5584C1]
     overflow-hidden relative"
     >
@@ -44,17 +45,26 @@ export default function LandingPage() {
         <span className="font-extrabold text-xl">IG</span>
       </div>
 
-      {/* MAIN WRAPPER */}
-      <div className="flex flex-col items-center w-full h-full pt-24 relative">
-        {/* ICON + TITLE */}
-        <img src={view_quilt} alt="cross-pattern" className="w-12 mt-20" />
-        <div className="flex flex-col items-center">
-          <h1 className="text-white text-3xl font-bold">InsightGrid</h1>
-          <p className="text-white/80 text-sm mt-1">
-            Customize Every View. Empower Every Decision.
-          </p>
+ <div className="flex flex-col items-center mt-[-60px]">
+        <h1 className="text-white text-4xl font-bold tracking-wide">
+          InsightGrid
+        </h1>
+        <p className="text-white/80 mt-2 text-sm tracking-wide">
+          Customize Every View. Empower Every Decision.
+        </p>
+
+        {/* BUTTON */}
+        <button
+          onClick={() => navigate("/login")}
+          className="mt-10 bg-white/40 hover:bg-white/60 text-white 
+          px-6 py-2 rounded-md font-medium backdrop-blur-sm transition flex items-center gap-2"
+        >
+          Create your first Insight →
+        </button>
         </div>
+          
       </div>
-    </div>
+           <LandingFeatureSection /> 
+    </>
   );
 }
