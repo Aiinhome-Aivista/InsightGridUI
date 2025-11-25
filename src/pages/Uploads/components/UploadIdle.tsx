@@ -1,12 +1,12 @@
 import BackupOutlinedIcon from "@mui/icons-material/BackupOutlined";
 
 interface Props {
-  onFileSelect: (file: File) => void;
+  onFileSelect: (files: File[]) => void;
 }
 
 export default function UploadIdle({ onFileSelect }: Props) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) onFileSelect(e.target.files[0]);
+    if (e.target.files) onFileSelect(Array.from(e.target.files));
   };
 
   return (
@@ -19,7 +19,7 @@ export default function UploadIdle({ onFileSelect }: Props) {
       </p>
 
       <label className="mt-3 cursor-pointer">
-        <input type="file" onChange={handleChange} className="hidden" />
+        <input type="file" onChange={handleChange} className="hidden" multiple />
         <span className="text-sm px-4 py-2 rounded-md bg-white text-[#333] border">
           Or Select a File
         </span>

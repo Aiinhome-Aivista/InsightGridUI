@@ -3,40 +3,38 @@ import UploadIdle from "./UploadIdle";
 import UploadProgress from "./UploadProgress";
 import UploadSuccess from "./UploadSuccess";
 import UploadActions from "./UploadActions";
-import DataProcessing from "./DataProcessing";
 
 interface Props {
-  file: File | null;
-  setFile: (file: File | null) => void;
+  onUploadComplete: (files: File[]) => void;
   theme: any;
 }
 
-export default function FileDropZone({ file, setFile }: Props) {
+export default function FileDropZone({ onUploadComplete, theme }: Props) {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadComplete, setUploadComplete] = useState(false);
-  const [showProcessing, setShowProcessing] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
 
-  const startUpload = (selectedFile: File) => {
-    setFile(selectedFile);
+  const startUpload = (selectedFiles: File[]) => {
+    setFiles(selectedFiles);
     setUploading(true);
     setProgress(0);
     setUploadComplete(false);
-    setShowProcessing(false);
+    onUploadComplete([]); // Clear previous files
   };
 
   const handleDelete = () => {
-    setFile(null);
+    setFiles([]);
     setUploading(false);
     setProgress(0);
     setUploadComplete(false);
-    setShowProcessing(false);
   };
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (e.dataTransfer.files?.[0]) startUpload(e.dataTransfer.files[0]);
+    setDragActive(false);
+    if (e.dataTransfer.files) startUpload(Array.from(e.dataTransfer.files));
   };
 
   const handleDrag = (e: DragEvent<HTMLDivElement>) => {
@@ -46,14 +44,14 @@ export default function FileDropZone({ file, setFile }: Props) {
   };
 
   useEffect(() => {
-    if (!uploading) return;
+    if (!uploading || files.length === 0) return;
     const interval = setInterval(() => {
       setProgress((p) => {
         if (p >= 100) {
           clearInterval(interval);
           setUploading(false);
           setUploadComplete(true);
-          setTimeout(() => setShowProcessing(true), 600);
+          setTimeout(() => onUploadComplete(files), 600);
           return 100;
         }
         return p + 1.2;
@@ -61,11 +59,11 @@ export default function FileDropZone({ file, setFile }: Props) {
     }, 35);
 
     return () => clearInterval(interval);
-  }, [uploading]);
+  }, [uploading, files, onUploadComplete]);
 
   return (
     <div className="space-y-6">
-      <p className="text-sm font-medium">Upload File</p>
+      <p className="text-sm font-medium" style={{ color: theme.primaryText }}>Upload File</p>
 
       <div
         onDragEnter={handleDrag}
@@ -75,23 +73,20 @@ export default function FileDropZone({ file, setFile }: Props) {
         className={`relative w-full h-44 rounded-xl border-2 border-dashed bg-[#FAFAFA] flex items-center justify-center transition
         ${dragActive ? "border-[#182938]" : "border-[#BCC7D2]"}`}
       >
-        {!file ? (
+        {files.length === 0 ? (
           <UploadIdle onFileSelect={startUpload} />
         ) : uploading ? (
-          <UploadProgress fileName={file.name} progress={progress} />
+          <UploadProgress fileName={files.length > 1 ? `${files.length} files` : files[0].name} progress={progress} />
         ) : uploadComplete ? (
           <>
-            <UploadSuccess fileName={file.name} />
+            <UploadSuccess fileName={files.length > 1 ? `${files.length} files` : files[0].name} />
             <UploadActions
-              onReupload={() => startUpload(file)}
+              onReupload={() => startUpload(files)}
               onDelete={handleDelete}
             />
           </>
         ) : null}
       </div>
-
-      {/* Data Processing Under Upload Box */}
-      {showProcessing && file && <DataProcessing fileName={file.name} />}
     </div>
   );
 }

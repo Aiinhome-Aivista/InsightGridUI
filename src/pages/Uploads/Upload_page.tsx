@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useTheme } from "../../theme";
-import FileNameInput from "./components/FileNameInput";
 import FileDropZone from "./components/FileDropZone";
+import DataProcessing from "./components/DataProcessing";
 
 export default function UploadPage() {
   const { theme } = useTheme();
-  const [fileName, setFileName] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [processedFiles, setProcessedFiles] = useState<File[]>([]);
 
   return (
     <div
@@ -27,13 +26,12 @@ export default function UploadPage() {
         >
           Start by uploading a data file to create your first view.
         </p>
-        {/* File Name Input Component */}
-        <FileNameInput
-          value={fileName}
-          onChange={(e) => setFileName(e.target.value)}
+        <FileDropZone
+          onUploadComplete={(files) => setProcessedFiles(files)}
           theme={theme}
         />
-        <FileDropZone file={file} setFile={setFile} theme={theme} />
+        {/* Data Processing Under Upload Box */}
+        {processedFiles.length > 0 && <DataProcessing files={processedFiles} />}
       </div>
     </div>
   );
