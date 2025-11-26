@@ -25,8 +25,8 @@ function PageFooter({ onClose, onSave, isSaveDisabled }: PageFooterProps) {
           disabled={isSaveDisabled}
           className={`px-6 py-2 rounded-lg text-sm ${
             isSaveDisabled
-              ? 'bg-gray-300 text-[#888585] cursor-not-allowed'
-              : 'bg-[#D9D9D9] text-[#888585] hover:bg[#888585] cursor-pointer'
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-gray-800 text-white hover:bg-gray-900 cursor-pointer'
           }`}
         >
           Save
@@ -35,5 +35,6 @@ function PageFooter({ onClose, onSave, isSaveDisabled }: PageFooterProps) {
     </div>
   );
 }
+
 
 export default PageFooter;

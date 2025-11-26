@@ -3,11 +3,16 @@ import CloseIcon from "@mui/icons-material/Close";
 interface ChipsetProps {
   label: string;
   onRemove: () => void;
+  onDragStart?: (e: React.DragEvent) => void;
 }
 
-function Chipset({ label, onRemove }: ChipsetProps) {
+function Chipset({ label, onRemove, onDragStart }: ChipsetProps) {
   return (
-    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-full">
+    <div 
+      draggable
+      onDragStart={onDragStart}
+      className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-full cursor-move hover:bg-gray-300 transition-colors"
+    >
       <span className="text-sm text-gray-700">{label}</span>
       <button
         onClick={onRemove}

@@ -1,4 +1,5 @@
 import ChipContainer from "./chip-container";
+import AvailableColumnItem from "./available-column-item";
 
 interface ColumnOption {
   id: string;
@@ -9,18 +10,24 @@ interface ColumnOption {
 // Column List Component
 interface ColumnListProps {
   selectionMode: number;
-  columns: ColumnOption[];
-  onToggleColumn: (id: string) => void;
-  selectedChips: string[];
+  selectedColumns: string[];
+  availableColumns: string[];
   onRemoveChip: (index: number) => void;
+  onDrop: (e: React.DragEvent) => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragStartFromChip: (index: number) => void;
+  onDragStartFromAvailable: (label: string) => void;
 }
 
 function ColumnList({
   selectionMode,
-  columns,
-  onToggleColumn,
-  selectedChips,
-  onRemoveChip
+  selectedColumns,
+  availableColumns,
+  onRemoveChip,
+  onDrop,
+  onDragOver,
+  onDragStartFromChip,
+  onDragStartFromAvailable
 }: ColumnListProps) {
   return (
     <div className="w-full">
@@ -35,43 +42,43 @@ function ColumnList({
         <p className="text-gray-700">Customer</p>
       </div>
 
-      {/* Add Column */}
-      <h3 className="text-xs font-medium text-gray-500 mb-2">
-        Add Column ({columns.length})
-      </h3>
-
-      {selectionMode === 0 ? (
-        // Multi Select Mode
-        <div className="space-y-3 text-sm">
-          {columns.map((column) => (
-            <label key={column.id} className="flex items-center">
-              <input
-                type="checkbox"
-                checked={column.checked}
-                onChange={() => onToggleColumn(column.id)}
-                className="w-4 h-4 mr-3"
-              />
-              {column.label}
-            </label>
-          ))}
-        </div>
-      ) : (
-        // Drag & Drop Mode - Show Chip Container
-        <ChipContainer items={selectedChips} onRemoveItem={onRemoveChip} />
+      {/* Selected Columns in Drag & Drop Mode */}
+      {selectionMode === 1 && (
+        <>
+          <h3 className="text-xs font-medium text-gray-500 mb-2">
+            Selected Column ({selectedColumns.length})
+          </h3>
+          <ChipContainer 
+            items={selectedColumns} 
+            onRemoveItem={onRemoveChip}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onDragStart={onDragStartFromChip}
+          />
+        </>
       )}
 
-      {/* Default Column */}
+      {/* Available Column */}
       <h3 className="text-xs font-medium text-gray-500 mb-2 mt-6">
-        Available Column (3)
+        Available Column ({availableColumns.length})
       </h3>
 
-      <div className="space-y-2 text-sm mb-6">
-        <p className="text-gray-700">Product Value</p>
-        <p className="text-gray-700">Purchase Amount</p>
-        <p className="text-gray-700">Credit Point</p>
+      <div className="space-y-2 mb-6">
+        {availableColumns.map((column, index) => (
+          <AvailableColumnItem
+            key={index}
+            label={column}
+            onDragStart={(e) => {
+              e.dataTransfer.setData('text/plain', column);
+              e.dataTransfer.setData('source', 'available');
+              onDragStartFromAvailable(column);
+            }}
+          />
+        ))}
       </div>
     </div>
   );
 }
+
 
 export default ColumnList;

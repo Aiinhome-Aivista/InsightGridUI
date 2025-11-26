@@ -16,42 +16,59 @@ interface ColumnOption {
   checked: boolean;
 }
 
-export default function ColumnSelectionPage({ open, onClose }: ColumnSelectionPageProps) {
+export default function ColumnSelectionPage() {
   const [selectionMode, setSelectionMode] = useState(0);
-  const [columns, setColumns] = useState<ColumnOption[]>([
-    { id: '1', label: 'Category', checked: true },
-    { id: '2', label: 'Region', checked: true },
-    { id: '3', label: 'Product Value', checked: false },
-    { id: '4', label: 'Purchase Amount', checked: false },
-    { id: '5', label: 'Credit Point', checked: true },
-  ]);
-  const [selectedChips, setSelectedChips] = useState<string[]>([
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([
     'Category',
     'Region',
     'Credit Point'
   ]);
-
-  const handleToggleColumn = (id: string) => {
-    setColumns(columns.map(col =>
-      col.id === id ? { ...col, checked: !col.checked } : col
-    ));
-  };
-
-  const handleRemoveChip = (index: number) => {
-    setSelectedChips(selectedChips.filter((_, i) => i !== index));
-  };
+  const [availableColumns, setAvailableColumns] = useState<string[]>([
+    'Product Value',
+    'Purchase Amount'
+  ]);
+  const [draggedItem, setDraggedItem] = useState<string>('');
 
   const handleModeChange = (index: number) => {
     setSelectionMode(index);
-    console.log('Mode:', index === 0 ? 'Multi Select' : 'Drag & Drop');
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDropToChipContainer = (e: React.DragEvent) => {
+    e.preventDefault();
+    const item = e.dataTransfer.getData('text/plain');
+    const source = e.dataTransfer.getData('source');
+
+    if (source === 'available' && item) {
+      // Add to selected columns
+      setSelectedColumns(prev => [...prev, item]);
+      // Remove from available columns
+      setAvailableColumns(prev => prev.filter(col => col !== item));
+    }
+  };
+
+  const handleRemoveChip = (index: number) => {
+    const removedItem = selectedColumns[index];
+    // Remove from selected columns
+    setSelectedColumns(prev => prev.filter((_, i) => i !== index));
+    // Add back to available columns at the end
+    setAvailableColumns(prev => [...prev, removedItem]);
+  };
+
+  const handleDragStartFromChip = (index: number) => {
+    setDraggedItem(selectedColumns[index]);
+  };
+
+  const handleDragStartFromAvailable = (label: string) => {
+    setDraggedItem(label);
   };
 
   const handleSave = () => {
-    console.log('Saving...', { selectionMode, columns, selectedChips });
-    onClose();
+    console.log('Saving...', { selectionMode, selectedColumns, availableColumns });
   };
-
-  if (!open) return null;
 
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
@@ -61,7 +78,7 @@ export default function ColumnSelectionPage({ open, onClose }: ColumnSelectionPa
         <div className="w-4/5 flex flex-col">
           {/* Header */}
           <PageHeader
-            onClose={onClose}
+            onClose={() => console.log('Close')}
             selectionMode={selectionMode}
             onModeChange={handleModeChange}
           />
@@ -69,21 +86,24 @@ export default function ColumnSelectionPage({ open, onClose }: ColumnSelectionPa
           <div className="flex-1 px-10 py-8 overflow-auto">
             <ColumnList
               selectionMode={selectionMode}
-              columns={columns}
-              onToggleColumn={handleToggleColumn}
-              selectedChips={selectedChips}
+              selectedColumns={selectedColumns}
+              availableColumns={availableColumns}
               onRemoveChip={handleRemoveChip}
+              onDrop={handleDropToChipContainer}
+              onDragOver={handleDragOver}
+              onDragStartFromChip={handleDragStartFromChip}
+              onDragStartFromAvailable={handleDragStartFromAvailable}
             />
           </div>
         </div>
         {/* Vertical Divider */}
         <div className="w-px bg-gray-200"></div>
-        {/* Right Sidebar - 20% width (no header, starts from top) */}
+        {/* Right Sidebar - 20% width */}
         <Sidebar />
       </div>
       {/* Footer - Full Width */}
       <PageFooter
-        onClose={onClose}
+        onClose={() => console.log('Reset')}
         onSave={handleSave}
         isSaveDisabled={false}
       />
