@@ -1,29 +1,35 @@
-import previewImage from "../../assets/Dashboard_preview.svg"; 
+import previewImage from "../../assets/Dashboard_preview.svg";
 
 export default function VisualizationSection() {
   return (
-    <section className="w-full bg-[#1F63CE] py-28 relative overflow-hidden">
+    <section className="w-full min-h-screen bg-[#256CC9] py-32 relative overflow-hidden">
 
       {/* Right blurred dashboard */}
       <img
         src={previewImage}
         alt="visual-preview"
-        className="absolute right-0 top-1/2 -translate-y-1/2 w-[750px] opacity-60 blur-[1px] rounded-3xl"
+        className="
+          absolute right-8 bottom-40 w-[680px] opacity-80 rounded-3xl
+          translate-y-10 
+        "
+        style={{
+          maskImage: "linear-gradient(to left, black 60%, transparent 100%)",
+        }}
       />
 
       {/* Content Container */}
-      <div className="max-w-[1250px] mx-auto flex items-center">
+      <div className="max-w-[1350px] mx-auto flex items-center pl-10">
         {/* Left Text Column */}
-        <div className="w-[50%] text-white">
+        <div className="w-[55%] text-white">
 
-          <h2 className="text-4xl font-semibold leading-snug">
+          <h2 className="text-[46px] font-semibold leading-tight tracking-tight">
             Build beautiful <br /> visualizations instantly.
           </h2>
 
-          {/* Underline Highlight */}
-          <div className="mt-3 w-16 h-2 rounded-full bg-white/90" />
+          {/* Underline highlight */}
+          <div className="mt-4 w-16 h-[8px] rounded-full bg-white/95" />
 
-          <p className="mt-8 text-white/90 text-[16px] leading-relaxed">
+          <p className="mt-10 text-white/85 text-[16px] leading-[29px] pr-10">
             From any column, simply click Insight to view smart, data-aware
             graph suggestions—text columns automatically offer bar charts, pie
             charts, column charts, and tree maps; numeric columns suggest

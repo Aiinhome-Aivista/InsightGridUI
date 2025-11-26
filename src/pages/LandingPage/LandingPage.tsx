@@ -5,6 +5,7 @@ import Union from "../../assets/Union.svg";
 import LandingFeatureSection from "./LandingFeatureSection";
 import VisualizationSection from "./VisualizationSection";
 import LandingDashboard from "./LandingDashboard";
+import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
 export default function LandingPage() {
   const navigate = useNavigate();
   return (
@@ -62,7 +63,8 @@ export default function LandingPage() {
           className="mt-10 bg-white/40 hover:bg-white/60 text-white 
           px-6 py-2 rounded-md font-medium backdrop-blur-sm transition flex items-center gap-2"
         >
-          Create your first Insight →
+          Create your first Insight
+          <ArrowForwardOutlinedIcon sx={{ fontSize: 22 }} />
         </button>
         </div>
       </div>
