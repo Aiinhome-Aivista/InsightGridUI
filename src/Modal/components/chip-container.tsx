@@ -1,14 +1,18 @@
 import Chipset from "./chipset";
 
-interface ChipContainerProps {
+export default function ChipContainer({ 
+  items, 
+  onRemoveItem, 
+  onDrop, 
+  onDragOver, 
+  onDragStart 
+}: {
   items: string[];
   onRemoveItem: (index: number) => void;
   onDrop: (e: React.DragEvent) => void;
   onDragOver: (e: React.DragEvent) => void;
   onDragStart: (index: number) => void;
-}
-
-function ChipContainer({ items, onRemoveItem, onDrop, onDragOver, onDragStart }: ChipContainerProps) {
+}) {
   return (
     <div 
       onDrop={onDrop}
@@ -39,4 +43,3 @@ function ChipContainer({ items, onRemoveItem, onDrop, onDragOver, onDragStart }:
   );
 }
 
-export default ChipContainer;

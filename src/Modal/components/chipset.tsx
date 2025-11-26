@@ -1,12 +1,14 @@
 import CloseIcon from "@mui/icons-material/Close";
 
-interface ChipsetProps {
+export default function Chipset({ 
+  label, 
+  onRemove, 
+  onDragStart 
+}: {
   label: string;
   onRemove: () => void;
   onDragStart?: (e: React.DragEvent) => void;
-}
-
-function Chipset({ label, onRemove, onDragStart }: ChipsetProps) {
+}) {
   return (
     <div 
       draggable
@@ -24,4 +26,3 @@ function Chipset({ label, onRemove, onDragStart }: ChipsetProps) {
   );
 }
 
-export default Chipset;

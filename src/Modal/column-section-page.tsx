@@ -1,35 +1,36 @@
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import { useState } from 'react';
-import Sidebar from './components/sidebar';
-import PageHeader from './components/page-header';
-import ColumnList from './components/column-list';
-import PageFooter from './components/page-footer';
+import { useState } from "react";
+import PageHeader from "./components/page-header";
+import ColumnList from "./components/column-list";
+import PageFooter from "./components/page-footer";
+import Sidebar from "./components/sidebar";
+import { useNavigate } from "react-router-dom";
 
-interface ColumnSelectionPageProps { 
-  onClose: () => void;
-}
+export default function ColumnSelectionPage() {
 
-interface ColumnOption {
-  id: string;
-  label: string;
-  checked: boolean;
-}
+  const navigate = useNavigate();   
 
-export default function ColumnSelectionPage({ onClose }: ColumnSelectionPageProps) {
+  const handleBack = () => {
+    navigate(-1);  
+  };
   const [selectionMode, setSelectionMode] = useState(0);
-  const [selectedColumns, setSelectedColumns] = useState<string[]>([
-    'Category',
-    'Region',
-    'Credit Point'
+  const [addColumns, setAddColumns] = useState([
+    { label: 'Category', checked: true },
+    { label: 'Region', checked: true },
+    { label: 'Credit Point', checked: true },
+    { label: 'Product Value', checked: false },
+    { label: 'Purchase Amount', checked: false }
   ]);
-  const [availableColumns, setAvailableColumns] = useState<string[]>([
-    'Product Value',
-    'Purchase Amount'
-  ]);
-  const [draggedItem, setDraggedItem] = useState<string>('');
 
   const handleModeChange = (index: number) => {
     setSelectionMode(index);
+  };
+
+  const handleToggleCheckbox = (label: string) => {
+    setAddColumns(prev => 
+      prev.map(col => 
+        col.label === label ? { ...col, checked: !col.checked } : col
+      )
+    );
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -42,32 +43,44 @@ export default function ColumnSelectionPage({ onClose }: ColumnSelectionPageProp
     const source = e.dataTransfer.getData('source');
 
     if (source === 'available' && item) {
-      // Add to selected columns
-      setSelectedColumns(prev => [...prev, item]);
-      // Remove from available columns
-      setAvailableColumns(prev => prev.filter(col => col !== item));
+      setAddColumns(prev =>
+        prev.map(col =>
+          col.label === item ? { ...col, checked: true } : col
+        )
+      );
     }
   };
 
   const handleRemoveChip = (index: number) => {
-    const removedItem = selectedColumns[index];
-    // Remove from selected columns
-    setSelectedColumns(prev => prev.filter((_, i) => i !== index));
-    // Add back to available columns at the end
-    setAvailableColumns(prev => [...prev, removedItem]);
+    const checkedColumns = addColumns.filter(col => col.checked);
+    const removedLabel = checkedColumns[index].label;
+    
+    setAddColumns(prev =>
+      prev.map(col =>
+        col.label === removedLabel ? { ...col, checked: false } : col
+      )
+    );
   };
 
   const handleDragStartFromChip = (index: number) => {
-    setDraggedItem(selectedColumns[index]);
+    // Optional: Add visual feedback during drag
   };
 
   const handleDragStartFromAvailable = (label: string) => {
-    setDraggedItem(label);
+    // Optional: Add visual feedback during drag
   };
 
   const handleSave = () => {
-    console.log('Saving...', { selectionMode, selectedColumns, availableColumns });
+    const selectedColumns = addColumns.filter(col => col.checked).map(col => col.label);
+    console.log('Saving...', { selectionMode, selectedColumns });
   };
+
+  const handleClose = () => {
+    console.log('Closing...');
+  };
+
+  // Get available columns (unchecked items) for drag & drop mode
+  const availableColumns = addColumns.filter(col => !col.checked).map(col => col.label);
 
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
@@ -77,7 +90,7 @@ export default function ColumnSelectionPage({ onClose }: ColumnSelectionPageProp
         <div className="w-4/5 flex flex-col">
           {/* Header */}
           <PageHeader
-            onClose={onClose}
+            onClose={handleBack}
             selectionMode={selectionMode}
             onModeChange={handleModeChange}
           />
@@ -85,13 +98,14 @@ export default function ColumnSelectionPage({ onClose }: ColumnSelectionPageProp
           <div className="flex-1 px-10 py-8 overflow-auto">
             <ColumnList
               selectionMode={selectionMode}
-              selectedColumns={selectedColumns}
+              addColumns={addColumns}
               availableColumns={availableColumns}
               onRemoveChip={handleRemoveChip}
               onDrop={handleDropToChipContainer}
               onDragOver={handleDragOver}
               onDragStartFromChip={handleDragStartFromChip}
               onDragStartFromAvailable={handleDragStartFromAvailable}
+              onToggleCheckbox={handleToggleCheckbox}
             />
           </div>
         </div>
@@ -102,7 +116,7 @@ export default function ColumnSelectionPage({ onClose }: ColumnSelectionPageProp
       </div>
       {/* Footer - Full Width */}
       <PageFooter
-        onClose={onClose}
+        onClose={handleClose}
         onSave={handleSave}
         isSaveDisabled={false}
       />

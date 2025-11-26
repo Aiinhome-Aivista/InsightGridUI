@@ -1,16 +1,15 @@
 import { useState } from 'react';
 
-interface AnimatedToggleProps {
-  options: string[];
-  defaultSelected?: number;
-  onChange?: (selectedIndex: number) => void;
-}
-
-function AnimatedToggleButton({ 
+// AnimatedToggleButton Component
+export default function AnimatedToggleButton({ 
   options, 
   defaultSelected = 0,
   onChange 
-}: AnimatedToggleProps) {
+}: {
+  options: string[];
+  defaultSelected?: number;
+  onChange?: (selectedIndex: number) => void;
+}) {
   const [selected, setSelected] = useState(defaultSelected);
 
   const handleSelect = (index: number) => {
@@ -47,4 +46,3 @@ function AnimatedToggleButton({
   );
 }
 
-export default AnimatedToggleButton;

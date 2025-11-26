@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function Sidebar() {
+export default function Sidebar() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   
@@ -40,5 +40,3 @@ function Sidebar() {
     </div>
   );
 }
-
-export default Sidebar;

@@ -122,7 +122,7 @@ export default function ColumnSelectionModal({ open, onClose }: ColumnSelectionM
           </button>
 
           <button
-            className="px-6 py-2 bg-gray-300 text-white rounded-lg text-sm cursor-not-allowed"
+            className="px-6 py-2 bg-gray-200 text-white rounded-lg text-sm cursor-not-allowed"
           >
             Save
           </button>

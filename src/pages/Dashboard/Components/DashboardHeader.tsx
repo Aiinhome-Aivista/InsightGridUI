@@ -5,6 +5,7 @@ import { InputText } from "primereact/inputtext";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ColumnSectionPage from "../../../Modal/column-section-page";
+import ColumnSelectionPage from "../../../Modal/column-section-page";
 
 interface HeaderProps {
   globalFilter: string;
@@ -80,7 +81,7 @@ export default function DashboardHeader({
       </header>
 
       {showColumnModal && (
-        <ColumnSectionPage onClose={() => setShowColumnModal(false)} />
+        <ColumnSelectionPage/>
       )}
     </>
   );

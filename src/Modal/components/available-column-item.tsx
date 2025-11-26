@@ -3,7 +3,13 @@ interface AvailableColumnItemProps {
   onDragStart: (e: React.DragEvent) => void;
 }
 
-function AvailableColumnItem({ label, onDragStart }: AvailableColumnItemProps) {
+export default function AvailableColumnItem({ 
+  label, 
+  onDragStart 
+}: {
+  label: string;
+  onDragStart: (e: React.DragEvent) => void;
+}) {
   return (
     <p
       draggable
@@ -15,4 +21,4 @@ function AvailableColumnItem({ label, onDragStart }: AvailableColumnItemProps) {
   );
 }
 
-export default AvailableColumnItem;
+

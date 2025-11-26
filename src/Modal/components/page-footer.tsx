@@ -1,10 +1,12 @@
-interface PageFooterProps {
+export default function PageFooter({ 
+  onClose, 
+  onSave, 
+  isSaveDisabled 
+}: {
   onClose: () => void;
   onSave: () => void;
   isSaveDisabled: boolean;
-}
-
-function PageFooter({ onClose, onSave, isSaveDisabled }: PageFooterProps) {
+}) {
   return (
     <div className="p-6 border-t border-gray-200 flex items-center justify-between">
       <p className="text-xs text-gray-500 leading-relaxed max-w-md pl-12 pr-12">
@@ -25,8 +27,8 @@ function PageFooter({ onClose, onSave, isSaveDisabled }: PageFooterProps) {
           disabled={isSaveDisabled}
           className={`px-6 py-2 rounded-lg text-sm ${
             isSaveDisabled
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-gray-800 text-white hover:bg-gray-900 cursor-pointer'
+              ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+              : 'bg-gray-400 text-white hover:bg-gray-500 cursor-pointer'
           }`}
         >
           Save
@@ -37,4 +39,3 @@ function PageFooter({ onClose, onSave, isSaveDisabled }: PageFooterProps) {
 }
 
 
-export default PageFooter;
