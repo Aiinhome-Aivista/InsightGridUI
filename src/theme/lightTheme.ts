@@ -7,7 +7,7 @@ const lightTheme: ThemeDefinition = {
   surface: "#ffffff",
   primaryText: "#0f172a",
   secondaryText: "#475569",
-  accent: "#2563eb",
+  accent: "#7CA1F3",
   border: "#e2e8f0",
 };
 
