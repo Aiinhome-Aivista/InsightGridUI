@@ -19,7 +19,9 @@ export default function Checkbox({
         onClick={onChange}
       >
         {checked && (
-          <span className="text-white text-xs font-bold">✔</span>
+          <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4">
+            <path d="M20 6L9 17l-5-5"></path>
+          </svg>
         )}
       </span>
 
