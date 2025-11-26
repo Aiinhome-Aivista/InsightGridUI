@@ -19,8 +19,13 @@ export default function FileNameInput({ value, onChange, theme }: Props) {
         placeholder="Write your file name"
         value={value}
         onChange={onChange}
-        className="w-full border border-[#E0E4E9] rounded-md px-4 py-2 text-sm 
-          text-[#2C2E42] focus:outline-none focus:ring-2 focus:ring-[#BCC7D2]"
+        className="w-full border rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2"
+        style={{
+          backgroundColor: theme.surface,
+          color: theme.primaryText,
+          borderColor: theme.border,
+          '--tw-ring-color': theme.accent,
+        } as React.CSSProperties}
       />
     </div>
   );
