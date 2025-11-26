@@ -4,15 +4,27 @@ import previewImage from "../../assets/MacBook.svg";
 export default function LandingFeatureSection() {
   return (
     <section
-      className="w-full h-[600px] flex items-center justify-between 
-      px-20 relative overflow-hidden  bg-gradient-to-br from-[#4C6685] via-[#5479A1] to-[#5584C1]"
+      className="w-full h-[600px] flex items-center justify-between px-20 relative"
     >
-      {/* Background blur shapes */}
-      <div className="absolute top-[-80px] left-[-120px] w-[450px] h-[450px] bg-[#3C5675] blur-[140px] opacity-40 rounded-full"></div>
-      <div className="absolute top-[150px] right-[-150px] w-[450px] h-[450px] bg-[#4D70A4] blur-[150px] opacity-40 rounded-full"></div>
+      {/* FLOATING COLOR CONTAINER 1 - TEAL */}
+      <div
+        className="absolute top-10 left-10 w-96 h-96 rounded-full 
+          blur-3xl opacity-40 mix-blend-screen bg-[#048951ff]"
+      ></div>
 
+      {/* FLOATING COLOR CONTAINER 2 - BLUE */}
+      <div
+        className="absolute top-25 -right-20 w-96 h-96 rounded-full 
+         blur-3xl mix-blend-screen bg-[#04418fff]"
+      ></div>
+
+      {/* FLOATING COLOR CONTAINER 3 - PURPLE */}
+      <div
+        className="absolute -bottom-20 left-1/3 w-96 h-96 rounded-full 
+         blur-3xl mix-blend-screen bg-[#322858ff]"
+      ></div>
       {/* LEFT TEXT CONTENT */}
-      <div className="flex flex-col w-[45%] text-white z-10">
+      <div className="flex flex-col w-[50%] text-white z-10 mb-28">
         <h2 className="text-4xl font-bold leading-snug">
           Transform Your Data <br /> Into Meaningful Insights
         </h2>
@@ -26,11 +38,11 @@ export default function LandingFeatureSection() {
       </div>
 
       {/* RIGHT UI PREVIEW IMAGE */}
-      <div className="w-[80%] flex justify-end z-10">
+      <div className="absolute bottom-0 right-0 z-10 ">
         <img
           src={previewImage}
           alt="dashboard-preview"
-          className="w-[520px] rounded-lg shadow-xl"
+          className="w-[600px]"
         />
       </div>
     </section>

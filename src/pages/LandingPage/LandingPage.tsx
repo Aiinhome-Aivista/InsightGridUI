@@ -6,13 +6,13 @@ import LandingFeatureSection from "./LandingFeatureSection";
 export default function LandingPage() {
   const navigate = useNavigate();
   return (
-    <>
     <div
-      className="w-full h-[600px] flex items-center justify-center 
-    bg-gradient-to-br from-[#4C6685] via-[#5479A1] to-[#5584C1]
-    overflow-hidden relative"
+      className="w-full bg-gradient-to-br from-[#4C6685] via-[#5479A1] to-[#5584C1] 
+      overflow-hidden relative"
     >
-      {/* FLOATING COLOR CONTAINER 1 - TEAL */}
+      <div
+        className="w-full h-[600px] flex items-center justify-center relative"
+      >
       <div
         className="absolute top-10 left-10 w-96 h-96 rounded-full 
           blur-3xl opacity-40 mix-blend-screen bg-[#048951ff]"
@@ -45,7 +45,7 @@ export default function LandingPage() {
         <span className="font-extrabold text-xl">IG</span>
       </div>
 
- <div className="flex flex-col items-center mt-[-60px]">
+      <div className="flex flex-col items-center mt-[-60px]">
         <h1 className="text-white text-4xl font-bold tracking-wide">
           InsightGrid
         </h1>
@@ -62,9 +62,8 @@ export default function LandingPage() {
           Create your first Insight →
         </button>
         </div>
-          
       </div>
-           <LandingFeatureSection /> 
-    </>
+      <LandingFeatureSection />
+    </div>
   );
 }
