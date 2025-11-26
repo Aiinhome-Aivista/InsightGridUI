@@ -13,8 +13,8 @@ import { useTheme } from "../../theme";
 
 const menuItems = [
   { name: "Upload", icon: FileUploadOutlinedIcon , path: "upload" },
-  { name: "Dashboard", icon: GridViewRoundedIcon, path: "dashboard" },
-  {name: "Table-View", icon: ViewColumnRoundedIcon, path: "table" },
+  { name: "Graph Insight", icon: GridViewRoundedIcon, path: "dashboard" },
+  {name: "Table Insight", icon: ViewColumnRoundedIcon, path: "table" },
   { name: "Setting", icon: SettingsRoundedIcon, path: "setting" },
   { name: "Download", icon: FileDownloadOutlinedIcon, path: "download" },
   { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
