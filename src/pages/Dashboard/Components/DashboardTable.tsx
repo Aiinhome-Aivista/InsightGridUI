@@ -7,6 +7,7 @@ import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import "./primereact-table.css";
 import ChartSidebar from "./ChartSidebar";
+import { useTheme } from "../../../theme";
 
 interface DashboardTableProps {
   data: any[];
@@ -14,6 +15,7 @@ interface DashboardTableProps {
 }
 
 export default function DashboardTable({ data, globalFilter }: DashboardTableProps) {
+  const { theme } = useTheme();
   const [isChartVisible, setIsChartVisible] = useState(false);
 
   const purchaseBody = (row: any) => (
@@ -27,37 +29,43 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
     <div>
       <div className="p-6">
         {/* Card Container */}
-        <div className="rounded-xl shadow-xs bg-white p-4">
+        <div
+          className="rounded-xl shadow-xs p-4"
+          style={{ backgroundColor: theme.surface }}
+        >
           {/* Header Section (Same as Screenshot) */}
           <div className="flex items-start justify-between mb-4">
             {/* Left Title + Subtitle */}
             <div>
-              <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                <GridViewRoundedIcon sx={{ fontSize: "1rem" }} />
+              <h2
+                className="text-sm font-semibold flex items-center gap-2"
+                style={{ color: theme.primaryText }}
+              >
+                <GridViewRoundedIcon sx={{ fontSize: "1rem", color: theme.primaryText }} />
                 Product Details
               </h2>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
                 This table is showing all product details
               </p>
             </div>
  
             {/* Right Icons (Grid + Chart) */}
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsChartVisible(true)}
-                className={`p-2 rounded-md transition ${
-                  isChartVisible ? "bg-gray-100" : "hover:bg-gray-200"
-                }`}
+              <button onClick={() => setIsChartVisible(true)}
+                className="p-2 rounded-md transition hover:bg-gray-500/10"
+                style={{
+                  backgroundColor: isChartVisible ? theme.border : "transparent",
+                }}
               >
-                <BarChartIcon className="text-gray-500" sx={{ fontSize: "1.1rem" }} />
+                <BarChartIcon sx={{ fontSize: "1.1rem", color: theme.secondaryText }} />
               </button>
-              <button
-                onClick={() => setIsChartVisible(false)}
-                className={`p-2 rounded-md transition ${
-                  !isChartVisible ? "bg-gray-200" : "hover:bg-gray-200"
-                }`}
+              <button onClick={() => setIsChartVisible(false)}
+                className="p-2 rounded-md transition hover:bg-gray-500/10"
+                style={{
+                  backgroundColor: !isChartVisible ? theme.border : "transparent",
+                }}
               >
-                <GridViewRoundedIcon className="text-gray-500" sx={{ fontSize: "1.1rem" }} />
+                <GridViewRoundedIcon sx={{ fontSize: "1.1rem", color: theme.secondaryText }} />
               </button>
             </div>
           </div>
@@ -84,7 +92,7 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
         </div>
       </div>
       {/* Right Sidebar */}
-      {isChartVisible && <ChartSidebar onClose={() => setIsChartVisible(false)} />}
+      {isChartVisible && <ChartSidebar onClose={() => setIsChartVisible(false)} theme={theme} />}
     </div>
   );
 }

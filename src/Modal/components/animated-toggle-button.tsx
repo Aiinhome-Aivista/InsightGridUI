@@ -1,16 +1,15 @@
 import { useState } from 'react';
 
-interface AnimatedToggleProps {
-  options: string[];
-  defaultSelected?: number;
-  onChange?: (selectedIndex: number) => void;
-}
-
+// AnimatedToggleButton Component
 export default function AnimatedToggleButton({ 
   options, 
   defaultSelected = 0,
   onChange 
-}: AnimatedToggleProps) {
+}: {
+  options: string[];
+  defaultSelected?: number;
+  onChange?: (selectedIndex: number) => void;
+}) {
   const [selected, setSelected] = useState(defaultSelected);
 
   const handleSelect = (index: number) => {
@@ -20,7 +19,6 @@ export default function AnimatedToggleButton({
 
   return (
     <div className="relative inline-flex bg-gray-100 rounded-lg p-1 gap-1">
-      {/* Animated Background Slider */}
       <div
         className="absolute top-1 bottom-1 bg-white rounded-md shadow-sm transition-all duration-300 ease-out"
         style={{
@@ -28,8 +26,6 @@ export default function AnimatedToggleButton({
           width: `calc(50% - 0.5rem)`
         }}
       />
-
-      {/* Toggle Options */}
       {options.map((option, index) => (
         <button
           key={index}
@@ -50,32 +46,3 @@ export default function AnimatedToggleButton({
   );
 }
 
-// Demo Component
-function Demo() {
-  const [mode, setMode] = useState(0);
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-      <div className="bg-white p-8 rounded-xl shadow-lg">
-        <h2 className="text-lg font-semibold mb-6 text-gray-800">
-          Selection Mode
-        </h2>
-        
-        <AnimatedToggleButton 
-          options={['Multi Select', 'Drag & Drop']}
-          defaultSelected={0}
-          onChange={(index) => {
-            setMode(index);
-            console.log('Selected:', index === 0 ? 'Multi Select' : 'Drag & Drop');
-          }}
-        />
-
-        <div className="mt-6 text-sm text-gray-600">
-          Current mode: <span className="font-medium text-gray-900">
-            {mode === 0 ? 'Multi Select' : 'Drag & Drop'}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}

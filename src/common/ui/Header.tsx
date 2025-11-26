@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import Tooltip from "@mui/material/Tooltip";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../theme";
+import LogoutModal from "../../Modal/LogoutModal";
 
 export default function Header() {
   const [formattedDate, setFormattedDate] = useState('');
   const [formattedTime, setFormattedTime] = useState('');
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,57 +45,68 @@ export default function Header() {
   const { theme } = useTheme();
 
   const handleLogout = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const confirmLogout = () => {
     navigate('/');
   };
 
   return (
-    <header
-      className="flex justify-between items-center px-6 h-14 border-b shadow-sm"
-      style={{
-        backgroundColor: theme.surface,
-        borderColor: theme.border,
-        color: theme.primaryText,
-      }}
-    >
-      <div className="flex justify-between items-center w-full">
-        {/* Left Logo Section */}
-        <div className="flex items-center">
-          <p className="text-base md:text-lg font-semibold tracking-tight" style={{ color: theme.primaryText }}>
-            <span style={{ color: theme.primaryText }}>A</span>
-            <span style={{ color: theme.accent }} className="font-bold">
-              ii
-            </span>
-            <span style={{ color: theme.primaryText }}>nhome</span>
-            <span className="px-1" style={{ color: theme.secondaryText }}>
-              |
-            </span>
-            <span className="font-extrabold" style={{ color: theme.primaryText }}>
-              IG
-            </span>
-          </p>
+    <>
+      <header
+        className="flex justify-between items-center px-6 h-14 border-b shadow-sm"
+        style={{
+          backgroundColor: theme.surface,
+          borderColor: theme.border,
+          color: theme.primaryText,
+        }}
+      >
+        <div className="flex justify-between items-center w-full">
+          {/* Left Logo Section */}
+          <div className="flex items-center">
+            <p className="text-base md:text-lg font-semibold tracking-tight" style={{ color: theme.primaryText }}>
+              <span style={{ color: theme.primaryText }}>A</span>
+              <span style={{ color: theme.accent }} className="font-bold">
+                ii
+              </span>
+              <span style={{ color: theme.primaryText }}>nhome</span>
+              <span className="px-1" style={{ color: theme.secondaryText }}>
+                |
+              </span>
+              <span className="font-extrabold" style={{ color: theme.primaryText }}>
+                IG
+              </span>
+            </p>
+          </div>
+ 
+          {/* Right Date & Time Section */}
+          <div className="flex items-center gap-3 text-sm" style={{ color: theme.secondaryText }}>
+            <p>
+              {formattedDate} | {formattedTime}
+            </p>
+            <Tooltip title="Logout" arrow>
+              <LogoutRoundedIcon
+                onClick={handleLogout}
+                sx={{
+                  color: theme.secondaryText,
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  transition: "color 0.2s ease-in-out",
+                  "&:hover": {
+                    color: theme.primaryText,
+                  },
+                }}
+              />
+            </Tooltip>
+          </div>
         </div>
-
-        {/* Right Date & Time Section */}
-        <div className="flex items-center gap-3 text-sm" style={{ color: theme.secondaryText }}>
-          <p>
-            {formattedDate} | {formattedTime}
-          </p>
-          <Tooltip title="Logout" arrow>
-            <LogoutRoundedIcon
-              onClick={handleLogout}
-              sx={{
-                color: theme.secondaryText,
-                fontSize: "20px",
-                cursor: "pointer",
-                transition: "color 0.2s ease-in-out",
-                "&:hover": {
-                  color: theme.primaryText,
-                },
-              }}
-            />
-          </Tooltip>
-        </div>
-      </div>
-    </header>
+      </header>
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={confirmLogout}
+      />
+    </>
   );
 }

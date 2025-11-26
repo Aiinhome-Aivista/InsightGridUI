@@ -1,8 +1,8 @@
 /* Header Styling */
 .p-datatable .p-datatable-thead > tr > th {
-  background: #ffffff !important;
+  background: var(--theme-surface) !important;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--theme-secondary-text) !important;
   border: none !important;
   padding: 14px 16px !important;
   text-align: left !important;
@@ -12,12 +12,12 @@
 .p-datatable .p-datatable-tbody > tr > td {
   padding: 14px 16px !important;
   border: none !important;
-  color: #374151 !important;
+  color: var(--theme-primary-text) !important;
 }
 
 /* Hover */
 .p-datatable .p-datatable-tbody > tr:hover {
-  background: #f9fafb !important;
+  background: var(--theme-background) !important;
 }
 
 /* Remove table outer borders */

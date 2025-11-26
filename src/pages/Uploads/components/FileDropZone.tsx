@@ -70,8 +70,11 @@ export default function FileDropZone({ onUploadComplete, theme }: Props) {
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        className={`relative w-full h-44 rounded-xl border-2 border-dashed bg-[#FAFAFA] flex items-center justify-center transition
-        ${dragActive ? "border-[#182938]" : "border-[#BCC7D2]"}`}
+        className={`relative w-full h-44 rounded-xl border-2 border-dashed flex items-center justify-center transition`}
+        style={{
+          backgroundColor: theme.surface,
+          borderColor: dragActive ? theme.accent : theme.border,
+        }}
       >
         {files.length === 0 ? (
           <UploadIdle onFileSelect={startUpload} />

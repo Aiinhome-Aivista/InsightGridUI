@@ -2,13 +2,15 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import SearchIcon from '@mui/icons-material/Search';
 import AnimatedToggleButton from './animated-toggle-button';
 
-interface PageHeaderProps {
+export default function PageHeader({ 
+  onClose, 
+  selectionMode, 
+  onModeChange 
+}: {
   onClose: () => void;
   selectionMode: number;
   onModeChange: (index: number) => void;
-}
-
-function PageHeader({ onClose, selectionMode, onModeChange }: PageHeaderProps) {
+}) {
   return (
     <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-4">
       <button
@@ -44,4 +46,3 @@ function PageHeader({ onClose, selectionMode, onModeChange }: PageHeaderProps) {
   );
 }
 
-export default PageHeader;
