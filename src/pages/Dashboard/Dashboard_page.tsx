@@ -2,7 +2,7 @@ import { useState } from "react";
 import DashboardHeader from "./Components/DashboardHeader";
 import DashboardTable from "./Components/DashboardTable";
 
-export default function DashboardPage() {
+export default function Dashboard_page() {
   const [globalFilter, setGlobalFilter] = useState("");
 
   const data = [

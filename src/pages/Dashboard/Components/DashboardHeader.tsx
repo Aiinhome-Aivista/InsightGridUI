@@ -59,12 +59,9 @@ export default function DashboardHeader({
                   },
                 }}
               />
-            </div>
-            <ColumnSectionPage
-              open={showColumnModal}
-              onClose={() => setShowColumnModal(false)}
-            />
 
+            </div>
+  
             <div
               className={`relative text-center border border-[#BCC7D2] rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors`}
             >
@@ -82,13 +79,9 @@ export default function DashboardHeader({
         </div>
       </header>
 
-
-
-      {/* <ColumnSelectionModal
-        open={showColumnModal}
-        onClose={() => setShowColumnModal(false)}
-      /> */}
-
+      {showColumnModal && (
+        <ColumnSectionPage onClose={() => setShowColumnModal(false)} />
+      )}
     </>
   );
 }

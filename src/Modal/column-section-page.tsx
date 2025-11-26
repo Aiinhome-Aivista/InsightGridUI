@@ -5,8 +5,7 @@ import PageHeader from './components/page-header';
 import ColumnList from './components/column-list';
 import PageFooter from './components/page-footer';
 
-interface ColumnSelectionPageProps {
-  open: boolean;
+interface ColumnSelectionPageProps { 
   onClose: () => void;
 }
 
@@ -16,7 +15,7 @@ interface ColumnOption {
   checked: boolean;
 }
 
-export default function ColumnSelectionPage() {
+export default function ColumnSelectionPage({ onClose }: ColumnSelectionPageProps) {
   const [selectionMode, setSelectionMode] = useState(0);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     'Category',
@@ -78,7 +77,7 @@ export default function ColumnSelectionPage() {
         <div className="w-4/5 flex flex-col">
           {/* Header */}
           <PageHeader
-            onClose={() => console.log('Close')}
+            onClose={onClose}
             selectionMode={selectionMode}
             onModeChange={handleModeChange}
           />
@@ -103,7 +102,7 @@ export default function ColumnSelectionPage() {
       </div>
       {/* Footer - Full Width */}
       <PageFooter
-        onClose={() => console.log('Reset')}
+        onClose={onClose}
         onSave={handleSave}
         isSaveDisabled={false}
       />
