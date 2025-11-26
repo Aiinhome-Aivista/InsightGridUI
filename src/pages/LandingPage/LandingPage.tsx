@@ -3,16 +3,20 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Union from "../../assets/Union.svg";
 import LandingFeatureSection from "./LandingFeatureSection";
+import VisualizationSection from "./VisualizationSection";
+import LandingDashboard from "./LandingDashboard";
+import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
 export default function LandingPage() {
   const navigate = useNavigate();
   return (
-    <>
+     <>
     <div
-      className="w-full h-[600px] flex items-center justify-center 
-    bg-gradient-to-br from-[#4C6685] via-[#5479A1] to-[#5584C1]
-    overflow-hidden relative"
+      className="w-full bg-gradient-to-br from-[#4C6685] via-[#5479A1] to-[#5584C1] 
+      overflow-hidden relative"
     >
-      {/* FLOATING COLOR CONTAINER 1 - TEAL */}
+      <div
+        className="w-full h-[600px] flex items-center justify-center relative"
+      >
       <div
         className="absolute top-10 left-10 w-96 h-96 rounded-full 
           blur-3xl opacity-40 mix-blend-screen bg-[#048951ff]"
@@ -45,7 +49,7 @@ export default function LandingPage() {
         <span className="font-extrabold text-xl">IG</span>
       </div>
 
- <div className="flex flex-col items-center mt-[-60px]">
+      <div className="flex flex-col items-center mt-[-60px]">
         <h1 className="text-white text-4xl font-bold tracking-wide">
           InsightGrid
         </h1>
@@ -59,12 +63,15 @@ export default function LandingPage() {
           className="mt-10 bg-white/40 hover:bg-white/60 text-white 
           px-6 py-2 rounded-md font-medium backdrop-blur-sm transition flex items-center gap-2"
         >
-          Create your first Insight →
+          Create your first Insight
+          <ArrowForwardOutlinedIcon sx={{ fontSize: 22 }} />
         </button>
         </div>
-          
       </div>
-           <LandingFeatureSection /> 
-    </>
+      <LandingFeatureSection />
+    </div>
+    <VisualizationSection />
+    <LandingDashboard />
+   </>
   );
 }
