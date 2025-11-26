@@ -1,0 +1,7 @@
+.tippy-box[data-theme~='gray'] {
+    @apply bg-gray-500 text-white;
+}
+
+.tippy-box[data-theme~='gray'][data-placement^='top'] > .tippy-arrow::before {
+    @apply border-t-gray-500;
+}

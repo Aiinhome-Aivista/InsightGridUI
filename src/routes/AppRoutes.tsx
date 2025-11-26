@@ -10,7 +10,7 @@ import LandingPage from "../pages/LandingPage/LandingPage";
 import SQL_page from "../pages/Filters/SQL_page";
 import Filter_page from "../pages/Filters/Filter_page";
 import TableView from "../pages/TableView/TableView";
-import InsightGridChat from "../pages/ChatScreen/InsightGridChat";
+import InsightGridChatWrapper from "../pages/ChatScreen/InsightGridChatWrapper";
 
 function AppRoutes() {
   return (
@@ -38,9 +38,7 @@ function AppRoutes() {
         {/* ✅ Newly added routes */}
         <Route path="sql" element={<SQL_page />} />
         <Route path="filter" element={<Filter_page />} />
-        <Route path="chatScreen" element={<InsightGridChat onClose={function (): void {
-          throw new Error("Function not implemented.");
-        } }/>} />
+        <Route path="chatScreen" element={<InsightGridChatWrapper />} />
       </Route>
     </Routes>
   );

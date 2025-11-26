@@ -2,21 +2,29 @@ import { useState } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
+import '../../../styles/tippy-theme.css';
 import { InputText } from "primereact/inputtext";
 import ColumnSelectionPage from "../../../Modal/column-section-page";
+import ForumIcon from '@mui/icons-material/Forum';
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
 
 interface HeaderProps {
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
+  onRefresh: () => void;
 }
 
 export default function DashboardHeader({
   globalFilter,
   setGlobalFilter,
+  onRefresh,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -65,36 +73,60 @@ export default function DashboardHeader({
 
             {/* Right Action Buttons */}
             <div className="flex items-center justify-center gap-3 md:gap-4">
-              {/* Column Selection */}
-              <div
-                onClick={() => setShowColumnModal(true)}
-                className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
-                style={{ borderColor: theme.border }}
-              >
-                <ViewColumnRoundedIcon
-                  className="w-5 h-5"
-                  sx={{
-                    color: theme.secondaryText,
-                    transition: "color 0.2s",
-                    "&:hover": { color: theme.primaryText },
-                  }}
-                />
-              </div>
+              {/* Chat Icon */}
+              <Tippy content="InsightGrid Chat" theme="gray">
+                <div
+                  onClick={() => navigate("/layout/chatScreen")}
+                  className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
+                  style={{ borderColor: theme.border }}
+                >
+                
+                  <ForumIcon
+                    className="w-5 h-5"
+                    sx={{
+                      color: theme.secondaryText,
+                      transition: "color 0.2s",
+                      "&:hover": { color: theme.primaryText },
+                    }}
+                  />
+                </div>
+              </Tippy>
+        
+              <Tippy content="Select Columns" theme="gray">
+                <div
+                  onClick={() => setShowColumnModal(true)}
+                  className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
+                  style={{ borderColor: theme.border }}
+                >
+                  
+                  <ViewColumnRoundedIcon
+                    className="w-5 h-5"
+                    sx={{
+                      color: theme.secondaryText,
+                      transition: "color 0.2s",
+                      "&:hover": { color: theme.primaryText },
+                    }}
+                  />
+                </div>
+              </Tippy>
 
               {/* Refresh */}
-              <div
-                className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
-                style={{ borderColor: theme.border }}
-              >
-                <AutorenewRoundedIcon
-                  className="w-5 h-5"
-                  sx={{
-                    color: theme.secondaryText,
-                    transition: "color 0.2s",
-                    "&:hover": { color: theme.primaryText },
-                  }}
-                />
-              </div>
+              <Tippy content="Refresh" theme="gray">
+                <div
+                  onClick={onRefresh}
+                  className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
+                  style={{ borderColor: theme.border }}
+                >
+                  <AutorenewRoundedIcon
+                    className="w-5 h-5"
+                    sx={{
+                      color: theme.secondaryText,
+                      transition: "color 0.2s",
+                      "&:hover": { color: theme.primaryText },
+                    }}
+                  />
+                </div>
+              </Tippy>
             </div>
           </div>
         </div>

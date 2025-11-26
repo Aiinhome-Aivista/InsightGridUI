@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTheme } from "../../theme";
 import FileDropZone from "./components/FileDropZone";
 import DataProcessing from "./components/DataProcessing";
+import FileNameInput from "./components/FileNameInput";
 
 export default function UploadPage() {
   const { theme } = useTheme();
@@ -26,6 +27,7 @@ export default function UploadPage() {
         >
           Start by uploading a data file to create your first view.
         </p>
+        <FileNameInput theme={theme} />
         <FileDropZone
           onUploadComplete={(files) => setProcessedFiles(files)}
           theme={theme}
