@@ -3,9 +3,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Union from "../../assets/Union.svg";
 import LandingFeatureSection from "./LandingFeatureSection";
+import VisualizationSection from "./VisualizationSection";
+import LandingDashboard from "./LandingDashboard";
 export default function LandingPage() {
   const navigate = useNavigate();
   return (
+     <>
     <div
       className="w-full bg-gradient-to-br from-[#4C6685] via-[#5479A1] to-[#5584C1] 
       overflow-hidden relative"
@@ -65,5 +68,8 @@ export default function LandingPage() {
       </div>
       <LandingFeatureSection />
     </div>
+    <VisualizationSection />
+    <LandingDashboard />
+   </>
   );
 }
