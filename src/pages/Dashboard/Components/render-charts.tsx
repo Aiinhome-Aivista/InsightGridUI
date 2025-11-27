@@ -1,5 +1,6 @@
 import ChartCard from "./chart-card";
 import PieChartGraph from "./pie-chart-graph";
+import BarChartGraph from "./bar-chart-graph";
 
 interface RenderChartsProps {
     selectedCharts: string[];
@@ -7,8 +8,10 @@ interface RenderChartsProps {
 }
 
 export default function RenderCharts({ selectedCharts, onRemoveChart }: RenderChartsProps) {
+
     const renderChart = (chartType: string) => {
         switch (chartType) {
+
             case 'pie':
                 return (
                     <ChartCard
@@ -20,7 +23,19 @@ export default function RenderCharts({ selectedCharts, onRemoveChart }: RenderCh
                         <PieChartGraph />
                     </ChartCard>
                 );
-            
+
+            case 'bar':
+                return (
+                    <ChartCard
+                        key={chartType}
+                        title="Product Details"
+                        description="This table is showing all product details"
+                        onRemove={() => onRemoveChart(chartType)}
+                    >
+                        <BarChartGraph />
+                    </ChartCard>
+                );
+
             default:
                 return null;
         }
