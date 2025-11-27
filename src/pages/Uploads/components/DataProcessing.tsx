@@ -104,9 +104,9 @@ export default function DataProcessing({ files }: Props) {
               21-11-2025
             </span>
 
-            {/* ACTION ICON: Refresh or Navigate */}
-            {processingProgress[file.name] < TOTAL_STEPS ? (
-              // REFRESH ICON
+            {/* ACTION ICONS */}
+            <div className="flex items-center gap-4 min-w-[60px] justify-end">
+              {/* REFRESH ICON - always visible and enabled */}
               <button onClick={() => handleProcessNextStep(file.name)}>
                 <AutorenewRoundedIcon
                   className="w-5 h-5 cursor-pointer"
@@ -117,15 +117,21 @@ export default function DataProcessing({ files }: Props) {
                   }}
                 />
               </button>
-            ) : (
-              // NEXT ARROW ICON
-              <button onClick={handleNavigateToDashboard}>
+
+              {/* NEXT ARROW ICON - always visible, but disabled until complete */}
+              <button
+                onClick={handleNavigateToDashboard}
+                disabled={processingProgress[file.name] < TOTAL_STEPS}
+              >
                 <ArrowForwardIcon
-                  className="w-5 h-5 cursor-pointer"
-                  sx={{ color: theme.accent, "&:hover": { color: theme.primaryText } }}
+                  className="w-5 h-5"
+                  sx={{
+                    color: processingProgress[file.name] < TOTAL_STEPS ? theme.border : theme.accent,
+                    cursor: processingProgress[file.name] < TOTAL_STEPS ? 'not-allowed' : 'pointer',
+                  }}
                 />
               </button>
-            )}
+            </div>
 
           </div>
         ))}
