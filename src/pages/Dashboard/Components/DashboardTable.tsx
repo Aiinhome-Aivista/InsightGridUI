@@ -7,9 +7,9 @@ import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import "./primereact-table.css";
 import ChartSidebar from "./ChartSidebar";
+import { useTheme } from "../../../theme";
 import RenderCharts from "./render-charts";
 import AnimatedToggleButton from "../../../Modal/components/animated-toggle-button";
-import { useTheme } from "../../../theme";
 
 interface DashboardTableProps {
   data: any[];
