@@ -17,8 +17,9 @@ export default function Dashboard_page() {
     <div className="h-full" style={{ backgroundColor: theme.background }}>
       <DashboardHeader
         globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
+        setGlobalFilter={setGlobalFilter} onRefresh={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       
       <DashboardTable
         data={data}
