@@ -3,7 +3,7 @@ import { ThemeDefinition } from "./types";
 const lightTheme: ThemeDefinition = {
   id: "light",
   label: "Light Theme",
-  background: "#f8fafc",
+  background: "#FBFBFB",
   surface: "#ffffff",
   primaryText: "#0f172a",
   secondaryText: "#475569",
