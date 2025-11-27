@@ -1,6 +1,7 @@
 import ChartCard from "./chart-card";
 import PieChartGraph from "./pie-chart-graph";
 import BarChartGraph from "./bar-chart-graph";
+import WaterfallChartGraph from "./waterfall-chart-graph";
 
 interface RenderChartsProps {
     selectedCharts: string[];
@@ -35,6 +36,19 @@ export default function RenderCharts({ selectedCharts, onRemoveChart }: RenderCh
                         <BarChartGraph />
                     </ChartCard>
                 );
+
+            case 'waterfall':
+                return (
+                    <ChartCard
+                        key={chartType}
+                        title="Waterfall Analysis"
+                        description="Financial performance breakdown with cumulative impact"
+                        onRemove={() => onRemoveChart(chartType)}
+                    >
+                        <WaterfallChartGraph />
+                    </ChartCard>
+                );
+
 
             default:
                 return null;

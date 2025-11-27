@@ -54,7 +54,12 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
   return (
     <div>
       <div className="p-6">
-        <div className="rounded-xl shadow-xs bg-white p-4">
+        {/* Card Container */}
+        <div
+          className="rounded-xl shadow-xs p-4"
+          style={{ backgroundColor: theme.surface }}
+        >
+          {/* Header Section (Same as Screenshot) */}
           <div className="flex items-start justify-between mb-4">
             <div>
               <h2
