@@ -29,6 +29,7 @@ export default function FileDropZone({ onUploadComplete, theme }: Props) {
     setUploading(false);
     setProgress(0);
     setUploadComplete(false);
+    onUploadComplete([]); // Also clear files in the parent component
   };
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
