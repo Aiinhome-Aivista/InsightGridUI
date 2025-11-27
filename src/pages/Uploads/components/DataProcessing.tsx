@@ -105,8 +105,7 @@ export default function DataProcessing({ files }: Props) {
             </span>
 
             {/* ACTION ICONS */}
-            <div className="flex items-center gap-4 min-w-[60px] justify-end">
-              {/* REFRESH ICON - always visible and enabled */}
+            <div className="flex items-center gap-20 min-w-[60px] justify-end">
               <button onClick={() => handleProcessNextStep(file.name)}>
                 <AutorenewRoundedIcon
                   className="w-5 h-5 cursor-pointer"
@@ -117,8 +116,6 @@ export default function DataProcessing({ files }: Props) {
                   }}
                 />
               </button>
-
-              {/* NEXT ARROW ICON - always visible, but disabled until complete */}
               <button
                 onClick={handleNavigateToDashboard}
                 disabled={processingProgress[file.name] < TOTAL_STEPS}
