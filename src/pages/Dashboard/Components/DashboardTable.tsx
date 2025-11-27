@@ -9,6 +9,7 @@ import "./primereact-table.css";
 import ChartSidebar from "./ChartSidebar";
 import RenderCharts from "./render-charts";
 import AnimatedToggleButton from "../../../Modal/components/animated-toggle-button";
+import { useTheme } from "../../../theme";
 
 interface DashboardTableProps {
   data: any[];
@@ -16,6 +17,7 @@ interface DashboardTableProps {
 }
 
 export default function DashboardTable({ data, globalFilter }: DashboardTableProps) {
+  const { theme } = useTheme();
   const [isChartVisible, setIsChartVisible] = useState(false);
   const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
   const [toggleSelection, setToggleSelection] = useState(1); // 0 = chart, 1 = table
@@ -52,14 +54,22 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
   return (
     <div>
       <div className="p-6">
-        <div className="rounded-xl shadow-xs bg-white p-4">
+        {/* Card Container */}
+        <div
+          className="rounded-xl shadow-xs p-4"
+          style={{ backgroundColor: theme.surface }}
+        >
+          {/* Header Section (Same as Screenshot) */}
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                <GridViewRoundedIcon sx={{ fontSize: "1rem" }} />
+              <h2
+                className="text-sm font-semibold flex items-center gap-2"
+                style={{ color: theme.primaryText }}
+              >
+                <GridViewRoundedIcon sx={{ fontSize: "1rem", color: theme.primaryText }} />
                 Product Details
               </h2>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
                 This table is showing all product details
               </p>
             </div>

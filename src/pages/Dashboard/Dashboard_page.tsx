@@ -1,8 +1,10 @@
 import { useState } from "react";
 import DashboardHeader from "./Components/DashboardHeader";
 import DashboardTable from "./Components/DashboardTable";
+import { useTheme } from "../../theme";
 
 export default function Dashboard_page() {
+  const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
 
   const data = [
@@ -12,7 +14,7 @@ export default function Dashboard_page() {
   ];
 
   return (
-    <div className="h-full bg-gray-50">
+    <div className="h-full" style={{ backgroundColor: theme.background }}>
       <DashboardHeader
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}

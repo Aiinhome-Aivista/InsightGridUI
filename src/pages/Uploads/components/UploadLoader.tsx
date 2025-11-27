@@ -1,4 +1,4 @@
-import React from "react";
+import { useTheme } from "../../../theme";
 
 interface Props {
   fileName: string | undefined;
@@ -6,20 +6,24 @@ interface Props {
 }
 
 export default function UploadLoader({ fileName, progress }: Props) {
+  const { theme } = useTheme();
+
   return (
     <div className="flex flex-col items-center w-full">
-      <div className="text-gray-700 text-sm mb-1 font-medium">
+      <div className="text-sm mb-1 font-medium" style={{ color: theme.primaryText }}>
         {fileName}
       </div>
 
-      <div className="w-[55%] h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div className="w-[55%] h-2 rounded-full overflow-hidden" style={{ backgroundColor: theme.border }}>
         <div
-          className="h-full bg-gray-500 transition-all"
-          style={{ width: `${progress}%` }}
+          className="h-full transition-all"
+          style={{ width: `${progress}%`, backgroundColor: theme.accent }}
         />
       </div>
 
-      <p className="text-xs mt-2 text-gray-600 font-semibold">Uploading</p>
+      <p className="text-xs mt-2 font-semibold" style={{ color: theme.secondaryText }}>
+        Uploading
+      </p>
     </div>
   );
 }

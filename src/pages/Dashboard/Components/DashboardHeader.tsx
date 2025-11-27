@@ -1,88 +1,138 @@
 import { useState } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
+import '../../../styles/tippy-theme.css';
 import { InputText } from "primereact/inputtext";
-import CloseIcon from "@mui/icons-material/Close";
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import ColumnSectionPage from "../../../Modal/column-section-page";
 import ColumnSelectionPage from "../../../Modal/column-section-page";
+import ForumIcon from '@mui/icons-material/Forum';
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../../theme";
 
 interface HeaderProps {
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
+  onRefresh: () => void;
 }
 
 export default function DashboardHeader({
   globalFilter,
   setGlobalFilter,
+  onRefresh,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
+  const { theme } = useTheme();
+  const navigate = useNavigate();
 
   return (
     <>
-      <header className="bg-white">
+      <header
+        style={{ backgroundColor: theme.surface }}
+        className="w-full"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20 gap-4">
-            {/* Left: Title + Subtitle */}
-            <div className="flex-shrink-0">
-              <h1 className="text-xl font-semibold text-gray-900">
+          {/* Responsive Flex Container */}
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
+
+            {/* Left Section */}
+            <div className="flex-shrink-0 text-center md:text-left">
+              <h1 className="text-xl font-semibold" style={{ color: theme.primaryText }}>
                 Tabular view
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <p
+                className="text-sm mt-1"
+                style={{ color: theme.secondaryText }}
+              >
                 Start by uploading a data file to create your first view.
               </p>
             </div>
 
-            {/* Center: Search */}
-            <div className="flex-1 flex justify-center px-4">
-              <div className="relative w-full max-w-2xl">
-                <SearchRoundedIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            {/* Center Search Bar */}
+            <div className="w-full md:flex-1 flex justify-center order-3 md:order-none">
+              <div className="relative w-full max-w-md md:max-w-2xl">
+                <SearchRoundedIcon
+                  className="absolute left-3 top-1/2 -translate-y-1/2"
+                  sx={{ color: theme.secondaryText }}
+                />
+
                 <InputText
                   value={globalFilter}
                   onChange={(e) => setGlobalFilter(e.target.value)}
                   placeholder="Global Search"
-                  className="pl-10 w-full h-10 rounded-xl border border-gray-300 text-sm"
+                  className="pl-10 w-full h-10 rounded-xl border text-sm"
+                  style={{
+                    backgroundColor: theme.background,
+                    color: theme.primaryText,
+                    borderColor: theme.border,
+                  }}
                 />
               </div>
             </div>
 
-            {/* Right: Action Buttons */}
-            <div
-              onClick={() => setShowColumnModal(true)}
-              className={`relative text-center border border-[#BCC7D2] rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors`}
-            >
-              <ViewColumnRoundedIcon
-                className={`w-5 h-5`}
-                sx={{
-                  transition: "color 0.2s ease-in-out",
-                  "&:hover": {
-                    color: "#2C2E42",
-                  },
-                }}
-              />
+            {/* Right Action Buttons */}
+            <div className="flex items-center justify-center gap-3 md:gap-4">
+              {/* Chat Icon */}
+              <Tippy content="InsightGrid Chat" theme="gray">
+                <div
+                  onClick={() => navigate("/layout/chatScreen")}
+                  className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
+                  style={{ borderColor: theme.border }}
+                >
+                
+                  <ForumIcon
+                    className="w-5 h-5"
+                    sx={{
+                      color: theme.secondaryText,
+                      transition: "color 0.2s",
+                      "&:hover": { color: theme.primaryText },
+                    }}
+                  />
+                </div>
+              </Tippy>
+        
+              <Tippy content="Select Columns" theme="gray">
+                <div
+                  onClick={() => setShowColumnModal(true)}
+                  className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
+                  style={{ borderColor: theme.border }}
+                >
+                  
+                  <ViewColumnRoundedIcon
+                    className="w-5 h-5"
+                    sx={{
+                      color: theme.secondaryText,
+                      transition: "color 0.2s",
+                      "&:hover": { color: theme.primaryText },
+                    }}
+                  />
+                </div>
+              </Tippy>
 
-            </div>
-  
-            <div
-              className={`relative text-center border border-[#BCC7D2] rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors`}
-            >
-              <AutorenewRoundedIcon
-                className={`w-5 h-5`}
-                sx={{
-                  transition: "color 0.2s ease-in-out",
-                  "&:hover": {
-                    color: "#2C2E42",
-                  },
-                }}
-              />
+              {/* Refresh */}
+              <Tippy content="Refresh" theme="gray">
+                <div
+                  onClick={onRefresh}
+                  className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
+                  style={{ borderColor: theme.border }}
+                >
+                  <AutorenewRoundedIcon
+                    className="w-5 h-5"
+                    sx={{
+                      color: theme.secondaryText,
+                      transition: "color 0.2s",
+                      "&:hover": { color: theme.primaryText },
+                    }}
+                  />
+                </div>
+              </Tippy>
             </div>
           </div>
         </div>
       </header>
 
-      {showColumnModal && (
-        <ColumnSelectionPage/>
-      )}
+      {showColumnModal && <ColumnSelectionPage />}
     </>
   );
 }
