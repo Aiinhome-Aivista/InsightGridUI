@@ -19,7 +19,7 @@ export default function Dashboard_page() {
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
       />
-
+      
       <DashboardTable
         data={data}
         globalFilter={globalFilter}

@@ -2,10 +2,10 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import SearchIcon from '@mui/icons-material/Search';
 import AnimatedToggleButton from './animated-toggle-button';
 
-export default function PageHeader({ 
-  onClose, 
-  selectionMode, 
-  onModeChange 
+export default function PageHeader({
+  onClose,
+  selectionMode,
+  onModeChange
 }: {
   onClose: () => void;
   selectionMode: number;
@@ -38,9 +38,24 @@ export default function PageHeader({
       </div>
 
       <AnimatedToggleButton
-        options={['Multi Select', 'Drag & Drop']}
+        options={[
+          { label: 'Multi Select', value: 'opt1' },
+          { label: 'Drag & Drop', value: 'opt2' }
+        ]}
         defaultSelected={selectionMode}
         onChange={onModeChange}
+
+        width="auto"
+        height="auto"
+        buttonPadding="0.5rem 1.5rem"
+        backgroundColor="#f3f4f6"
+        activeBackgroundColor="#ffffff"
+        textColor="#6b7280"
+        activeTextColor="#111827"
+        fontSize="0.875rem"
+        iconSize="1.25rem"
+        iconPosition="left"
+        mode="text" // 'icon' | 'text' | 'both'
       />
     </div>
   );
