@@ -2,62 +2,85 @@ import ChartCard from "./chart-card";
 import PieChartGraph from "./pie-chart-graph";
 import BarChartGraph from "./bar-chart-graph";
 import WaterfallChartGraph from "./waterfall-chart-graph";
+import BoxPlotGraph from "./box-plot-graph";
+import KpiMeterChart from "./kpi-chart-graph";
 
 interface RenderChartsProps {
-    selectedCharts: string[];
-    onRemoveChart: (chartType: string) => void;
+  selectedCharts: string[];
+  onRemoveChart: (chartType: string) => void;
 }
 
 export default function RenderCharts({ selectedCharts, onRemoveChart }: RenderChartsProps) {
 
-    const renderChart = (chartType: string) => {
-        switch (chartType) {
+  const renderChart = (chartType: string) => {
+    switch (chartType) {
 
-            case 'pie':
-                return (
-                    <ChartCard
-                        key={chartType}
-                        title="Product Details"
-                        description="This table is showing all product details"
-                        onRemove={() => onRemoveChart(chartType)}
-                    >
-                        <PieChartGraph />
-                    </ChartCard>
-                );
+      case "pie":
+        return (
+          <ChartCard
+            key={chartType}
+            title="Product Details"
+            description="This table is showing all product details"
+            onRemove={() => onRemoveChart(chartType)}
+          >
+            <PieChartGraph />
+          </ChartCard>
+        );
 
-            case 'bar':
-                return (
-                    <ChartCard
-                        key={chartType}
-                        title="Product Details"
-                        description="This table is showing all product details"
-                        onRemove={() => onRemoveChart(chartType)}
-                    >
-                        <BarChartGraph />
-                    </ChartCard>
-                );
+      case "bar":
+        return (
+          <ChartCard
+            key={chartType}
+            title="Product Details"
+            description="This table is showing all product details"
+            onRemove={() => onRemoveChart(chartType)}
+          >
+            <BarChartGraph />
+          </ChartCard>
+        );
 
-            case 'waterfall':
-                return (
-                    <ChartCard
-                        key={chartType}
-                        title="Waterfall Analysis"
-                        description="Financial performance breakdown with cumulative impact"
-                        onRemove={() => onRemoveChart(chartType)}
-                    >
-                        <WaterfallChartGraph />
-                    </ChartCard>
-                );
+      case "waterfall":
+        return (
+          <ChartCard
+            key={chartType}
+            title="Waterfall Analysis"
+            description="Financial performance breakdown with cumulative impact"
+            onRemove={() => onRemoveChart(chartType)}
+          >
+            <WaterfallChartGraph />
+          </ChartCard>
+        );
 
+case "box":
+  return (
+    <ChartCard
+      title="Sales Box Plot"
+      description="This chart shows box plot distribution of sales"
+      onRemove={() => onRemoveChart(chartType)}
+    >
+      <BoxPlotGraph />
+    </ChartCard>
+  );
+      case "kpi":
+        return (
+          <ChartCard
+            key={chartType}
+            title="KPI Meter"
+            description="Gauge chart showing KPI performance"
+            onRemove={() => onRemoveChart(chartType)}
+          >
+            <KpiMeterChart  />
+          </ChartCard>
+        );
 
-            default:
-                return null;
-        }
-    };
+      default:
+        return null;
+    }
+  };
 
-    return (
-        <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            {selectedCharts.map(chartType => renderChart(chartType))}
-        </div>
-    );
+  return (
+    <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+      {selectedCharts.map(chartType => renderChart(chartType))}
+    </div>
+  );
 }

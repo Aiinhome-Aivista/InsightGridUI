@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts";
 
-export default function SalesDetailsChart() {
+export default function BarChartGraph() {
   // Bar heights (similar to your screenshot)
   const targetData = [
     { name: "A", value: 20 },
