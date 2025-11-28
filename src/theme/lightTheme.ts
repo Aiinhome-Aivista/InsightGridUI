@@ -5,8 +5,8 @@ const lightTheme: ThemeDefinition = {
   label: "Light Theme",
   background: "#FBFBFB",
   surface: "#ffffff",
-  primaryText: "#0f172a",
-  secondaryText: "#475569",
+  primaryText: "#1C1B1F",
+  secondaryText: "#888585",
   accent: "#7CA1F3",
   border: "#e2e8f0",
 };

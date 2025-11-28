@@ -19,6 +19,7 @@ export default function DataProcessing({ files }: Props) {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
+  const [loadingFile, setLoadingFile] = useState<string | null>(null);
 
   // Initialize progress for each file when the component mounts or files change
   useEffect(() => {
@@ -30,10 +31,16 @@ export default function DataProcessing({ files }: Props) {
   }, [files]);
 
   const handleProcessNextStep = (fileName: string) => {
-    setProcessingProgress(prev => ({
-      ...prev,
-      [fileName]: Math.min(prev[fileName] + 1, TOTAL_STEPS)
-    }));
+    setLoadingFile(fileName); // Set the current file as loading
+
+    // Simulate a network request or a long-running task
+    setTimeout(() => {
+      setProcessingProgress(prev => ({
+        ...prev,
+        [fileName]: Math.min(prev[fileName] + 1, TOTAL_STEPS)
+      }));
+      setLoadingFile(null); // Reset loading state after completion
+    }, 1500); // Simulate a 1.5-second loading time
   };
 
   const handleNavigateToDashboard = () => {
@@ -49,7 +56,7 @@ export default function DataProcessing({ files }: Props) {
         Data Processing
       </label>
 
-      <div className="space-y-2">
+      <div className="space-y-2 bg-[#EAEAEA] shadow-md">
         {files.map((file, index) => (
           <div
             key={index}
@@ -106,15 +113,25 @@ export default function DataProcessing({ files }: Props) {
 
             {/* ACTION ICONS */}
             <div className="flex items-center gap-20 min-w-[60px] justify-end">
-              <button onClick={() => handleProcessNextStep(file.name)}>
-                <AutorenewRoundedIcon
-                  className="w-5 h-5 cursor-pointer"
-                  sx={{
-                    color: theme.secondaryText,
-                    transition: "color 0.2s",
-                    "&:hover": { color: theme.primaryText },
-                  }}
-                />
+              <button
+                onClick={() => handleProcessNextStep(file.name)}
+                disabled={loadingFile === file.name}
+              >
+                {loadingFile === file.name ? (
+                  <AutorenewRoundedIcon
+                    className="w-5 h-5 animate-spin"
+                    sx={{ color: theme.secondaryText }}
+                  />
+                ) : (
+                  <AutorenewRoundedIcon
+                    className="w-5 h-5 cursor-pointer"
+                    sx={{
+                      color: theme.secondaryText,
+                      transition: "color 0.2s",
+                      "&:hover": { color: theme.primaryText },
+                    }}
+                  />
+                )}
               </button>
               <button
                 onClick={handleNavigateToDashboard}

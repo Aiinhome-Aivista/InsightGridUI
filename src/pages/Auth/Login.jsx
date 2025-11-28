@@ -20,12 +20,12 @@ export default function Login() {
   async function handleLogin(e) {
     e?.preventDefault?.();
     setLoading(true);
-    // Close any existing notification
     setNotification((prev) => ({ ...prev, open: false }));
 
+    let res;
     try {
       const payload = { user_email, password };
-      const res = await ApiService(POST_APIS.login, {
+      res = await ApiService(POST_APIS.login, {
         method: "POST",
         body: payload,
       });
@@ -98,19 +98,13 @@ export default function Login() {
         alt="cross-pattern"
         className="absolute bottom-0 right-0 w-100"
       />
-
-      {/* TOP LEFT CORNER LOGO */}
       <div className="absolute top-8 left-10 flex items-center gap-2 text-white font-semibold text-lg">
         <span className="text-white/80">
           A<span className="text-[#4319C2]">ii</span>nhome |
         </span>
         <span className="font-extrabold text-xl">IG</span>
       </div>
-
-      {/* MAIN WRAPPER */}
       <div className="flex flex-col items-center w-full h-full pt-24 relative">
-
-        {/* ICON + TITLE */}
         <img
           src={view_quilt}
           alt="cross-pattern"
@@ -122,8 +116,6 @@ export default function Login() {
             Customize Every View. Empower Every Decision.
           </p>
         </div>
-
-        {/* CENTER LOGIN CARD */}
         <form onSubmit={handleLogin} className="mt-24 w-80 flex flex-col space-y-4">
           <input
             type="text"
@@ -149,8 +141,6 @@ export default function Login() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-
-        {/* FOOTER */}
         <p className="text-white/70 text-xs absolute bottom-12">
           ©2025 Aiihome Technologies Pvt. Ltd. All rights reserved
         </p>
