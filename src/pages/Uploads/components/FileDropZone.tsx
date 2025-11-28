@@ -63,7 +63,7 @@ export default function FileDropZone({ onUploadComplete, theme }: Props) {
   }, [uploading, files, onUploadComplete]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       <p className="text-sm font-medium" style={{ color: theme.primaryText }}>Upload File</p>
 
       <div
