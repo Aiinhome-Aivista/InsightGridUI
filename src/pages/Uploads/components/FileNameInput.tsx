@@ -11,7 +11,7 @@ export default function FileNameInput({ value, onChange, theme }: Props) {
         className="block text-sm font-medium mb-1"
         style={{ color: theme.primaryText }}
       >
-        File Name
+        Session Name
       </label>
 
       <input

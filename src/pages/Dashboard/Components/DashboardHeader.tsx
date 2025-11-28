@@ -23,8 +23,20 @@ export default function DashboardHeader({
   onRefresh,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { theme } = useTheme();
   const navigate = useNavigate();
+
+  const handleRefresh = () => {
+    // Don't do anything if already refreshing
+    if (isRefreshing) return;
+
+    setIsRefreshing(true);
+    onRefresh();
+
+    // Simulate a refresh delay
+    setTimeout(() => setIsRefreshing(false), 1500);
+  };
 
   return (
     <>
@@ -51,7 +63,7 @@ export default function DashboardHeader({
 
             {/* Center Search Bar */}
             <div className="w-full md:flex-1 flex justify-center order-3 md:order-none">
-              <div className="relative w-full max-w-md md:max-w-2xl">
+              <div className="relative w-full">
                 <SearchRoundedIcon
                   className="absolute left-3 top-1/2 -translate-y-1/2"
                   sx={{ color: theme.secondaryText }}
@@ -113,18 +125,23 @@ export default function DashboardHeader({
               {/* Refresh */}
               <Tippy content="Refresh" theme="gray">
                 <div
-                  onClick={onRefresh}
-                  className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
+                  onClick={handleRefresh}
+                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
+                    isRefreshing ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-gray-500/10'
+                  }`}
                   style={{ borderColor: theme.border }}
                 >
-                  <AutorenewRoundedIcon
-                    className="w-5 h-5"
-                    sx={{
-                      color: theme.secondaryText,
-                      transition: "color 0.2s",
-                      "&:hover": { color: theme.primaryText },
-                    }}
-                  />
+                  {isRefreshing ? (
+                    <AutorenewRoundedIcon className="w-5 h-5 animate-spin" sx={{ color: theme.secondaryText }} />
+                  ) : (
+                    <AutorenewRoundedIcon
+                      className="w-5 h-5"
+                      sx={{
+                        color: theme.secondaryText,
+                        "&:hover": { color: theme.primaryText },
+                      }}
+                    />
+                  )}
                 </div>
               </Tippy>
             </div>

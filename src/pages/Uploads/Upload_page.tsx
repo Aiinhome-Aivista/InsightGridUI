@@ -29,7 +29,10 @@ export default function UploadPage() {
         </p>
         <FileNameInput theme={theme} />
         <FileDropZone
-          onUploadComplete={(files) => setProcessedFiles(files)}
+          onUploadComplete={(newFiles) => {
+            // Replace the old files with the new ones
+            setProcessedFiles(newFiles);
+          }}
           theme={theme}
         />
         {/* Data Processing Under Upload Box */}

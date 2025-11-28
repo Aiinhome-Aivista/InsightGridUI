@@ -11,7 +11,7 @@ export default function LandingPage() {
   return (
      <>
     <div
-      className="w-full bg-gradient-to-br from-[#4C6685] via-[#5479A1] to-[#5584C1] 
+      className="w-full min-h-screen bg-gradient-to-br from-[#4C6685] via-[#5479A1] to-[#5584C1] 
       overflow-hidden relative"
     >
       <div
@@ -49,7 +49,7 @@ export default function LandingPage() {
         <span className="font-extrabold text-xl">IG</span>
       </div>
 
-      <div className="flex flex-col items-center mt-[-60px]">
+      <div className="flex flex-col items-center mt-[-20px]">
         <h1 className="text-white text-4xl font-bold tracking-wide">
           InsightGrid
         </h1>

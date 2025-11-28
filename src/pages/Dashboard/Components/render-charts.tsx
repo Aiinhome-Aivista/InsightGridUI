@@ -4,6 +4,8 @@ import BarChartGraph from "./bar-chart-graph";
 import WaterfallChartGraph from "./waterfall-chart-graph";
 import BoxPlotGraph from "./box-plot-graph";
 import KpiMeterChart from "./kpi-chart-graph";
+import BubbleChartGraph from "./bubble-chart-graph";
+import MixedChartGraph from "./mixed-chart-graph";
 
 interface RenderChartsProps {
   selectedCharts: string[];
@@ -50,6 +52,39 @@ export default function RenderCharts({ selectedCharts, onRemoveChart }: RenderCh
             <WaterfallChartGraph />
           </ChartCard>
         );
+            case 'waterfall':
+                return (
+                    <ChartCard
+                        key={chartType}
+                        title="Waterfall Analysis"
+                        description="Financial performance breakdown with cumulative impact"
+                        onRemove={() => onRemoveChart(chartType)}
+                    >
+                        <WaterfallChartGraph />
+                    </ChartCard>
+                );
+            case 'bubble':
+                return (
+                    <ChartCard
+                        key={chartType}
+                        title="Product Performance"
+                        description="Multi-dimensional product analysis with sales metrics"
+                        onRemove={() => onRemoveChart(chartType)}
+                    >
+                        <BubbleChartGraph />
+                    </ChartCard>
+                );
+                case 'mixed':
+                return (
+                    <ChartCard
+                        key={chartType}
+                        title="Financial Overview"
+                        description="Combined revenue, profit, and growth analysis"
+                        onRemove={() => onRemoveChart(chartType)}
+                    >
+                        <MixedChartGraph />
+                    </ChartCard>
+                );
 
 case "box":
   return (

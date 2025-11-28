@@ -5,6 +5,9 @@ import { Tag } from "primereact/tag";
 import { FilterMatchMode } from "primereact/api";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
+import '../../../styles/tippy-theme.css';
 import "./primereact-table.css";
 import ChartSidebar from "./ChartSidebar";
 import { useTheme } from "../../../theme";
@@ -20,7 +23,7 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
   const { theme } = useTheme();
   const [isChartVisible, setIsChartVisible] = useState(false);
   const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
-  const [toggleSelection, setToggleSelection] = useState(1); // 0 = chart, 1 = table
+  const [toggleSelection, setToggleSelection] = useState(1);
   const [showChartView, setShowChartView] = useState(false); // NEW: Controls what to display
 
   const handleRemoveChart = (chartType: string) => {
@@ -76,8 +79,16 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
             <div className="flex items-center gap-2">
               <AnimatedToggleButton
                 options={[
-                  { icon: <BarChartIcon />, value: 'chart' },
-                  { icon: <GridViewRoundedIcon />, value: 'table' },
+                  {
+                    icon: <Tippy content="Chart View" theme="gray" placement="bottom"><BarChartIcon /></Tippy>,
+                    value: 'chart'
+                  },
+                  {
+                    icon: (
+                      <Tippy content="Table View" theme="gray" placement="bottom"><GridViewRoundedIcon /></Tippy>
+                    ),
+                    value: 'table'
+                  },
                 ]}
                 defaultSelected={toggleSelection}
                 onChange={(selectedIndex: number, value: string | number) => {
