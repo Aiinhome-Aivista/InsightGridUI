@@ -27,7 +27,9 @@ export default function UploadPage() {
         >
           Start by uploading a data file to create your first view.
         </p>
-        <FileNameInput theme={theme} />
+        <FileNameInput theme={theme} value={""} onChange={function (e: React.ChangeEvent<HTMLInputElement>): void {
+          throw new Error("Function not implemented.");
+        } } />
         <FileDropZone
           onUploadComplete={(newFiles) => {
             // Replace the old files with the new ones
