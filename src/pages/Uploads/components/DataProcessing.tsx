@@ -8,7 +8,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useTheme } from "../../../theme";
 
 interface Props {
-  files: File[];
+  files: any[];
 }
 
 // Define the steps for better readability
@@ -25,8 +25,19 @@ export default function DataProcessing({ files }: Props) {
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
     files.forEach(file => {
-      initialProgress[file.name] = 0; // Start with 0 steps completed
+      const fileName = file.name || file.file_name;
+      // initialProgress[file.name] = 0; // Start with 0 steps completed
+      if (file.table_extract_status === 'Done') {
+        initialProgress[fileName] = 1;
+      }
+      if (file.column_extract_status === 'Done') {
+        initialProgress[fileName] = 2;
+      }
+      if (file.relationship_mapping_status === 'Done') {
+        initialProgress[fileName] = 3;
+      }
     });
+    console.log('Initial Processing Progress:', initialProgress);
     setProcessingProgress(initialProgress);
   }, [files]);
 
@@ -68,13 +79,13 @@ export default function DataProcessing({ files }: Props) {
               className="text-sm font-medium min-w-[140px]"
               style={{ color: theme.primaryText }}
             >
-              {file.name}
+              {file.name || file.file_name}
             </div>
 
             {/* STEPS */}
             <div className="flex items-center gap-20">
               {STEPS.map((stepName, stepIndex) => {
-                const currentProgress = processingProgress[file.name] || 0;
+                const currentProgress = processingProgress[file.name || file.file_name] || 0;
                 const isCompleted = stepIndex < currentProgress;
                 const iconColor = isCompleted ? theme.accent : theme.secondaryText;
 
@@ -100,7 +111,8 @@ export default function DataProcessing({ files }: Props) {
               className="text-xs min-w-[50px] text-center"
               style={{ color: theme.secondaryText }}
             >
-              {(file.size / (1024 * 1024)).toFixed(2)}MB
+              {/* {(file.size / (1024 * 1024)).toFixed(2)}MB */}
+              {file.file_size || (file.size / (1024 * 1024)).toFixed(2) + 'MB'}
             </span>
 
             {/* DATE */}
@@ -108,16 +120,17 @@ export default function DataProcessing({ files }: Props) {
               className="text-xs min-w-[80px] text-center"
               style={{ color: theme.secondaryText }}
             >
-              21-11-2025
+              {/* 21-11-2025 */}
+              {file.created_at}
             </span>
 
             {/* ACTION ICONS */}
             <div className="flex items-center gap-20 min-w-[60px] justify-end">
               <button
-                onClick={() => handleProcessNextStep(file.name)}
-                disabled={loadingFile === file.name}
+                onClick={() => handleProcessNextStep(file.name || file.file_name)}
+                disabled={loadingFile === (file.name || file.file_name)}
               >
-                {loadingFile === file.name ? (
+                {loadingFile === (file.name || file.file_name) ? (
                   <AutorenewRoundedIcon
                     className="w-5 h-5 animate-spin"
                     sx={{ color: theme.secondaryText }}
