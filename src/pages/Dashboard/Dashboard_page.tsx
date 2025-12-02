@@ -2,6 +2,7 @@ import { useState } from "react";
 import DashboardHeader from "./Components/DashboardHeader";
 import DashboardTable from "./Components/DashboardTable";
 import { useTheme } from "../../theme";
+import Chat from "./Components/chat";
 
 export default function Dashboard_page() {
   const { theme } = useTheme();
@@ -25,6 +26,7 @@ export default function Dashboard_page() {
         data={data}
         globalFilter={globalFilter}
       />
+      <Chat />
     </div>
   );
 }
