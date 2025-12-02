@@ -154,6 +154,9 @@ export default function Chat() {
           </div>
         )}
       </div>
+      <div className="mb-10 px-6">
+           <ProductDataTable data={[]} globalFilter="" />
+ </div>
  </div>
     </div>
   );

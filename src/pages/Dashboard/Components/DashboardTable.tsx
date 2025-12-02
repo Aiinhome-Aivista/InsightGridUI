@@ -57,8 +57,10 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
           {/* Toggle */}
           <AnimatedToggleButton
             options={[
-              { icon: <Tippy content="Chart View" theme="gray"><BarChartIcon /></Tippy>, value: 'chart' },
-              { icon: <Tippy content="Table View" theme="gray"><GridViewRoundedIcon /></Tippy>, value: 'table' }
+                { label: "Meta Data", value: 'data' },
+                { label: "Table View", value: 'table' },
+                { label: "Insight", value: 'chart' },
+           
             ]}
             defaultSelected={toggleSelection}
             onChange={(i, value) => {
@@ -71,8 +73,7 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
                 setShowChartView(false);
               }
             }}
-            mode="icon"
-            iconSize="1.2rem"
+            mode="text"
           />
         </div>
 
