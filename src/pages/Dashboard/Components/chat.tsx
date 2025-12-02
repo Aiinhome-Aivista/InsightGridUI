@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ArrowLeftRoundedIcon from '@mui/icons-material/ArrowLeftRounded';
 
 interface ChatSession {
   id: number;
@@ -76,9 +77,7 @@ export default function Chat() {
     <p className="text-gray-500 mt-0.5 text-sm">
       Ask insight from available table
     </p>
-  </div>
-
-  
+  </div>  
   <div className="flex items-center gap-6 px-8 mt-2 border-gray-200 bg-white h-11">
   {chats.map((chat) => (
     <button
@@ -119,9 +118,8 @@ export default function Chat() {
           the item for each category from the product_insights table using the
           given CASE logic
         </span>
-        <span className="cursor-pointer text-gray-400 hover:text-gray-700">
-          &#9654;
-        </span>
+            <ArrowLeftRoundedIcon  className="w-10 h-10" />
+        
       </div>
 
       {/* Script View */}
