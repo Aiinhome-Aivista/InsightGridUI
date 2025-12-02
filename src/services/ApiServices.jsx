@@ -4,10 +4,13 @@
  * @param {object} [options={}] - The options for the fetch request (method, body, headers).
  * @returns {Promise<any>} A promise that resolves with the JSON response.
  */
-const ApiService = async (url, options = {}) => {
-    const defaultHeaders = {
-        'Content-Type': 'application/json',
-    };
+const ApiService = async (url, options = {}, isFormData = false) => {
+    let defaultHeaders = {};
+    if (!isFormData) {
+        defaultHeaders = {
+            'Content-Type': 'application/json',
+        };
+    }
 
     const config = {
         ...options,
@@ -17,7 +20,7 @@ const ApiService = async (url, options = {}) => {
         },
     };
 
-    if (config.body) {
+    if (config.body && !isFormData) {
         config.body = JSON.stringify(config.body);
     }
 

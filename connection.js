@@ -7,5 +7,4 @@ export const GET_APIS = {
 export const POST_APIS = {
   login: `${BASE_URL}login`,
   fileUpload: `${BASE_URL}upload_files_count`,
-  
 };

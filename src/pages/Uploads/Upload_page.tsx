@@ -4,7 +4,7 @@ import FileDropZone from "./components/FileDropZone";
 import DataProcessing from "./components/DataProcessing";
 import FileNameInput from "./components/FileNameInput";
 import ApiService from "../../services/ApiServices";
-import { GET_APIS } from "../../../connection";
+import { GET_APIS, POST_APIS } from "../../../connection";
 
 export default function UploadPage() {
   const { theme } = useTheme();
@@ -22,6 +22,24 @@ export default function UploadPage() {
       setProcessedFiles(response.data);
     } catch (error) {
       console.error('Error tracking files:', error);
+    }
+  }
+
+  async function uploadFiles(files: File[]) {
+    try {
+      const formData = new FormData();
+      formData.append('session_id', Math.random().toString(36).substring(2, 15));
+      formData.append('session_name', 'default');
+      files.forEach(file => {
+        formData.append('files', file);
+      });
+      await ApiService(POST_APIS.fileUpload, {
+        method: "POST",
+        body: formData,
+      }, true);
+      trackFiles(); // Refresh the file list after upload
+    } catch (error) {
+      console.error('Error uploading files:', error);
     }
   }
 
@@ -48,10 +66,7 @@ export default function UploadPage() {
           throw new Error("Function not implemented.");
         } } />
         <FileDropZone
-          onUploadComplete={(newFiles) => {
-            // Replace the old files with the new ones
-            setProcessedFiles(newFiles);
-          }}
+          onUploadComplete={uploadFiles}
           theme={theme}
         />
         {/* Data Processing Under Upload Box */}
