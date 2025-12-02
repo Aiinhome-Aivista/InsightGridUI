@@ -3,7 +3,7 @@ import DashboardHeader from "./Components/DashboardHeader";
 import DashboardTable from "./Components/DashboardTable";
 import { useTheme } from "../../theme";
 import Chat from "./Components/chat";
-import ProductDataTable from "./Components/DataTable";
+
 
 export default function Dashboard_page() {
   const { theme } = useTheme();
@@ -16,21 +16,17 @@ export default function Dashboard_page() {
   ];
 
   return (
-    <div className="h-full" style={{ backgroundColor: theme.background }}>
+    <div className="h-full flex flex-col">
       <DashboardHeader
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter} onRefresh={function (): void {
           throw new Error("Function not implemented.");
         } }      />
       
-      <DashboardTable
-        data={data}
-        globalFilter={globalFilter}
-      />
-      <Chat />
-      <div className="p-6">
-     <ProductDataTable data={data} globalFilter={globalFilter} />
-     </div>
+      <div className="flex-grow overflow-y-auto">
+        <DashboardTable data={data} globalFilter={globalFilter} />
+        <Chat />
+      </div>
     </div>
   );
 }

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
-
+import ProductDataTable from "../Components/DataTable";
 interface ChatSession {
   id: number;
   name: string;
   question: string;
   query: string;
   logs: string[];
+
 }
 
 const initialChats: ChatSession[] = [
@@ -70,15 +71,13 @@ export default function Chat() {
   }, [activeChatId]);
 
   return (
-    <div className="w-full bg-[#fafafa] min-h-screen">
-   <div className="bg-white pb-1">
+    <div className="w-full min-h-screen">
+   <div className="pb-1 bg-[#D9D9D91A]">
   <div className="px-8 pt-4">
     <h1 className="text-xl font-semibold text-gray-800">Chat view</h1>
-    <p className="text-gray-500 mt-0.5 text-sm">
+    <div className="text-gray-500 text-sm flex flex-row items-center gap-6 border-gray-200 h-11">
       Ask insight from available table
-    </p>
-  </div>  
-  <div className="flex items-center gap-6 px-8 mt-2 border-gray-200 bg-white h-11">
+  {/* <div className="flex items-center gap-6 px-8 border-gray-200 h-11"> */}
   {chats.map((chat) => (
     <button
       key={chat.id}
@@ -106,13 +105,12 @@ export default function Chat() {
     New
   </button>
 </div>
-
-</div>
+</div> 
       {/* Chat Prompt */}
       <div className="px-8 py-6 text-gray-700">{activeChat?.question}</div>
 
       {/* Chat Input Box */}
-      <div className="mx-8 border rounded-xl bg-white flex justify-between items-center px-4 py-3 text-gray-500">
+      <div className="mx-8 border rounded-xl flex justify-between items-center px-4 py-3 text-gray-500">
         <span className="truncate">
           Create a stored procedure that returns department, category type, and
           the item for each category from the product_insights table using the
@@ -121,14 +119,15 @@ export default function Chat() {
             <PlayArrowRoundedIcon className="w-10 h-10" />
         
       </div>
+      </div>
 
-      {/* Script View */}
+    <div className="bg-[#D9D9D91A] shadow-sm p-2">
       <h1 className="text-xl font-semibold text-gray-800 px-8 mt-10">
         Script view
       </h1>
       <p className="text-gray-500 px-8 mb-2">Modify and run available script</p>
 
-      <div className="mx-8 bg-white border rounded-xl p-6 mb-10 relative">
+      <div className="mx-8 p-4 bg-[#FFFFFF] shadow-sm mb-10 relative">
         <button
           onClick={handleRunScript}
           className="absolute right-6 top-6 px-4 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
@@ -141,7 +140,7 @@ export default function Chat() {
         </pre>
 
         {displayedLogs.length > 0 && (
-          <div className="mt-6 pt-6 border-t border-gray-200 space-y-2 text-sm">
+          <div className="mt-6 pt-6 border-t border-gray-200 space-y-2 text-sm -mx-6 px-6">
             {displayedLogs.map((log, i) => (
               <p
                 key={i}
@@ -155,6 +154,7 @@ export default function Chat() {
           </div>
         )}
       </div>
+ </div>
     </div>
   );
 }

@@ -42,9 +42,9 @@ export default function DashboardHeader({
     <>
       <header
         // style={{ backgroundColor: theme.surface }}
-        className="w-full"
+        className="w-full bg-[#D9D9D91A]"
       >
-        <div className="px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8 ">
           {/* Responsive Flex Container */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
 
