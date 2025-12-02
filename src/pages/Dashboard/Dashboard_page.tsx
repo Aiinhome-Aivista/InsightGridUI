@@ -3,6 +3,7 @@ import DashboardHeader from "./Components/DashboardHeader";
 import DashboardTable from "./Components/DashboardTable";
 import { useTheme } from "../../theme";
 import Chat from "./Components/chat";
+import ProductDataTable from "./Components/DataTable";
 
 export default function Dashboard_page() {
   const { theme } = useTheme();
@@ -27,6 +28,9 @@ export default function Dashboard_page() {
         globalFilter={globalFilter}
       />
       <Chat />
+      <div className="p-6">
+     <ProductDataTable data={data} globalFilter={globalFilter} />
+     </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ArrowLeftRoundedIcon from '@mui/icons-material/ArrowLeftRounded';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 
 interface ChatSession {
   id: number;
@@ -118,7 +118,7 @@ export default function Chat() {
           the item for each category from the product_insights table using the
           given CASE logic
         </span>
-            <ArrowLeftRoundedIcon  className="w-10 h-10" />
+            <PlayArrowRoundedIcon className="w-10 h-10" />
         
       </div>
 
