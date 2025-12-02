@@ -96,12 +96,12 @@ export default function Chat() {
 
   return (
     <div className="w-full min-h-screen px-5 mt-5">
-   <div className="pb-1 bg-[#D9D9D91A] rounded-xl">
+   <div className="pb-2 bg-[#D9D9D91A] rounded-xl">
   <div className="px-8 pt-4">
     <h1 className="text-xl font-semibold text-gray-800">Chat view</h1>
-    <div className="text-gray-500 text-sm flex flex-row items-center gap-6 border-gray-200 h-11">
+    <div className="text-gray-500 text-sm flex flex-row items-center gap-6 border-gray-200">
       Ask insight from available table
-  {/* <div className="flex items-center gap-6 px-8 border-gray-200 h-11"> */}
+  <div className="border-b-2 border-[#D9D9D9] w-[82%] gap-6 flex">
   {chats.map((chat) => (
     <button
       key={chat.id}
@@ -129,6 +129,7 @@ export default function Chat() {
     New
   </button>
 </div>
+</div>
 </div> 
       {/* Chat Prompt */}
       <div className="px-8 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2">
@@ -151,7 +152,7 @@ export default function Chat() {
       </div>
 
     <div className="bg-[#D9D9D91A] p-2 mt-5 rounded-xl">
-      <h1 className="text-xl font-semibold text-gray-800 px-8 mt-10">
+      <h1 className="text-xl font-semibold text-gray-800 px-8 mt-6">
         Script view
       </h1>
       <p className="text-gray-500 px-8 mb-2">Modify and run available script</p>
