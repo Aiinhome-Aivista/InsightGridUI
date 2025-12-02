@@ -41,7 +41,7 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
 
   return (
     <div className="p-6">
-      <div className="rounded-xl shadow-xs p-4" style={{ backgroundColor: theme.surface }}>
+      <div className="rounded-xl shadow-xs p-4" >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
@@ -58,7 +58,7 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
           <AnimatedToggleButton
             options={[
                 { label: "Meta Data", value: 'data' },
-                { label: "Table View", value: 'table' },
+                { label: "Data View", value: 'table' },
                 { label: "Insight", value: 'chart' },
            
             ]}

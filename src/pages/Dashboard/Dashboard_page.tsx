@@ -16,7 +16,8 @@ export default function Dashboard_page() {
   ];
 
   return (
-    <div className="h-full flex flex-col">
+    <>
+    <div className="flex flex-col bg-[#D9D9D91A] rounded-xl m-5">
       <DashboardHeader
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter} onRefresh={function (): void {
@@ -24,7 +25,10 @@ export default function Dashboard_page() {
         } }      />
       
       <DashboardTable data={data} globalFilter={globalFilter} />
+      </div>
+      <div>
       <Chat />
     </div>
+    </>
   );
 }

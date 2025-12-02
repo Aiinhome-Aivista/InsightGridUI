@@ -95,7 +95,7 @@ export default function Chat() {
   }, [activeChatId]);
 
   return (
-    <div className="w-full min-h-screen px-5">
+    <div className="w-full min-h-screen px-5 mt-5">
    <div className="pb-1 bg-[#D9D9D91A] rounded-xl">
   <div className="px-8 pt-4">
     <h1 className="text-xl font-semibold text-gray-800">Chat view</h1>
@@ -150,13 +150,13 @@ export default function Chat() {
       </form>
       </div>
 
-    <div className="bg-[#D9D9D91A] shadow-sm p-2">
+    <div className="bg-[#D9D9D91A] p-2 mt-5 rounded-xl">
       <h1 className="text-xl font-semibold text-gray-800 px-8 mt-10">
         Script view
       </h1>
       <p className="text-gray-500 px-8 mb-2">Modify and run available script</p>
 
-      <div className="mx-8 p-4 bg-[#FFFFFF] shadow-sm mb-10 relative">
+      <div className="mx-8 p-4 bg-[#FFFFFF] shadow-sm mb-10 rounded-xl relative">
         <button
           onClick={handleRunScript}
           className="absolute right-6 top-6 px-4 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
