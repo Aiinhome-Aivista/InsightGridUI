@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import ProductDataTable from "../Components/DataTable";
-interface ChatSession {
+import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";interface ChatSession {
   id: number;
   name: string;
   question: string;
@@ -96,8 +95,8 @@ export default function Chat() {
   }, [activeChatId]);
 
   return (
-    <div className="w-full min-h-screen">
-   <div className="pb-1 bg-[#D9D9D91A]">
+    <div className="w-full min-h-screen px-5">
+   <div className="pb-1 bg-[#D9D9D91A] rounded-xl">
   <div className="px-8 pt-4">
     <h1 className="text-xl font-semibold text-gray-800">Chat view</h1>
     <div className="text-gray-500 text-sm flex flex-row items-center gap-6 border-gray-200 h-11">
@@ -134,7 +133,6 @@ export default function Chat() {
       {/* Chat Prompt */}
       <div className="px-8 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2">
         <span>{activeChat?.question}</span>
-       
       </div>
 
       {/* Chat Input Box */}

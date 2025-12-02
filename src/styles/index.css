@@ -20,6 +20,24 @@ font-family: "Ballo Da 2",;
     color: var(--theme-primary-text);
   }
 }
+/* Scrollbar styles for WebKit browsers */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #dbeafe00;
+  /* Tailwind's blue-100 */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888e92;
+  /* Tailwind's blue-600 */
+  border-radius: 10px;
+  border: 2px solid #dbeafe;
+  /* Same as track for a nice padding effect */
+}
 /* Custom component styles */
 @layer components {
   .btn-primary {

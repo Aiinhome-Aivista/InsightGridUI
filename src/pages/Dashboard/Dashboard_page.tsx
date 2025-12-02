@@ -23,10 +23,8 @@ export default function Dashboard_page() {
           throw new Error("Function not implemented.");
         } }      />
       
-      <div className="flex-grow overflow-y-auto">
-        <DashboardTable data={data} globalFilter={globalFilter} />
-        <Chat />
-      </div>
+      <DashboardTable data={data} globalFilter={globalFilter} />
+      <Chat />
     </div>
   );
 }
