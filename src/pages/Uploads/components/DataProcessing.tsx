@@ -3,48 +3,60 @@ import { useNavigate } from "react-router-dom";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useTheme } from "../../../theme";
 
 interface Props {
-  files: File[];
+  files: any[];
+  onRefresh?: () => void | Promise<void>;
 }
 
-// Define the steps for better readability
 const STEPS = ["Table Extraction", "Column Extraction", "Data Mapping"];
 const TOTAL_STEPS = STEPS.length;
 
-export default function DataProcessing({ files }: Props) {
+export default function DataProcessing({ files, onRefresh }: Props) {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
-  const [loadingFile, setLoadingFile] = useState<string | null>(null);
 
-  // Initialize progress for each file when the component mounts or files change
+  // Calculate progress based on file status
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
+    
     files.forEach(file => {
-      initialProgress[file.name] = 0; // Start with 0 steps completed
+      const fileName = file.name || file.file_name;
+      let progress = 0;
+
+      // Check each status and increment progress
+      if (file.table_extract_status === 'Done') {
+        progress = 1;
+      }
+      if (file.column_extract_status === 'Done') {
+        progress = 2;
+      }
+      if (file.data_insights_status === 'Done' || file.relationship_mapping_status === 'Done') {
+        progress = 3;
+      }
+
+      initialProgress[fileName] = progress;
     });
+
+    console.log('Processing Progress:', initialProgress);
     setProcessingProgress(initialProgress);
   }, [files]);
 
-  const handleProcessNextStep = (fileName: string) => {
-    setLoadingFile(fileName); // Set the current file as loading
-
-    // Simulate a network request or a long-running task
-    setTimeout(() => {
-      setProcessingProgress(prev => ({
-        ...prev,
-        [fileName]: Math.min(prev[fileName] + 1, TOTAL_STEPS)
-      }));
-      setLoadingFile(null); // Reset loading state after completion
-    }, 1500); // Simulate a 1.5-second loading time
-  };
-
-  const handleNavigateToDashboard = () => {
-    navigate('/layout/dashboard');
+  const handleNavigateToDashboard = (file: any) => {
+    const fileName = file.name || file.file_name;
+    const progress = processingProgress[fileName] || 0;
+    
+    if (progress >= TOTAL_STEPS) {
+      navigate('/layout/dashboard', { 
+        state: { 
+          sessionId: file.session_id, 
+          sessionName: file.session_name 
+        } 
+      });
+    }
   };
 
   return (
@@ -53,102 +65,108 @@ export default function DataProcessing({ files }: Props) {
         className="block text-sm font-medium mb-2"
         style={{ color: theme.primaryText }}
       >
-        Data Processing
+        Uploaded Files
       </label>
 
-      <div className="space-y-2 bg-[#EAEAEA] shadow-md">
-        {files.map((file, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between rounded-lg px-4 py-3 w-full"
-            style={{ backgroundColor: theme.surface }}
-          >
-            {/* FILE NAME */}
+      <div className="space-y-2 bg-[#EAEAEA] shadow-md rounded-lg p-2">
+        {files.map((file, index) => {
+          const fileName = file.name || file.file_name;
+          const currentProgress = processingProgress[fileName] || 0;
+          const isFullyProcessed = currentProgress >= TOTAL_STEPS;
+
+          return (
             <div
-              className="text-sm font-medium min-w-[140px]"
-              style={{ color: theme.primaryText }}
+              key={index}
+              className="flex items-center justify-between rounded-lg px-4 py-3 w-full"
+              style={{ backgroundColor: theme.surface }}
             >
-              {file.name}
-            </div>
-
-            {/* STEPS */}
-            <div className="flex items-center gap-20">
-              {STEPS.map((stepName, stepIndex) => {
-                const currentProgress = processingProgress[file.name] || 0;
-                const isCompleted = stepIndex < currentProgress;
-                const iconColor = isCompleted ? theme.accent : theme.secondaryText;
-
-                return (
-                  <div
-                    key={stepIndex}
-                    className="flex flex-col items-center"
-                    style={{ color: iconColor }}
-                  >
-                    {isCompleted ? (
-                      <CheckCircleIcon sx={{ fontSize: 20, color: iconColor }} />
-                    ) : (
-                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: iconColor }} />
-                    )}
-                    <span className="text-[10px] mt-1">{stepName}</span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* FILE SIZE */}
-            <span
-              className="text-xs min-w-[50px] text-center"
-              style={{ color: theme.secondaryText }}
-            >
-              {(file.size / (1024 * 1024)).toFixed(2)}MB
-            </span>
-
-            {/* DATE */}
-            <span
-              className="text-xs min-w-[80px] text-center"
-              style={{ color: theme.secondaryText }}
-            >
-              21-11-2025
-            </span>
-
-            {/* ACTION ICONS */}
-            <div className="flex items-center gap-20 min-w-[60px] justify-end">
-              <button
-                onClick={() => handleProcessNextStep(file.name)}
-                disabled={loadingFile === file.name}
+              {/* FILE NAME */}
+              <div
+                className="text-sm font-medium min-w-[140px]"
+                style={{ color: theme.primaryText }}
               >
-                {loadingFile === file.name ? (
-                  <AutorenewRoundedIcon
-                    className="w-5 h-5 animate-spin"
-                    sx={{ color: theme.secondaryText }}
-                  />
-                ) : (
-                  <AutorenewRoundedIcon
-                    className="w-5 h-5 cursor-pointer"
-                    sx={{
-                      color: theme.secondaryText,
-                      transition: "color 0.2s",
-                      "&:hover": { color: theme.primaryText },
-                    }}
-                  />
-                )}
-              </button>
-              <button
-                onClick={handleNavigateToDashboard}
-                disabled={processingProgress[file.name] < TOTAL_STEPS}
+                {fileName}
+              </div>
+
+              {/* STEPS */}
+              <div className="flex items-center gap-20">
+                {STEPS.map((stepName, stepIndex) => {
+                  const isCompleted = stepIndex < currentProgress;
+                  const iconColor = isCompleted ? theme.accent : theme.secondaryText;
+
+                  return (
+                    <div
+                      key={stepIndex}
+                      className="flex flex-col items-center"
+                      style={{ color: iconColor }}
+                    >
+                      {isCompleted ? (
+                        <CheckCircleIcon sx={{ fontSize: 20, color: iconColor }} />
+                      ) : (
+                        <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: iconColor }} />
+                      )}
+                      <span className="text-[10px] mt-1">{stepName}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* FILE SIZE */}
+              <span
+                className="text-xs min-w-[50px] text-center"
+                style={{ color: theme.secondaryText }}
               >
-                <ArrowForwardIcon
-                  className="w-5 h-5"
+                {file.file_size || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+              </span>
+
+              {/* DATE */}
+              <span
+                className="text-xs min-w-[80px] text-center"
+                style={{ color: theme.secondaryText }}
+              >
+                {file.created_at || new Date().toLocaleDateString()}
+              </span>
+
+              {/* ACTION ICONS */}
+              <div className="flex items-center gap-20 min-w-[60px] justify-end">
+                {/* Refresh/Sync Icon */}
+                <AutorenewRoundedIcon
+                  className="w-5 h-5 cursor-pointer"
                   sx={{
-                    color: processingProgress[file.name] < TOTAL_STEPS ? theme.border : theme.accent,
-                    cursor: processingProgress[file.name] < TOTAL_STEPS ? 'not-allowed' : 'pointer',
+                    color: theme.secondaryText,
+                    transition: "color 0.2s",
+                    "&:hover": { color: theme.primaryText },
+                  }}
+                  onClick={() => {
+                    console.log('Manual refresh triggered for:', fileName);
+                    if (onRefresh) {
+                      onRefresh();
+                    }
                   }}
                 />
-              </button>
-            </div>
 
-          </div>
-        ))}
+                {/* Navigate to Dashboard */}
+                <button
+                  onClick={() => handleNavigateToDashboard(file)}
+                  disabled={!isFullyProcessed}
+                  title={isFullyProcessed ? "View in Dashboard" : "Processing incomplete"}
+                >
+                  <ArrowForwardIcon
+                    className="w-5 h-5"
+                    sx={{
+                      color: isFullyProcessed ? theme.accent : theme.border,
+                      cursor: isFullyProcessed ? 'pointer' : 'not-allowed',
+                      transition: "color 0.2s",
+                      "&:hover": { 
+                        color: isFullyProcessed ? theme.primaryText : theme.border 
+                      },
+                    }}
+                  />
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -3,9 +3,10 @@ import { useTheme } from "../../../theme";
 
 interface Props {
   onFileSelect: (files: File[]) => void;
+  disabled?: boolean;
 }
 
-export default function UploadIdle({ onFileSelect }: Props) {
+export default function UploadIdle({ onFileSelect, disabled = false }: Props) {
   const { theme } = useTheme();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,8 +22,15 @@ export default function UploadIdle({ onFileSelect }: Props) {
         CSV, EXC, PDF (MAX 10MB)
       </p>
 
-      <label className="mt-3 cursor-pointer">
-        <input type="file" onChange={handleChange} className="hidden" multiple />
+      <label className={`mt-3 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
+        <input
+          type="file"
+          onChange={handleChange}
+          className="hidden"
+          multiple
+          accept=".xml,.csv,.sql,.xlsx,.dump,.xls"
+          disabled={disabled}
+        />
         <span
           className="text-sm px-4 py-2 rounded-md border"
           style={{ backgroundColor: theme.surface, color: theme.primaryText, borderColor: theme.border }}
