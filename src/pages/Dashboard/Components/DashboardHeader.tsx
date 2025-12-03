@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -10,6 +10,7 @@ import { Dropdown } from "primereact/dropdown";
 import ColumnSelectionPage from "../../../Modal/column-section-page";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
+import ApiServices from "../../../services/ApiServices";
 
 interface HeaderProps {
   globalFilter: string;
@@ -26,12 +27,29 @@ export default function DashboardHeader({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { theme } = useTheme();
   const [selectedView, setSelectedView] = useState(null);
- const tableOptions = [
-    { label: "Product Details", value: "product_details" },
-    { label: "Sales Data", value: "sales_data" },
-  ];
+  const [tableOptions, setTableOptions] = useState([]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const payload = {
+      session_id: "1232025",
+      session_name: "test123",
+      file_name: "customer_orders_updated(2.0).xlsx",
+    };
+
+    ApiServices.getUiData(payload)
+      .then((response) => {
+        if (response.data.isSuccess) {
+          const tables = response.data.data.tables.map((table: string) => ({
+            label: table,
+            value: table.toLowerCase().replace(/ /g, "_"),
+          }));
+          setTableOptions(tables);
+        }
+      })
+      .catch((error) => console.error("Error fetching UI data:", error));
+  }, []);
 
   const handleRefresh = () => {
     // Don't do anything if already refreshing
@@ -96,7 +114,7 @@ export default function DashboardHeader({
               {/* View Dropdown */}
               <Dropdown
                 value={selectedView}
-                options={tableOptions }
+                options={tableOptions}
                 placeholder="Product Details"
                 className="p-4
     w-52 h-11

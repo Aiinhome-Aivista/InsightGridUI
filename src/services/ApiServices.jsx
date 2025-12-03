@@ -6,6 +6,9 @@ class ApiServices {
    login(body) {
      return axios.post(POST_APIS.login, body);
    }
+   getUiData(body) {
+    return axios.post(POST_APIS.get_ui_data, body);
+  }
 }
 
 export default new ApiServices();
