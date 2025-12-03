@@ -8,7 +8,7 @@ import "../../../styles/tippy-theme.css";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import ColumnSelectionPage from "../../../Modal/column-section-page";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
 import ApiServices from "../../../services/ApiServices";
 
@@ -28,27 +28,31 @@ export default function DashboardHeader({
   const { theme } = useTheme();
   const [selectedView, setSelectedView] = useState(null);
   const [tableOptions, setTableOptions] = useState([]);
-
+  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const payload = {
-      session_id: "1232025",
-      session_name: "test123",
-      file_name: "customer_orders_updated(2.0).xlsx",
-    };
+    const sessionData = location.state;
 
-    ApiServices.getUiData(payload)
-      .then((response) => {
-        if (response.data.isSuccess) {
-          const tables = response.data.data.tables.map((table: string) => ({
-            label: table,
-            value: table.toLowerCase().replace(/ /g, "_"),
-          }));
-          setTableOptions(tables);
-        }
-      })
-      .catch((error) => console.error("Error fetching UI data:", error));
+    if (sessionData?.sessionId && sessionData?.sessionName && sessionData?.fileName) {
+      const payload = {
+        session_id: sessionData.sessionId,
+        session_name: sessionData.sessionName,
+        file_name: sessionData.fileName,
+      };
+
+      ApiServices.getUiData(payload)
+        .then((response) => {
+          if (response.data.isSuccess) {
+            const tables = response.data.data.tables.map((table: string) => ({
+              label: table,
+              value: table.toLowerCase().replace(/ /g, "_"),
+            }));
+            setTableOptions(tables);
+          }
+        })
+        .catch((error) => console.error("Error fetching UI data:", error));
+    }
   }, []);
 
   const handleRefresh = () => {

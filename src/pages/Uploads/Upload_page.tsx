@@ -27,9 +27,10 @@ export default function UploadPage() {
 
   async function trackFiles() {
     try {
-      const response = await ApiService(GET_APIS.tracker, { method: 'GET' });
+      const response = await ApiService.tracker();
       console.log('File tracking response:', response);
-      setProcessedFiles(response.data || []);
+      // The actual file list is likely nested in response.data.data
+      setProcessedFiles(response.data?.data || []);
     } catch (error) {
       console.error('Error tracking files:', error);
     }
@@ -80,26 +81,21 @@ export default function UploadPage() {
       console.log('Timestamp:', new Date().toISOString());
 
       // Step 1: Upload files
-      const uploadResponse = await ApiService(
-        POST_APIS.fileUpload,
-        {
-          method: "POST",
-          body: formData,
-        },
-        true  // isFormData = true
-      );
+      const uploadResponse = await ApiService.fileUpload(formData);
 
       console.log('=== UPLOAD RESPONSE ===');
       console.log('Full Response:', uploadResponse);
       console.log('Upload completed at:', new Date().toISOString());
 
-      if (!uploadResponse.isSuccess) {
-        throw new Error(uploadResponse.message || 'Upload failed');
+      const responseData = uploadResponse.data;
+
+      if (!responseData.isSuccess) {
+        throw new Error(responseData.message || 'Upload failed');
       }
 
       // Extract session info from response
-      const uploadedFile = uploadResponse.data && uploadResponse.data.length > 0 
-        ? uploadResponse.data[0] 
+      const uploadedFile = responseData.data && responseData.data.length > 0 
+        ? responseData.data[0] 
         : null;
 
       if (!uploadedFile) {
@@ -161,9 +157,10 @@ export default function UploadPage() {
       console.log('=== VERIFYING DATA EXISTS ===');
       console.log('Verification started at:', new Date().toISOString());
       
-      const response = await ApiService(GET_APIS.tracker, { method: 'GET' });
+      const response = await ApiService.tracker();
+      const filesList = response.data?.data || [];
       
-      const fileExists = response.data?.some(
+      const fileExists = filesList.some(
         (file: any) => 
           file.session_id === sessionId && 
           file.session_name === sessionName
@@ -176,8 +173,9 @@ export default function UploadPage() {
         await new Promise(resolve => setTimeout(resolve, 3000));
         
         // Retry verification
-        const retryResponse = await ApiService(GET_APIS.tracker, { method: 'GET' });
-        const retryExists = retryResponse.data?.some(
+        const retryResponse = await ApiService.tracker();
+        const retryFilesList = retryResponse.data?.data || [];
+        const retryExists = retryFilesList.some(
           (file: any) => 
             file.session_id === sessionId && 
             file.session_name === sessionName
@@ -207,13 +205,7 @@ export default function UploadPage() {
       console.log('Request Body:', JSON.stringify(requestBody, null, 2));
       console.log('Request URL:', POST_APIS.processSessionData);
 
-      const processResponse = await ApiService(
-        POST_APIS.processSessionData,
-        {
-          method: "POST",
-          body: requestBody,
-        }
-      );
+      const processResponse = await ApiService.processSessionData(requestBody);
 
       console.log('=== PROCESS SESSION DATA RESPONSE ===');
       console.log('Process completed at:', new Date().toISOString());

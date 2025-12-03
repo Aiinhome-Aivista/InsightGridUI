@@ -53,7 +53,8 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       navigate('/layout/dashboard', { 
         state: { 
           sessionId: file.session_id, 
-          sessionName: file.session_name 
+          sessionName: file.session_name,
+          fileName: fileName
         } 
       });
     }
