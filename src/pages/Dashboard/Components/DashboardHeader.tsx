@@ -16,12 +16,14 @@ interface HeaderProps {
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
   onRefresh: () => void;
+  onTableSelect?: (data: any) => void;
 }
 
 export default function DashboardHeader({
   globalFilter,
   setGlobalFilter,
   onRefresh,
+  onTableSelect,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -29,6 +31,7 @@ export default function DashboardHeader({
   const [selectedView, setSelectedView] = useState(null);
   const [tableOptions, setTableOptions] = useState([]);
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,17 +47,48 @@ export default function DashboardHeader({
       ApiServices.getUiData(payload)
         .then((response) => {
           if (response.data.isSuccess) {
-            const tables = response.data.data.tables.map((table: string) => ({
-              label: table,
-              value: table.toLowerCase().replace(/ /g, "_"),
-            }));
-            setTableOptions(tables);
+            // The initial response might contain the list of tables
+            if (response.data.data.tables) {
+              const tables = response.data.data.tables.map((table: string) => ({
+                label: table,
+                value: table, // Use the actual table name as the value
+              }));
+              setTableOptions(tables);
+            }
+            // If a table is already selected (e.g. on page load with state), pass its data up
+            if (onTableSelect && response.data.data.rows) {
+              onTableSelect(response.data.data);
+            }
           }
         })
         .catch((error) => console.error("Error fetching UI data:", error));
     }
   }, []);
 
+  const handleViewChange = (e: { value: any }) => {
+    const selectedTable = e.value;
+    setSelectedView(selectedTable);
+
+    const sessionData = location.state;
+    if (sessionData?.sessionId && sessionData?.sessionName && sessionData?.fileName && selectedTable) {
+      const payload = {
+        session_id: sessionData.sessionId,
+        session_name: sessionData.sessionName,
+        file_name: sessionData.fileName,
+        table_name: selectedTable,
+      };
+
+      setIsLoading(true);
+      ApiServices.getUiData(payload)
+        .then(response => {
+          if (onTableSelect) {
+            onTableSelect(response.data.data);
+          }
+        })
+        .catch(error => console.error("Error fetching table data:", error))
+        .finally(() => setIsLoading(false));
+    }
+  };
   const handleRefresh = () => {
     // Don't do anything if already refreshing
     if (isRefreshing) return;
@@ -119,6 +153,8 @@ export default function DashboardHeader({
               <Dropdown
                 value={selectedView}
                 options={tableOptions}
+                onChange={handleViewChange}
+                loading={isLoading}
                 placeholder="Product Details"
                 className="p-4
     w-52 h-11

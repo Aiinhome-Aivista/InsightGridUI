@@ -1,30 +1,41 @@
 import { useState } from "react";
 import DashboardHeader from "./Components/DashboardHeader";
 import DashboardTable from "./Components/DashboardTable";
-import { useTheme } from "../../theme";
 import Chat from "./Components/chat";
 
-
 export default function Dashboard_page() {
-  const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
+  const [tableData, setTableData] = useState({
+    rows: [],
+    columns: [],
+    insights: [],
+    tableName: "Product Details", // Default title
+  });
 
-  const data = [
-    { sales: "Python", product: "10 mints", customer: "17/10/2025", purchase: "Active" },
-    { sales: "SQL", product: "22 mints", customer: "11/10/2025", purchase: "Active" },
-    { sales: "JAVA", product: "7 mints", customer: "13/10/2025", purchase: "Active" },
-  ];
+  const handleTableDataSelect = (data: any) => {
+    setTableData({
+      rows: data.rows || [],
+      columns: data.column_metadata || [],
+      insights: data.insights || [],
+      tableName: data.table_name || "Product Details",
+    });
+  };
+
+  const handleRefresh = () => {
+    // Implement your refresh logic here, e.g., re-fetch data
+    console.log("Refresh triggered");
+  };
 
   return (
     <>
-    <div className="flex flex-col bg-[#D9D9D91A] rounded-xl m-5">
-      <DashboardHeader
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter} onRefresh={function (): void {
-          throw new Error("Function not implemented.");
-        } }      />
-      
-      <DashboardTable data={data} globalFilter={globalFilter} />
+      <div className="flex flex-col bg-[#D9D9D91A] rounded-xl m-5">
+        <DashboardHeader
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+          onRefresh={handleRefresh}
+          onTableSelect={handleTableDataSelect}
+        />
+        <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} globalFilter={globalFilter} tableName={tableData.tableName} />
       </div>
       <div>
       <Chat />

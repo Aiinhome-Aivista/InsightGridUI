@@ -8,13 +8,18 @@ import ProductDataTable from "../Components/DataTable";
 import { IconButton } from "@mui/material";
 interface DashboardTableProps {
   data: any[];
+  columns: { column_name: string }[];
+  insights: string[];
   globalFilter: string;
+  tableName: string;
 }
 
-export default function DashboardTable({ data, globalFilter }: DashboardTableProps) {
+export default function DashboardTable({ data, columns, insights, globalFilter, tableName }: DashboardTableProps) {
   const { theme } = useTheme();
-  const [toggleSelection, setToggleSelection] = useState(1);
+  const [toggleSelection, setToggleSelection] = useState('dataview');
   const [isExpanded, setIsExpanded] = useState(true);
+
+  const defaultSelectionIndex = 1; // "Data View"
 
   return (
     <div className="p-6">
@@ -24,10 +29,10 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
           <div>
             <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: theme.primaryText }}>
               <GridViewRoundedIcon sx={{ fontSize: "1rem", color: theme.primaryText }} />
-              Product Details
+              {tableName} Details
             </h2>
             <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
-              This table is showing all product details
+              This table is showing all {tableName} details
             </p>
           </div>
 
@@ -40,9 +45,9 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
                   { label: "Insight", value: 'insights' },
              
               ]}
-              defaultSelected={toggleSelection}
-              onChange={(i) => {
-                setToggleSelection(i);
+              defaultSelected={defaultSelectionIndex}
+              onChange={(_index, value) => {
+                setToggleSelection(value as string);
               }}
               mode="text"
             />
@@ -55,22 +60,30 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
         {/* CONDITIONAL RENDER */}
         {isExpanded && (
           <>
-            {toggleSelection === 0 && (
+            {toggleSelection === 'metadata' && (
               <div className="p-4 min-h-[200px] flex items-center justify-center">
                 <div className="flex flex-wrap gap-3">
-                  {['Product ID', 'Category', 'Brand', 'Price', 'Stock'].map(pill => (
-                    <span key={pill} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm">
-                      {pill}
+                  {columns.map(col => (
+                    <span key={col.column_name} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm">
+                      {col.column_name}
                     </span>
                   ))}
                 </div>
               </div>
             )}
-            {toggleSelection === 1 && (
-              <ProductDataTable data={data} globalFilter={globalFilter} />
+            {toggleSelection === 'dataview' && (
+              <ProductDataTable data={data} globalFilter={globalFilter} columns={columns} />
             )}
-            {toggleSelection === 2 && (
-              <div className="p-4 min-h-[200px] flex items-center justify-center text-gray-500">Under development</div>
+            {toggleSelection === 'insights' && (
+              <div className="p-4 min-h-[200px]">
+                <ul className="list-disc list-inside space-y-2">
+                  {insights.map((insight, index) => (
+                    <li key={index} className="text-sm text-gray-700">
+                      {insight}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </>
         )}
