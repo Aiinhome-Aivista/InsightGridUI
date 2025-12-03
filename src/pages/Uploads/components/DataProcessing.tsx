@@ -41,7 +41,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       initialProgress[fileName] = progress;
     });
 
-    console.log('Processing Progress:', initialProgress);
     setProcessingProgress(initialProgress);
   }, [files]);
 
@@ -138,7 +137,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     "&:hover": { color: theme.primaryText },
                   }}
                   onClick={() => {
-                    console.log('Manual refresh triggered for:', fileName);
                     if (onRefresh) {
                       onRefresh();
                     }

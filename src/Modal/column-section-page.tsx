@@ -72,11 +72,9 @@ export default function ColumnSelectionPage() {
 
   const handleSave = () => {
     const selectedColumns = addColumns.filter(col => col.checked).map(col => col.label);
-    console.log('Saving...', { selectionMode, selectedColumns });
   };
 
   const handleClose = () => {
-    console.log('Closing...');
   };
 
   // Get available columns (unchecked items) for drag & drop mode

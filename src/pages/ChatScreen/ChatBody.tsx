@@ -27,7 +27,6 @@ FROM product_insights;
 
   const handleSend = () => {
     if (!message.trim()) return;
-    console.log("Send:", message);
     setMessage("");
   };
 
