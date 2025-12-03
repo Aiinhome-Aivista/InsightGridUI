@@ -1,15 +1,11 @@
 import { useState } from "react";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import Tippy from '@tippyjs/react';
-import "tippy.js/dist/tippy.css";
-import "../../../styles/tippy-theme.css";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useTheme } from "../../../theme";
-import ChartSidebar from "./ChartSidebar";
-import RenderCharts from "./render-charts";
 import AnimatedToggleButton from "../../../Modal/components/animated-toggle-button";
 import ProductDataTable from "../Components/DataTable";
-
+import { IconButton } from "@mui/material";
 interface DashboardTableProps {
   data: any[];
   globalFilter: string;
@@ -17,27 +13,8 @@ interface DashboardTableProps {
 
 export default function DashboardTable({ data, globalFilter }: DashboardTableProps) {
   const { theme } = useTheme();
-  const [isChartVisible, setIsChartVisible] = useState(false);
-  const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
   const [toggleSelection, setToggleSelection] = useState(1);
-  const [showChartView, setShowChartView] = useState(false);
-
-  const handleRemoveChart = (chartType: string) => {
-    const newCharts = selectedCharts.filter(chart => chart !== chartType);
-    setSelectedCharts(newCharts);
-    if (newCharts.length === 0) {
-      setShowChartView(false);
-      setToggleSelection(1);
-    }
-  };
-
-  const handleSidebarClose = () => {
-    setIsChartVisible(false);
-    if (selectedCharts.length === 0) {
-      setToggleSelection(1);
-      setShowChartView(false);
-    }
-  };
+  const [isExpanded, setIsExpanded] = useState(true);
 
   return (
     <div className="p-6">
@@ -54,47 +31,50 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
             </p>
           </div>
 
-          {/* Toggle */}
-          <AnimatedToggleButton
-            options={[
-                { label: "Meta Data", value: 'data' },
-                { label: "Data View", value: 'table' },
-                { label: "Insight", value: 'chart' },
-           
-            ]}
-            defaultSelected={toggleSelection}
-            onChange={(i, value) => {
-              setToggleSelection(i);
-              if (value === 'chart') {
-                setIsChartVisible(true);
-                if (selectedCharts.length > 0) setShowChartView(true);
-              } else {
-                setIsChartVisible(false);
-                setShowChartView(false);
-              }
-            }}
-            mode="text"
-          />
+          <div className="flex items-center gap-2">
+            {/* Toggle */}
+            <AnimatedToggleButton
+              options={[
+                  { label: "Meta Data", value: 'metadata' },
+                  { label: "Data View", value: 'dataview' },
+                  { label: "Insight", value: 'insights' },
+             
+              ]}
+              defaultSelected={toggleSelection}
+              onChange={(i) => {
+                setToggleSelection(i);
+              }}
+              mode="text"
+            />
+            <IconButton onClick={() => setIsExpanded(!isExpanded)} size="small">
+              {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </div>
         </div>
 
         {/* CONDITIONAL RENDER */}
-        {showChartView && selectedCharts.length > 0 ? (
-          <RenderCharts selectedCharts={selectedCharts} onRemoveChart={handleRemoveChart} />
-        ) : (
-          <ProductDataTable data={data} globalFilter={globalFilter} />  // <-- NEW COMPONENT
+        {isExpanded && (
+          <>
+            {toggleSelection === 0 && (
+              <div className="p-4 min-h-[200px] flex items-center justify-center">
+                <div className="flex flex-wrap gap-3">
+                  {['Product ID', 'Category', 'Brand', 'Price', 'Stock'].map(pill => (
+                    <span key={pill} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm">
+                      {pill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {toggleSelection === 1 && (
+              <ProductDataTable data={data} globalFilter={globalFilter} />
+            )}
+            {toggleSelection === 2 && (
+              <div className="p-4 min-h-[200px] flex items-center justify-center text-gray-500">Under development</div>
+            )}
+          </>
         )}
       </div>
-
-      {isChartVisible && (
-        <ChartSidebar
-          onChartSelect={(charts) => {
-            setSelectedCharts(charts);
-            if (charts.length > 0) setShowChartView(true);
-          }}
-          onClose={handleSidebarClose}
-          selectedCharts={selectedCharts}
-        />
-      )}
     </div>
   );
 }
