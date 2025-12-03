@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react';
 interface ChartSidebarProps {
   onChartSelect?: (chartTypes: string[]) => void;
   onClose?: () => void;
-  selectedCharts?: string[]; // FIX 3: Receive selected charts as prop
+  selectedCharts?: string[];
 }
 
 interface ChartOption {
@@ -22,10 +22,8 @@ interface ChartOption {
 }
 
 export default function ChartSidebar({ onChartSelect, onClose, selectedCharts: initialSelectedCharts = [] }: ChartSidebarProps) {
-  // FIX 3: Initialize with passed selectedCharts
   const [selectedCharts, setSelectedCharts] = useState<string[]>(initialSelectedCharts);
 
-  // FIX 3: Update local state when prop changes
   useEffect(() => {
     setSelectedCharts(initialSelectedCharts);
   }, [initialSelectedCharts]);
@@ -76,9 +74,10 @@ export default function ChartSidebar({ onChartSelect, onClose, selectedCharts: i
   ];
 
   const handleChartClick = (chartType: string) => {
+    // CHANGED: Replace current selection with new chart instead of toggling
     const newSelection = selectedCharts.includes(chartType)
-      ? selectedCharts.filter(id => id !== chartType)
-      : [...selectedCharts, chartType];
+      ? [] // If clicking the same chart, deselect it
+      : [chartType]; // Otherwise, replace with the new chart
 
     setSelectedCharts(newSelection);
     if (onChartSelect) {
@@ -106,7 +105,7 @@ export default function ChartSidebar({ onChartSelect, onClose, selectedCharts: i
         </div>
         {selectedCharts.length > 0 && (
           <div className="mt-3 text-xs text-blue-600 font-medium">
-            {selectedCharts.length} chart{selectedCharts.length !== 1 ? 's' : ''} selected
+            {selectedCharts.length} chart selected
           </div>
         )}
       </div>
