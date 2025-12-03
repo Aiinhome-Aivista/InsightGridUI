@@ -67,7 +67,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         Uploaded Files
       </label>
 
-      <div className="space-y-2 bg-[#EAEAEA] shadow-md rounded-lg p-2">
+      <div className="space-y-2 rounded-lg p-2">
         {files.map((file, index) => {
           const fileName = file.name || file.file_name;
           const currentProgress = processingProgress[fileName] || 0;
@@ -76,7 +76,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           return (
             <div
               key={index}
-              className="flex items-center justify-between rounded-lg px-4 py-3 w-full"
+              className="flex items-center justify-between rounded-lg px-4 py-2 w-full"
               style={{ backgroundColor: theme.surface }}
             >
               {/* FILE NAME */}

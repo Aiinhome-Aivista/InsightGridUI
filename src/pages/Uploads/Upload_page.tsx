@@ -199,26 +199,9 @@ export default function UploadPage() {
     }
   }
 
-  // Manual refresh function for retry
-  const handleManualProcess = async () => {
-    if (!currentSessionRef.current) {
-      alert('No recent upload session found. Please upload a file first.');
-      return;
-    }
-
-    setIsProcessing(true);
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    await processSessionData(currentSessionRef.current.id, currentSessionRef.current.name);
-  };
-
   return (
-    <div
-      className="flex flex-col items-start w-full h-full p-8"
-      style={{ backgroundColor: theme.background }}
-    >
-      <div className="w-full rounded-lg" style={{ backgroundColor: theme.surface }}>
+    
+      <div className="w-full rounded-lg p-8">
         <h2
           className="text-center text-xl font-semibold"
           style={{ color: theme.primaryText }}
@@ -254,41 +237,25 @@ export default function UploadPage() {
 
         {/* Processing Indicator */}
         {isProcessing && (
-          <div className="mt-4 p-4 rounded-lg border" style={{
-            backgroundColor: theme.surface,
-            borderColor: theme.border
-          }}>
-            <div className="flex items-center gap-3">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2" style={{
-                borderColor: theme.accent
-              }}></div>
-              <div className="flex-1">
-                <p className="text-sm font-medium" style={{ color: theme.primaryText }}>
-                  Processing {processingFileName}...
-                </p>
-                <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
-                  Extracting tables, columns, and analyzing data with AI. This may take a few moments.
-                </p>
-              </div>
-              <button
-                onClick={handleManualProcess}
-                className="px-3 py-1 text-xs rounded border hover:bg-opacity-80"
-                style={{
-                  borderColor: theme.border,
-                  color: theme.primaryText
-                }}
-              >
-                Retry
-              </button>
+
+          <div className="flex items-center gap-3 pt-4">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2" style={{
+              borderColor: theme.accent
+            }}></div>
+            <div className="flex-1">
+              <p className="text-sm font-medium" style={{ color: theme.primaryText }}>
+                Processing {processingFileName}...
+              </p>
+
             </div>
+
           </div>
         )}
 
         {/* Data Processing */}
         {processedFiles.length > 0 && (
-          <DataProcessing files={processedFiles} onRefresh={handleManualProcess} />
+          <DataProcessing files={processedFiles} />
         )}
       </div>
-    </div>
   );
 }
