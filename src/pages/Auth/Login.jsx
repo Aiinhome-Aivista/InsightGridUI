@@ -3,8 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Union from "../../assets/Union.svg";
 import view_quilt from "../../assets/view_quilt.svg";
-import ApiService from "../../services/ApiServices";
-import { POST_APIS } from "../../../connection";
+import ApiServices from "../../services/ApiServices";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -14,53 +13,54 @@ export default function Login() {
   const [notification, setNotification] = useState({
     open: false,
     message: "",
-    severity: "info", // 'success', 'error', 'warning', 'info'
+    severity: "info",
   });
 
-  async function handleLogin(e) {
-    e?.preventDefault?.();
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setLoading(true);
-    setNotification((prev) => ({ ...prev, open: false }));
+    setNotification({ open: false, message: "", severity: "info" });
 
-    let res;
+    let res = null;
+
     try {
-      const payload = { user_email, password };
-      res = await ApiService(POST_APIS.login, {
-        method: "POST",
-        body: payload,
-      });
+      const payload = { user_email, password }; // LoginPayload
+      const response = await ApiServices.login(payload);
+      res = response.data; // LoginResponse
 
-      if (res?.isSuccess) {
-        setNotification({ open: true, message: "Login successfully!", severity: "success" });
-        // persist user data for app usage
+      if (res.isSuccess) {
+        setNotification({
+          open: true,
+          message: "Login successfully!",
+          severity: "success",
+        });
+
         localStorage.setItem("ig_user", JSON.stringify(res.data));
-        // navigate into the layout after a short delay
-        setTimeout(() => {
-          navigate("/layout/upload", { replace: true });
-        }, 1500);
-        return; // Stop execution here
+
+        setTimeout(() => navigate("/layout/upload", { replace: true }), 1500);
+
+        return;
       }
 
-      // If API returns an error
-      setNotification({ open: true, message: res?.message || "Login failed", severity: "error" });
-
+      setNotification({
+        open: true,
+        message: res?.message || "Login failed",
+        severity: "error",
+      });
     } catch (err) {
-      setNotification({ open: true, message: err?.message || "Network error", severity: "error" });
+      setNotification({
+        open: true,
+        message: err.message || "Network Error",
+        severity: "error",
+      });
     } finally {
-      // Only set loading to false if login was not successful
-      // to prevent button state change during navigation
-      if (!res?.isSuccess) {
-        setLoading(false);
-      }
+      if (!res?.isSuccess) setLoading(false);
     }
-  }
-
-  const handleCloseNotification = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setNotification((prev) => ({ ...prev, open: false }));
   };
+
+  const handleCloseNotification = () =>
+    setNotification((prev) => ({ ...prev, open: false }));
+
 
   return (
     <div className="w-full h-screen flex items-center justify-center 

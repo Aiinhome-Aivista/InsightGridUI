@@ -27,7 +27,7 @@ export default function VisualizationSection() {
           </h2>
 
           {/* Underline highlight */}
-          <div className="mt-4 w-16 h-[8px] rounded-full bg-white/95" />
+          {/* <div className=" mt-4 w-16 h-[8px] rounded-full bg-white/95" /> */}
 
           <p className="mt-10 text-white/85 text-[16px] leading-[29px] pr-10">
             From any column, simply click Insight to view smart, data-aware

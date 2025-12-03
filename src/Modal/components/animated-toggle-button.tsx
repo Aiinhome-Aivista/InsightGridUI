@@ -58,8 +58,8 @@ export default function AnimatedToggleButton({
   buttonPadding = '0.5rem 1.5rem',
   gap = '0.25rem',
   
-  backgroundColor = '#f3f4f6',
-  activeBackgroundColor = '#ffffff',
+  backgroundColor = '#FFFFFF',
+  activeBackgroundColor = '#D9D9D9',
   textColor = '#6b7280',
   activeTextColor = '#111827',
   hoverTextColor = '#374151',

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
@@ -6,6 +6,7 @@ import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRound
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
+import type { LoginUserData } from "../../models/login.model";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ViewColumnRoundedIcon from '@mui/icons-material/ViewColumnRounded';
@@ -22,10 +23,19 @@ const menuItems = [
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(true);
+  const [user, setUser] = useState<LoginUserData | null>(null);
   const { theme } = useTheme();
   const location = useLocation();
   const activePath = location.pathname.split("/").pop() || "upload";
 
+  useEffect(() => {
+    const userDataString = localStorage.getItem("ig_user");
+    if (userDataString) {
+      try {
+        setUser(JSON.parse(userDataString));
+      } catch (error) { console.error("Failed to parse user data from localStorage", error); }
+    }
+  }, []);
   return (
     <aside
       className={`${collapsed ? "w-20" : "w-60"
@@ -42,7 +52,7 @@ export default function Sidebar() {
 
         {!collapsed && (
           <p className="ml-3 font-medium" style={{ color: theme.primaryText }}>
-            User
+            {user?.user_name || "User"}
           </p>
         )}
 
