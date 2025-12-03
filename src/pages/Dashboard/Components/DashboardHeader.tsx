@@ -54,6 +54,14 @@ export default function DashboardHeader({
                 value: table, // Use the actual table name as the value
               }));
               setTableOptions(tables);
+
+              // Automatically select the first table and fetch its data
+              if (tables.length > 0) {
+                const firstTable = tables[0].value;
+                setSelectedView(firstTable); // Set the dropdown value
+                // Manually trigger the fetch for the first table
+                handleViewChange({ value: firstTable });
+              }
             }
             // If a table is already selected (e.g. on page load with state), pass its data up
             if (onTableSelect && response.data.data.rows) {

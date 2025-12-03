@@ -20,6 +20,57 @@ font-family: "Ballo Da 2",;
     color: var(--theme-primary-text);
   }
 }
+
+
+/* PAGINATION CONTAINER */
+.custom-table .p-paginator {
+  border: none !important;
+  padding: 1rem !important;
+  background: transparent !important;
+  gap: 15px;
+}
+
+/* PAGINATION BUTTONS */
+.custom-table .p-paginator .p-paginator-page,
+.custom-table .p-paginator .p-paginator-first,
+.custom-table .p-paginator .p-paginator-last,
+.custom-table .p-paginator .p-paginator-prev,
+.custom-table .p-paginator .p-paginator-next {
+  border-radius: 10px !important;
+  border: 1px solid #E5E7EB !important;
+  background: #ffffff !important;
+  color: #6B7280 !important;
+  min-width: 40px;
+  height: 40px;
+  transition: all 0.2s ease;
+  box-shadow: none !important;
+}
+
+/* HOVER EFFECT */
+.custom-table .p-paginator .p-paginator-page:hover,
+.custom-table .p-paginator .p-paginator-first:hover,
+.custom-table .p-paginator .p-paginator-last:hover,
+.custom-table .p-paginator .p-paginator-prev:hover,
+.custom-table .p-paginator .p-paginator-next:hover {
+  border-color: #B9C2D0 !important;
+  background: #F9FAFB !important;
+}
+
+/* ACTIVE PAGE */
+.custom-table .p-paginator .p-paginator-page.p-highlight {
+  background: #6a99e6 !important;
+  border-color: #6190dc !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  transform: scale(1.0);
+}
+
+/* DISABLED BUTTON */
+.custom-table .p-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Scrollbar styles for WebKit browsers */
 ::-webkit-scrollbar {
   width: 10px;
