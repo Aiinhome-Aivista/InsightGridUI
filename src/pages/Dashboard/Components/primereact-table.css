@@ -7,7 +7,10 @@
   padding: 14px 16px !important;
   text-align: left !important;
 }
-
+.custom-table{
+  background-color: white !important;
+  border-radius: 0.75rem !important;
+}
 /* Rows */
 .p-datatable .p-datatable-tbody > tr > td {
   padding: 14px 16px !important;

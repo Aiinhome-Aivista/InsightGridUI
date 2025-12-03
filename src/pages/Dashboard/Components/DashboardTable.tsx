@@ -1,19 +1,11 @@
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { useState, useEffect } from "react";
-import { Tag } from "primereact/tag";
-import { FilterMatchMode } from "primereact/api";
+import { useState } from "react";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css';
-import '../../../styles/tippy-theme.css';
-import "./primereact-table.css";
-import ChartSidebar from "./ChartSidebar";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useTheme } from "../../../theme";
-import RenderCharts from "./render-charts";
 import AnimatedToggleButton from "../../../Modal/components/animated-toggle-button";
-
+import ProductDataTable from "../Components/DataTable";
+import { IconButton } from "@mui/material";
 interface DashboardTableProps {
   data: any[];
   globalFilter: string;
@@ -21,144 +13,68 @@ interface DashboardTableProps {
 
 export default function DashboardTable({ data, globalFilter }: DashboardTableProps) {
   const { theme } = useTheme();
-  const [isChartVisible, setIsChartVisible] = useState(false);
-  const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
   const [toggleSelection, setToggleSelection] = useState(1);
-  const [showChartView, setShowChartView] = useState(false); // NEW: Controls what to display
-
-  const handleRemoveChart = (chartType: string) => {
-    const newCharts = selectedCharts.filter(chart => chart !== chartType);
-    setSelectedCharts(newCharts);
-    
-    // If no charts left, switch to table view
-    if (newCharts.length === 0) {
-      setShowChartView(false);
-      setToggleSelection(1);
-    }
-  };
-
-  const handleSidebarClose = () => {
-    setIsChartVisible(false);
-    
-    // FIX 1: If no charts were selected, revert to table view
-    if (selectedCharts.length === 0) {
-      setToggleSelection(1);
-      setShowChartView(false);
-    }
-  };
-
-  const purchaseBody = (row: any) => (
-    <Tag
-      value={row.purchase}
-      className="px-3 py-1 rounded-full bg-green-100 text-green-600 text-xs font-medium border-none"
-    />
-  );
+  const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <div>
-      <div className="p-6">
-        {/* Card Container */}
-        <div
-          className="rounded-xl shadow-xs p-4"
-          style={{ backgroundColor: theme.surface }}
-        >
-          {/* Header Section (Same as Screenshot) */}
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h2
-                className="text-sm font-semibold flex items-center gap-2"
-                style={{ color: theme.primaryText }}
-              >
-                <GridViewRoundedIcon sx={{ fontSize: "1rem", color: theme.primaryText }} />
-                Product Details
-              </h2>
-              <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
-                This table is showing all product details
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <AnimatedToggleButton
-                options={[
-                  {
-                    icon: <Tippy content="Chart View" theme="gray" placement="bottom"><BarChartIcon /></Tippy>,
-                    value: 'chart'
-                  },
-                  {
-                    icon: (
-                      <Tippy content="Table View" theme="gray" placement="bottom"><GridViewRoundedIcon /></Tippy>
-                    ),
-                    value: 'table'
-                  },
-                ]}
-                defaultSelected={toggleSelection}
-                onChange={(selectedIndex: number, value: string | number) => {
-                  setToggleSelection(selectedIndex);
-                  if (value === 'chart') {
-                    setIsChartVisible(true);
-                    // If charts exist, show them
-                    if (selectedCharts.length > 0) {
-                      setShowChartView(true);
-                    }
-                  } else {
-                    // FIX 2: When switching to table view, hide charts and close sidebar
-                    setIsChartVisible(false);
-                    setShowChartView(false);
-                  }
-                }}
-                width="auto"
-                height="auto"
-                buttonPadding="0.5rem 0.6rem"
-                backgroundColor="#f3f4f6"
-                activeBackgroundColor="#ffffff"
-                textColor="#6b7280"
-                activeTextColor="#111827"
-                iconSize="1.2rem"
-                iconPosition="left"
-                mode="icon"
-              />
-            </div>
+    <div className="p-6">
+      <div className="rounded-xl shadow-xs p-4" >
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: theme.primaryText }}>
+              <GridViewRoundedIcon sx={{ fontSize: "1rem", color: theme.primaryText }} />
+              Product Details
+            </h2>
+            <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
+              This table is showing all product details
+            </p>
           </div>
 
-          {/* FIX 2: Show Charts only when showChartView is true AND charts exist */}
-          {showChartView && selectedCharts.length > 0 ? (
-            <RenderCharts selectedCharts={selectedCharts} onRemoveChart={handleRemoveChart} />
-          ) : (
-            <DataTable
-              value={data}
-              paginator={false}
-              rows={10}
-              globalFilter={globalFilter}
-              filters={{
-                global: {
-                  value: globalFilter,
-                  matchMode: FilterMatchMode.CONTAINS,
-                },
+          <div className="flex items-center gap-2">
+            {/* Toggle */}
+            <AnimatedToggleButton
+              options={[
+                  { label: "Meta Data", value: 'metadata' },
+                  { label: "Data View", value: 'dataview' },
+                  { label: "Insight", value: 'insights' },
+             
+              ]}
+              defaultSelected={toggleSelection}
+              onChange={(i) => {
+                setToggleSelection(i);
               }}
-              className="custom-table"
-            >
-              <Column field="sales" header="Sales" />
-              <Column field="product" header="Product" />
-              <Column field="customer" header="Customer" />
-              <Column field="purchase" header="Purchase Amount" body={purchaseBody} />
-            </DataTable>
-          )}
+              mode="text"
+            />
+            <IconButton onClick={() => setIsExpanded(!isExpanded)} size="small">
+              {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </div>
         </div>
-      </div>
 
-      {/* Sidebar appears when chart icon clicked */}
-      {isChartVisible && (
-        <ChartSidebar
-          onChartSelect={(charts) => {
-            setSelectedCharts(charts);
-            // When charts are selected, show them
-            if (charts.length > 0) {
-              setShowChartView(true);
-            }
-          }}
-          onClose={handleSidebarClose}
-          selectedCharts={selectedCharts} // FIX 3: Pass selected charts to sidebar
-        />
-      )}
+        {/* CONDITIONAL RENDER */}
+        {isExpanded && (
+          <>
+            {toggleSelection === 0 && (
+              <div className="p-4 min-h-[200px] flex items-center justify-center">
+                <div className="flex flex-wrap gap-3">
+                  {['Product ID', 'Category', 'Brand', 'Price', 'Stock'].map(pill => (
+                    <span key={pill} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm">
+                      {pill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {toggleSelection === 1 && (
+              <ProductDataTable data={data} globalFilter={globalFilter} />
+            )}
+            {toggleSelection === 2 && (
+              <div className="p-4 min-h-[200px] flex items-center justify-center text-gray-500">Under development</div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

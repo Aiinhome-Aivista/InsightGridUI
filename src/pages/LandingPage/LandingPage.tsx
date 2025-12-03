@@ -15,7 +15,7 @@ export default function LandingPage() {
       overflow-hidden relative"
     >
       <div
-        className="w-full h-[600px] flex items-center justify-center relative"
+        className="w-full h-[900px] flex items-center justify-center relative"
       >
       <div
         className="absolute top-10 left-10 w-96 h-96 rounded-full 
@@ -49,7 +49,7 @@ export default function LandingPage() {
         <span className="font-extrabold text-xl">IG</span>
       </div>
 
-      <div className="flex flex-col items-center mt-[-20px]">
+      <div className="flex flex-col items-center mt-8">
         <h1 className="text-white text-4xl font-bold tracking-wide">
           InsightGrid
         </h1>
