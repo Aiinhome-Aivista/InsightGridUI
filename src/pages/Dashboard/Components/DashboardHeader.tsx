@@ -177,7 +177,7 @@ export default function DashboardHeader({
   "
                 panelClassName=" pl-4
     rounded-xl shadow-md
-    text-[#6F6F6F]
+    text-[#6F6F6F] bg-white
   "
               />
 
