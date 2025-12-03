@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -8,31 +8,87 @@ import "../../../styles/tippy-theme.css";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import ColumnSelectionPage from "../../../Modal/column-section-page";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
+import ApiServices from "../../../services/ApiServices";
 
 interface HeaderProps {
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
   onRefresh: () => void;
+  onTableSelect?: (data: any) => void;
 }
 
 export default function DashboardHeader({
   globalFilter,
   setGlobalFilter,
   onRefresh,
+  onTableSelect,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { theme } = useTheme();
   const [selectedView, setSelectedView] = useState(null);
- const tableOptions = [
-    { label: "Product Details", value: "product_details" },
-    { label: "Sales Data", value: "sales_data" },
-  ];
-
+  const [tableOptions, setTableOptions] = useState([]);
+  const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const sessionData = location.state;
+
+    if (sessionData?.sessionId && sessionData?.sessionName && sessionData?.fileName) {
+      const payload = {
+        session_id: sessionData.sessionId,
+        session_name: sessionData.sessionName,
+        file_name: sessionData.fileName,
+      };
+
+      ApiServices.getUiData(payload)
+        .then((response) => {
+          if (response.data.isSuccess) {
+            // The initial response might contain the list of tables
+            if (response.data.data.tables) {
+              const tables = response.data.data.tables.map((table: string) => ({
+                label: table,
+                value: table, // Use the actual table name as the value
+              }));
+              setTableOptions(tables);
+            }
+            // If a table is already selected (e.g. on page load with state), pass its data up
+            if (onTableSelect && response.data.data.rows) {
+              onTableSelect(response.data.data);
+            }
+          }
+        })
+        .catch((error) => console.error("Error fetching UI data:", error));
+    }
+  }, []);
+
+  const handleViewChange = (e: { value: any }) => {
+    const selectedTable = e.value;
+    setSelectedView(selectedTable);
+
+    const sessionData = location.state;
+    if (sessionData?.sessionId && sessionData?.sessionName && sessionData?.fileName && selectedTable) {
+      const payload = {
+        session_id: sessionData.sessionId,
+        session_name: sessionData.sessionName,
+        file_name: sessionData.fileName,
+        table_name: selectedTable,
+      };
+
+      setIsLoading(true);
+      ApiServices.getUiData(payload)
+        .then(response => {
+          if (onTableSelect) {
+            onTableSelect(response.data.data);
+          }
+        })
+        .catch(error => console.error("Error fetching table data:", error))
+        .finally(() => setIsLoading(false));
+    }
+  };
   const handleRefresh = () => {
     // Don't do anything if already refreshing
     if (isRefreshing) return;
@@ -96,7 +152,9 @@ export default function DashboardHeader({
               {/* View Dropdown */}
               <Dropdown
                 value={selectedView}
-                options={tableOptions }
+                options={tableOptions}
+                onChange={handleViewChange}
+                loading={isLoading}
                 placeholder="Product Details"
                 className="p-4
     w-52 h-11

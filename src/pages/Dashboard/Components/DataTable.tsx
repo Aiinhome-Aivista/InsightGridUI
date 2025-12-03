@@ -1,37 +1,41 @@
+import { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Tag } from "primereact/tag";
 import { FilterMatchMode } from "primereact/api";
 import "./primereact-table.css";
 
 interface ProductDataTableProps {
   data: any[];
   globalFilter: string;
+  columns: { column_name: string }[];
 }
 
-export default function ProductDataTable({ data, globalFilter }: ProductDataTableProps) {
-  const purchaseBody = (row: any) => (
-    <Tag
-      value={row.purchase}
-      className="px-3 py-1 rounded-full bg-green-100 text-green-600 text-xs font-medium border-none"
-    />
-  );
+export default function ProductDataTable({ data, globalFilter, columns = [] }: ProductDataTableProps) {
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
+
+  const onPageChange = (event: { first: number, rows: number }) => {
+    setFirst(event.first);
+    setRows(event.rows);
+  };
 
   return (
     <DataTable
       value={data}
-      paginator={false}
-      rows={10}
+      rows={rows}
+      first={first}
+      onPage={onPageChange}
+      rowsPerPageOptions={[10, 20, 30, 50]}
       globalFilter={globalFilter}
+      sortMode="multiple"
       filters={{
         global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
       }}
       className="custom-table"
     >
-      <Column field="sales" header="Sales" />
-      <Column field="product" header="Product" />
-      <Column field="customer" header="Customer" />
-      <Column field="purchase" header="Purchase Amount" body={purchaseBody} />
+      {columns.map((col) => (
+        <Column key={col.column_name} field={col.column_name} header={col.column_name} sortable />
+      ))}
     </DataTable>
   );
 }
