@@ -7,6 +7,7 @@ import FileNameInput from "./components/FileNameInput";
 export default function UploadPage() {
   const { theme } = useTheme();
   const [processedFiles, setProcessedFiles] = useState<File[]>([]);
+  
 
   return (
     <div
@@ -42,4 +43,7 @@ export default function UploadPage() {
       </div>
     </div>
   );
+
+
+  
 }

@@ -27,7 +27,7 @@ export default function Dashboard_page() {
       <DashboardTable data={data} globalFilter={globalFilter} />
       </div>
       <div>
-      <Chat />
+      <Chat/>
     </div>
     </>
   );
