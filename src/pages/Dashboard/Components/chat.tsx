@@ -35,9 +35,9 @@ export default function Chat() {
 
   // Safety check
   const defaultSession = {
-    session_id: sessionData?.session_id || "",
-    session_name: sessionData?.session_name || "Chat01",
-    file_name: sessionData?.file_name || "unknown_file",
+    session_id: sessionData?.sessionId || "",
+    session_name: sessionData?.sessionName || "Chat01",
+    file_name: sessionData?.fileName || "unknown_file",
   };
 
   // Flag to check for the critical missing data
@@ -87,7 +87,7 @@ export default function Chat() {
       session_name: defaultSession.session_name,
       file_name: defaultSession.file_name,
       // When calling the 'chat' API for initial data, a default query is required.
-      user_query: "What tables are available and show me the top 5 rows of the first one?", 
+      user_query: "What tables are available?", 
     };
 
     // ⭐ DEBUG: Log initial load payload
@@ -99,19 +99,18 @@ export default function Chat() {
         if (response.data.isSuccess) {
           const data = response.data.data;
           
-          // 1. Populate the list of available tables (if the chat API supports returning this)
-          if (data.tables) {
-            const tables = data.tables.map((table: string) => ({
-              label: table,
-              value: table, // Use the actual table name as the value
-            }));
-            setTableOptions(tables);
-          }
-          
-          // 2. Set the initial data for display (equivalent to onTableSelect logic)
-          if (data.rows && data.columns) {
-            setTableData({ rows: data.rows, columns: data.columns });
-          }
+          // The chat API returns a SQL query. Let's display it.
+          setChats(chats => chats.map(chat => {
+            if (chat.id === 1) {
+              return {
+                ...chat,
+                question: data.user_query || payload.user_query,
+                query: data.ai_response || "-- No initial query generated.",
+                logs: data.logs || [],
+              };
+            }
+            return chat;
+          }));
         }
       })
       .catch((error) => console.error("Error fetching initial UI data using chat API:", error));
@@ -186,9 +185,9 @@ export default function Chat() {
         if (chat.id === activeChatId) {
           return {
             ...chat,
-            question: result.answer || "No response",
-            query: result.generated_sql || "-- No SQL generated",
-            logs: result.logs || [],
+            question: result.user_query || inputValue,
+            query: result.ai_response || "-- No SQL generated",
+            logs: result.logs || ["Execution log not available."],
           };
         }
         return chat;
