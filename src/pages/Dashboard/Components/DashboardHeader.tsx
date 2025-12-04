@@ -185,7 +185,7 @@ export default function DashboardHeader({
                 loading={isLoading}
                 onShow={handleDropdownShow}
                 onHide={handleDropdownHide}
-                placeholder="Product Details"
+                placeholder="Select table"
                 className="p-4
     w-52 h-11
     border border-[#E5E5E5]
