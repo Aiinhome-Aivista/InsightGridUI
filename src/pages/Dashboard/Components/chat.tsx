@@ -75,7 +75,7 @@ export default function Chat() {
       session_id: defaultSession.session_id,
       session_name: defaultSession.session_name,
       file_name: defaultSession.file_name,
-      user_query: "What tables are available?",
+      user_query: "Start exploring — type a question about the data!",
     };
     ApiServices.chat(payload)
       .then((response) => {
