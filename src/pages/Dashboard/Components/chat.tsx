@@ -293,7 +293,7 @@ export default function Chat() {
       } else {
         clearInterval(typingInterval);
       }
-    }, 20); // Typing speed
+    }, 10); // Typing speed
 
     return () => {
       clearInterval(typingInterval);
