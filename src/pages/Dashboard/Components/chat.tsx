@@ -65,6 +65,7 @@ export default function Chat() {
   const [tableData, setTableData] = useState<TableData | null>(null);
   // ⭐ State to store list of available tables (UI data)
   const [tableOptions, setTableOptions] = useState<TableOption[]>([]); 
+  const [isExecuting, setIsExecuting] = useState(false); // For loading state on Run button
 
   const activeChat = chats.find((c) => c.id === activeChatId);
 
@@ -218,9 +219,74 @@ export default function Chat() {
     }
   };
 
+  // ⭐ Helper to extract pure SQL from the AI response
+  const extractSqlQuery = (rawQuery: string): string => {
+    if (!rawQuery) {
+      return "";
+    }
+  
+    // The AI can wrap the query in markdown, stored procedures, or add comments.
+    // This regex aims to find a `WITH` or `SELECT` statement, which can be inside backticks.
+    const queryMatch = rawQuery.match(/(?:WITH|SELECT)[\s\S]*/i);
+  
+    if (queryMatch) {
+      let query = queryMatch[0];
+  
+      // Remove stored procedure definitions if they exist
+      query = query.replace(/DELIMITER\s*;;/gi, '')
+                   .replace(/CREATE\s+PROCEDURE[\s\S]*?BEGIN/gi, '')
+                   .replace(/END\s*;;/gi, '');
+      
+      return query.split(';')[0].trim() + ';';
+    }
+    return ""; // Return empty if no query is found
+  };
+
   // ⭐ Show Execution Logs
-  const handleRunScript = () => {
-    setDisplayedLogs(activeChat?.logs || []);
+  const handleRunScript = async () => {
+    if (!activeChat) {
+      setDisplayedLogs(["No active chat session."]);
+      return;
+    }
+
+    const cleanQuery = extractSqlQuery(activeChat.query || "");
+    if (!cleanQuery || !activeChat.session_id) {
+      setDisplayedLogs(["No script to run."]);
+      setTableData(null);
+      return;
+    }
+
+    setIsExecuting(true); // Start loading
+    try {
+      const payload = {
+        sql_query:" Here is the stored procedure that meets all the requirements:\n\n\nDELIMITER ;;\nCREATE PROCEDURE sp_dynamic_query()\nBEGIN\n    WITH CustomersCTE AS (\n        SELECT jt.*\n        FROM processed_cleaned_table_data main,\n             JSON_TABLE(main.row_data, '$[*]' COLUMNS (\n                 Name VARCHAR(255) PATH '$.\"Name\"',\n                 Email VARCHAR(255) PATH '$.\"Email\"',\n                 Phone DECIMAL(65,4) PATH '$.\"Phone\"',\n                 CustomerID VARCHAR(255) PATH '$.\"CustomerID\"'\n             )) AS jt\n        WHERE\n            main.table_name = 'Customers'\n            AND main.session_id = '6900830710'\n            AND main.file_name = 'customer_orders (1).xlsx'\n    ),\n    OrdersCTE AS (\n        SELECT jt.*\n        FROM processed_cleaned_table_data main,\n             JSON_TABLE(main.row_data, '$[*]' COLUMNS (\n                 Amount DECIMAL(65,4) PATH '$.\"Amount\"',\n                 OrderID VARCHAR(255) PATH '$.\"OrderID\"',\n                 OrderDate VARCHAR(255) PATH '$.\"OrderDate\"',\n                 CustomerID VARCHAR(255) PATH '$.\"CustomerID\"'\n             )) AS jt\n        WHERE\n            main.table_name = 'Orders'\n            AND main.session_id = '6900830710'\n            AND main.file_name = 'customer_orders (1).xlsx'\n    )\n    SELECT c.Name, o.OrderID\n    FROM CustomersCTE c\n    JOIN OrdersCTE o ON c.CustomerID = o.CustomerID\n    WHERE o.OrderID IN (\n        SELECT OrderID\n        FROM OrdersCTE\n        WHERE Amount = (SELECT Amount FROM JSON_TABLE(processed_cleaned_table_data, '$[*]' COLUMNS (Amount DECIMAL(65,4) PATH '$.\"Amount\"')) WHERE Product = 'mobile')\n    );\nEND;;\nDELIMITER ;\n\n\nThis stored procedure joins the Customers and Orders CTEs based on the CustomerID and filters orders where the order's product is 'mobile'.",
+      };
+
+      console.log("Executing SQL Payload:", payload);
+
+      const response = await ApiServices.executeSql(payload);
+
+      if (response.data.isSuccess && Array.isArray(response.data.data)) {
+        const rows = response.data.data;
+        // If there are rows, derive columns from the keys of the first row object
+        const columns = rows.length > 0 
+          ? Object.keys(rows[0]).map(key => ({ column_name: key })) 
+          : [];
+        
+        setTableData({ rows, columns });
+        setDisplayedLogs([response.data.message || "Execution successful."]);
+      } else {
+        setTableData(null);
+        setDisplayedLogs([response.data.message || "Execution failed or returned no data."]);
+      }
+    } catch (error) {
+      console.error("Execute SQL API Error:", error);
+      const errorMessage = error.response?.data?.message || "An error occurred while running the script.";
+      setDisplayedLogs([`ERROR: ${errorMessage}`]);
+      setTableData(null);
+    } finally {
+      setIsExecuting(false); // Stop loading
+    }
   };
 
   useEffect(() => {
@@ -318,10 +384,12 @@ export default function Chat() {
         <div className="mx-8 p-4 bg-white shadow-sm mb-10 rounded-xl relative">
           <button
             onClick={handleRunScript}
-            disabled={isSessionDataMissing} // Disabled when session is missing
-            className={`absolute right-6 top-6 px-4 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300 ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={isSessionDataMissing || isExecuting} // Disabled when session is missing or executing
+            className={`absolute right-6 top-6 px-4 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${
+              isSessionDataMissing || isExecuting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
+            }`}
           >
-            Run
+            {isExecuting ? "Running..." : "Run"}
           </button>
 
           <pre className="mt-10 whitespace-pre-wrap text-sm text-[#4b4bff] font-mono">

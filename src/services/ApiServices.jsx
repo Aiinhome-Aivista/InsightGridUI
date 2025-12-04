@@ -13,6 +13,10 @@ class ApiServices {
      chat(body) {
     return axios.post(POST_APIS.chat_ai, body);
   }
+  
+  executeSql(body) {
+    return axios.post(POST_APIS.execute_sql, body);
+  }
 
 
   fileUpload(formData) {
