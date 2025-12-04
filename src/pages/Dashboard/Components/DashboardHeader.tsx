@@ -54,9 +54,24 @@ export default function DashboardHeader({
                 value: table, // Use the actual table name as the value
               }));
               setTableOptions(tables);
+              if (tables.length > 0 && onTableSelect) {
+                const firstTable = tables[0].value;
+                setSelectedView(firstTable);
+                setIsLoading(true);
+
+                const tablePayload = { ...payload, table_name: firstTable };
+                ApiServices.getUiData(tablePayload)
+                  .then(tableResponse => {
+                    if (tableResponse.data.isSuccess) {
+                      onTableSelect(tableResponse.data.data);
+                    }
+                  })
+                  .catch(err => console.error("Error fetching data for the first table:", err))
+                  .finally(() => setIsLoading(false));
+              }
             }
             // If a table is already selected (e.g. on page load with state), pass its data up
-            if (onTableSelect && response.data.data.rows) {
+            else if (onTableSelect && response.data.data.rows) {
               onTableSelect(response.data.data);
             }
           }
@@ -155,6 +170,7 @@ export default function DashboardHeader({
                 options={tableOptions}
                 onChange={handleViewChange}
                 loading={isLoading}
+                hideOnScroll
                 placeholder="Product Details"
                 className="p-4
     w-52 h-11
@@ -169,7 +185,7 @@ export default function DashboardHeader({
   "
                 panelClassName=" pl-4
     rounded-xl shadow-md
-    text-[#6F6F6F]
+    text-[#6F6F6F] bg-white
   "
               />
 

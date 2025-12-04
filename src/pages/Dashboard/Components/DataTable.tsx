@@ -12,7 +12,7 @@ interface ProductDataTableProps {
 
 export default function ProductDataTable({ data, globalFilter, columns = [] }: ProductDataTableProps) {
   const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(10);
+  const [rows, setRows] = useState(5);
 
   const onPageChange = (event: { first: number, rows: number }) => {
     setFirst(event.first);
@@ -22,19 +22,28 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
   return (
     <DataTable
       value={data}
+      paginator
       rows={rows}
       first={first}
       onPage={onPageChange}
-      rowsPerPageOptions={[10, 20, 30, 50]}
+      rowsPerPageOptions={[5, 10, 15, 20, 25, 30]}
       globalFilter={globalFilter}
       sortMode="multiple"
       filters={{
         global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
       }}
       className="custom-table"
+      paginatorTemplate="PrevPageLink PageLinks NextPageLink CurrentPageReport RowsPerPageDropdown"
+      paginatorClassName="custom-paginator"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     >
       {columns.map((col) => (
-        <Column key={col.column_name} field={col.column_name} header={col.column_name} sortable />
+        <Column
+          key={col.column_name}
+          field={col.column_name}
+          header={col.column_name}
+          sortable
+        />
       ))}
     </DataTable>
   );
