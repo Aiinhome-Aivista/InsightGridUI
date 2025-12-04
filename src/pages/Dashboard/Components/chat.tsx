@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import ApiServices from "../../../services/ApiServices";
-import ProductDataTable from "../Components/DataTable";
+// Assuming this path is correct based on your component structure
+import ProductDataTable from "../Components/DataTable"; 
 
 interface ChatSession {
   id: number;
@@ -15,6 +16,18 @@ interface ChatSession {
   logs: string[];
 }
 
+// Interface for the table data structure returned by the API
+interface TableData {
+  rows: any[];
+  columns: any[];
+}
+
+// Interface for table selection options (based on user's API response logic)
+interface TableOption {
+    label: string;
+    value: string;
+}
+
 export default function Chat() {
   // ⭐ Read data passed from UploadPage
   const location = useLocation();
@@ -24,8 +37,11 @@ export default function Chat() {
   const defaultSession = {
     session_id: sessionData?.session_id || "",
     session_name: sessionData?.session_name || "Chat01",
-    file_name: sessionData?.file_name || "unknown_file"
+    file_name: sessionData?.file_name || "unknown_file",
   };
+
+  // Flag to check for the critical missing data
+  const isSessionDataMissing = !defaultSession.session_id;
 
   const [chats, setChats] = useState<ChatSession[]>([
     {
@@ -34,17 +50,74 @@ export default function Chat() {
       session_id: defaultSession.session_id,
       session_name: defaultSession.session_name,
       file_name: defaultSession.file_name,
-      question: "Ask anything about your file…",
+      // Update initial question based on missing data
+      question: isSessionDataMissing ? "FATAL ERROR: Session ID Missing." : "Ask anything about your file…",
       query: "",
-      logs: []
-    }
+      // Update initial logs based on missing data
+      logs: isSessionDataMissing ? ["CRITICAL: Missing session_id. Cannot communicate with API."] : [],
+    },
   ]);
 
   const [activeChatId, setActiveChatId] = useState(1);
   const [displayedLogs, setDisplayedLogs] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
+  // ⭐ State to store table data (rows and columns)
+  const [tableData, setTableData] = useState<TableData | null>(null);
+  // ⭐ State to store list of available tables (UI data)
+  const [tableOptions, setTableOptions] = useState<TableOption[]>([]); 
 
   const activeChat = chats.find((c) => c.id === activeChatId);
+
+
+  // ⭐ EFFECT: Fetch initial UI data (tables list and initial table content)
+  useEffect(() => {
+    // Check if critical session data is missing
+    if (isSessionDataMissing) {
+      console.error("API Call skipped: Cannot initialize chat due to missing session_id.");
+      // Ensure error log is visible on initial load if missing
+      setChats(chats => chats.map(chat => 
+        chat.id === 1 ? { ...chat, logs: ["CRITICAL: Missing session_id. Cannot communicate with API."] } : chat
+      ));
+      return;
+    }
+
+    const payload = {
+      session_id: defaultSession.session_id,
+      // The backend chat endpoint usually requires all three session identifiers
+      session_name: defaultSession.session_name,
+      file_name: defaultSession.file_name,
+      // When calling the 'chat' API for initial data, a default query is required.
+      user_query: "What tables are available and show me the top 5 rows of the first one?", 
+    };
+
+    // ⭐ DEBUG: Log initial load payload
+    console.log("Sending Initial Load Payload:", payload);
+
+    // The user requested to use the chat API here for initial loading.
+    ApiServices.chat(payload)
+      .then((response) => {
+        if (response.data.isSuccess) {
+          const data = response.data.data;
+          
+          // 1. Populate the list of available tables (if the chat API supports returning this)
+          if (data.tables) {
+            const tables = data.tables.map((table: string) => ({
+              label: table,
+              value: table, // Use the actual table name as the value
+            }));
+            setTableOptions(tables);
+          }
+          
+          // 2. Set the initial data for display (equivalent to onTableSelect logic)
+          if (data.rows && data.columns) {
+            setTableData({ rows: data.rows, columns: data.columns });
+          }
+        }
+      })
+      .catch((error) => console.error("Error fetching initial UI data using chat API:", error));
+
+  }, [defaultSession.session_id, defaultSession.session_name, defaultSession.file_name, isSessionDataMissing]);
+
 
   // ⭐ Create new Chat Tab
   const handleNewChat = () => {
@@ -56,28 +129,56 @@ export default function Chat() {
       session_id: defaultSession.session_id,
       session_name: defaultSession.session_name,
       file_name: defaultSession.file_name,
-      question: "Start a new query…",
+      // Update new chat creation based on missing data
+      question: isSessionDataMissing ? "FATAL ERROR: Session ID Missing." : "Start a new query…",
       query: "",
-      logs: []
+      logs: isSessionDataMissing ? ["CRITICAL: Missing session_id. Cannot communicate with API."] : [],
     };
 
     setChats([...chats, newChat]);
     setActiveChatId(newChatId);
+    // Clear table data when switching to a new chat
+    setTableData(null); 
   };
 
   // ⭐ Send Message → API Call
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !activeChat) return;
+    
+    // Check if critical session data is missing before sending a message
+    if (!activeChat.session_id || !activeChat.session_name || !activeChat.file_name) {
+      
+      const missingFields = [];
+      if (!activeChat.session_id) missingFields.push("session_id");
+      if (!activeChat.session_name) missingFields.push("session_name");
+      if (!activeChat.file_name) missingFields.push("file_name");
+
+      console.error(`Cannot send message: Active chat session data is incomplete. Missing: ${missingFields.join(", ")}`);
+      
+      // Provide user feedback without using alert()
+      const errorChat = chats.map((chat) =>
+        chat.id === activeChatId
+          ? { ...chat, logs: [`ERROR: Session data incomplete. Missing fields: ${missingFields.join(", ")}`] }
+          : chat
+      );
+      setChats(errorChat);
+      return;
+    }
+
 
     try {
       const payload = {
         session_id: activeChat.session_id,
         session_name: activeChat.session_name,
         file_name: activeChat.file_name,
-        user_query: inputValue
+        user_query: inputValue,
       };
 
+      // ⭐ DEBUG: Log the payload to check for empty or null values
+      console.log("Sending Chat Payload:", payload); 
+
+      // API call to ApiServices.chat(payload)
       const response = await ApiServices.chat(payload);
       const result = response.data?.data || {};
 
@@ -87,7 +188,7 @@ export default function Chat() {
             ...chat,
             question: result.answer || "No response",
             query: result.generated_sql || "-- No SQL generated",
-            logs: result.logs || []
+            logs: result.logs || [],
           };
         }
         return chat;
@@ -96,6 +197,13 @@ export default function Chat() {
       setChats(updatedChats);
       setDisplayedLogs([]);
       setInputValue("");
+      
+      // ⭐ Set Table Data from API response
+      if (result.rows && result.columns) {
+        setTableData({ rows: result.rows, columns: result.columns });
+      } else {
+        setTableData(null); // Clear table if no data is returned
+      }
 
     } catch (error) {
       console.error("Chat API Error:", error);
@@ -107,6 +215,7 @@ export default function Chat() {
       );
 
       setChats(updatedChats);
+      setTableData(null); // Clear table on error
     }
   };
 
@@ -117,28 +226,40 @@ export default function Chat() {
 
   useEffect(() => {
     setDisplayedLogs([]);
+    // ⭐ Clear table data when active chat changes
+    setTableData(null); 
   }, [activeChatId]);
 
   return (
     <div className="w-full min-h-screen px-5 mt-5">
+      
+      {/* ⭐ CRITICAL ERROR MESSAGE (Replaces the yellow debug banner) */}
+      {isSessionDataMissing && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg shadow-md" role="alert">
+          <p className="font-bold">CRITICAL ERROR: Session Data Missing</p>
+          <p>The **session\_id** was not passed correctly from the previous page (Upload). This prevents all communication with the backend AI service.</p>
+          <p className="mt-2 text-sm italic">Action Required: Please navigate back to the Upload page and ensure a file is processed successfully before proceeding here.</p>
+        </div>
+      )}
 
       {/* Chat Header */}
       <div className="pb-2 bg-[#D9D9D91A] rounded-xl">
         <div className="px-8 pt-4">
           <h1 className="text-xl font-semibold text-gray-800">Chat view</h1>
           <div className="text-gray-500 text-sm flex flex-row items-center gap-6 border-gray-200">
-            Ask insight from available table
+            Ask insight from available table (Tables Loaded: {tableOptions.length})
 
             <div className="border-b-2 border-[#D9D9D9] w-[82%] gap-6 flex">
               {chats.map((chat) => (
                 <button
                   key={chat.id}
                   onClick={() => setActiveChatId(chat.id)}
+                  disabled={isSessionDataMissing} // Disabled when session is missing
                   className={`relative pb-2 pt-1 text-sm tracking-wide transition-colors ${
                     activeChatId === chat.id
                       ? "text-[#6A1B9A] font-medium"
                       : "text-gray-500 hover:text-[#6A1B9A]"
-                  }`}
+                  } ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {chat.name}
 
@@ -150,7 +271,8 @@ export default function Chat() {
 
               <button
                 onClick={handleNewChat}
-                className="pb-2 pt-1 text-sm text-gray-500 hover:text-[#6A1B9A] transition-colors"
+                disabled={isSessionDataMissing} // Disabled when session is missing
+                className={`pb-2 pt-1 text-sm text-gray-500 hover:text-[#6A1B9A] transition-colors ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 New
               </button>
@@ -172,11 +294,16 @@ export default function Chat() {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Ask a question to generate a script..."
-            className="w-full h-full bg-transparent outline-none text-sm text-gray-800"
+            placeholder={isSessionDataMissing ? "Cannot send messages due to missing session ID." : "Ask a question to generate a script..."}
+            disabled={isSessionDataMissing} // Disabled when session is missing
+            className={`w-full h-full bg-transparent outline-none text-sm text-gray-800 ${isSessionDataMissing ? 'cursor-not-allowed' : ''}`}
           />
 
-          <button type="submit" className="p-2 rounded-full hover:bg-gray-100">
+          <button 
+            type="submit" 
+            disabled={isSessionDataMissing} // Disabled when session is missing
+            className={`p-2 rounded-full hover:bg-gray-100 ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
             <PlayArrowRoundedIcon className="w-6 h-6 text-gray-600" />
           </button>
         </form>
@@ -192,7 +319,8 @@ export default function Chat() {
         <div className="mx-8 p-4 bg-white shadow-sm mb-10 rounded-xl relative">
           <button
             onClick={handleRunScript}
-            className="absolute right-6 top-6 px-4 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+            disabled={isSessionDataMissing} // Disabled when session is missing
+            className={`absolute right-6 top-6 px-4 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300 ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Run
           </button>
@@ -217,7 +345,17 @@ export default function Chat() {
           )}
         </div>
 
+        {/* ⭐ Data Table Section */}
         <div className="mb-10 px-6">
+          {tableData && tableData.rows.length > 0 && (
+            <div className="p-2 bg-white rounded-xl shadow-md">
+                <ProductDataTable 
+                  data={tableData.rows}
+                  columns={tableData.columns} 
+                  globalFilter={""}
+                />
+            </div>
+          )}
         </div>
       </div>
     </div>

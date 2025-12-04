@@ -10,6 +10,10 @@ class ApiServices {
    getUiData(body) {
     return axios.post(POST_APIS.get_ui_data, body);
   }
+     chat(body) {
+    return axios.post(POST_APIS.chat_ai, body);
+  }
+
 
   fileUpload(formData) {
     return axios.post(POST_APIS.fileUpload, formData, {
