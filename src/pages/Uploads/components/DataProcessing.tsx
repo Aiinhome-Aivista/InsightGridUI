@@ -19,22 +19,20 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const navigate = useNavigate();
   const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
 
-  // Calculate progress based on file status
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
-    
+
     files.forEach(file => {
-      const fileName = file.name || file.file_name;
+      const fileName = file.name || file.file_name || file['file name'];
       let progress = 0;
 
-      // Check each status and increment progress
       if (file.table_extract_status === 'Done') {
         progress = 1;
       }
       if (file.column_extract_status === 'Done') {
         progress = 2;
       }
-      if (file.data_insights_status === 'Done' || file.relationship_mapping_status === 'Done') {
+      if (file.data_insights_status === 'Done' && file.relationship_mapping_status === 'Done') {
         progress = 3;
       }
 
@@ -47,13 +45,13 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const handleNavigateToDashboard = (file: any) => {
     const fileName = file.name || file.file_name;
     const progress = processingProgress[fileName] || 0;
-    
+
     if (progress >= TOTAL_STEPS) {
-      navigate('/layout/dashboard', { 
-        state: { 
-          sessionId: file.session_id, 
-          sessionName: file.session_name 
-        } 
+      navigate('/layout/dashboard', {
+        state: {
+          sessionId: file.session_id,
+          sessionName: file.session_name
+        }
       });
     }
   };
@@ -79,7 +77,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               className="flex items-center justify-between rounded-lg px-4 py-2 w-full"
               style={{ backgroundColor: theme.surface }}
             >
-              {/* FILE NAME */}
               <div
                 className="text-sm font-medium min-w-[140px]"
                 style={{ color: theme.primaryText }}
@@ -87,7 +84,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 {fileName}
               </div>
 
-              {/* STEPS */}
               <div className="flex items-center gap-20">
                 {STEPS.map((stepName, stepIndex) => {
                   const isCompleted = stepIndex < currentProgress;
@@ -110,7 +106,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 })}
               </div>
 
-              {/* FILE SIZE */}
               <span
                 className="text-xs min-w-[50px] text-center"
                 style={{ color: theme.secondaryText }}
@@ -118,7 +113,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 {file.file_size || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
               </span>
 
-              {/* DATE */}
               <span
                 className="text-xs min-w-[80px] text-center"
                 style={{ color: theme.secondaryText }}
@@ -126,9 +120,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 {file.created_at || new Date().toLocaleDateString()}
               </span>
 
-              {/* ACTION ICONS */}
               <div className="flex items-center gap-20 min-w-[60px] justify-end">
-                {/* Refresh/Sync Icon */}
                 <AutorenewRoundedIcon
                   className="w-5 h-5 cursor-pointer"
                   sx={{
@@ -143,7 +135,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                   }}
                 />
 
-                {/* Navigate to Dashboard */}
                 <button
                   onClick={() => handleNavigateToDashboard(file)}
                   disabled={!isFullyProcessed}
@@ -155,8 +146,8 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                       color: isFullyProcessed ? theme.accent : theme.border,
                       cursor: isFullyProcessed ? 'pointer' : 'not-allowed',
                       transition: "color 0.2s",
-                      "&:hover": { 
-                        color: isFullyProcessed ? theme.primaryText : theme.border 
+                      "&:hover": {
+                        color: isFullyProcessed ? theme.primaryText : theme.border
                       },
                     }}
                   />

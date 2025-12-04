@@ -57,7 +57,6 @@ export default function UploadPage() {
       const sessionId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
       const sessionNameTrimmed = sessionName.trim();
 
-      // Store session info for later use
       currentSessionRef.current = { id: sessionId, name: sessionNameTrimmed };
 
       const formData = new FormData();
@@ -68,28 +67,33 @@ export default function UploadPage() {
       });
 
       setProcessingFileName(files.length > 1 ? `${files.length} files` : files[0].name);
-
-      // Step 1: Upload files
       const uploadResponse = await ApiService(
         POST_APIS.fileUpload,
         {
           method: "POST",
           body: formData,
         },
-        true  // isFormData = true
+        true
       );
 
       if (!uploadResponse.isSuccess) {
         throw new Error(uploadResponse.message || 'Upload failed');
       }
 
-      // Extract session info from response
-      const uploadedFile = uploadResponse.data && uploadResponse.data.length > 0
-        ? uploadResponse.data[0]
-        : null;
+      let uploadedFile = null;
+
+      if (Array.isArray(uploadResponse.data) && uploadResponse.data.length > 0) {
+        uploadedFile = uploadResponse.data[0];
+      } else if (uploadResponse.data && typeof uploadResponse.data === 'object') {
+        uploadedFile = uploadResponse.data;
+      }
 
       if (!uploadedFile) {
-        throw new Error('No file data returned from upload');
+        throw new Error('No file data in response');
+      }
+
+      if (uploadedFile.upload_status === "Failed" || uploadedFile.error) {
+        throw new Error(uploadedFile.error || 'Upload failed');
       }
 
       const actualSessionId = uploadedFile.session_id || sessionId;
@@ -100,57 +104,56 @@ export default function UploadPage() {
         name: actualSessionName
       };
 
-      const waitTime = files.reduce((total, file) => total + file.size, 0) > 5000000 ? 10000 : 7000;
-
       setIsUploading(false);
       setIsProcessing(true);
 
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
-      // Step 2: Verify data exists before processing
-      const verifySuccess = await verifyDataExists(actualSessionId, actualSessionName);
+      const verifySuccess = await verifyDataExistsDetailed(actualSessionId, actualSessionName);
 
       if (!verifySuccess) {
-        throw new Error('Data verification failed. Please try processing again manually.');
+        throw new Error('Data verification failed. Check console logs for details.');
       }
-
-      // Step 3: Process session data
+      
       await processSessionData(actualSessionId, actualSessionName);
 
     } catch (error: any) {
-      alert(`Error uploading files: ${error.message || 'Please try again.'}`);
       setIsUploading(false);
       setIsProcessing(false);
       uploadInProgress.current = false;
     }
   }
 
-  async function verifyDataExists(sessionId: string, sessionName: string): Promise<boolean> {
-    try {
-      const response = await ApiService(GET_APIS.tracker, { method: 'GET' });
+  async function verifyDataExistsDetailed(
+    sessionId: string,
+    sessionName: string
+  ): Promise<boolean> {
+    const maxRetries = 8;
+    const baseDelay = 1500;
 
-      const fileExists = response.data?.some(
-        (file: any) =>
-          file.session_id === sessionId &&
-          file.session_name === sessionName
-      );
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const response = await ApiService(GET_APIS.tracker, { method: 'GET' });
 
-      if (!fileExists) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        const retryResponse = await ApiService(GET_APIS.tracker, { method: 'GET' });
-        const retryExists = retryResponse.data?.some(
-          (file: any) =>
-            file.session_id === sessionId &&
-            file.session_name === sessionName
-        );
+        const fileExists = response.data?.some((file: any) => {
+          const idMatch = file.session_id === sessionId;
+          const nameMatch = file.session_name === sessionName;
+          return idMatch && nameMatch;
+        });
 
-        return retryExists;
+        if (fileExists) {
+          return true;
+        }
+
+        if (attempt < maxRetries - 1) {
+          const delay = baseDelay * Math.pow(1.5, attempt);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      } catch (error) {
       }
-
-      return true;
-    } catch (error) {
-      return false;
     }
+
+    return false;
   }
 
   async function processSessionData(sessionId: string, sessionNameTrimmed: string) {
@@ -200,62 +203,56 @@ export default function UploadPage() {
   }
 
   return (
-    
-      <div className="w-full rounded-lg p-8">
-        <h2
-          className="text-center text-xl font-semibold"
-          style={{ color: theme.primaryText }}
-        >
-          Upload your data
-        </h2>
+    <div className="w-full rounded-lg p-8">
+      <h2
+        className="text-center text-xl font-semibold"
+        style={{ color: theme.primaryText }}
+      >
+        Upload your data
+      </h2>
 
-        <p
-          className="text-center text-xs mb-6"
-          style={{ color: theme.secondaryText }}
-        >
-          Start by uploading a data file to create your first view.
-        </p>
+      <p
+        className="text-center text-xs mb-6"
+        style={{ color: theme.secondaryText }}
+      >
+        Start by uploading a data file to create your first view.
+      </p>
 
-        <FileNameInput
-          theme={theme}
-          value={sessionName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setSessionName(e.target.value);
-            if (sessionNameError) {
-              setSessionNameError("");
-            }
-          }}
-          error={sessionNameError}
-          disabled={isUploading || isProcessing}
-        />
+      <FileNameInput
+        theme={theme}
+        value={sessionName}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setSessionName(e.target.value);
+          if (sessionNameError) {
+            setSessionNameError("");
+          }
+        }}
+        error={sessionNameError}
+        disabled={isUploading || isProcessing}
+      />
 
-        <FileDropZone
-          onUploadComplete={uploadFiles}
-          theme={theme}
-          disabled={isUploading || isProcessing}
-        />
+      <FileDropZone
+        onUploadComplete={uploadFiles}
+        theme={theme}
+        disabled={isUploading || isProcessing}
+      />
 
-        {/* Processing Indicator */}
-        {isProcessing && (
-
-          <div className="flex items-center gap-3 pt-4">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2" style={{
-              borderColor: theme.accent
-            }}></div>
-            <div className="flex-1">
-              <p className="text-sm font-medium" style={{ color: theme.primaryText }}>
-                Processing {processingFileName}...
-              </p>
-
-            </div>
-
+      {isProcessing && (
+        <div className="flex items-center gap-3 pt-4">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2" style={{
+            borderColor: theme.accent
+          }}></div>
+          <div className="flex-1">
+            <p className="text-sm font-medium" style={{ color: theme.primaryText }}>
+              Processing {processingFileName}...
+            </p>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Data Processing */}
-        {processedFiles.length > 0 && (
-          <DataProcessing files={processedFiles} />
-        )}
-      </div>
+      {processedFiles.length > 0 && (
+        <DataProcessing files={processedFiles} onRefresh={trackFiles} />
+      )}
+    </div>
   );
 }
