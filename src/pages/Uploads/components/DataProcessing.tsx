@@ -19,7 +19,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const navigate = useNavigate();
   const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
 
-  // Calculate progress based on file status
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
     
@@ -27,7 +26,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       const fileName = file.name || file.file_name;
       let progress = 0;
 
-      // Check each status and increment progress
       if (file.table_extract_status === 'Done') {
         progress = 1;
       }
@@ -41,7 +39,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       initialProgress[fileName] = progress;
     });
 
-    console.log('Processing Progress:', initialProgress);
     setProcessingProgress(initialProgress);
   }, [files]);
 
@@ -81,7 +78,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               className="flex items-center justify-between rounded-lg px-4 py-3 w-full"
               style={{ backgroundColor: theme.surface }}
             >
-              {/* FILE NAME */}
               <div
                 className="text-sm font-medium min-w-[140px]"
                 style={{ color: theme.primaryText }}
@@ -89,7 +85,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 {fileName}
               </div>
 
-              {/* STEPS */}
               <div className="flex items-center gap-20">
                 {STEPS.map((stepName, stepIndex) => {
                   const isCompleted = stepIndex < currentProgress;
@@ -112,7 +107,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 })}
               </div>
 
-              {/* FILE SIZE */}
               <span
                 className="text-xs min-w-[50px] text-center"
                 style={{ color: theme.secondaryText }}
@@ -120,7 +114,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 {file.file_size || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
               </span>
 
-              {/* DATE */}
               <span
                 className="text-xs min-w-[80px] text-center"
                 style={{ color: theme.secondaryText }}
@@ -128,9 +121,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 {file.created_at || new Date().toLocaleDateString()}
               </span>
 
-              {/* ACTION ICONS */}
               <div className="flex items-center gap-20 min-w-[60px] justify-end">
-                {/* Refresh/Sync Icon */}
                 <AutorenewRoundedIcon
                   className="w-5 h-5 cursor-pointer"
                   sx={{
@@ -139,14 +130,12 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     "&:hover": { color: theme.primaryText },
                   }}
                   onClick={() => {
-                    console.log('Manual refresh triggered for:', fileName);
                     if (onRefresh) {
                       onRefresh();
                     }
                   }}
                 />
 
-                {/* Navigate to Dashboard */}
                 <button
                   onClick={() => handleNavigateToDashboard(file)}
                   disabled={!isFullyProcessed}

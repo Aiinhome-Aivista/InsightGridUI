@@ -28,8 +28,6 @@ export default function UploadPage() {
   async function trackFiles() {
     try {
       const response = await ApiService.tracker();
-      console.log('File tracking response:', response);
-      // The actual file list is likely nested in response.data.data
       setProcessedFiles(response.data?.data || []);
     } catch (error) {
       console.error('Error tracking files:', error);
@@ -37,10 +35,7 @@ export default function UploadPage() {
   }
 
   async function uploadFiles(files: File[]) {
-    if (!files || files.length === 0) {
-      console.log('No files to upload, skipping...');
-      return;
-    }
+    if (!files || files.length === 0) return;
 
     if (!sessionName || sessionName.trim() === "") {
       setSessionNameError("Session name is required before uploading files");
@@ -49,10 +44,7 @@ export default function UploadPage() {
 
     setSessionNameError("");
 
-    if (uploadInProgress.current) {
-      console.log('Upload already in progress, skipping...');
-      return;
-    }
+    if (uploadInProgress.current) return;
 
     uploadInProgress.current = true;
     setIsUploading(true);
@@ -62,7 +54,6 @@ export default function UploadPage() {
       const sessionId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
       const sessionNameTrimmed = sessionName.trim();
 
-      // Store session info for later use
       currentSessionRef.current = { id: sessionId, name: sessionNameTrimmed };
 
       const formData = new FormData();
@@ -74,26 +65,13 @@ export default function UploadPage() {
 
       setProcessingFileName(files.length > 1 ? `${files.length} files` : files[0].name);
 
-      console.log('=== UPLOAD REQUEST ===');
-      console.log('Session ID:', sessionId);
-      console.log('Session Name:', sessionNameTrimmed);
-      console.log('Files:', files.map(f => f.name));
-      console.log('Timestamp:', new Date().toISOString());
-
-      // Step 1: Upload files
       const uploadResponse = await ApiService.fileUpload(formData);
-
-      console.log('=== UPLOAD RESPONSE ===');
-      console.log('Full Response:', uploadResponse);
-      console.log('Upload completed at:', new Date().toISOString());
-
       const responseData = uploadResponse.data;
 
       if (!responseData.isSuccess) {
         throw new Error(responseData.message || 'Upload failed');
       }
 
-      // Extract session info from response
       const uploadedFile = responseData.data && responseData.data.length > 0 
         ? responseData.data[0] 
         : null;
@@ -105,41 +83,24 @@ export default function UploadPage() {
       const actualSessionId = uploadedFile.session_id || sessionId;
       const actualSessionName = uploadedFile.session_name || sessionNameTrimmed;
 
-      console.log('=== EXTRACTED SESSION INFO ===');
-      console.log('Actual Session ID:', actualSessionId);
-      console.log('Actual Session Name:', actualSessionName);
-
-      // Update ref with actual values
       currentSessionRef.current = { 
         id: actualSessionId, 
         name: actualSessionName 
       };
 
-      // ✅ CRITICAL FIX: Wait longer for database commit
-      // Large files with multiple chunks need more time
       const waitTime = files.reduce((total, file) => total + file.size, 0) > 5000000 ? 10000 : 7000;
-      
-      console.log('=== WAITING FOR DATABASE COMMIT ===');
-      console.log(`File size total: ${files.reduce((total, file) => total + file.size, 0)} bytes`);
-      console.log(`Waiting ${waitTime}ms for database commit...`);
-      console.log('Wait started at:', new Date().toISOString());
 
       setIsUploading(false);
       setIsProcessing(true);
 
       await new Promise(resolve => setTimeout(resolve, waitTime));
 
-      console.log('Wait completed at:', new Date().toISOString());
-      console.log('=== STARTING PROCESSING ===');
-
-      // Step 2: Verify data exists before processing
       const verifySuccess = await verifyDataExists(actualSessionId, actualSessionName);
       
       if (!verifySuccess) {
         throw new Error('Data verification failed. Please try processing again manually.');
       }
 
-      // Step 3: Process session data
       await processSessionData(actualSessionId, actualSessionName);
 
     } catch (error: any) {
@@ -151,12 +112,8 @@ export default function UploadPage() {
     }
   }
 
-  // ✅ NEW: Verify data exists before processing
   async function verifyDataExists(sessionId: string, sessionName: string): Promise<boolean> {
     try {
-      console.log('=== VERIFYING DATA EXISTS ===');
-      console.log('Verification started at:', new Date().toISOString());
-      
       const response = await ApiService.tracker();
       const filesList = response.data?.data || [];
       
@@ -166,13 +123,9 @@ export default function UploadPage() {
           file.session_name === sessionName
       );
 
-      console.log('File exists in database:', fileExists);
-      
       if (!fileExists) {
-        console.warn('⚠️ File not found in database yet, waiting additional 3 seconds...');
         await new Promise(resolve => setTimeout(resolve, 3000));
         
-        // Retry verification
         const retryResponse = await ApiService.tracker();
         const retryFilesList = retryResponse.data?.data || [];
         const retryExists = retryFilesList.some(
@@ -181,7 +134,6 @@ export default function UploadPage() {
             file.session_name === sessionName
         );
         
-        console.log('Retry - File exists:', retryExists);
         return retryExists;
       }
 
@@ -194,24 +146,13 @@ export default function UploadPage() {
 
   async function processSessionData(sessionId: string, sessionNameTrimmed: string) {
     try {
-      console.log('=== PROCESS SESSION DATA REQUEST ===');
-      console.log('Process started at:', new Date().toISOString());
-      
       const requestBody = {
         session_id: sessionId,
         session_name: sessionNameTrimmed
       };
-      
-      console.log('Request Body:', JSON.stringify(requestBody, null, 2));
-      console.log('Request URL:', POST_APIS.processSessionData);
 
       const processResponse = await ApiService.processSessionData(requestBody);
 
-      console.log('=== PROCESS SESSION DATA RESPONSE ===');
-      console.log('Process completed at:', new Date().toISOString());
-      console.log('Success! Response:', processResponse);
-
-      // Check if global_operations contains LLM errors
       const globalOps = processResponse.data?.global_operations;
       if (globalOps) {
         const hasLLMError = Object.values(globalOps).some(
@@ -219,12 +160,10 @@ export default function UploadPage() {
         );
         
         if (hasLLMError) {
-          console.warn('⚠️ LLM Error detected in response');
           alert('Processing completed but some AI features failed. You can retry processing from the dashboard.');
         }
       }
 
-      // Refresh file list
       await trackFiles();
       
       setIsProcessing(false);
@@ -232,10 +171,7 @@ export default function UploadPage() {
       uploadInProgress.current = false;
 
     } catch (processError: any) {
-      console.error('=== PROCESS SESSION DATA ERROR ===');
-      console.error('Error occurred at:', new Date().toISOString());
-      console.error('Error:', processError);
-      console.error('Error Message:', processError.message);
+      console.error('Process session data error:', processError);
       
       setIsProcessing(false);
       setProcessingFileName("");
@@ -250,20 +186,14 @@ export default function UploadPage() {
     }
   }
 
-  // Manual refresh function for retry
   const handleManualProcess = async () => {
     if (!currentSessionRef.current) {
       alert('No recent upload session found. Please upload a file first.');
       return;
     }
 
-    console.log('=== MANUAL RETRY TRIGGERED ===');
-    console.log('Retry started at:', new Date().toISOString());
     setIsProcessing(true);
-    
-    // Wait a bit before retrying
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
     await processSessionData(currentSessionRef.current.id, currentSessionRef.current.name);
   };
 
@@ -306,7 +236,6 @@ export default function UploadPage() {
           disabled={isUploading || isProcessing}
         />
 
-        {/* Processing Indicator */}
         {isProcessing && (
           <div className="mt-4 p-4 rounded-lg border" style={{ 
             backgroundColor: theme.surface,
@@ -338,7 +267,6 @@ export default function UploadPage() {
           </div>
         )}
         
-        {/* Data Processing */}
         {processedFiles.length > 0 && (
           <DataProcessing files={processedFiles} onRefresh={handleManualProcess} />
         )}
