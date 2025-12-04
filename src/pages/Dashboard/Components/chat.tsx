@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import ApiServices from "../../../services/ApiServices";
 // Assuming this path is correct based on your component structure
-import ProductDataTable from "../Components/DataTable"; 
+import ProductDataTable from "../Components/DataTable";
 
 interface ChatSession {
   id: number;
@@ -14,6 +14,7 @@ interface ChatSession {
   question: string;
   query: string;
   logs: string[];
+  ai_response?: string;
 }
 
 // Interface for the table data structure returned by the API
@@ -24,8 +25,8 @@ interface TableData {
 
 // Interface for table selection options (based on user's API response logic)
 interface TableOption {
-    label: string;
-    value: string;
+  label: string;
+  value: string;
 }
 
 export default function Chat() {
@@ -64,7 +65,7 @@ export default function Chat() {
   // ⭐ State to store table data (rows and columns)
   const [tableData, setTableData] = useState<TableData | null>(null);
   // ⭐ State to store list of available tables (UI data)
-  const [tableOptions, setTableOptions] = useState<TableOption[]>([]); 
+  const [tableOptions, setTableOptions] = useState<TableOption[]>([]);
   const [isExecuting, setIsExecuting] = useState(false); // For loading state on Run button
 
   const activeChat = chats.find((c) => c.id === activeChatId);
@@ -76,7 +77,7 @@ export default function Chat() {
     if (isSessionDataMissing) {
       console.error("API Call skipped: Cannot initialize chat due to missing session_id.");
       // Ensure error log is visible on initial load if missing
-      setChats(chats => chats.map(chat => 
+      setChats(chats => chats.map(chat =>
         chat.id === 1 ? { ...chat, logs: ["CRITICAL: Missing session_id. Cannot communicate with API."] } : chat
       ));
       return;
@@ -88,7 +89,7 @@ export default function Chat() {
       session_name: defaultSession.session_name,
       file_name: defaultSession.file_name,
       // When calling the 'chat' API for initial data, a default query is required.
-      user_query: "What tables are available?", 
+      user_query: "What tables are available?",
     };
 
     // ⭐ DEBUG: Log initial load payload
@@ -99,7 +100,7 @@ export default function Chat() {
       .then((response) => {
         if (response.data.isSuccess) {
           const data = response.data.data;
-          
+
           // The chat API returns a SQL query. Let's display it.
           setChats(chats => chats.map(chat => {
             if (chat.id === 1) {
@@ -138,24 +139,24 @@ export default function Chat() {
     setChats([...chats, newChat]);
     setActiveChatId(newChatId);
     // Clear table data when switching to a new chat
-    setTableData(null); 
+    setTableData(null);
   };
 
   // ⭐ Send Message → API Call
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !activeChat) return;
-    
+
     // Check if critical session data is missing before sending a message
     if (!activeChat.session_id || !activeChat.session_name || !activeChat.file_name) {
-      
+
       const missingFields = [];
       if (!activeChat.session_id) missingFields.push("session_id");
       if (!activeChat.session_name) missingFields.push("session_name");
       if (!activeChat.file_name) missingFields.push("file_name");
 
       console.error(`Cannot send message: Active chat session data is incomplete. Missing: ${missingFields.join(", ")}`);
-      
+
       // Provide user feedback without using alert()
       const errorChat = chats.map((chat) =>
         chat.id === activeChatId
@@ -176,28 +177,42 @@ export default function Chat() {
       };
 
       // ⭐ DEBUG: Log the payload to check for empty or null values
-      console.log("Sending Chat Payload:", payload); 
+      console.log("Sending Chat Payload:", payload);
 
       // API call to ApiServices.chat(payload)
       const response = await ApiServices.chat(payload);
       const result = response.data?.data || {};
+
+      // const updatedChats = chats.map((chat) => {
+      //   if (chat.id === activeChatId) {
+      //     return {
+      //       ...chat,
+      //       question: result.user_query || inputValue,
+      //       query: result.ai_response || "-- No SQL generated",
+      //       logs: result.logs || ["Execution log not available."],
+      //     };
+      //   }
+      //   return chat;
+      // });
 
       const updatedChats = chats.map((chat) => {
         if (chat.id === activeChatId) {
           return {
             ...chat,
             question: result.user_query || inputValue,
-            query: result.ai_response || "-- No SQL generated",
-            logs: result.logs || ["Execution log not available."],
+            query: result.ai_response || "",
+            ai_response: result.ai_response || "",   // ⭐ store full AI SQL
+            logs: result.logs || ["Execution log not available."]
           };
         }
         return chat;
       });
 
+
       setChats(updatedChats);
       setDisplayedLogs([]);
       setInputValue("");
-      
+
       // ⭐ Set Table Data from API response
       if (result.rows && result.columns) {
         setTableData({ rows: result.rows, columns: result.columns });
@@ -224,19 +239,19 @@ export default function Chat() {
     if (!rawQuery) {
       return "";
     }
-  
+
     // The AI can wrap the query in markdown, stored procedures, or add comments.
     // This regex aims to find a `WITH` or `SELECT` statement, which can be inside backticks.
     const queryMatch = rawQuery.match(/(?:WITH|SELECT)[\s\S]*/i);
-  
+
     if (queryMatch) {
       let query = queryMatch[0];
-  
+
       // Remove stored procedure definitions if they exist
       query = query.replace(/DELIMITER\s*;;/gi, '')
-                   .replace(/CREATE\s+PROCEDURE[\s\S]*?BEGIN/gi, '')
-                   .replace(/END\s*;;/gi, '');
-      
+        .replace(/CREATE\s+PROCEDURE[\s\S]*?BEGIN/gi, '')
+        .replace(/END\s*;;/gi, '');
+
       return query.split(';')[0].trim() + ';';
     }
     return ""; // Return empty if no query is found
@@ -249,7 +264,7 @@ export default function Chat() {
       return;
     }
 
-    const cleanQuery = extractSqlQuery(activeChat.query || "");
+    const cleanQuery = activeChat.ai_response?.trim() || "";
     if (!cleanQuery || !activeChat.session_id) {
       setDisplayedLogs(["No script to run."]);
       setTableData(null);
@@ -259,7 +274,7 @@ export default function Chat() {
     setIsExecuting(true); // Start loading
     try {
       const payload = {
-        sql_query:" Here is the stored procedure that meets all the requirements:\n\n\nDELIMITER ;;\nCREATE PROCEDURE sp_dynamic_query()\nBEGIN\n    WITH CustomersCTE AS (\n        SELECT jt.*\n        FROM processed_cleaned_table_data main,\n             JSON_TABLE(main.row_data, '$[*]' COLUMNS (\n                 Name VARCHAR(255) PATH '$.\"Name\"',\n                 Email VARCHAR(255) PATH '$.\"Email\"',\n                 Phone DECIMAL(65,4) PATH '$.\"Phone\"',\n                 CustomerID VARCHAR(255) PATH '$.\"CustomerID\"'\n             )) AS jt\n        WHERE\n            main.table_name = 'Customers'\n            AND main.session_id = '6900830710'\n            AND main.file_name = 'customer_orders (1).xlsx'\n    ),\n    OrdersCTE AS (\n        SELECT jt.*\n        FROM processed_cleaned_table_data main,\n             JSON_TABLE(main.row_data, '$[*]' COLUMNS (\n                 Amount DECIMAL(65,4) PATH '$.\"Amount\"',\n                 OrderID VARCHAR(255) PATH '$.\"OrderID\"',\n                 OrderDate VARCHAR(255) PATH '$.\"OrderDate\"',\n                 CustomerID VARCHAR(255) PATH '$.\"CustomerID\"'\n             )) AS jt\n        WHERE\n            main.table_name = 'Orders'\n            AND main.session_id = '6900830710'\n            AND main.file_name = 'customer_orders (1).xlsx'\n    )\n    SELECT c.Name, o.OrderID\n    FROM CustomersCTE c\n    JOIN OrdersCTE o ON c.CustomerID = o.CustomerID\n    WHERE o.OrderID IN (\n        SELECT OrderID\n        FROM OrdersCTE\n        WHERE Amount = (SELECT Amount FROM JSON_TABLE(processed_cleaned_table_data, '$[*]' COLUMNS (Amount DECIMAL(65,4) PATH '$.\"Amount\"')) WHERE Product = 'mobile')\n    );\nEND;;\nDELIMITER ;\n\n\nThis stored procedure joins the Customers and Orders CTEs based on the CustomerID and filters orders where the order's product is 'mobile'.",
+        sql_query: cleanQuery
       };
 
       console.log("Executing SQL Payload:", payload);
@@ -269,10 +284,10 @@ export default function Chat() {
       if (response.data.isSuccess && Array.isArray(response.data.data)) {
         const rows = response.data.data;
         // If there are rows, derive columns from the keys of the first row object
-        const columns = rows.length > 0 
-          ? Object.keys(rows[0]).map(key => ({ column_name: key })) 
+        const columns = rows.length > 0
+          ? Object.keys(rows[0]).map(key => ({ column_name: key }))
           : [];
-        
+
         setTableData({ rows, columns });
         setDisplayedLogs([response.data.message || "Execution successful."]);
       } else {
@@ -292,12 +307,12 @@ export default function Chat() {
   useEffect(() => {
     setDisplayedLogs([]);
     // ⭐ Clear table data when active chat changes
-    setTableData(null); 
+    setTableData(null);
   }, [activeChatId]);
 
   return (
     <div className="w-full min-h-screen px-5 mt-5">
-      
+
       {/* ⭐ CRITICAL ERROR MESSAGE (Replaces the yellow debug banner) */}
       {isSessionDataMissing && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg shadow-md" role="alert">
@@ -320,11 +335,10 @@ export default function Chat() {
                   key={chat.id}
                   onClick={() => setActiveChatId(chat.id)}
                   disabled={isSessionDataMissing} // Disabled when session is missing
-                  className={`relative pb-2 pt-1 text-sm tracking-wide transition-colors ${
-                    activeChatId === chat.id
-                      ? "text-[#6A1B9A] font-medium"
-                      : "text-gray-500 hover:text-[#6A1B9A]"
-                  } ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`relative pb-2 pt-1 text-sm tracking-wide transition-colors ${activeChatId === chat.id
+                    ? "text-[#6A1B9A] font-medium"
+                    : "text-gray-500 hover:text-[#6A1B9A]"
+                    } ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {chat.name}
 
@@ -364,8 +378,8 @@ export default function Chat() {
             className={`w-full h-full bg-transparent outline-none text-sm text-gray-800 ${isSessionDataMissing ? 'cursor-not-allowed' : ''}`}
           />
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isSessionDataMissing} // Disabled when session is missing
             className={`p-2 rounded-full hover:bg-gray-100 ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
@@ -385,9 +399,8 @@ export default function Chat() {
           <button
             onClick={handleRunScript}
             disabled={isSessionDataMissing || isExecuting} // Disabled when session is missing or executing
-            className={`absolute right-6 top-6 px-4 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${
-              isSessionDataMissing || isExecuting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
-            }`}
+            className={`absolute right-6 top-6 px-4 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${isSessionDataMissing || isExecuting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
+              }`}
           >
             {isExecuting ? "Running..." : "Run"}
           </button>
@@ -416,11 +429,11 @@ export default function Chat() {
         <div className="mb-10 px-6">
           {tableData && tableData.rows.length > 0 && (
             <div className="p-2 bg-white rounded-xl shadow-md">
-                <ProductDataTable 
-                  data={tableData.rows}
-                  columns={tableData.columns} 
-                  globalFilter={""}
-                />
+              <ProductDataTable
+                data={tableData.rows}
+                columns={tableData.columns}
+                globalFilter={""}
+              />
             </div>
           )}
         </div>
