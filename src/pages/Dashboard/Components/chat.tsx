@@ -4,6 +4,8 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import ApiServices from "../../../services/ApiServices";
 // Assuming this path is correct based on your component structure
 import ProductDataTable from "../Components/DataTable";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface ChatSession {
   id: number;
@@ -16,34 +18,25 @@ interface ChatSession {
   logs: string[];
   ai_response?: string;
 }
-
-// Interface for the table data structure returned by the API
 interface TableData {
   rows: any[];
   columns: any[];
 }
 
-// Interface for table selection options (based on user's API response logic)
 interface TableOption {
   label: string;
   value: string;
 }
 
 export default function Chat() {
-  // ⭐ Read data passed from UploadPage
   const location = useLocation();
   const sessionData = location.state;
-
-  // Safety check
   const defaultSession = {
     session_id: sessionData?.sessionId || "",
     session_name: sessionData?.sessionName || "Chat01",
     file_name: sessionData?.fileName || "unknown_file",
   };
-
-  // Flag to check for the critical missing data
   const isSessionDataMissing = !defaultSession.session_id;
-
   const [chats, setChats] = useState<ChatSession[]>([
     {
       id: 1,
@@ -51,10 +44,8 @@ export default function Chat() {
       session_id: defaultSession.session_id,
       session_name: defaultSession.session_name,
       file_name: defaultSession.file_name,
-      // Update initial question based on missing data
       question: isSessionDataMissing ? "FATAL ERROR: Session ID Missing." : "Ask anything about your file…",
       query: "",
-      // Update initial logs based on missing data
       logs: isSessionDataMissing ? ["CRITICAL: Missing session_id. Cannot communicate with API."] : [],
     },
   ]);
@@ -62,21 +53,14 @@ export default function Chat() {
   const [activeChatId, setActiveChatId] = useState(1);
   const [displayedLogs, setDisplayedLogs] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
-  // ⭐ State to store table data (rows and columns)
   const [tableData, setTableData] = useState<TableData | null>(null);
-  // ⭐ State to store list of available tables (UI data)
   const [tableOptions, setTableOptions] = useState<TableOption[]>([]);
-  const [isExecuting, setIsExecuting] = useState(false); // For loading state on Run button
-
+  const [isExecuting, setIsExecuting] = useState(false);
   const activeChat = chats.find((c) => c.id === activeChatId);
-
-
-  // ⭐ EFFECT: Fetch initial UI data (tables list and initial table content)
   useEffect(() => {
-    // Check if critical session data is missing
+    
     if (isSessionDataMissing) {
       console.error("API Call skipped: Cannot initialize chat due to missing session_id.");
-      // Ensure error log is visible on initial load if missing
       setChats(chats => chats.map(chat =>
         chat.id === 1 ? { ...chat, logs: ["CRITICAL: Missing session_id. Cannot communicate with API."] } : chat
       ));
@@ -85,23 +69,14 @@ export default function Chat() {
 
     const payload = {
       session_id: defaultSession.session_id,
-      // The backend chat endpoint usually requires all three session identifiers
       session_name: defaultSession.session_name,
       file_name: defaultSession.file_name,
-      // When calling the 'chat' API for initial data, a default query is required.
       user_query: "What tables are available?",
     };
-
-    // ⭐ DEBUG: Log initial load payload
-    console.log("Sending Initial Load Payload:", payload);
-
-    // The user requested to use the chat API here for initial loading.
     ApiServices.chat(payload)
       .then((response) => {
         if (response.data.isSuccess) {
           const data = response.data.data;
-
-          // The chat API returns a SQL query. Let's display it.
           setChats(chats => chats.map(chat => {
             if (chat.id === 1) {
               return {
@@ -119,8 +94,6 @@ export default function Chat() {
 
   }, [defaultSession.session_id, defaultSession.session_name, defaultSession.file_name, isSessionDataMissing]);
 
-
-  // ⭐ Create new Chat Tab
   const handleNewChat = () => {
     const newChatId = chats.length + 1;
 
@@ -142,7 +115,7 @@ export default function Chat() {
     setTableData(null);
   };
 
-  // ⭐ Send Message → API Call
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !activeChat) return;
@@ -182,18 +155,6 @@ export default function Chat() {
       // API call to ApiServices.chat(payload)
       const response = await ApiServices.chat(payload);
       const result = response.data?.data || {};
-
-      // const updatedChats = chats.map((chat) => {
-      //   if (chat.id === activeChatId) {
-      //     return {
-      //       ...chat,
-      //       question: result.user_query || inputValue,
-      //       query: result.ai_response || "-- No SQL generated",
-      //       logs: result.logs || ["Execution log not available."],
-      //     };
-      //   }
-      //   return chat;
-      // });
 
       const updatedChats = chats.map((chat) => {
         if (chat.id === activeChatId) {
