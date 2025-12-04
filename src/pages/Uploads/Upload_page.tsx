@@ -16,7 +16,7 @@ export default function UploadPage() {
   const [processingFileName, setProcessingFileName] = useState("");
   const isInitialMount = useRef(true);
   const uploadInProgress = useRef(false);
-  const currentSessionRef = useRef<{id: string, name: string} | null>(null);
+  const currentSessionRef = useRef<{ id: string, name: string } | null>(null);
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -72,8 +72,8 @@ export default function UploadPage() {
         throw new Error(responseData.message || 'Upload failed');
       }
 
-      const uploadedFile = responseData.data && responseData.data.length > 0 
-        ? responseData.data[0] 
+      const uploadedFile = responseData.data && responseData.data.length > 0
+        ? responseData.data[0]
         : null;
 
       if (!uploadedFile) {
@@ -83,9 +83,9 @@ export default function UploadPage() {
       const actualSessionId = uploadedFile.session_id || sessionId;
       const actualSessionName = uploadedFile.session_name || sessionNameTrimmed;
 
-      currentSessionRef.current = { 
-        id: actualSessionId, 
-        name: actualSessionName 
+      currentSessionRef.current = {
+        id: actualSessionId,
+        name: actualSessionName
       };
 
       const waitTime = files.reduce((total, file) => total + file.size, 0) > 5000000 ? 10000 : 7000;
@@ -96,7 +96,7 @@ export default function UploadPage() {
       await new Promise(resolve => setTimeout(resolve, waitTime));
 
       const verifySuccess = await verifyDataExists(actualSessionId, actualSessionName);
-      
+
       if (!verifySuccess) {
         throw new Error('Data verification failed. Please try processing again manually.');
       }
@@ -116,24 +116,24 @@ export default function UploadPage() {
     try {
       const response = await ApiService.tracker();
       const filesList = response.data?.data || [];
-      
+
       const fileExists = filesList.some(
-        (file: any) => 
-          file.session_id === sessionId && 
+        (file: any) =>
+          file.session_id === sessionId &&
           file.session_name === sessionName
       );
 
       if (!fileExists) {
         await new Promise(resolve => setTimeout(resolve, 3000));
-        
+
         const retryResponse = await ApiService.tracker();
         const retryFilesList = retryResponse.data?.data || [];
         const retryExists = retryFilesList.some(
-          (file: any) => 
-            file.session_id === sessionId && 
+          (file: any) =>
+            file.session_id === sessionId &&
             file.session_name === sessionName
         );
-        
+
         return retryExists;
       }
 
@@ -158,25 +158,25 @@ export default function UploadPage() {
         const hasLLMError = Object.values(globalOps).some(
           (ops: any) => Array.isArray(ops) && ops.includes("LLM Error")
         );
-        
+
         if (hasLLMError) {
           alert('Processing completed but some AI features failed. You can retry processing from the dashboard.');
         }
       }
 
       await trackFiles();
-      
+
       setIsProcessing(false);
       setProcessingFileName("");
       uploadInProgress.current = false;
 
     } catch (processError: any) {
       console.error('Process session data error:', processError);
-      
+
       setIsProcessing(false);
       setProcessingFileName("");
       uploadInProgress.current = false;
-      
+
       alert(
         `Processing failed: ${processError.message}\n\n` +
         `Session ID: ${sessionId}\n` +
@@ -186,91 +186,57 @@ export default function UploadPage() {
     }
   }
 
-  const handleManualProcess = async () => {
-    if (!currentSessionRef.current) {
-      alert('No recent upload session found. Please upload a file first.');
-      return;
-    }
-
-    setIsProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    await processSessionData(currentSessionRef.current.id, currentSessionRef.current.name);
-  };
 
   return (
-    <div
-      className="flex flex-col items-start w-full h-full p-8"
-      style={{ backgroundColor: theme.background }}
-    >
-      <div className="w-full rounded-lg" style={{ backgroundColor: theme.surface }}>
-        <h2
-          className="text-center text-xl font-semibold"
-          style={{ color: theme.primaryText }}
-        >
-          Upload your data
-        </h2>
+    <div className="w-full rounded-lg p-8">
+      <h2
+        className="text-center text-xl font-semibold"
+        style={{ color: theme.primaryText }}
+      >
+        Upload your data
+      </h2>
 
-        <p
-          className="text-center text-xs mb-6"
-          style={{ color: theme.secondaryText }}
-        >
-          Start by uploading a data file to create your first view.
-        </p>
-        
-        <FileNameInput 
-          theme={theme} 
-          value={sessionName} 
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setSessionName(e.target.value);
-            if (sessionNameError) {
-              setSessionNameError("");
-            }
-          }}
-          error={sessionNameError}
-          disabled={isUploading || isProcessing}
-        />
-        
-        <FileDropZone
-          onUploadComplete={uploadFiles}
-          theme={theme}
-          disabled={isUploading || isProcessing}
-        />
+      <p
+        className="text-center text-xs mb-6"
+        style={{ color: theme.secondaryText }}
+      >
+        Start by uploading a data file to create your first view.
+      </p>
 
-        {isProcessing && (
-          <div className="mt-4 p-4 rounded-lg border" style={{ 
-            backgroundColor: theme.surface,
-            borderColor: theme.border 
-          }}>
-            <div className="flex items-center gap-3">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2" style={{ 
-                borderColor: theme.accent 
-              }}></div>
-              <div className="flex-1">
-                <p className="text-sm font-medium" style={{ color: theme.primaryText }}>
-                  Processing {processingFileName}...
-                </p>
-                <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
-                  Extracting tables, columns, and analyzing data with AI. This may take a few moments.
-                </p>
-              </div>
-              <button
-                onClick={handleManualProcess}
-                className="px-3 py-1 text-xs rounded border hover:bg-opacity-80"
-                style={{ 
-                  borderColor: theme.border,
-                  color: theme.primaryText 
-                }}
-              >
-                Retry
-              </button>
+      <FileNameInput
+        theme={theme}
+        value={sessionName}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setSessionName(e.target.value);
+          if (sessionNameError) {
+            setSessionNameError("");
+          }
+        }}
+        error={sessionNameError}
+        disabled={isUploading || isProcessing}
+      />
+      <FileDropZone
+        onUploadComplete={uploadFiles}
+        theme={theme}
+        disabled={isUploading || isProcessing}
+      />
+      {isProcessing && (
+        <div className="flex flex-col items-center justify-center gap-3 mt-4">
+          <div className="flex items-center gap-3">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2" style={{
+              borderColor: theme.accent
+            }}></div>
+            <div className="flex-1">
+              <p className="text-sm font-medium" style={{ color: theme.primaryText }}>
+                Processing {processingFileName}...
+              </p>
             </div>
           </div>
-        )}
-        
-        {processedFiles.length > 0 && (
-          <DataProcessing files={processedFiles} onRefresh={handleManualProcess} />
-        )}
-      </div>
+        </div>
+      )}
+      {processedFiles.length > 0 && (
+        <DataProcessing files={processedFiles}/>
+      )}
     </div>
   );
 }

@@ -11,7 +11,7 @@ interface Props {
   onRefresh?: () => void | Promise<void>;
 }
 
-const STEPS = ["Table Extraction", "Column Extraction", "Data Mapping"];
+const STEPS = ["Table Extraction", "Column Extraction", "Data Insights"];
 const TOTAL_STEPS = STEPS.length;
 
 export default function DataProcessing({ files, onRefresh }: Props) {
@@ -21,7 +21,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
-    
+
     files.forEach(file => {
       const fileName = file.name || file.file_name;
       let progress = 0;
@@ -45,119 +45,119 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const handleNavigateToDashboard = (file: any) => {
     const fileName = file.name || file.file_name;
     const progress = processingProgress[fileName] || 0;
-    
+
     if (progress >= TOTAL_STEPS) {
-      navigate('/layout/dashboard', { 
-        state: { 
-          sessionId: file.session_id, 
+      navigate('/layout/dashboard', {
+        state: {
+          sessionId: file.session_id,
           sessionName: file.session_name,
           fileName: fileName
-        } 
+        }
       });
     }
   };
 
   return (
     <div className="mt-6">
-      <label
-        className="block text-sm font-medium mb-2"
-        style={{ color: theme.primaryText }}
-      >
-        Uploaded Files
-      </label>
+      <div className="flex items-center justify-between mb-4 m-2">
+        <label
+          className="block text-sm font-medium"
+          style={{ color: theme.primaryText }}
+        >
+          Uploaded Files
+        </label>
+        <AutorenewRoundedIcon
+          className="w-5 h-5 cursor-pointer"
+          sx={{
+            color: theme.secondaryText,
+            transition: "color 0.2s",
+            "&:hover": { color: theme.primaryText },
+          }}
+          onClick={() => {
+            if (onRefresh) {
+              onRefresh();
+            }
+          }}
+        />
+      </div>
 
-      <div className="space-y-2 bg-[#EAEAEA] shadow-md rounded-lg p-2">
-        {files.map((file, index) => {
-          const fileName = file.name || file.file_name;
-          const currentProgress = processingProgress[fileName] || 0;
-          const isFullyProcessed = currentProgress >= TOTAL_STEPS;
+      {files.map((file, index) => {
+        const fileName = file.name || file.file_name;
+        const currentProgress = processingProgress[fileName] || 0;
+        const isFullyProcessed = currentProgress >= TOTAL_STEPS;
 
-          return (
+        return (
+          <div
+            key={index}
+            className="flex items-center justify-between rounded-lg px-4 py-3 w-full"
+            style={{ backgroundColor: theme.surface }}
+          >
             <div
-              key={index}
-              className="flex items-center justify-between rounded-lg px-4 py-3 w-full"
-              style={{ backgroundColor: theme.surface }}
+              className="text-sm font-medium min-w-[140px]"
+              style={{ color: theme.primaryText }}
             >
-              <div
-                className="text-sm font-medium min-w-[140px]"
-                style={{ color: theme.primaryText }}
+              {fileName}
+            </div>
+
+            <div className="flex items-center gap-20">
+              {STEPS.map((stepName, stepIndex) => {
+                const isCompleted = stepIndex < currentProgress;
+                const iconColor = isCompleted ? theme.accent : theme.secondaryText;
+
+                return (
+                  <div
+                    key={stepIndex}
+                    className="flex flex-col items-center"
+                    style={{ color: iconColor }}
+                  >
+                    {isCompleted ? (
+                      <CheckCircleIcon sx={{ fontSize: 20, color: iconColor }} />
+                    ) : (
+                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: iconColor }} />
+                    )}
+                    <span className="text-[10px] mt-1">{stepName}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <span
+              className="text-xs min-w-[50px] text-center"
+              style={{ color: theme.secondaryText }}
+            >
+              {file.file_size || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+            </span>
+
+            <span
+              className="text-xs min-w-[80px] text-center"
+              style={{ color: theme.secondaryText }}
+            >
+              {file.created_at || new Date().toLocaleDateString()}
+            </span>
+
+            <div className="flex items-center gap-20 min-w-[60px] justify-end">
+
+              <button
+                onClick={() => handleNavigateToDashboard(file)}
+                disabled={!isFullyProcessed}
+                title={isFullyProcessed ? "View in Dashboard" : "Processing incomplete"}
               >
-                {fileName}
-              </div>
-
-              <div className="flex items-center gap-20">
-                {STEPS.map((stepName, stepIndex) => {
-                  const isCompleted = stepIndex < currentProgress;
-                  const iconColor = isCompleted ? theme.accent : theme.secondaryText;
-
-                  return (
-                    <div
-                      key={stepIndex}
-                      className="flex flex-col items-center"
-                      style={{ color: iconColor }}
-                    >
-                      {isCompleted ? (
-                        <CheckCircleIcon sx={{ fontSize: 20, color: iconColor }} />
-                      ) : (
-                        <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: iconColor }} />
-                      )}
-                      <span className="text-[10px] mt-1">{stepName}</span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <span
-                className="text-xs min-w-[50px] text-center"
-                style={{ color: theme.secondaryText }}
-              >
-                {file.file_size || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
-              </span>
-
-              <span
-                className="text-xs min-w-[80px] text-center"
-                style={{ color: theme.secondaryText }}
-              >
-                {file.created_at || new Date().toLocaleDateString()}
-              </span>
-
-              <div className="flex items-center gap-20 min-w-[60px] justify-end">
-                <AutorenewRoundedIcon
-                  className="w-5 h-5 cursor-pointer"
+                <ArrowForwardIcon
+                  className="w-5 h-5"
                   sx={{
-                    color: theme.secondaryText,
+                    color: isFullyProcessed ? theme.accent : theme.border,
+                    cursor: isFullyProcessed ? 'pointer' : 'not-allowed',
                     transition: "color 0.2s",
-                    "&:hover": { color: theme.primaryText },
-                  }}
-                  onClick={() => {
-                    if (onRefresh) {
-                      onRefresh();
-                    }
+                    "&:hover": {
+                      color: isFullyProcessed ? theme.primaryText : theme.border
+                    },
                   }}
                 />
-
-                <button
-                  onClick={() => handleNavigateToDashboard(file)}
-                  disabled={!isFullyProcessed}
-                  title={isFullyProcessed ? "View in Dashboard" : "Processing incomplete"}
-                >
-                  <ArrowForwardIcon
-                    className="w-5 h-5"
-                    sx={{
-                      color: isFullyProcessed ? theme.accent : theme.border,
-                      cursor: isFullyProcessed ? 'pointer' : 'not-allowed',
-                      transition: "color 0.2s",
-                      "&:hover": { 
-                        color: isFullyProcessed ? theme.primaryText : theme.border 
-                      },
-                    }}
-                  />
-                </button>
-              </div>
+              </button>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
