@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -32,6 +32,7 @@ export default function DashboardHeader({
   const [tableOptions, setTableOptions] = useState([]);
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const dropdownRef = useRef<Dropdown>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -115,6 +116,17 @@ export default function DashboardHeader({
     setTimeout(() => setIsRefreshing(false), 1500);
   };
 
+  const handleDropdownShow = () => {
+    window.addEventListener("scroll", handleScroll, true);
+  };
+
+  const handleDropdownHide = () => {
+    window.removeEventListener("scroll", handleScroll, true);
+  };
+
+  const handleScroll = () => {
+    dropdownRef.current?.hide();
+  };
   return (
     <>
       <header
@@ -166,11 +178,13 @@ export default function DashboardHeader({
             <div className="flex items-center justify-center gap-3 md:gap-4">
               {/* View Dropdown */}
               <Dropdown
+                ref={dropdownRef}
                 value={selectedView}
                 options={tableOptions}
                 onChange={handleViewChange}
                 loading={isLoading}
-                hideOnScroll
+                onShow={handleDropdownShow}
+                onHide={handleDropdownHide}
                 placeholder="Product Details"
                 className="p-4
     w-52 h-11

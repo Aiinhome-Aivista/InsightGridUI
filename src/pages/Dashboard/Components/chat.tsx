@@ -313,7 +313,7 @@ export default function Chat() {
         <div className="px-8 pt-4">
           <h1 className="text-xl font-semibold text-gray-800">Chat view</h1>
           <div className="text-gray-500 text-sm flex flex-row items-center gap-6 border-gray-200">
-            Ask insight from available table (Tables Loaded: {tableOptions.length})
+            Ask insight from available table 
 
             <div className="border-b-2 border-[#D9D9D9] w-[82%] gap-6 flex">
               {chats.map((chat) => (
