@@ -7,6 +7,19 @@
   padding: 14px 16px !important;
   text-align: left !important;
 }
+
+/* Sort Icon Styling */
+.p-datatable .p-sortable-column .p-sortable-column-icon {
+  font-size: 0.7rem !important; /* Decrease icon size */
+  width: 0.7rem !important;
+  height: 0.7rem !important;
+  margin-left: 0.3rem !important;
+}
+
+.p-datatable .p-column-header-content {
+  display: flex;
+  align-items: center; /* Vertically align text and icon */
+}
 .custom-table{
   background-color: white !important;
   border-radius: 0.75rem !important;

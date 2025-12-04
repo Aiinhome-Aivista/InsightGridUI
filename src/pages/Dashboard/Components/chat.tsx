@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import ApiServices from "../../../services/ApiServices";
@@ -60,6 +60,7 @@ export default function Chat() {
   const [typewriterKey, setTypewriterKey] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const scriptContainerRef = useRef<HTMLDivElement>(null);
   const activeChat = chats.find((c) => c.id === activeChatId);
   useEffect(() => {
     
@@ -300,6 +301,13 @@ export default function Chat() {
     };
   }, [activeChatId, typewriterKey]); // Rerun when chat changes or message is sent
 
+  // Effect to auto-scroll the script view as content is added
+  useEffect(() => {
+    if (scriptContainerRef.current) {
+      scriptContainerRef.current.scrollTop = scriptContainerRef.current.scrollHeight;
+    }
+  }, [typedQuery]); // Dependency on typedQuery ensures it runs on each character addition
+
 
   return (
     <div className="w-full min-h-screen px-5 mt-5">
@@ -401,7 +409,10 @@ export default function Chat() {
             {isExecuting ? "Running..." : "Run"}
           </button>
 
-          <div className="mt-10 text-sm font-mono relative min-h-[150px]">
+          <div
+            ref={scriptContainerRef}
+            className="mt-10 text-sm font-mono relative min-h-[150px] max-h-[450px] overflow-y-auto"
+          >
             {/* This SyntaxHighlighter displays the progressively typed and highlighted query. */}
             <SyntaxHighlighter
               language="sql"

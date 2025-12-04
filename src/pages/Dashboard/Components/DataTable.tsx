@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { FilterMatchMode } from "primereact/api";
@@ -11,31 +10,18 @@ interface ProductDataTableProps {
 }
 
 export default function ProductDataTable({ data, globalFilter, columns = [] }: ProductDataTableProps) {
-  const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(5);
-
-  const onPageChange = (event: { first: number, rows: number }) => {
-    setFirst(event.first);
-    setRows(event.rows);
-  };
-
   return (
     <DataTable
       value={data}
-      paginator
-      rows={rows}
-      first={first}
-      onPage={onPageChange}
-      rowsPerPageOptions={[5, 10, 15, 20, 25, 30]}
       globalFilter={globalFilter}
       sortMode="multiple"
+      scrollable
+      scrollHeight="400px"
+      style={{ width: '100%' }}
       filters={{
         global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
       }}
       className="custom-table"
-      paginatorTemplate="PrevPageLink PageLinks NextPageLink CurrentPageReport RowsPerPageDropdown"
-      paginatorClassName="custom-paginator"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     >
       {columns.map((col) => (
         <Column
