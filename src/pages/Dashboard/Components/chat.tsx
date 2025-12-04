@@ -55,6 +55,8 @@ export default function Chat() {
   const [inputValue, setInputValue] = useState("");
   const [tableData, setTableData] = useState<TableData | null>(null);
   const [tableOptions, setTableOptions] = useState<TableOption[]>([]);
+  const [typedQuery, setTypedQuery] = useState("");
+  const [typewriterKey, setTypewriterKey] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
   const activeChat = chats.find((c) => c.id === activeChatId);
   useEffect(() => {
@@ -112,6 +114,7 @@ export default function Chat() {
     setChats([...chats, newChat]);
     setActiveChatId(newChatId);
     // Clear table data when switching to a new chat
+    setTypewriterKey(prev => prev + 1);
     setTableData(null);
   };
 
@@ -172,6 +175,7 @@ export default function Chat() {
 
       setChats(updatedChats);
       setDisplayedLogs([]);
+      setTypewriterKey(prev => prev + 1);
       setInputValue("");
 
       // ⭐ Set Table Data from API response
@@ -271,6 +275,27 @@ export default function Chat() {
     setTableData(null);
   }, [activeChatId]);
 
+  // Effect to handle the typewriter animation
+  useEffect(() => {
+    const query = activeChat?.query || '';
+    let i = 0;
+    setTypedQuery(''); // Clear previous query
+
+    const typingInterval = setInterval(() => {
+      if (i < query.length) {
+        setTypedQuery(prev => prev + query.charAt(i));
+        i++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 20); // Typing speed
+
+    return () => {
+      clearInterval(typingInterval);
+    };
+  }, [activeChatId, typewriterKey]); // Rerun when chat changes or message is sent
+
+
   return (
     <div className="w-full min-h-screen px-5 mt-5">
 
@@ -366,9 +391,22 @@ export default function Chat() {
             {isExecuting ? "Running..." : "Run"}
           </button>
 
-          <pre className="mt-10 whitespace-pre-wrap text-sm text-[#4b4bff] font-mono">
-            {activeChat?.query}
-          </pre>
+          <div className="mt-10 text-sm font-mono relative min-h-[150px]">
+            {/* This SyntaxHighlighter displays the progressively typed and highlighted query. */}
+            <SyntaxHighlighter
+              language="sql"
+              style={oneLight}
+              customStyle={{
+                backgroundColor: "transparent",
+                padding: 0,
+                margin: 0,
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-all",
+              }}
+            >
+              {typedQuery + (typedQuery === (activeChat?.query || '') ? '' : '_')}
+            </SyntaxHighlighter>
+          </div>
 
           {displayedLogs.length > 0 && (
             <div className="mt-6 pt-6 border-t border-gray-200 space-y-2 text-sm -mx-6 px-6">
