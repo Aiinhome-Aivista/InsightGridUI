@@ -11,12 +11,15 @@ import ColumnSelectionPage from "../../../Modal/column-section-page";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
 import ApiServices from "../../../services/ApiServices";
+import AnimatedToggleButton from "../../../Modal/components/animated-toggle-button";
 
 interface HeaderProps {
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
   onRefresh: () => void;
   onTableSelect?: (data: any) => void;
+  viewSelection: string;
+  onViewChange: (view: string) => void;
 }
 
 export default function DashboardHeader({
@@ -24,6 +27,8 @@ export default function DashboardHeader({
   setGlobalFilter,
   onRefresh,
   onTableSelect,
+  viewSelection,
+  onViewChange,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -34,6 +39,12 @@ export default function DashboardHeader({
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef<Dropdown>(null);
   const navigate = useNavigate();
+  const toggleOptions = [
+    { label: "Meta Data", value: 'metadata' },
+    { label: "Data View", value: 'dataview' },
+    { label: "Insight", value: 'insights' },
+  ];
+  const defaultSelectionIndex = toggleOptions.findIndex(opt => opt.value === viewSelection);
 
   useEffect(() => {
     const sessionData = location.state;
@@ -135,9 +146,9 @@ export default function DashboardHeader({
       >
         <div className="px-4 sm:px-6 lg:px-8 ">
           {/* Responsive Flex Container */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
             {/* Left Section */}
-            <div className="flex-shrink-0 text-center md:text-left">
+            {/* <div className="flex-shrink-0 text-center md:text-left">
               <h1
                 className="text-xl font-semibold"
                 style={{ color: theme.primaryText }}
@@ -150,7 +161,7 @@ export default function DashboardHeader({
               >
                 Start by uploading a data file to create your first view.
               </p>
-            </div>
+            </div> */}
 
             {/* Center Search Bar */}
             <div className="w-full md:flex-1 flex justify-center order-3 md:order-none">
@@ -185,6 +196,7 @@ export default function DashboardHeader({
                 loading={isLoading}
                 onShow={handleDropdownShow}
                 onHide={handleDropdownHide}
+                filter
                 placeholder="Select table"
                 className="p-4
     w-52 h-11
@@ -201,6 +213,15 @@ export default function DashboardHeader({
     rounded-xl shadow-md
     text-[#6F6F6F] bg-white
   "
+              />
+
+              <AnimatedToggleButton
+                options={toggleOptions}
+                defaultSelected={defaultSelectionIndex}
+                onChange={(_index, value) => {
+                  onViewChange(value as string);
+                }}
+                mode="text"
               />
 
               <Tippy content="Select Columns" theme="gray">

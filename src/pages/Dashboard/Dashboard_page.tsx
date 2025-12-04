@@ -5,6 +5,7 @@ import Chat from "./Components/chat";
 
 export default function Dashboard_page() {
   const [globalFilter, setGlobalFilter] = useState("");
+  const [viewSelection, setViewSelection] = useState('dataview');
   const [tableData, setTableData] = useState({
     rows: [],
     columns: [],
@@ -34,8 +35,10 @@ export default function Dashboard_page() {
           setGlobalFilter={setGlobalFilter}
           onRefresh={handleRefresh}
           onTableSelect={handleTableDataSelect}
+          viewSelection={viewSelection}
+          onViewChange={setViewSelection}
         />
-        <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} globalFilter={globalFilter} tableName={tableData.tableName} />
+        <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} globalFilter={globalFilter} tableName={tableData.tableName} viewSelection={viewSelection} />
       </div>
       <div>
       <Chat/>

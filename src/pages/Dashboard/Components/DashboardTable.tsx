@@ -12,14 +12,12 @@ interface DashboardTableProps {
   insights: string[];
   globalFilter: string;
   tableName: string;
+  viewSelection: string;
 }
 
-export default function DashboardTable({ data, columns, insights, globalFilter, tableName }: DashboardTableProps) {
+export default function DashboardTable({ data, columns, insights, globalFilter, tableName, viewSelection }: DashboardTableProps) {
   const { theme } = useTheme();
-  const [toggleSelection, setToggleSelection] = useState('dataview');
   const [isExpanded, setIsExpanded] = useState(true);
-
-  const defaultSelectionIndex = 1; // "Data View"
 
   return (
     <div className="p-6">
@@ -36,8 +34,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Toggle */}
+          {/* <div className="flex items-center gap-2">
             <AnimatedToggleButton
               options={[
                   { label: "Meta Data", value: 'metadata' },
@@ -54,13 +51,13 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
             <IconButton onClick={() => setIsExpanded(!isExpanded)} size="small">
               {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
-          </div>
+          </div> */}
         </div>
 
         {/* CONDITIONAL RENDER */}
         {isExpanded && (
           <>
-            {toggleSelection === 'metadata' && (
+            {viewSelection === 'metadata' && (
               <div className="p-4 min-h-[200px] flex items-center justify-center">
                 <div className="flex flex-wrap gap-3">
                   {columns.map(col => (
@@ -71,10 +68,10 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
                 </div>
               </div>
             )}
-            {toggleSelection === 'dataview' && (
+            {viewSelection === 'dataview' && (
               <ProductDataTable data={data} globalFilter={globalFilter} columns={columns} />
             )}
-            {toggleSelection === 'insights' && (
+            {viewSelection === 'insights' && (
               <div className="p-4 min-h-[200px]">
                 <ul className="list-disc list-inside space-y-2">
                   {insights.map((insight, index) => (

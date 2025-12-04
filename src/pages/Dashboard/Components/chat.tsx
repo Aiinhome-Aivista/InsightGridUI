@@ -311,8 +311,6 @@ export default function Chat() {
 
   return (
     <div className="w-full min-h-screen px-5 mt-5">
-
-      {/* ⭐ CRITICAL ERROR MESSAGE (Replaces the yellow debug banner) */}
       {isSessionDataMissing && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg shadow-md" role="alert">
           <p className="font-bold">CRITICAL ERROR: Session Data Missing</p>
@@ -324,9 +322,9 @@ export default function Chat() {
       {/* Chat Header */}
       <div className="pb-2 bg-[#D9D9D91A] rounded-xl">
         <div className="px-8 pt-4">
-          <h1 className="text-xl font-semibold text-gray-800">Chat view</h1>
-          <div className="text-gray-500 text-sm flex flex-row items-center gap-6 border-gray-200">
-            Ask insight from available table 
+          <h1 className="text-xl font-semibold text-gray-800">Speak to Data Doctor</h1>
+          <div className="text-gray-500 text-md flex flex-row items-center gap-20 border-gray-200">
+        Hello, how can I help you?
 
             <div className="border-b-2 border-[#D9D9D9] w-[82%] gap-6 flex">
               {chats.map((chat) => (
@@ -395,7 +393,7 @@ export default function Chat() {
       {/* Script Section */}
       <div className="bg-[#D9D9D91A] p-2 mt-5 rounded-xl">
         <h1 className="text-xl font-semibold text-gray-800 px-8 mt-6">
-          Script view
+          Generated Procedure
         </h1>
         <p className="text-gray-500 px-8 mb-2">Modify and run available script</p>
 
@@ -411,7 +409,7 @@ export default function Chat() {
 
           <div
             ref={scriptContainerRef}
-            className="mt-10 text-sm font-mono relative min-h-[150px] max-h-[450px] overflow-y-auto"
+            className="mt-10 text-sm font-mono relative min-h-[150px] max-h-[350px] overflow-y-auto max-w-screen"
           >
             {/* This SyntaxHighlighter displays the progressively typed and highlighted query. */}
             <SyntaxHighlighter
@@ -444,8 +442,6 @@ export default function Chat() {
             </div>
           )}
         </div>
-
-        {/* ⭐ Data Table Section */}
         <div className="mb-10 px-6">
           {tableData && tableData.rows.length > 0 && (
             <div className="p-2 bg-white rounded-xl shadow-md">
