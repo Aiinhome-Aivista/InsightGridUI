@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import ApiServices from "../../../services/ApiServices";
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 // Assuming this path is correct based on your component structure
 import ProductDataTable from "../Components/DataTable";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -58,6 +59,7 @@ export default function Chat() {
   const [typedQuery, setTypedQuery] = useState("");
   const [typewriterKey, setTypewriterKey] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const activeChat = chats.find((c) => c.id === activeChatId);
   useEffect(() => {
     
@@ -144,6 +146,7 @@ export default function Chat() {
     }
 
 
+    setIsSending(true);
     try {
       const payload = {
         session_id: activeChat.session_id,
@@ -196,6 +199,8 @@ export default function Chat() {
 
       setChats(updatedChats);
       setTableData(null); // Clear table on error
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -359,17 +364,22 @@ export default function Chat() {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder={isSessionDataMissing ? "Cannot send messages due to missing session ID." : "Ask a question to generate a script..."}
-            disabled={isSessionDataMissing} // Disabled when session is missing
-            className={`w-full h-full bg-transparent outline-none text-sm text-gray-800 ${isSessionDataMissing ? 'cursor-not-allowed' : ''}`}
+            placeholder={isSessionDataMissing ? "Cannot send messages due to missing session ID." : "Ask a question to generate a script..."
+            }
+            disabled={isSessionDataMissing || isSending} // Disabled when session is missing or sending
+            className={`w-full h-full bg-transparent outline-none text-sm text-gray-800 ${isSessionDataMissing || isSending ? 'cursor-not-allowed' : ''}`}
           />
 
           <button
             type="submit"
-            disabled={isSessionDataMissing} // Disabled when session is missing
-            className={`p-2 rounded-full hover:bg-gray-100 ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={isSessionDataMissing || isSending} // Disabled when session is missing or sending
+            className={`p-2 rounded-full hover:bg-gray-100 ${isSessionDataMissing || isSending ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            <PlayArrowRoundedIcon className="w-6 h-6 text-gray-600" />
+            {isSending ? (
+              <AutorenewRoundedIcon className="w-6 h-6 text-gray-600 animate-spin" />
+            ) : (
+              <PlayArrowRoundedIcon className="w-6 h-6 text-gray-600" />
+            )}
           </button>
         </form>
       </div>
@@ -381,7 +391,7 @@ export default function Chat() {
         </h1>
         <p className="text-gray-500 px-8 mb-2">Modify and run available script</p>
 
-        <div className="mx-8 p-4 bg-white shadow-sm mb-10 rounded-xl relative">
+        <div className="mx-8 p-6 bg-white shadow-sm mb-10 rounded-xl relative">
           <button
             onClick={handleRunScript}
             disabled={isSessionDataMissing || isExecuting} // Disabled when session is missing or executing
