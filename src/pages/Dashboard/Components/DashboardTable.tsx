@@ -58,7 +58,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
         {isExpanded && (
           <>
             {viewSelection === 'metadata' && (
-              <div className="p-4 min-h-[200px] flex items-center justify-center">
+              <div className="p-4 min-h-[200px]  max-h-[300px]flex items-center justify-center">
                 <div className="flex flex-wrap gap-3">
                   {columns.map(col => (
                     <span key={col.column_name} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm">
@@ -72,7 +72,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
               <ProductDataTable data={data} globalFilter={globalFilter} columns={columns} />
             )}
             {viewSelection === 'insights' && (
-              <div className="p-4 min-h-[200px]">
+              <div className="p-4 min-h-[200px] max-h-[200px] overflow-y-auto">
                 <ul className="list-disc list-inside space-y-2">
                   {insights.map((insight, index) => (
                     <li key={index} className="text-sm text-gray-700">

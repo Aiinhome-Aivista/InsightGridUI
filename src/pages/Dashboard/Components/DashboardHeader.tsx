@@ -199,7 +199,7 @@ export default function DashboardHeader({
                 filter
                 placeholder="Select table"
                 className="p-4
-    w-52 h-11
+    w-80 h-10
     border border-[#E5E5E5]
     rounded-xl
     text-[#6F6F6F]
