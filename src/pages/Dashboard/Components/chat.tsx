@@ -356,7 +356,7 @@ export default function Chat() {
 
       {/* Chat Header */}
       <div className="pb-2 bg-[#D9D9D91A] rounded-xl">
-        <div className="px-4 pt-4">
+        <div className="px-5 pt-4">
           <h1 className="text-lg font-semibold text-gray-800">Speak to Data Doctor</h1>
           <div className="text-gray-500 text-md flex flex-row items-center gap-20 border-gray-200">
        
@@ -392,14 +392,14 @@ export default function Chat() {
         </div>
 
         {/* Chat Box */}
-        <div className="px-4 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2">
+        <div className="px-5 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2">
           <span>{activeChat?.question}</span>
         </div>
 
         {/* Input */}
         <form
           onSubmit={handleSendMessage}
-          className="mx-4 border rounded-xl flex justify-between items-center px-4 py-2 mt-20 text-gray-500 bg-white"
+          className="mx-4 border rounded-xl flex justify-between items-center px-5 py-2 mt-20 text-gray-500 bg-white"
         >
           <input
             type="text"
@@ -427,16 +427,16 @@ export default function Chat() {
 
       {/* Script Section */}
       <div className="bg-[#D9D9D91A] p-2 mt-5 rounded-xl">
-        <div className="flex flex-row items-center justify-between px-4">
+        <div className="flex flex-row items-center justify-between px-5">
         <h1 className="text-lg font-semibold text-gray-800 mt-1">
   Script view
   <p className="text-sm text-gray-500 mb-4">Run available script</p>
 </h1>
 
 
-<div className="flex flex-row items-center justify-between px-4">
+<div className="flex flex-row items-center justify-between px-5">
   {/* Left empty space or other content can stay here */}
-  <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-2 shadow-sm">
+  <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-5 py-2 shadow-sm">
   <input
             type="text"
             value={viewName}
@@ -447,7 +447,7 @@ export default function Chat() {
     {/* <button
             onClick={() => setIsConfirmSaveModalOpen(true)}
             disabled={!viewName.trim() || !isScriptRunSuccess}
-            className={`px-4 py-1.5 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
+            className={`px-5 py-1.5 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
               !viewName.trim() || !isScriptRunSuccess ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
             }`}
           >
@@ -456,7 +456,7 @@ export default function Chat() {
     <button
             onClick={() => setIsConfirmSaveModalOpen(true)}
             disabled={!viewName.trim()}
-            className={`px-4 py-1.5 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
+            className={`px-5 py-1.5 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
               !viewName.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
             }`}
           >
@@ -470,7 +470,7 @@ export default function Chat() {
           <button
             onClick={handleRunScript}
             disabled={isSessionDataMissing || isExecuting} // Disabled when session is missing or executing
-            className={`absolute right-6 top-6 px-4 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${isSessionDataMissing || isExecuting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
+            className={`absolute right-6 top-6 px-5 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${isSessionDataMissing || isExecuting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
               }`}
           >
             {isExecuting ? "Running..." : "Run"}
@@ -497,7 +497,7 @@ export default function Chat() {
           </div>
 
           {displayedLogs.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-gray-200 space-y-2 text-sm -mx-6 px-6">
+            <div className="mt-6 pt-6 border-t border-gray-200 space-y-2 text-sm -mx-6 px-5">
               {displayedLogs.map((log, i) => (
                 <p
                   key={i}
@@ -511,7 +511,7 @@ export default function Chat() {
             </div>
           )}
         </div>
-        <div className="mb-10 px-6">
+        <div className="mb-10 px-5">
           {tableData && tableData.rows.length > 0 && (
             <div className="p-2 bg-white rounded-xl shadow-md">
               <ProductDataTable

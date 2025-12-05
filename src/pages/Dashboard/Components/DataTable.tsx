@@ -18,7 +18,7 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
     sortMode="multiple"
     scrollable
     scrollHeight="200px"
-    style={{ maxWidth: "1400px" }}
+    style={{ maxWidth: "1370px" }}
     filters={{
       global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
     }}

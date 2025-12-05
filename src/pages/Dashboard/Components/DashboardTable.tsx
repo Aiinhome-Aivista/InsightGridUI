@@ -20,7 +20,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <div className="p-1">
+    <div className="px-4">
       <div className="rounded-xl shadow-xs" >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
@@ -61,7 +61,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
               <div className="p-4 min-h-[200px]  max-h-[300px]flex items-center justify-center">
                 <div className="flex flex-wrap gap-3">
                   {columns.map(col => (
-                    <span key={col.column_name} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm">
+                    <span key={col.column_name} className="px-5 py-2 bg-gray-200 text-gray-700 rounded-full text-sm">
                       {col.column_name}
                     </span>
                   ))}
