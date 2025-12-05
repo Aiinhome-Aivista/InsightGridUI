@@ -62,6 +62,7 @@ export default function Chat() {
   const [isExecuting, setIsExecuting] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
+  const [isScriptRunSuccess, setIsScriptRunSuccess] = useState(false);
   const [viewName, setViewName] = useState("");
   const scriptContainerRef = useRef<HTMLDivElement>(null);
   const activeChat = chats.find((c) => c.id === activeChatId);
@@ -122,6 +123,7 @@ export default function Chat() {
     // Clear table data when switching to a new chat
     setTypewriterKey(prev => prev + 1);
     setTableData(null);
+    setIsScriptRunSuccess(false);
   };
 
 
@@ -186,6 +188,7 @@ export default function Chat() {
         setTableData({ rows: result.rows, columns: result.columns });
       } else {
         setTableData(null); // Clear table if no data is returned
+        setIsScriptRunSuccess(false);
       }
 
     } catch (error) {
@@ -199,6 +202,7 @@ export default function Chat() {
 
       setChats(updatedChats);
       setTableData(null); // Clear table on error
+      setIsScriptRunSuccess(false);
     } finally {
       setIsSending(false);
     }
@@ -234,6 +238,7 @@ export default function Chat() {
     if (!cleanQuery || !activeChat.session_id) {
       setDisplayedLogs(["No script to run."]);
       setTableData(null);
+      setIsScriptRunSuccess(false);
       return;
     }
 
@@ -256,15 +261,18 @@ export default function Chat() {
 
         setTableData({ rows, columns });
         setDisplayedLogs([response.data.message || "Execution successful."]);
+        setIsScriptRunSuccess(true);
       } else {
         setTableData(null);
         setDisplayedLogs([response.data.message || "Execution failed or returned no data."]);
+        setIsScriptRunSuccess(false);
       }
     } catch (error) {
       console.error("Execute SQL API Error:", error);
       const errorMessage = error.response?.data?.message || "An error occurred while running the script.";
       setDisplayedLogs([`ERROR: ${errorMessage}`]);
       setTableData(null);
+      setIsScriptRunSuccess(false);
     } finally {
       setIsExecuting(false); // Stop loading
     }
@@ -273,6 +281,7 @@ export default function Chat() {
   useEffect(() => {
     setDisplayedLogs([]);
     setTableData(null);
+    setIsScriptRunSuccess(false);
   }, [activeChatId]);
 
   // Effect to handle the typewriter animation
@@ -410,6 +419,15 @@ export default function Chat() {
             placeholder="Name and save your custom view"
             className="text-gray-600 text-sm bg-transparent outline-none w-full"
           />
+    {/* <button
+            onClick={() => setIsConfirmSaveModalOpen(true)}
+            disabled={!viewName.trim() || !isScriptRunSuccess}
+            className={`px-4 py-1.5 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
+              !viewName.trim() || !isScriptRunSuccess ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
+            }`}
+          >
+      Save
+    </button> */}
     <button
             onClick={() => setIsConfirmSaveModalOpen(true)}
             disabled={!viewName.trim()}
