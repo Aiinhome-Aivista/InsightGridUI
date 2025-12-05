@@ -64,7 +64,7 @@ export default function AnimatedToggleButton({
   activeTextColor = '#111827',
   hoverTextColor = '#374151',
   
-  borderRadius = '0.5rem',
+  borderRadius = '0.75rem',
   activeBorderRadius = '0.375rem',
   shadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
   

@@ -52,7 +52,7 @@ export default function Sidebar() {
 
         {!collapsed && (
           <p className="ml-3 font-medium" style={{ color: theme.primaryText }}>
-            {user?.username || "User"}
+            {user?.user_name || "User"}
           </p>
         )}
 

@@ -175,7 +175,7 @@ export default function DashboardHeader({
                   value={globalFilter}
                   onChange={(e) => setGlobalFilter(e.target.value)}
                   placeholder="Global Search"
-                  className="pl-10 w-full h-10 rounded-xl border text-sm"
+                  className="pl-10 w-full h-11 rounded-xl border text-sm"
                   style={{
                     backgroundColor: theme.background,
                     color: theme.primaryText,
@@ -199,7 +199,7 @@ export default function DashboardHeader({
                 filter
                 placeholder="Select table"
                 className="p-4
-    w-80 h-10
+    w-80 h-11
     border border-[#E5E5E5]
     rounded-xl
     text-[#6F6F6F]
@@ -209,6 +209,8 @@ export default function DashboardHeader({
     focus:ring-0 focus:outline-none
     shadow-none
   "
+  
+                  
                 panelClassName=" pl-4
     rounded-xl shadow-md
     text-[#6F6F6F] bg-white

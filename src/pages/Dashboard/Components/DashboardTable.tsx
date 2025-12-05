@@ -20,7 +20,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <div className="p-6">
+    <div className="p-1">
       <div className="rounded-xl shadow-xs p-4" >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">

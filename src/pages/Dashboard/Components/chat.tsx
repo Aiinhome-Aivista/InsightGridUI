@@ -76,7 +76,7 @@ export default function Chat() {
       session_id: defaultSession.session_id,
       session_name: defaultSession.session_name,
       file_name: defaultSession.file_name,
-      user_query: "Start exploring — type a question about the data!",
+      user_query: " Hello, how can I help you?",
     };
     ApiServices.chat(payload)
       .then((response) => {
@@ -155,8 +155,6 @@ export default function Chat() {
         file_name: activeChat.file_name,
         user_query: inputValue,
       };
-
-      // ⭐ DEBUG: Log the payload to check for empty or null values
       console.log("Sending Chat Payload:", payload);
 
       // API call to ApiServices.chat(payload)
@@ -324,9 +322,9 @@ export default function Chat() {
         <div className="px-8 pt-4">
           <h1 className="text-xl font-semibold text-gray-800">Speak to Data Doctor</h1>
           <div className="text-gray-500 text-md flex flex-row items-center gap-20 border-gray-200">
-        Hello, how can I help you?
+       
 
-            <div className="border-b-2 border-[#D9D9D9] w-[82%] gap-6 flex">
+            <div className="border-b-2 border-[#D9D9D9] w-[100%] gap-6 mt-1 flex">
               {chats.map((chat) => (
                 <button
                   key={chat.id}
