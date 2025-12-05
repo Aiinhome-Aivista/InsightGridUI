@@ -7,6 +7,7 @@ import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ProductDataTable from "../Components/DataTable";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
 
 interface ChatSession {
   id: number;
@@ -60,6 +61,8 @@ export default function Chat() {
   const [typewriterKey, setTypewriterKey] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
+  const [viewName, setViewName] = useState("");
   const scriptContainerRef = useRef<HTMLDivElement>(null);
   const activeChat = chats.find((c) => c.id === activeChatId);
   useEffect(() => {
@@ -299,6 +302,14 @@ export default function Chat() {
     }
   }, [typedQuery]); // Dependency on typedQuery ensures it runs on each character addition
 
+  const handleConfirmSave = () => {
+    console.log("View saved:", viewName);
+    setIsConfirmSaveModalOpen(false);
+  };
+
+  const handleCancelSave = () => {
+    setIsConfirmSaveModalOpen(false);
+  };
 
   return (
     <div className="w-full min-h-screen px-5 mt-5">
@@ -311,7 +322,7 @@ export default function Chat() {
 
       {/* Chat Header */}
       <div className="pb-2 bg-[#D9D9D91A] rounded-xl">
-        <div className="px-8 pt-4">
+        <div className="px-4 pt-4">
           <h1 className="text-xl font-semibold text-gray-800">Speak to Data Doctor</h1>
           <div className="text-gray-500 text-md flex flex-row items-center gap-20 border-gray-200">
        
@@ -347,14 +358,14 @@ export default function Chat() {
         </div>
 
         {/* Chat Box */}
-        <div className="px-8 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2">
+        <div className="px-4 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2">
           <span>{activeChat?.question}</span>
         </div>
 
         {/* Input */}
         <form
           onSubmit={handleSendMessage}
-          className="mx-8 border rounded-xl flex justify-between items-center px-4 py-2 mt-20 text-gray-500 bg-white"
+          className="mx-4 border rounded-xl flex justify-between items-center px-4 py-2 mt-20 text-gray-500 bg-white"
         >
           <input
             type="text"
@@ -382,12 +393,37 @@ export default function Chat() {
 
       {/* Script Section */}
       <div className="bg-[#D9D9D91A] p-2 mt-5 rounded-xl">
-        <h1 className="text-xl font-semibold text-gray-800 px-8 mt-6">
-          Generated Procedure
-        </h1>
-        <p className="text-gray-500 px-8 mb-2">Modify and run available script</p>
+        <div className="flex flex-row items-center justify-between px-4">
+        <h1 className="text-xl font-semibold text-gray-800 mt-1">
+  Script view
+  <p className="text-gray-500 mb-4">Modify and run available script</p>
+</h1>
 
-        <div className="mx-8 p-6 bg-white shadow-sm mb-10 rounded-xl relative">
+
+<div className="flex flex-row items-center justify-between px-4">
+  {/* Left empty space or other content can stay here */}
+  <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
+  <input
+            type="text"
+            value={viewName}
+            onChange={(e) => setViewName(e.target.value)}
+            placeholder="Name and save your custom view"
+            className="text-gray-600 text-sm bg-transparent outline-none w-full"
+          />
+    <button
+            onClick={() => setIsConfirmSaveModalOpen(true)}
+            disabled={!viewName.trim()}
+            className={`px-4 py-1.5 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
+              !viewName.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
+            }`}
+          >
+      Save
+    </button>
+  </div>
+  </div>
+</div>
+
+        <div className="mx-4 p-6 bg-white shadow-sm mb-10 rounded-xl relative">
           <button
             onClick={handleRunScript}
             disabled={isSessionDataMissing || isExecuting} // Disabled when session is missing or executing
@@ -444,6 +480,13 @@ export default function Chat() {
           )}
         </div>
       </div>
+      {isConfirmSaveModalOpen && (
+        <ConfirmSaveView
+          viewName={viewName}
+          onCancel={handleCancelSave}
+          onConfirm={handleConfirmSave}
+        />
+      )}
     </div>
   );
 }
