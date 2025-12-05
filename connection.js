@@ -12,4 +12,5 @@ export const POST_APIS = {
   
   get_ui_data: `${BASE_URL}get_ui_data`,
   processSessionData: `${BASE_URL}process_session_data`,
+  save_chat: `${BASE_URL}save_chat`,
 };
