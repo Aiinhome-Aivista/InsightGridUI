@@ -29,8 +29,13 @@ class ApiServices {
     return axios.post(POST_APIS.processSessionData, body);
   }
 
-  tracker() {
-    return axios.get(GET_APIS.tracker);
+  // tracker() {
+  //   return axios.get(GET_APIS.tracker);
+  // }
+  tracker(user_id) {
+    return axios.get(GET_APIS.tracker, {
+      params: { user_id }
+    });
   }
 }
 

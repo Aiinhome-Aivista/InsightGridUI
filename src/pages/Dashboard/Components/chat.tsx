@@ -167,7 +167,7 @@ export default function Chat() {
             ...chat,
             question: result.user_query || inputValue,
             query: result.ai_response || "",
-            ai_response: result.ai_response || "",   // ⭐ store full AI SQL
+            ai_response: result.ai_response || "", 
             logs: result.logs || ["Execution log not available."]
           };
         }
@@ -179,8 +179,6 @@ export default function Chat() {
       setDisplayedLogs([]);
       setTypewriterKey(prev => prev + 1);
       setInputValue("");
-
-      // ⭐ Set Table Data from API response
       if (result.rows && result.columns) {
         setTableData({ rows: result.rows, columns: result.columns });
       } else {
@@ -202,8 +200,6 @@ export default function Chat() {
       setIsSending(false);
     }
   };
-
-  // ⭐ Helper to extract pure SQL from the AI response
   const extractSqlQuery = (rawQuery: string): string => {
     if (!rawQuery) {
       return "";
@@ -225,8 +221,6 @@ export default function Chat() {
     }
     return ""; // Return empty if no query is found
   };
-
-  // ⭐ Show Execution Logs
   const handleRunScript = async () => {
     if (!activeChat) {
       setDisplayedLogs(["No active chat session."]);
@@ -275,7 +269,6 @@ export default function Chat() {
 
   useEffect(() => {
     setDisplayedLogs([]);
-    // ⭐ Clear table data when active chat changes
     setTableData(null);
   }, [activeChatId]);
 
@@ -311,9 +304,8 @@ export default function Chat() {
     <div className="w-full min-h-screen px-5 mt-5">
       {isSessionDataMissing && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg shadow-md" role="alert">
-          <p className="font-bold">CRITICAL ERROR: Session Data Missing</p>
-          <p>The **session\_id** was not passed correctly from the previous page (Upload). This prevents all communication with the backend AI service.</p>
-          <p className="mt-2 text-sm italic">Action Required: Please navigate back to the Upload page and ensure a file is processed successfully before proceeding here.</p>
+          <p className="font-bold">Session Data Missing</p>
+         
         </div>
       )}
 

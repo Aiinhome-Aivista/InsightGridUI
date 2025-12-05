@@ -29,7 +29,7 @@ export default function UploadPage() {
 
   async function trackFiles() {
     try {
-      const response = await ApiService.tracker();
+      const response = await ApiService.tracker(createdBy);
       setProcessedFiles(response.data?.data || []);
     } catch (error) {
       console.error('Error tracking files:', error);
