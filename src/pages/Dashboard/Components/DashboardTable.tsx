@@ -20,12 +20,12 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <div className="p-6">
+    <div className="p-1">
       <div className="rounded-xl shadow-xs p-4" >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: theme.primaryText }}>
+            <h2 className="text-md font-semibold flex items-center gap-2" style={{ color: theme.primaryText }}>
               <GridViewRoundedIcon sx={{ fontSize: "1rem", color: theme.primaryText }} />
               {tableName} Details
             </h2>
