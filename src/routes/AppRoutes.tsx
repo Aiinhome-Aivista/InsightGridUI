@@ -11,6 +11,7 @@ import SQL_page from "../pages/Filters/SQL_page";
 import Filter_page from "../pages/Filters/Filter_page";
 import TableView from "../pages/TableView/TableView";
 import InsightGridChatWrapper from "../pages/ChatScreen/InsightGridChatWrapper";
+import Dashboard from "../pages/components/dashboard";
 
 function AppRoutes() {
   return (
@@ -18,7 +19,8 @@ function AppRoutes() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/upload" element={<Navigate to="/layout/upload" replace />} />
-      <Route path="/dashboard" element={<Navigate to="/layout/dashboard" replace />} />
+      <Route path="/dashboard" element={<Navigate to="/layout/dashboard-page" replace />} />
+      <Route path="/dashboard-component" element={<Navigate to="/layout/dashboard-component" replace />} />
       <Route path="/table" element={<Navigate to="/layout/table" replace />} />
       <Route path="/setting" element={<Navigate to="/layout/setting" replace />} />
       <Route path="/download" element={<Navigate to="/layout/download" replace />} />
@@ -29,7 +31,8 @@ function AppRoutes() {
         <Route index element={<Navigate to="upload" replace />} />
         <Route path="upload" element={<Upload_page />} />
         <Route path="dashboard" element={<Dashboard_page />} />
-         <Route path="table" element={<TableView />} />
+        <Route path="dashboard-component" element={<Dashboard />} />
+        <Route path="table" element={<TableView />} />
         <Route path="setting" element={<Setting_page />} />
         <Route path="download" element={<Download_page />} />
         <Route path="customize" element={<Customize_page />} />
