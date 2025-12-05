@@ -49,6 +49,7 @@ export default function Header() {
   };
 
   const confirmLogout = () => {
+    localStorage.clear();
     navigate('/');
   };
 
