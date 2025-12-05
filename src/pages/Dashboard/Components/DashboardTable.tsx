@@ -25,7 +25,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: theme.primaryText }}>
+            <h2 className="text-md font-semibold flex items-center gap-2" style={{ color: theme.primaryText }}>
               <GridViewRoundedIcon sx={{ fontSize: "1rem", color: theme.primaryText }} />
               {tableName} Details
             </h2>
