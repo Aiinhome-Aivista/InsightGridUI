@@ -19,20 +19,29 @@ export default function UploadPage() {
   const currentSessionRef = useRef<{ id: string, name: string } | null>(null);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
   const createdBy = userData?.user_id || "";
-
+  const [noFileMessage, setNoFileMessage] = useState("");
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      trackFiles();
+      trackFiles(createdBy);
     }
   }, []);
 
-  async function trackFiles() {
+  async function trackFiles(userId: string) {
     try {
-      const response = await ApiService.tracker(createdBy);
+      const response = await ApiService.tracker(userId);
       setProcessedFiles(response.data?.data || []);
+
+      // Save API message if no files
+      if (response.data?.data.length === 0) {
+        setNoFileMessage(response.data?.message || "No files found");
+      } else {
+        setNoFileMessage("");  // clear message
+      }
+
     } catch (error) {
       console.error('Error tracking files:', error);
+      setNoFileMessage(error.message);
     }
   }
 
@@ -117,7 +126,7 @@ export default function UploadPage() {
 
   async function verifyDataExists(sessionId: string, sessionName: string): Promise<boolean> {
     try {
-      const response = await ApiService.tracker();
+      const response = await ApiService.tracker(createdBy);
       const filesList = response.data?.data || [];
 
       const fileExists = filesList.some(
@@ -167,7 +176,7 @@ export default function UploadPage() {
         }
       }
 
-      await trackFiles();
+      await trackFiles(createdBy);
 
       setIsProcessing(false);
       setProcessingFileName("");
@@ -237,9 +246,20 @@ export default function UploadPage() {
           </div>
         </div>
       )}
-      {processedFiles.length > 0 && (
-        <DataProcessing files={processedFiles} onRefresh={trackFiles}/>
-      )}
+      {processedFiles.length > 0 ? (
+        <DataProcessing files={processedFiles} onRefresh={() => { trackFiles(createdBy) }} />
+      ) :
+        (
+          <div className="flex justify-center mt-40">
+            <p
+              className="text-center text-sm"
+              style={{ color: theme.secondaryText }}
+            >
+              {noFileMessage}
+            </p>
+          </div>
+        )
+      }
     </div>
   );
 }
