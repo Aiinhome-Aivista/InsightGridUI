@@ -29,6 +29,10 @@ class ApiServices {
     return axios.post(POST_APIS.processSessionData, body);
   }
 
+  saveChat(body) {
+    return axios.post(POST_APIS.save_chat, body);
+  }
+
   // tracker() {
   //   return axios.get(GET_APIS.tracker);
   // }

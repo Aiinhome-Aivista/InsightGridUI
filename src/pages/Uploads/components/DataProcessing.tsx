@@ -62,11 +62,12 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     const progress = processingProgress[fileName] || 0;
 
     if (progress >= TOTAL_STEPS) {
-      navigate('/layout/dashboard', {
+      navigate('/layout/table-insights', {
         state: {
           sessionId: file.session_id,
           sessionName: file.session_name,
           fileName: fileName
+      
         }
       });
     }
@@ -103,6 +104,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
       {files.map((file, index) => {
         const fileName = file.name || file.file_name;
+        const session_name = file.session_name || "Untitled Session";
         const currentProgress = processingProgress[fileName] || 0;
         const isFullyProcessed = currentProgress >= TOTAL_STEPS;
 
@@ -113,6 +115,16 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             style={{ backgroundColor: theme.secondaryBg }}
           >
             <div className="relative group w-[20%] min-w-[150px] mr-4">
+                <div
+                className="text-sm font-medium truncate"
+                style={{ color: theme.primaryText }}
+              >
+                {session_name}
+              </div>
+              
+              </div>
+            <div className="relative group w-[20%] min-w-[150px] mr-4">
+            
               <div
                 className="text-sm font-medium truncate"
                 style={{ color: theme.primaryText }}
