@@ -4,14 +4,12 @@ import ColumnList from "./components/column-list";
 import PageFooter from "./components/page-footer";
 import Sidebar from "./components/sidebar";
 import { useNavigate } from "react-router-dom";
-
-export default function ColumnSelectionPage() {
-
-  const navigate = useNavigate();   
-
-  const handleBack = () => {
-    navigate(-1);  
-  };
+interface ColumnSelectionPageProps {
+  onClose: () => void;
+}
+export default function ColumnSelectionPage({ onClose }: ColumnSelectionPageProps) {
+  const navigate = useNavigate();
+  const handleBack = () => onClose();
   const [selectionMode, setSelectionMode] = useState(0);
   const [addColumns, setAddColumns] = useState([
     { label: 'Category', checked: true },
@@ -75,10 +73,6 @@ export default function ColumnSelectionPage() {
     console.log('Saving...', { selectionMode, selectedColumns });
   };
 
-  const handleClose = () => {
-    console.log('Closing...');
-  };
-
   // Get available columns (unchecked items) for drag & drop mode
   const availableColumns = addColumns.filter(col => !col.checked).map(col => col.label);
 
@@ -116,7 +110,7 @@ export default function ColumnSelectionPage() {
       </div>
       {/* Footer - Full Width */}
       <PageFooter
-        onClose={handleClose}
+        onClose={handleBack}
         onSave={handleSave}
         isSaveDisabled={false}
       />

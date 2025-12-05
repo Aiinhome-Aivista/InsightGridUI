@@ -275,7 +275,7 @@ export default function DashboardHeader({
         </div>
       </header>
 
-      {showColumnModal && <ColumnSelectionPage />}
+      {showColumnModal && <ColumnSelectionPage onClose={() => setShowColumnModal(false)} />}
     </>
   );
 }
