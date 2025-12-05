@@ -18,6 +18,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
@@ -41,6 +42,20 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
     setProcessingProgress(initialProgress);
   }, [files]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      if (onRefresh) {
+        await onRefresh();
+      }
+    } finally {
+      // Keep spinning for at least 500ms for smooth animation
+      setTimeout(() => {
+        setIsRefreshing(false);
+      }, 500);
+    }
+  };
 
   const handleNavigateToDashboard = (file: any) => {
     const fileName = file.name || file.file_name;
@@ -72,12 +87,17 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             color: theme.secondaryText,
             transition: "color 0.2s",
             "&:hover": { color: theme.primaryText },
+            animation: isRefreshing ? "spin 1s linear infinite" : "none",
+            "@keyframes spin": {
+              "0%": {
+                transform: "rotate(0deg)",
+              },
+              "100%": {
+                transform: "rotate(360deg)",
+              },
+            },
           }}
-          onClick={() => {
-            if (onRefresh) {
-              onRefresh();
-            }
-          }}
+          onClick={handleRefresh}
         />
       </div>
 

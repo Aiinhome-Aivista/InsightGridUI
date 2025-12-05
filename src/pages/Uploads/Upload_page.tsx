@@ -235,7 +235,7 @@ export default function UploadPage() {
         </div>
       )}
       {processedFiles.length > 0 && (
-        <DataProcessing files={processedFiles}/>
+        <DataProcessing files={processedFiles} onRefresh={trackFiles}/>
       )}
     </div>
   );
