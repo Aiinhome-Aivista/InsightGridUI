@@ -33,6 +33,8 @@ export default function UploadPage() {
       console.error('Error tracking files:', error);
     }
   }
+const userData = JSON.parse(localStorage.getItem("ig_user"));
+const createdBy = userData?.user_id || "";
 
   async function uploadFiles(files: File[]) {
     if (!files || files.length === 0) return;
@@ -59,6 +61,7 @@ export default function UploadPage() {
       const formData = new FormData();
       formData.append('session_id', sessionId);
       formData.append('session_name', sessionNameTrimmed);
+      formData.append('created_by', createdBy);
       files.forEach(file => {
         formData.append('files', file);
       });
