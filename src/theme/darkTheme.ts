@@ -4,6 +4,7 @@ const darkTheme: ThemeDefinition = {
   id: "dark",
   label: "Dark Theme",
   background: "#0f172a",
+  secondaryBg: "#1e293b",
     surface: "#1e293b",
 //   surface:"#FF0000",
   primaryText: "#f8fafc",

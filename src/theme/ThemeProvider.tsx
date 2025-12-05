@@ -12,6 +12,7 @@ import { ThemeColorKey, ThemeDefinition, ThemeOption } from "./types";
 const STORAGE_KEY = "insightgrid-theme";
 const cssVarMap: Record<ThemeColorKey, string> = {
     background: "--theme-background",
+    secondaryBg: "--theme-secondary-bg",
     surface: "--theme-surface",
     primaryText: "--theme-primary-text",
     secondaryText: "--theme-secondary-text",
@@ -21,6 +22,7 @@ const cssVarMap: Record<ThemeColorKey, string> = {
 
 const colorKeys: ThemeColorKey[] = [
     "background",
+    "secondaryBg",
     "surface",
     "primaryText",
     "secondaryText",

@@ -2,6 +2,7 @@ export type ThemeOption = "light" | "dark";
 
 export type ThemeColorKey =
   | "background"
+  | "secondaryBg"
   | "surface"
   | "primaryText"
   | "secondaryText"
