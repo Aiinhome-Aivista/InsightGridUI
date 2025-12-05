@@ -23,7 +23,8 @@ font-family: "Ballo Da 2",;
 }
 /* Scrollbar styles for WebKit browsers */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {

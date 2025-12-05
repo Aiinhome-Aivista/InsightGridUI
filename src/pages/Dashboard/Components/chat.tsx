@@ -323,7 +323,7 @@ export default function Chat() {
       {/* Chat Header */}
       <div className="pb-2 bg-[#D9D9D91A] rounded-xl">
         <div className="px-4 pt-4">
-          <h1 className="text-xl font-semibold text-gray-800">Speak to Data Doctor</h1>
+          <h1 className="text-lg font-semibold text-gray-800">Speak to Data Doctor</h1>
           <div className="text-gray-500 text-md flex flex-row items-center gap-20 border-gray-200">
        
 
@@ -394,15 +394,15 @@ export default function Chat() {
       {/* Script Section */}
       <div className="bg-[#D9D9D91A] p-2 mt-5 rounded-xl">
         <div className="flex flex-row items-center justify-between px-4">
-        <h1 className="text-xl font-semibold text-gray-800 mt-1">
+        <h1 className="text-lg font-semibold text-gray-800 mt-1">
   Script view
-  <p className="text-gray-500 mb-4">Modify and run available script</p>
+  <p className="text-sm text-gray-500 mb-4">Run available script</p>
 </h1>
 
 
 <div className="flex flex-row items-center justify-between px-4">
   {/* Left empty space or other content can stay here */}
-  <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
+  <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-2 shadow-sm">
   <input
             type="text"
             value={viewName}
