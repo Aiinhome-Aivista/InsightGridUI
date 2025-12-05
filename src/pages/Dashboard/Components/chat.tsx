@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import ApiServices from "../../../services/ApiServices";
+import ApiService from "../../../services/ApiServices";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 // Assuming this path is correct based on your component structure
 import ProductDataTable from "../Components/DataTable";
@@ -66,6 +66,7 @@ export default function Chat() {
   const [viewName, setViewName] = useState("");
   const scriptContainerRef = useRef<HTMLDivElement>(null);
   const activeChat = chats.find((c) => c.id === activeChatId);
+  const userData = JSON.parse(localStorage.getItem("ig_user"));
   useEffect(() => {
     
     if (isSessionDataMissing) {
@@ -82,7 +83,7 @@ export default function Chat() {
       file_name: defaultSession.file_name,
       user_query: " Hello, how can I help you?",
     };
-    ApiServices.chat(payload)
+    ApiService.chat(payload)
       .then((response) => {
         if (response.data.isSuccess) {
           const data = response.data.data;
@@ -163,7 +164,7 @@ export default function Chat() {
       console.log("Sending Chat Payload:", payload);
 
       // API call to ApiServices.chat(payload)
-      const response = await ApiServices.chat(payload);
+      const response = await ApiService.chat(payload);
       const result = response.data?.data || {};
 
       const updatedChats = chats.map((chat) => {
@@ -250,7 +251,7 @@ export default function Chat() {
 
       console.log("Executing SQL Payload:", payload);
 
-      const response = await ApiServices.executeSql(payload);
+      const response = await ApiService.executeSql(payload);
 
       if (response.data.isSuccess && Array.isArray(response.data.data)) {
         const rows = response.data.data;
@@ -311,9 +312,33 @@ export default function Chat() {
     }
   }, [typedQuery]); // Dependency on typedQuery ensures it runs on each character addition
 
-  const handleConfirmSave = () => {
-    console.log("View saved:", viewName);
-    setIsConfirmSaveModalOpen(false);
+  const handleConfirmSave = async () => {
+    if (!activeChat || !viewName.trim()) return;
+
+    const payload = {
+      chat_title: viewName,
+      user_query: activeChat.question,
+      is_execute: isScriptRunSuccess ? 1 : 0,
+      ai_response: activeChat.ai_response || "",
+      created_by: userData?.user_id || "unknown",
+    };
+
+    try {
+      const response = await ApiService.saveChat(payload);
+      if (response.data.isSuccess) {
+        console.log("Chat saved successfully:", response.data.message);
+        // Optionally, show a success toast/notification to the user
+      } else {
+        console.error("Failed to save chat:", response.data.message);
+        // Optionally, show an error toast/notification
+      }
+    } catch (error) {
+      console.error("Error saving chat:", error);
+      // Optionally, show an error toast/notification
+    } finally {
+      setIsConfirmSaveModalOpen(false);
+      setViewName(""); // Clear input after saving
+    }
   };
 
   const handleCancelSave = () => {
