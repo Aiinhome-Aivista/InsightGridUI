@@ -38,7 +38,7 @@ export default function Login() {
         localStorage.setItem("ig_user", JSON.stringify(res.data));
 
         // setTimeout(() => navigate("/layout/upload", { replace: true }), 1500);
-        setTimeout(() => navigate("/dashboard-component", { replace: true }), 1500);
+        setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
 
 
         return;

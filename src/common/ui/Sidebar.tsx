@@ -14,9 +14,9 @@ import { useTheme } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 const menuItems = [
-  { name: "Home", icon: HomeOutlinedIcon, path: "dashboard-component" },
+  { name: "Dashboard", icon: HomeOutlinedIcon, path: "dashboard" },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
-  { name: "Table Insights", icon: ViewColumnRoundedIcon, path: "dashboard" },
+  { name: "Table Insights", icon: ViewColumnRoundedIcon, path: "table-insights" },
   { name: "Graph Insights", icon: GridViewRoundedIcon, path: "table" },
   { name: "Setting", icon: SettingsRoundedIcon, path: "setting" },
   { name: "Download", icon: FileDownloadOutlinedIcon, path: "download" },
