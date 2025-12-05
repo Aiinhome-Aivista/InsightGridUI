@@ -29,6 +29,7 @@ export default function Sidebar() {
   const { theme } = useTheme();
   const location = useLocation();
   const activePath = location.pathname.split("/").pop() || "upload";
+  const [clickedTab, setClickedTab] = useState(""); 
 
   useEffect(() => {
     const userDataString = localStorage.getItem("ig_user");
@@ -80,7 +81,11 @@ export default function Sidebar() {
             const Icon = item.icon;
             const isActive = item.path === activePath;
             return (
-              <Link to={item.path} key={item.name} className="no-underline">
+              <Link to={item.path} key={item.name} className="no-underline"
+              onClick={() => {
+                console.log("Clicked Tab:", item.name);
+                setClickedTab(item.name);  
+              }} >
                 <div
                   className={`flex items-center ${collapsed ? "justify-center" : "justify-start"
                     } h-12 cursor-pointer rounded-lg transition px-3`}
