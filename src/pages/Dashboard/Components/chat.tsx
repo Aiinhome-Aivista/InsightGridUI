@@ -492,7 +492,7 @@ export default function Chat() {
                 wordBreak: "break-all",
               }}
             >
-              {typedQuery + (typedQuery === (activeChat?.query || '') ? '' : '_')}
+              {typedQuery + (typedQuery === (activeChat?.query || '') ? '' : ' ')}
             </SyntaxHighlighter>
           </div>
 

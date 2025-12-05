@@ -11,19 +11,21 @@ interface ProductDataTableProps {
 
 export default function ProductDataTable({ data, globalFilter, columns = [] }: ProductDataTableProps) {
   return (
-    <DataTable
-      value={data}
-      globalFilter={globalFilter}
-      sortMode="multiple"
-      scrollable
-    
-      scrollHeight="200px"
-      style={{ width: '100%' }}
-      filters={{
-        global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
-      }}
-      className="custom-table"
-    >
+   <div style={{ maxWidth: "100%", overflow: "auto" }}>
+  <DataTable
+    value={data}
+    globalFilter={globalFilter}
+    sortMode="multiple"
+    scrollable
+    scrollHeight="200px"
+    style={{ maxWidth: "1780px" }}
+    filters={{
+      global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
+    }}
+    className="custom-table"
+  >
+  
+
       {columns.map((col) => (
         <Column
           key={col.column_name}
@@ -33,5 +35,6 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
         />
       ))}
     </DataTable>
+    </div>
   );
 }

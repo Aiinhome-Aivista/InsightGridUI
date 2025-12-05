@@ -21,6 +21,15 @@ font-family: "Ballo Da 2",;
     color: var(--theme-primary-text);
   }
 }
+
+
+
+
+/* Optional: max table width */
+.custom-table {
+  max-width: 1780px;   /* You can adjust */
+}
+
 /* Scrollbar styles for WebKit browsers */
 ::-webkit-scrollbar {
   width: 8px;
