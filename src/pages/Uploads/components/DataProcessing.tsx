@@ -109,17 +109,31 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         return (
           <div
             key={index}
-            className="flex items-center justify-between rounded-lg px-4 py-3 w-full"
-            style={{ backgroundColor: theme.surface }}
+            className="flex items-center rounded-lg px-4 py-3 w-full min-w-[80px] mb-3"
+            style={{ backgroundColor: theme.secondaryBg }}
           >
-            <div
-              className="text-sm font-medium min-w-[140px]"
-              style={{ color: theme.primaryText }}
-            >
-              {fileName}
+            <div className="relative group w-[20%] min-w-[150px] mr-4">
+              <div
+                className="text-sm font-medium truncate"
+                style={{ color: theme.primaryText }}
+              >
+                {fileName}
+              </div>
+
+              {/* Tooltip */}
+              <div className="
+                  absolute left-1/2 -translate-x-1/2 mt-1
+                  hidden group-hover:block
+                  whitespace-nowrap
+                  bg-[#888585] text-white text-xs px-2 py-1 rounded
+                  shadow-lg z-10
+                "
+              >
+                {fileName}
+              </div>
             </div>
 
-            <div className="flex items-center gap-20">
+            <div className="flex items-center min-w-[380px] w-[50%]">
               {STEPS.map((stepName, stepIndex) => {
                 const isCompleted = stepIndex < currentProgress;
                 const iconColor = isCompleted ? theme.accent : theme.secondaryText;
@@ -127,7 +141,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 return (
                   <div
                     key={stepIndex}
-                    className="flex flex-col items-center"
+                    className="flex flex-col items-center flex-1"
                     style={{ color: iconColor }}
                   >
                     {isCompleted ? (
@@ -141,21 +155,21 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               })}
             </div>
 
-            <span
-              className="text-xs min-w-[50px] text-center"
+            <div
+              className="text-xs text-center min-w-[80px] mx-4 w-[5%]"
               style={{ color: theme.secondaryText }}
             >
               {file.file_size || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
-            </span>
+            </div>
 
-            <span
-              className="text-xs min-w-[80px] text-center"
+            <div
+              className="text-xs text-center min-w-[180px] mx-4 w-[20%]"
               style={{ color: theme.secondaryText }}
             >
               {file.created_at || new Date().toLocaleDateString()}
-            </span>
+            </div>
 
-            <div className="flex items-center gap-20 min-w-[60px] justify-end">
+            <div className="flex items-center min-w-[60px] justify-end w-[5%]">
 
               <button
                 onClick={() => handleNavigateToDashboard(file)}

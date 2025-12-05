@@ -11,10 +11,12 @@ import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ViewColumnRoundedIcon from '@mui/icons-material/ViewColumnRounded';
 import { useTheme } from "../../theme";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 const menuItems = [
-  { name: "Upload", icon: FileUploadOutlinedIcon , path: "upload" },
-    {name: "Table Insights", icon: ViewColumnRoundedIcon, path: "dashboard" },
+  { name: "Home", icon: HomeOutlinedIcon, path: "dashboard-component" },
+  { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
+  { name: "Table Insights", icon: ViewColumnRoundedIcon, path: "dashboard" },
   { name: "Graph Insights", icon: GridViewRoundedIcon, path: "table" },
   { name: "Setting", icon: SettingsRoundedIcon, path: "setting" },
   { name: "Download", icon: FileDownloadOutlinedIcon, path: "download" },

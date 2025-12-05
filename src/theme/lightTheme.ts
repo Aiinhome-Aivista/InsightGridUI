@@ -4,6 +4,7 @@ const lightTheme: ThemeDefinition = {
   id: "light",
   label: "Light Theme",
   background: "#FBFBFB",
+  secondaryBg: "#EAEAEA",
   surface: "#ffffff",
   primaryText: "#1C1B1F",
   secondaryText: "#888585",

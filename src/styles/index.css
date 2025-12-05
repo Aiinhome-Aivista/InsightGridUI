@@ -8,6 +8,7 @@
   :root {
 font-family: "Ballo Da 2",;
     --theme-background: #FBFBFB;
+    --theme-secondary-bg: #EAEAEA;
     --theme-surface: #ffffff;
     --theme-primary-text: #0f172a;
     --theme-secondary-text: #475569;
@@ -68,4 +69,3 @@ font-family: "Ballo Da 2",;
     border: 1px solid var(--theme-border);
   }
 }
-
