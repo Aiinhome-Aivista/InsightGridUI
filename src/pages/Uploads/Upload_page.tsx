@@ -17,6 +17,8 @@ export default function UploadPage() {
   const isInitialMount = useRef(true);
   const uploadInProgress = useRef(false);
   const currentSessionRef = useRef<{ id: string, name: string } | null>(null);
+  const userData = JSON.parse(localStorage.getItem("ig_user"));
+  const createdBy = userData?.user_id || "";
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -33,8 +35,6 @@ export default function UploadPage() {
       console.error('Error tracking files:', error);
     }
   }
-const userData = JSON.parse(localStorage.getItem("ig_user"));
-const createdBy = userData?.user_id || "";
 
   async function uploadFiles(files: File[]) {
     if (!files || files.length === 0) return;
