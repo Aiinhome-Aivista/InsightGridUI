@@ -42,7 +42,7 @@ export default function DashboardHeader({
   const toggleOptions = [
     { label: "Meta Data", value: 'metadata' },
     { label: "Data View", value: 'dataview' },
-    { label: "Insight", value: 'insights' },
+    { label: "Insights", value: 'insights' },
   ];
   const defaultSelectionIndex = toggleOptions.findIndex(opt => opt.value === viewSelection);
 
