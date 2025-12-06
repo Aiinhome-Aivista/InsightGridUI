@@ -480,7 +480,7 @@ export default function Chat() {
 
           <div
             ref={scriptContainerRef}
-            className="mt-10 text-sm font-mono relative min-h-[150px] max-h-[350px] overflow-y-auto max-w-screen"
+            className="mt-10 text-sm font-mono relative min-h-[150px] max-h-[350px] overflow-y-auto max-w-[1300px]"
           >
             {/* This SyntaxHighlighter displays the progressively typed and highlighted query. */}
             <SyntaxHighlighter
@@ -490,8 +490,8 @@ export default function Chat() {
                 backgroundColor: "transparent",
                 padding: 0,
                 margin: 0,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-all",
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
               }}
             >
               {typedQuery + (typedQuery === (activeChat?.query || '') ? '' : ' ')}
