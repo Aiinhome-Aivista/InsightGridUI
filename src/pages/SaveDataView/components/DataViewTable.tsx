@@ -1,6 +1,6 @@
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Tag } from "primereact/tag";
 import { FilterMatchMode } from "primereact/api";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
@@ -13,6 +13,8 @@ import ChartSidebar from "../../Dashboard/Components/ChartSidebar";
 import { useTheme } from "../../../theme";
 import RenderCharts from "../../Dashboard/Components/render-charts";
 import AnimatedToggleButton from "../../../Modal/components/animated-toggle-button";
+import { ProcedureCodeBlock, ProcedureToggleButton } from "./SpDropDown";
+
 
 interface DashboardTableProps {
   allData: { [key: string]: any[] };
@@ -29,13 +31,15 @@ export default function DashboardTable({
   const [isChartVisible, setIsChartVisible] = useState(false);
   const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
   const [toggleSelection, setToggleSelection] = useState(1);
-  const [showChartView, setShowChartView] = useState(false); // NEW: Controls what to display
+  const [showChartView, setShowChartView] = useState(false);
+  
+  // State for Procedure View (Default is true as requested)
+  const [showProcedure, setShowProcedure] = useState(true);
 
   const handleRemoveChart = (chartType: string) => {
     const newCharts = selectedCharts.filter((chart) => chart !== chartType);
     setSelectedCharts(newCharts);
 
-    // If no charts left, switch to table view
     if (newCharts.length === 0) {
       setShowChartView(false);
       setToggleSelection(1);
@@ -44,8 +48,6 @@ export default function DashboardTable({
 
   const handleSidebarClose = () => {
     setIsChartVisible(false);
-
-    // FIX 1: If no charts were selected, revert to table view
     if (selectedCharts.length === 0) {
       setToggleSelection(1);
       setShowChartView(false);
@@ -63,13 +65,14 @@ export default function DashboardTable({
     <div>
       {selectedTables.map((tableKey) => {
         const tableData = allData[tableKey] || [];
-        const tableName = tableKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        const tableName = tableKey
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (l) => l.toUpperCase());
 
         return (
           <div key={tableKey} className="p-6 px-4 ">
-            {/* Card Container */}
-            <div className="rounded-xl shadow-xs p-4">
-              {/* Header Section (Same as Screenshot) */}
+            <div className="rounded-xl shadow-xs p-4 bg-white">
+              {/* Header Section */}
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h2
@@ -85,19 +88,23 @@ export default function DashboardTable({
                     className="text-xs mt-1"
                     style={{ color: theme.secondaryText }}
                   >
-                    This table is showing all {tableName.toLowerCase()}
+                    This table is showing all {tableName.toLowerCase()} details
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+
+                <div className="flex items-center gap-3">
+                  
+                  {/* COMPONENT: Procedure Toggle Button */}
+                  <ProcedureToggleButton 
+                    isOpen={showProcedure} 
+                    onToggle={() => setShowProcedure(!showProcedure)} 
+                  />
+
                   <AnimatedToggleButton
                     options={[
                       {
                         icon: (
-                          <Tippy
-                            content="Chart View"
-                            theme="gray"
-                            placement="bottom"
-                          >
+                          <Tippy content="Chart View" theme="gray" placement="bottom">
                             <BarChartIcon />
                           </Tippy>
                         ),
@@ -105,11 +112,7 @@ export default function DashboardTable({
                       },
                       {
                         icon: (
-                          <Tippy
-                            content="Table View"
-                            theme="gray"
-                            placement="bottom"
-                          >
+                          <Tippy content="Table View" theme="gray" placement="bottom">
                             <GridViewRoundedIcon />
                           </Tippy>
                         ),
@@ -117,16 +120,12 @@ export default function DashboardTable({
                       },
                     ]}
                     defaultSelected={toggleSelection}
-                    onChange={(selectedIndex: number, value: string | number) => {
+                    onChange={(selectedIndex, value) => {
                       setToggleSelection(selectedIndex);
                       if (value === "chart") {
                         setIsChartVisible(true);
-                        // If charts exist, show them
-                        if (selectedCharts.length > 0) {
-                          setShowChartView(true);
-                        }
+                        if (selectedCharts.length > 0) setShowChartView(true);
                       } else {
-                        // FIX 2: When switching to table view, hide charts and close sidebar
                         setIsChartVisible(false);
                         setShowChartView(false);
                       }
@@ -145,7 +144,10 @@ export default function DashboardTable({
                 </div>
               </div>
 
-              {/* FIX 2: Show Charts only when showChartView is true AND charts exist */}
+              {/* COMPONENT: Procedure Code Content */}
+              <ProcedureCodeBlock isVisible={showProcedure} />
+
+              {/* Chart vs Table View Logic */}
               {showChartView && selectedCharts.length > 0 ? (
                 <RenderCharts
                   selectedCharts={selectedCharts}
@@ -165,18 +167,14 @@ export default function DashboardTable({
                     global: {
                       value: globalFilter,
                       matchMode: FilterMatchMode.CONTAINS,
-                    }
+                    },
                   }}
                   className="custom-table"
                 >
                   <Column field="sales" header="Sales" />
                   <Column field="product" header="Product" />
                   <Column field="customer" header="Customer" />
-                  <Column
-                    field="purchase"
-                    header="Purchase Amount"
-                    body={purchaseBody}
-                  />
+                  <Column field="purchase" header="Purchase Amount" body={purchaseBody} />
                 </DataTable>
               )}
             </div>
@@ -184,21 +182,16 @@ export default function DashboardTable({
         );
       })}
 
-      {/* Sidebar appears when chart icon clicked */}
       {isChartVisible && (
         <ChartSidebar
           onChartSelect={(charts) => {
             setSelectedCharts(charts);
-            // When charts are selected, show them
-            if (charts.length > 0) {
-              setShowChartView(true);
-            }
+            if (charts.length > 0) setShowChartView(true);
           }}
           onClose={handleSidebarClose}
-          selectedCharts={selectedCharts} // FIX 3: Pass selected charts to sidebar
+          selectedCharts={selectedCharts}
         />
       )}
     </div>
   );
-
 }
