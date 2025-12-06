@@ -42,6 +42,10 @@ class ApiServices {
   //   });
   // }
   
+
+  getDashboardData(body) {
+  return axios.post(POST_APIS.get_dashboard_data, body);
+}
 }
 
 export default new ApiServices();
