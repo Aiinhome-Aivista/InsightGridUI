@@ -41,11 +41,17 @@ class ApiServices {
   //     params: { user_id }
   //   });
   // }
-  
+
 
   getDashboardData(body) {
-  return axios.post(POST_APIS.get_dashboard_data, body);
-}
+    return axios.post(POST_APIS.get_dashboard_data, body);
+  }
+
+  getChatHistory(body) {  
+    return axios.post(POST_APIS.get_chat_history, body);
+  }
+
+
 }
 
 export default new ApiServices();
