@@ -1,13 +1,13 @@
-import { useState,useRef } from "react";
+import { useState, useRef } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css';
-import '../../../styles/tippy-theme.css';
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import "../../../styles/tippy-theme.css";
 import { InputText } from "primereact/inputtext";
 import ColumnSelectionPage from "../../../Modal/column-section-page";
-import ForumIcon from '@mui/icons-material/Forum';
+import ForumIcon from "@mui/icons-material/Forum";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
 import { MultiSelect } from "primereact/multiselect";
@@ -18,7 +18,7 @@ interface HeaderProps {
   onRefresh: () => void;
   selectedTables: string[];
   setSelectedTables: (value: string[]) => void;
-  tableOptions: { label: string, value: string }[];
+  tableOptions: { label: string; value: string }[];
 }
 
 export default function DashboardHeader({
@@ -43,6 +43,14 @@ export default function DashboardHeader({
     // Simulate a refresh delay
     setTimeout(() => setIsRefreshing(false), 1500);
   };
+  const [selectedCities, setSelectedCities] = useState([]);
+  const cities = [
+    { label: "New York", value: "NY" },
+    { label: "Rome", value: "RM" },
+    { label: "London", value: "LDN" },
+    { label: "Istanbul", value: "IST" },
+    { label: "Paris", value: "PRS" },
+  ];
   return (
     <>
       <header
@@ -52,10 +60,12 @@ export default function DashboardHeader({
         <div className="px-4 sm:px-4 lg:px-7">
           {/* Responsive Flex Container */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
-
             {/* Left Section */}
             <div className="flex-shrink-0 text-center md:text-left">
-              <h1 className="text-xl font-semibold" style={{ color: theme.primaryText }}>
+              <h1
+                className="text-xl font-semibold"
+                style={{ color: theme.primaryText }}
+              >
                 Tabular view
               </h1>
               <p
@@ -95,17 +105,19 @@ export default function DashboardHeader({
                 options={tableOptions}
                 onChange={(e) => setSelectedTables(e.value)}
                 placeholder="Select Views"
-                filter
                 display="chip"
-                className="p-4 w-80 h-10 border border-[#E5E5E5] rounded-xl text-[#6F6F6F] text-sm flex items-center bg-white focus:ring-0 focus:outline-none shadow-none"
-                panelClassName="pl-4
-                    rounded-xl shadow-md
-                    text-[#6F6F6F] bg-white
-                  "
+                className="
+          p-4 w-80 h-10 border border-[#E5E5E5]
+          rounded-xl text-[#6F6F6F] text-sm flex items-center bg-white
+          focus:ring-0 focus:outline-none shadow-none
+        "
+                panelClassName="
+          pl-4 rounded-xl shadow-md text-[#6F6F6F] bg-white
+        "
                 pt={{
-                  wrapper: { className: 'max-h-64 overflow-auto' },
-                  header: { className: 'p-2 gap-3' },
-                  item: { className: 'p-2 gap-3' }
+                  wrapper: { className: "max-h-64 overflow-auto" },
+                  header: { className: "p-2 gap-3" },
+                  item: { className: "p-2 gap-3" },
                 }}
               />
               <Tippy content="InsightGrid Chat" theme="gray">
@@ -114,7 +126,6 @@ export default function DashboardHeader({
                   className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
                   style={{ borderColor: theme.border }}
                 >
-                
                   <ForumIcon
                     className="w-5 h-5"
                     sx={{
@@ -125,14 +136,13 @@ export default function DashboardHeader({
                   />
                 </div>
               </Tippy>
-        
+
               <Tippy content="Select Columns" theme="gray">
                 <div
                   onClick={() => setShowColumnModal(true)}
                   className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
                   style={{ borderColor: theme.border }}
                 >
-                  
                   <ViewColumnRoundedIcon
                     className="w-5 h-5"
                     sx={{
@@ -149,12 +159,17 @@ export default function DashboardHeader({
                 <div
                   onClick={handleRefresh}
                   className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
-                    isRefreshing ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-gray-500/10'
+                    isRefreshing
+                      ? "cursor-not-allowed"
+                      : "cursor-pointer hover:bg-gray-500/10"
                   }`}
                   style={{ borderColor: theme.border }}
                 >
                   {isRefreshing ? (
-                    <AutorenewRoundedIcon className="w-5 h-5 animate-spin" sx={{ color: theme.secondaryText }} />
+                    <AutorenewRoundedIcon
+                      className="w-5 h-5 animate-spin"
+                      sx={{ color: theme.secondaryText }}
+                    />
                   ) : (
                     <AutorenewRoundedIcon
                       className="w-5 h-5"
@@ -170,7 +185,6 @@ export default function DashboardHeader({
           </div>
         </div>
       </header>
-
     </>
   );
 }
