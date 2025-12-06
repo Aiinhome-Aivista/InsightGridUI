@@ -1,7 +1,7 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const GET_APIS = {
-  tracker: `${BASE_URL}tracker`,
+  
 };
 
 export const POST_APIS = {
@@ -13,4 +13,5 @@ export const POST_APIS = {
   get_ui_data: `${BASE_URL}get_ui_data`,
   processSessionData: `${BASE_URL}process_session_data`,
   save_chat: `${BASE_URL}save_chat`,
+  tracker: `${BASE_URL}tracker`,
 };

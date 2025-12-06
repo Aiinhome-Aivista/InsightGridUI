@@ -23,27 +23,46 @@ export default function UploadPage() {
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      trackFiles(createdBy);
+      // trackFiles(createdBy);
+      trackFiles({ created_by: createdBy });
     }
   }, []);
 
-  async function trackFiles(userId: string) {
+  // async function trackFiles(userId: string) {
+  //   try {
+  //     const response = await ApiService.tracker(userId);
+  //     setProcessedFiles(response.data?.data || []);
+
+  //     // Save API message if no files
+  //     if (response.data?.data.length === 0) {
+  //       setNoFileMessage(response.data?.message || "No files found");
+  //     } else {
+  //       setNoFileMessage("");  // clear message
+  //     }
+
+  //   } catch (error) {
+  //     console.error('Error tracking files:', error);
+  //     setNoFileMessage(error.message);
+  //   }
+  // }
+
+  async function trackFiles(payload: { created_by: string }) {
     try {
-      const response = await ApiService.tracker(userId);
+      const response = await ApiService.tracker(payload);
       setProcessedFiles(response.data?.data || []);
 
-      // Save API message if no files
       if (response.data?.data.length === 0) {
         setNoFileMessage(response.data?.message || "No files found");
       } else {
-        setNoFileMessage("");  // clear message
+        setNoFileMessage("");
       }
 
     } catch (error) {
-      console.error('Error tracking files:', error);
+      console.error("Error tracking files:", error);
       setNoFileMessage(error.message);
     }
   }
+
 
   async function uploadFiles(files: File[]) {
     if (!files || files.length === 0) return;
@@ -113,7 +132,7 @@ export default function UploadPage() {
         throw new Error('Data verification failed. Please try processing again manually.');
       }
 
-      await processSessionData(actualSessionId, actualSessionName);
+      await processSessionData(actualSessionId, actualSessionName, );
 
     } catch (error: any) {
       console.error('Error uploading files:', error);
@@ -126,7 +145,8 @@ export default function UploadPage() {
 
   async function verifyDataExists(sessionId: string, sessionName: string): Promise<boolean> {
     try {
-      const response = await ApiService.tracker(createdBy);
+      // const response = await ApiService.tracker(createdBy);
+      const response = await ApiService.tracker({ created_by: createdBy });
       const filesList = response.data?.data || [];
 
       const fileExists = filesList.some(
@@ -138,7 +158,8 @@ export default function UploadPage() {
       if (!fileExists) {
         await new Promise(resolve => setTimeout(resolve, 3000));
 
-        const retryResponse = await ApiService.tracker();
+        // const retryResponse = await ApiService.tracker();
+        const retryResponse = await ApiService.tracker({ created_by: createdBy });
         const retryFilesList = retryResponse.data?.data || [];
         const retryExists = retryFilesList.some(
           (file: any) =>
@@ -160,7 +181,8 @@ export default function UploadPage() {
     try {
       const requestBody = {
         session_id: sessionId,
-        session_name: sessionNameTrimmed
+        session_name: sessionNameTrimmed,
+        created_by: createdBy
       };
 
       const processResponse = await ApiService.processSessionData(requestBody);
@@ -176,7 +198,9 @@ export default function UploadPage() {
         }
       }
 
-      await trackFiles(createdBy);
+      // await trackFiles(createdBy);
+      await trackFiles({ created_by: createdBy });
+
 
       setIsProcessing(false);
       setProcessingFileName("");
@@ -246,8 +270,11 @@ export default function UploadPage() {
           </div>
         </div>
       )}
+      {/* onRefresh={() => { trackFiles(createdBy) }}  */}
       {processedFiles.length > 0 ? (
-        <DataProcessing files={processedFiles} onRefresh={() => { trackFiles(createdBy) }} />
+        <DataProcessing files={processedFiles} 
+        onRefresh={() => trackFiles({ created_by: createdBy })}
+/>
       ) :
         (
           <div className="flex justify-center mt-40">

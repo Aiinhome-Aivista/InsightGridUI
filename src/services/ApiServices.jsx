@@ -3,17 +3,17 @@ import { GET_APIS, POST_APIS } from "../../connection";
 //import { LoginPayload, LoginResponse } from "../models/login.model";
 
 class ApiServices {
-   login(body) {
-     return axios.post(POST_APIS.login, body);
-   }
+  login(body) {
+    return axios.post(POST_APIS.login, body);
+  }
 
-   getUiData(body) {
+  getUiData(body) {
     return axios.post(POST_APIS.get_ui_data, body);
   }
-     chat(body) {
+  chat(body) {
     return axios.post(POST_APIS.chat_ai, body);
   }
-  
+
   executeSql(body) {
     return axios.post(POST_APIS.execute_sql, body);
   }
@@ -33,14 +33,15 @@ class ApiServices {
     return axios.post(POST_APIS.save_chat, body);
   }
 
-  // tracker() {
-  //   return axios.get(GET_APIS.tracker);
-  // }
-  tracker(user_id) {
-    return axios.get(GET_APIS.tracker, {
-      params: { user_id }
-    });
+  tracker(body) {
+    return axios.post(POST_APIS.tracker, body);
   }
+  // tracker(user_id) {
+  //   return axios.get(GET_APIS.tracker, {
+  //     params: { user_id }
+  //   });
+  // }
+  
 }
 
 export default new ApiServices();

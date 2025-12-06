@@ -321,6 +321,8 @@ export default function Chat() {
       is_execute: isScriptRunSuccess ? 1 : 0,
       ai_response: activeChat.ai_response || "",
       created_by: userData?.user_id || "unknown",
+      table_data: tableData || null,
+    
     };
 
     try {
