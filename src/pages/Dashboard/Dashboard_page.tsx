@@ -29,7 +29,7 @@ export default function Dashboard_page() {
 
   return (
     <>
-      <div className="flex flex-col bg-[#D9D9D91A] rounded-xl m-5">
+      <div className="flex flex-col bg-[#D9D9D91A] rounded-xl m-5 max-w-screen">
         <DashboardHeader
           globalFilter={globalFilter}
           setGlobalFilter={setGlobalFilter}
