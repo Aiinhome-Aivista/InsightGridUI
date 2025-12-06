@@ -5,10 +5,10 @@ import { Tag } from "primereact/tag";
 import { FilterMatchMode } from "primereact/api";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css';
-import '../../../styles/tippy-theme.css';
- import "../../Dashboard/Components/primereact-table.css";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import "../../../styles/tippy-theme.css";
+import "../../Dashboard/Components/primereact-table.css";
 import ChartSidebar from "../../Dashboard/Components/ChartSidebar";
 import { useTheme } from "../../../theme";
 import RenderCharts from "../../Dashboard/Components/render-charts";
@@ -19,7 +19,10 @@ interface DashboardTableProps {
   globalFilter: string;
 }
 
-export default function DashboardTable({ data, globalFilter }: DashboardTableProps) {
+export default function DashboardTable({
+  data,
+  globalFilter,
+}: DashboardTableProps) {
   const { theme } = useTheme();
   const [isChartVisible, setIsChartVisible] = useState(false);
   const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
@@ -27,9 +30,9 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
   const [showChartView, setShowChartView] = useState(false); // NEW: Controls what to display
 
   const handleRemoveChart = (chartType: string) => {
-    const newCharts = selectedCharts.filter(chart => chart !== chartType);
+    const newCharts = selectedCharts.filter((chart) => chart !== chartType);
     setSelectedCharts(newCharts);
-    
+
     // If no charts left, switch to table view
     if (newCharts.length === 0) {
       setShowChartView(false);
@@ -39,7 +42,7 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
 
   const handleSidebarClose = () => {
     setIsChartVisible(false);
-    
+
     // FIX 1: If no charts were selected, revert to table view
     if (selectedCharts.length === 0) {
       setToggleSelection(1);
@@ -58,10 +61,7 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
     <div>
       <div className="p-6">
         {/* Card Container */}
-        <div
-          className="rounded-xl shadow-xs p-4"
-          style={{ backgroundColor: theme.surface }}
-        >
+        <div className="rounded-xl shadow-xs p-4">
           {/* Header Section (Same as Screenshot) */}
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -69,10 +69,15 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
                 className="text-sm font-semibold flex items-center gap-2"
                 style={{ color: theme.primaryText }}
               >
-                <GridViewRoundedIcon sx={{ fontSize: "1rem", color: theme.primaryText }} />
+                <GridViewRoundedIcon
+                  sx={{ fontSize: "1rem", color: theme.primaryText }}
+                />
                 Product Details
               </h2>
-              <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
+              <p
+                className="text-xs mt-1"
+                style={{ color: theme.secondaryText }}
+              >
                 This table is showing all product details
               </p>
             </div>
@@ -80,20 +85,34 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
               <AnimatedToggleButton
                 options={[
                   {
-                    icon: <Tippy content="Chart View" theme="gray" placement="bottom"><BarChartIcon /></Tippy>,
-                    value: 'chart'
+                    icon: (
+                      <Tippy
+                        content="Chart View"
+                        theme="gray"
+                        placement="bottom"
+                      >
+                        <BarChartIcon />
+                      </Tippy>
+                    ),
+                    value: "chart",
                   },
                   {
                     icon: (
-                      <Tippy content="Table View" theme="gray" placement="bottom"><GridViewRoundedIcon /></Tippy>
+                      <Tippy
+                        content="Table View"
+                        theme="gray"
+                        placement="bottom"
+                      >
+                        <GridViewRoundedIcon />
+                      </Tippy>
                     ),
-                    value: 'table'
+                    value: "table",
                   },
                 ]}
                 defaultSelected={toggleSelection}
                 onChange={(selectedIndex: number, value: string | number) => {
                   setToggleSelection(selectedIndex);
-                  if (value === 'chart') {
+                  if (value === "chart") {
                     setIsChartVisible(true);
                     // If charts exist, show them
                     if (selectedCharts.length > 0) {
@@ -121,12 +140,19 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
 
           {/* FIX 2: Show Charts only when showChartView is true AND charts exist */}
           {showChartView && selectedCharts.length > 0 ? (
-            <RenderCharts selectedCharts={selectedCharts} onRemoveChart={handleRemoveChart} />
+            <RenderCharts
+              selectedCharts={selectedCharts}
+              onRemoveChart={handleRemoveChart}
+            />
           ) : (
             <DataTable
               value={data}
               paginator={false}
               rows={10}
+              sortMode="multiple"
+              scrollable
+              scrollHeight="200px"
+              style={{ maxWidth: "1370px" }}
               globalFilter={globalFilter}
               filters={{
                 global: {
@@ -139,7 +165,11 @@ export default function DashboardTable({ data, globalFilter }: DashboardTablePro
               <Column field="sales" header="Sales" />
               <Column field="product" header="Product" />
               <Column field="customer" header="Customer" />
-              <Column field="purchase" header="Purchase Amount" body={purchaseBody} />
+              <Column
+                field="purchase"
+                header="Purchase Amount"
+                body={purchaseBody}
+              />
             </DataTable>
           )}
         </div>

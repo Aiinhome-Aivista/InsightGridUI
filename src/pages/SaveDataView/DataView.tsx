@@ -14,7 +14,7 @@ export default function TableView() {
   ];
 
   return (
-    <div className="h-full bg-[#D9D9D91A]" style={{ backgroundColor: theme.background }}>
+    <div className="h-full bg-[#D9D9D91A] rounded-xl m-5 max-w-screen">
       <DataViewHeader
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter} onRefresh={function (): void {

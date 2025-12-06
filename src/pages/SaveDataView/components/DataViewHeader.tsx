@@ -109,7 +109,7 @@ export default function DashboardHeader({
                                 onShow={handleDropdownShow}
                                 onHide={handleDropdownHide}
                                 filter
-                                placeholder="Select table"
+                                placeholder="Select available view data"
                                 className="p-4
                     w-80 h-11
                     border border-[#E5E5E5]
