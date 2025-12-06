@@ -21,6 +21,70 @@ font-family: "Ballo Da 2",;
     color: var(--theme-primary-text);
   }
 }
+/* Remove double check mark */
+.p-multiselect-item .p-checkbox .p-checkbox-box .p-checkbox-icon {
+  display: none !important;
+}
+/* Fix close icon alignment */
+.p-multiselect-header .p-multiselect-close {
+  margin-right: 6px !important; /* adjust spacing */
+  margin-top: 2px !important;   /* vertical alignment */
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Remove hover effect on entire header */
+.p-multiselect-header {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+/* Apply hover effect ONLY to close icon */
+.p-multiselect-close {
+  border-radius: 6px !important;
+  padding: 4px !important;
+  transition: background-color 0.2s ease;
+}
+
+.p-multiselect-close:hover {
+  background-color: #e5e7eb !important; /* light gray hover */
+}
+
+.p-multiselect-header .p-checkbox {
+  display: none !important;
+}
+.p-multiselect-items-wrapper {
+  padding-top: 0 !important;
+  margin-top: -35px !important; /* adjust or remove based on height */
+}
+/* Show only checkbox tick when selected */
+.p-multiselect-item .p-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon {
+  display: block !important;
+}
+
+/* Proper spacing between checkbox and text */
+.p-multiselect-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 10px 12px !important;
+}
+
+/* Chip spacing fix */
+.p-multiselect-token {
+  margin-right: 8px !important;
+}
+
+/* Fix panel padding + alignment */
+.p-multiselect-panel {
+  border-radius: 12px !important;
+  padding-top: 6px !important;
+}
+
+.p-multiselect-items-wrapper {
+  padding: 0 !important;
+}
 
 
 
