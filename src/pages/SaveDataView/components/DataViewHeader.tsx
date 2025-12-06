@@ -10,26 +10,29 @@ import ColumnSelectionPage from "../../../Modal/column-section-page";
 import ForumIcon from '@mui/icons-material/Forum';
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
-import { Dropdown } from "primereact/dropdown";
+import { MultiSelect } from "primereact/multiselect";
 
 interface HeaderProps {
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
   onRefresh: () => void;
+  selectedTables: string[];
+  setSelectedTables: (value: string[]) => void;
+  tableOptions: { label: string, value: string }[];
 }
 
 export default function DashboardHeader({
   globalFilter,
   setGlobalFilter,
   onRefresh,
+  selectedTables,
+  setSelectedTables,
+  tableOptions,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { theme } = useTheme();
   const navigate = useNavigate();
-  const [selectedView, setSelectedView] = useState(null);
-    const [tableOptions, setTableOptions] = useState([]);
-  const dropdownRef = useRef<Dropdown>(null);
   const handleRefresh = () => {
     // Don't do anything if already refreshing
     if (isRefreshing) return;
@@ -40,26 +43,13 @@ export default function DashboardHeader({
     // Simulate a refresh delay
     setTimeout(() => setIsRefreshing(false), 1500);
   };
- const [isLoading, setIsLoading] = useState(false); // Dummy isLoading state
-
-  // Dummy functions to satisfy the Dropdown props
-  const handleViewChange = (e: { value: any }) => {
-    setSelectedView(e.value);
-    // console.log("Selected table:", e.value);
-  };
-  const handleDropdownShow = () => {
-    // console.log("Dropdown shown");
-  };
-  const handleDropdownHide = () => {
-    // console.log("Dropdown hidden");
-  };
   return (
     <>
       <header
         // style={{ backgroundColor: theme.surface }}
         className="w-full"
       >
-        <div className="px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-4">
           {/* Responsive Flex Container */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
 
@@ -99,36 +89,25 @@ export default function DashboardHeader({
             </div>
 
             {/* Right Action Buttons */}
-            <div className="flex items-center justify-center gap-3 md:gap-4">
-                  <Dropdown
-                                ref={dropdownRef}
-                                value={selectedView}
-                                options={tableOptions}
-                                onChange={handleViewChange}
-                                loading={isLoading}
-                                onShow={handleDropdownShow}
-                                onHide={handleDropdownHide}
-                                filter
-                                placeholder="Select available view data"
-                                className="p-4
-                    w-80 h-10
-                    border border-[#E5E5E5]
-                    rounded-xl
-                    text-[#6F6F6F]
-                    text-sm
-                    flex items-center
-                    bg-white
-                    focus:ring-0 focus:outline-none
-                    shadow-none
-                  "
-                  
-                                  
-                                panelClassName=" pl-4
+            <div className="flex items-center justify-center gap-3 md:gap-4 ">
+              <MultiSelect
+                value={selectedTables}
+                options={tableOptions}
+                onChange={(e) => setSelectedTables(e.value)}
+                placeholder="Select Views"
+                filter
+                display="chip"
+                className="p-4 w-80 h-10 border border-[#E5E5E5] rounded-xl text-[#6F6F6F] text-sm flex items-center bg-white focus:ring-0 focus:outline-none shadow-none"
+                panelClassName="pl-4
                     rounded-xl shadow-md
                     text-[#6F6F6F] bg-white
                   "
-                              />
-              {/* Chat Icon */}
+                pt={{
+                  wrapper: { className: 'max-h-64 overflow-auto' },
+                  header: { className: 'p-2 gap-3' },
+                  item: { className: 'p-2 gap-3' }
+                }}
+              />
               <Tippy content="InsightGrid Chat" theme="gray">
                 <div
                   onClick={() => navigate("/layout/chatScreen")}
