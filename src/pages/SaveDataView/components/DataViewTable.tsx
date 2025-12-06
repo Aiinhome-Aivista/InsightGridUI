@@ -55,7 +55,7 @@ export default function DashboardTable({
   const purchaseBody = (row: any) => (
     <Tag
       value={row.purchase}
-      className="px-3 py-1 rounded-full bg-green-100 text-green-600 text-xs font-medium border-none"
+      className="px-4 py-1 rounded-full bg-green-100 text-green-600 text-xs font-medium border-none"
     />
   );
 
@@ -66,7 +66,7 @@ export default function DashboardTable({
         const tableName = tableKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
         return (
-          <div key={tableKey} className="p-6 ">
+          <div key={tableKey} className="p-6 px-4 ">
             {/* Card Container */}
             <div className="rounded-xl shadow-xs p-4">
               {/* Header Section (Same as Screenshot) */}
