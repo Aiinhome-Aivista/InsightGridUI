@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -33,6 +33,7 @@ export default function DashboardHeader({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const multiSelectRef = useRef(null);
 
   const handleRefresh = () => {
     if (isRefreshing) return;
@@ -40,6 +41,19 @@ export default function DashboardHeader({
     onRefresh();
     setTimeout(() => setIsRefreshing(false), 1500);
   };
+
+  const handleDropdownShow = () => {
+    window.addEventListener("scroll", handleScroll, true);
+  };
+
+  const handleDropdownHide = () => {
+    window.removeEventListener("scroll", handleScroll, true);
+  };
+
+  const handleScroll = () => {
+    multiSelectRef.current?.hide();
+  };
+
 
   // --- CUSTOM TEMPLATE FOR SELECTED ITEMS (CHIPS) ---
   const selectedItemTemplate = (value: string) => {
@@ -121,6 +135,7 @@ export default function DashboardHeader({
               {/* --- MULTISELECT --- */}
               <div className="w-full md:w-auto">
                 <MultiSelect
+                  ref={multiSelectRef}
                   value={selectedTables}
                   options={tableOptions}
                   onChange={(e) => setSelectedTables(e.value)}
@@ -129,6 +144,8 @@ export default function DashboardHeader({
                   placeholder="Select Views"
                   display="chip"
                   selectedItemTemplate={selectedItemTemplate}
+                  onShow={handleDropdownShow}
+                  onHide={handleDropdownHide}
                   
                   // STYLE FIXES:
                   // flex-wrap: Ensures chips flow to next line
