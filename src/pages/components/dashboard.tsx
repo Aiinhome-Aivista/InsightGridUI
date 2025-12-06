@@ -45,9 +45,9 @@ export default function Dashboard() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col gap-4 overflow-hidden min-h-0 p-4">
-        {/* First Row: */}
+        {/* First Row: 4 small cards (40%) + 1 large card (60%) */}
         <div className="flex gap-4 h-[30%]">
-          {/* Left side*/}
+          {/* Left side - 4 cards in 2x2 grid (40% width) */}
           <div className="w-[40%] grid grid-cols-2 gap-4">
             <div className="bg-[#D9D9D9] rounded-lg p-3 flex flex-col items-center justify-center">
               <p className="text-2xl font-bold text-gray-800">{stats.totalUploaded}</p>
@@ -68,25 +68,54 @@ export default function Dashboard() {
           </div>
 
           {/* Right side */}
-          <div className="w-[60%] bg-[#D9D9D9] rounded-lg p-3">
-            {/* Large card content */}
+          <div className="w-[60%] bg-[#D9D9D9] rounded-lg p-3 overflow-auto">
+            {dashboardData?.latest_file ? (
+              <table className="w-full text-sm border-collapse border border-gray-400">
+                <thead>
+                  <tr>
+                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Session Name</th>
+                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">File Name</th>
+                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Table Extract Status</th>
+                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Column Extract Status</th>
+                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Data Insights Status</th>
+                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">File Size</th>
+                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Updated At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.session_name}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.file_name}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.file_size}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.table_extract_status}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.column_extract_status}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.data_insights_status}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.updated_at}</td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <p className="text-gray-600 text-sm">No file data available</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Second Row */}
+        {/* Second Row: 3 cards with different widths */}
         <div className="flex gap-4 h-[30%]">
           <div className="w-[20%] bg-[#D9D9D9] rounded-lg p-3">
             {/* Card 5 - 20% width */}
           </div>
           <div className="w-[50%] bg-[#D9D9D9] rounded-lg p-3">
-            {/* Card 6  */}
+            {/* Card 6 - 50% width */}
           </div>
           <div className="w-[30%] bg-[#D9D9D9] rounded-lg p-3">
-            {/* Card 7  */}
+            {/* Card 7 - 30% width */}
           </div>
         </div>
 
-        {/* Third Row */}
+        {/* Third Row: 2 larger cards + 1 thin column with 4 small cards */}
         <div className="flex gap-4 h-[30%]">
           {/* First card */}
           <div className="w-[30%] bg-[#D9D9D9] rounded-lg p-3">
@@ -98,7 +127,7 @@ export default function Dashboard() {
             {/* Card 9 content */}
           </div>
 
-          {/* Right column */}
+          {/* Right column with 4 stacked cards */}
           <div className="w-[50%] flex flex-col gap-4">
             <div className="h-[30%] bg-[#D9D9D9] rounded-lg p-2">
               {/* Small card 1 */}
