@@ -19,7 +19,7 @@ export default function UploadIdle({ onFileSelect, disabled = false }: Props) {
 
       <p className="text-sm mt-2" style={{ color: theme.secondaryText }}>
         Click to upload or drag and drop <br />
-        CSV, EXC, PDF (MAX 10MB)
+        CSV, XLSX, XML, SQL, DUMP, XLS (MAX 10MB)
       </p>
 
       <label className={`mt-3 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
