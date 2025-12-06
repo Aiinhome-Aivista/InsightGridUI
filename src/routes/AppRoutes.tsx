@@ -9,7 +9,7 @@ import Login from "../pages/Auth/Login";
 import LandingPage from "../pages/LandingPage/LandingPage";
 import SQL_page from "../pages/Filters/SQL_page";
 import Filter_page from "../pages/Filters/Filter_page";
-import TableView from "../pages/TableView/TableView";
+import TableView from "../pages/SaveDataView/DataView";
 import InsightGridChatWrapper from "../pages/ChatScreen/InsightGridChatWrapper";
 import Dashboard from "../pages/components/dashboard";
 
