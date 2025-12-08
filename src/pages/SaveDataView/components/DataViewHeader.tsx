@@ -67,7 +67,7 @@
 //       // Added 'group' class here to control hover state of children
 //       <div className="group inline-flex items-center bg-[#F3F4F6] text-[#4B5563] rounded-md px-2 py-0.5 text-xs font-medium border border-gray-200 mr-1 mb-1 transition-all">
 //         <span>{label}</span>
-        
+
 //         {/* Custom Close Icon */}
 //         <div
 //           role="button"
@@ -131,7 +131,7 @@
 
 //             {/* Right Action Buttons */}
 //             <div className="flex items-start md:items-center justify-center gap-3 md:gap-4">
-              
+
 //               {/* --- MULTISELECT --- */}
 //               <div className="w-full md:w-auto">
 //                 <MultiSelect
@@ -146,17 +146,17 @@
 //                   selectedItemTemplate={selectedItemTemplate}
 //                   onShow={handleDropdownShow}
 //                   onHide={handleDropdownHide}
-                  
+
 //                   // STYLE FIXES:
 //                   // flex-wrap: Ensures chips flow to next line
 //                   // content-center: Vertically aligns items
 //                   className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0"
-                  
+
 //                   // Adjusted padding to look balanced
 //                   style={{ padding: '4px 8px' }}
-                  
+
 //                   panelClassName="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden mt-1"
-                  
+
 //                   pt={{
 //                       wrapper: { className: "max-h-64 overflow-auto custom-scrollbar" },
 //                       header: { className: "p-3 bg-gray-50 border-b border-gray-100 text-sm font-medium text-gray-700" },
@@ -266,7 +266,11 @@ export default function DataViewHeader({
 
   // --- Template for selected chip ---
   const selectedItemTemplate = (value) => {
-    const opt = tableOptions.find((o) => o.value === value);
+    // const opt = tableOptions.find((o) => o.value === value);
+    const opt = Array.isArray(tableOptions)
+      ? tableOptions.find((o) => o.value === value)
+      : null;
+
     if (!opt) return null;
 
     return (

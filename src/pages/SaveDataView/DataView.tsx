@@ -53,82 +53,79 @@
 
 
 
-// 📌 TableView.tsx — FULL DYNAMIC VERSION
+//  TableView.tsx — FULL DYNAMIC VERSION
 
 import { useEffect, useState } from "react";
 import DataViewHeader from "./components/DataViewHeader";
 import DataViewTable from "./components/DataViewTable";
 import { useTheme } from "../../theme";
+import ApiServices from "../../services/ApiServices";
 
-// -------------------------------------------------------------
-// ✅ MOCK API RESPONSE (same structure as backend)
-// -------------------------------------------------------------
-const mockApiResponse = {
-  tables: {
-    paid_orders: {
-      title: "Paid Orders",
-      procedure_sql: "DELIMITER $$ ... END $$",
-      columns: [
-        "category",
-        "customer_id",
-        "order_date",
-        "order_id",
-        "order_status",
-        "payment_method",
-        "payment_status",
-        "product_id",
-        "product_name",
-        "quantity",
-        "total_amount",
-        "unit_price"
-      ],
-      rows: [
-        {
-          category: "Furniture",
-          customer_id: "CUST174",
-          order_date: "2025-01-24",
-          order_id: "ORD0002",
-          order_status: "Pending",
-          payment_method: "UPI",
-          payment_status: "Paid",
-          product_id: "P302",
-          product_name: "Standing Desk",
-          quantity: "5",
-          total_amount: "24443.5",
-          unit_price: "4888.7"
-        }
-      ],
-      chart_suggestions: ["bar", "pie", "bubble", "mixed", "box"],
-      insights: [
-        "Furniture category has the highest total amount spent.",
-        "UPI is the most frequent payment method.",
-        "Delivered status is most common."
-      ]
-    },
+// MOCK API RESPONSE (same structure as backend)
+// const mockApiResponse = {
+//   tables: {
+//     paid_orders: {
+//       title: "Paid Orders",
+//       procedure_sql: "DELIMITER $$ ... END $$",
+//       columns: [
+//         "category",
+//         "customer_id",
+//         "order_date",
+//         "order_id",
+//         "order_status",
+//         "payment_method",
+//         "payment_status",
+//         "product_id",
+//         "product_name",
+//         "quantity",
+//         "total_amount",
+//         "unit_price"
+//       ],
+//       rows: [
+//         {
+//           category: "Furniture",
+//           customer_id: "CUST174",
+//           order_date: "2025-01-24",
+//           order_id: "ORD0002",
+//           order_status: "Pending",
+//           payment_method: "UPI",
+//           payment_status: "Paid",
+//           product_id: "P302",
+//           product_name: "Standing Desk",
+//           quantity: "5",
+//           total_amount: "24443.5",
+//           unit_price: "4888.7"
+//         }
+//       ],
+//       chart_suggestions: ["bar", "pie", "bubble", "mixed", "box"],
+//       insights: [
+//         "Furniture category has the highest total amount spent.",
+//         "UPI is the most frequent payment method.",
+//         "Delivered status is most common."
+//       ]
+//     },
 
-    electronics_orders: {
-      title: "Electronics Orders",
-      procedure_sql: "DELIMITER $$ ... END $$",
-      columns: ["category", "customer_id", "..."],
-      rows: [{ "...": "..." }],
-      chart_suggestions: ["bar", "pie", "box", "kpi"],
-      insights: [
-        "There are 54 electronics orders.",
-        "Credit Card is the most frequent payment method.",
-        "Delivered status is most common for electronics."
-      ]
-    }
-  },
+//     electronics_orders: {
+//       title: "Electronics Orders",
+//       procedure_sql: "DELIMITER $$ ... END $$",
+//       columns: ["category", "customer_id", "..."],
+//       rows: [{ "...": "..." }],
+//       chart_suggestions: ["bar", "pie", "box", "kpi"],
+//       insights: [
+//         "There are 54 electronics orders.",
+//         "Credit Card is the most frequent payment method.",
+//         "Delivered status is most common for electronics."
+//       ]
+//     }
+//   },
 
-  dropdown_options: [
-    { label: "Paid Orders", value: "paid_orders" },
-    { label: "Electronics Orders", value: "electronics_orders" }
-  ]
-};
+//   dropdown_options: [
+//     { label: "Paid Orders", value: "paid_orders" },
+//     { label: "Electronics Orders", value: "electronics_orders" }
+//   ]
+// };
 
-// -------------------------------------------------------------
-// ⭐ MAIN COMPONENT
-// -------------------------------------------------------------
+
 export default function TableView() {
   const { theme } = useTheme();
 
@@ -139,15 +136,66 @@ export default function TableView() {
   const [allData, setAllData] = useState<any>({});
   const [tableOptions, setTableOptions] = useState<any[]>([]);
   const [selectedTables, setSelectedTables] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTableData();
+  }, []);
+
+
+  // Fetch data from API
+  const fetchTableData = async () => {
+    try {
+      setLoading(true);
+
+      // Get user from localStorage
+      const userData = JSON.parse(localStorage.getItem("ig_user"));
+
+      // Extract user_id for created_by
+      const createdBy = userData?.user_id;
+
+      if (!createdBy) {
+        console.error("No user_id found in localStorage ig_user.");
+        setLoading(false);
+        return;
+      }
+
+      // Build payload dynamically
+      const payload = {
+        created_by: createdBy
+      };
+
+      //  Call API
+      const response = await ApiServices.getChatHistory(payload);
+
+      // const data = response.data;
+
+      const apiData = response.data.data;
+      console.log("dataview response", apiData);
+
+      setAllData(apiData.tables);
+      setTableOptions(apiData.dropdown_options);
+
+      if (apiData.dropdown_options?.length > 0) {
+        setSelectedTables([apiData.dropdown_options[0].value]);
+      }
+
+    } catch (err) {
+      console.error("API error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   // Load initial data
-  useEffect(() => {
-    setAllData(mockApiResponse.tables);
-    setTableOptions(mockApiResponse.dropdown_options);
+  // useEffect(() => {
+  //   setAllData(mockApiResponse.tables);
+  //   setTableOptions(mockApiResponse.dropdown_options);
 
-    // Default selection
-    setSelectedTables([mockApiResponse.dropdown_options[0].value]);
-  }, []);
+  //   // Default selection
+  //   setSelectedTables([mockApiResponse.dropdown_options[0].value]);
+  // }, []);
 
   const handleRefresh = () => {
     console.log("Refreshing...");
