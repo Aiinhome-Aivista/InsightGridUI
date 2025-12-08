@@ -436,7 +436,7 @@ export default function Chat() {
 </h1>
 
 
-<div className="flex flex-row items-center justify-between px-5">
+<div className="flex flex-row items-center justify-between px-5 pr-0">
   {/* Left empty space or other content can stay here */}
   <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-5 py-2 shadow-sm">
   <input
@@ -458,7 +458,7 @@ export default function Chat() {
     <button
             onClick={() => setIsConfirmSaveModalOpen(true)}
             disabled={!viewName.trim()}
-            className={`px-5 py-1.5 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
+            className={`px-5 py-1 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
               !viewName.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
             }`}
           >
