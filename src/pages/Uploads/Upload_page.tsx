@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useTheme } from "../../theme";
 import FileDropZone from "./components/FileDropZone";
 import DataProcessing from "./components/DataProcessing";
-import FileNameInput from "./components/FileNameInput";
+// import FileNameInput from "./components/FileNameInput";
 import ApiService from "../../services/ApiServices";
 import { useAuth } from "../Auth/AuthContext";
 
@@ -28,24 +28,7 @@ export default function UploadPage() {
     }
   }, [createdBy]);
 
-  // async function trackFiles(userId: string) {
-  //   try {
-  //     const response = await ApiService.tracker(userId);
-  //     setProcessedFiles(response.data?.data || []);
-
-  //     // Save API message if no files
-  //     if (response.data?.data.length === 0) {
-  //       setNoFileMessage(response.data?.message || "No files found");
-  //     } else {
-  //       setNoFileMessage("");  // clear message
-  //     }
-
-  //   } catch (error) {
-  //     console.error('Error tracking files:', error);
-  //     setNoFileMessage(error.message);
-  //   }
-  // }
-
+  
   async function trackFiles(payload: { created_by: string }) {
     try {
       const response = await ApiService.tracker(payload);
@@ -132,7 +115,7 @@ export default function UploadPage() {
         throw new Error('Data verification failed. Please try processing again manually.');
       }
 
-      await processSessionData(actualSessionId, actualSessionName, );
+      // await processSessionData(actualSessionId, actualSessionName, );
 
     } catch (error: any) {
       console.error('Error uploading files:', error);
@@ -177,50 +160,50 @@ export default function UploadPage() {
     }
   }
 
-  async function processSessionData(sessionId: string, sessionNameTrimmed: string) {
-    try {
-      const requestBody = {
-        session_id: sessionId,
-        session_name: sessionNameTrimmed,
-        created_by: createdBy
-      };
+  // async function processSessionData(sessionId: string, sessionNameTrimmed: string) {
+  //   try {
+  //     const requestBody = {
+  //       session_id: sessionId,
+  //       session_name: sessionNameTrimmed,
+  //       created_by: createdBy
+  //     };
 
-      const processResponse = await ApiService.processSessionData(requestBody);
+  //     const processResponse = await ApiService.processSessionData(requestBody);
 
-      const globalOps = processResponse.data?.global_operations;
-      if (globalOps) {
-        const hasLLMError = Object.values(globalOps).some(
-          (ops: any) => Array.isArray(ops) && ops.includes("LLM Error")
-        );
+  //     const globalOps = processResponse.data?.global_operations;
+  //     if (globalOps) {
+  //       const hasLLMError = Object.values(globalOps).some(
+  //         (ops: any) => Array.isArray(ops) && ops.includes("LLM Error")
+  //       );
 
-        if (hasLLMError) {
-          alert('Processing completed but some AI features failed. You can retry processing from the dashboard.');
-        }
-      }
+  //       if (hasLLMError) {
+  //         alert('Processing completed but some AI features failed. You can retry processing from the dashboard.');
+  //       }
+  //     }
 
-      // await trackFiles(createdBy);
-      await trackFiles({ created_by: createdBy });
+  //     // await trackFiles(createdBy);
+  //     await trackFiles({ created_by: createdBy });
 
 
-      setIsProcessing(false);
-      setProcessingFileName("");
-      uploadInProgress.current = false;
+  //     setIsProcessing(false);
+  //     setProcessingFileName("");
+  //     uploadInProgress.current = false;
 
-    } catch (processError: any) {
-      console.error('Process session data error:', processError);
+  //   } catch (processError: any) {
+  //     console.error('Process session data error:', processError);
 
-      setIsProcessing(false);
-      setProcessingFileName("");
-      uploadInProgress.current = false;
+  //     setIsProcessing(false);
+  //     setProcessingFileName("");
+  //     uploadInProgress.current = false;
 
-      alert(
-        `Processing failed: ${processError.message}\n\n` +
-        `Session ID: ${sessionId}\n` +
-        `Session Name: ${sessionNameTrimmed}\n\n` +
-        `Please try again using the retry button.`
-      );
-    }
-  }
+  //     alert(
+  //       `Processing failed: ${processError.message}\n\n` +
+  //       `Session ID: ${sessionId}\n` +
+  //       `Session Name: ${sessionNameTrimmed}\n\n` +
+  //       `Please try again using the retry button.`
+  //     );
+  //   }
+  // }
 
 
   return (
@@ -239,7 +222,7 @@ export default function UploadPage() {
         Start by uploading a data file to create your first view.
       </p>
 
-      <FileNameInput
+      {/* <FileNameInput
         theme={theme}
         value={sessionName}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -250,7 +233,7 @@ export default function UploadPage() {
         }}
         error={sessionNameError}
         disabled={isUploading || isProcessing}
-      />
+      /> */}
       <FileDropZone
         onUploadComplete={uploadFiles}
         theme={theme}
