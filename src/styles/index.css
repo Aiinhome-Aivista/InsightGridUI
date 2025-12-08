@@ -33,6 +33,7 @@ font-family: "Ballo Da 2",;
   align-items: center !important;
 }
 
+
 /* Remove hover effect on entire header */
 .p-multiselect-header {
   background: transparent !important;
