@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import ApiService from "../../../services/ApiServices";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-// Assuming this path is correct based on your component structure
 import ProductDataTable from "./DataTable";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -104,37 +103,11 @@ export default function Chat() {
 
   }, [defaultSession.session_id, defaultSession.session_name, defaultSession.file_name, isSessionDataMissing]);
 
-  // const handleNewChat = () => {
-  //   const newChatId = chats.length + 1;
-
-  //   const newChat: ChatSession = {
-  //     id: newChatId,
-  //     name: `Chat0${newChatId}`,
-  //     session_id: defaultSession.session_id,
-  //     session_name: defaultSession.session_name,
-  //     file_name: defaultSession.file_name,
-  //     // Update new chat creation based on missing data
-  //     question: isSessionDataMissing ? "FATAL ERROR: Session ID Missing." : "Start a new query…",
-  //     query: "",
-  //     logs: isSessionDataMissing ? ["CRITICAL: Missing session_id. Cannot communicate with API."] : [],
-  //   };
-
-  //   setChats([...chats, newChat]);
-  //   setActiveChatId(newChatId);
-  //   // Clear table data when switching to a new chat
-  //   setTypewriterKey(prev => prev + 1);
-  //   setTableData(null);
-  //   setIsScriptRunSuccess(false);
-  // };
-
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !activeChat) return;
-
-    // Check if critical session data is missing before sending a message
     if (!activeChat.session_id || !activeChat.session_name || !activeChat.file_name) {
-
       const missingFields = [];
       if (!activeChat.session_id) missingFields.push("session_id");
       if (!activeChat.session_name) missingFields.push("session_name");
@@ -212,9 +185,6 @@ export default function Chat() {
     if (!rawQuery) {
       return "";
     }
-
-    // The AI can wrap the query in markdown, stored procedures, or add comments.
-    // This regex aims to find a `WITH` or `SELECT` statement, which can be inside backticks.
     const queryMatch = rawQuery.match(/(?:WITH|SELECT)[\s\S]*/i);
 
     if (queryMatch) {

@@ -1,25 +1,22 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
-import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import type { LoginUserData } from "../../models/login.model";
-import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
-import ViewColumnRoundedIcon from '@mui/icons-material/ViewColumnRounded';
 import { useTheme } from "../../theme";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ApiServices from "../../services/ApiServices";
+import DataObjectRoundedIcon from '@mui/icons-material/DataObjectRounded';
+import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 
 const menuItems = [
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
-  { name: "query-designer", icon: ViewColumnRoundedIcon, path: "query-designer" },
-  { name: "Setting", icon: SettingsRoundedIcon, path: "setting" },
-  { name: "Download", icon: FileDownloadOutlinedIcon, path: "download" },
+  { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-designer" },
+    { name: "Report Designer", icon: DashboardRoundedIcon, path: "report-query" },
   { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
+
 ];
 
 export default function Sidebar() {
