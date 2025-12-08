@@ -183,7 +183,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
             <div className="flex items-center min-w-[60px] justify-end w-[5%]">
 
-              <button
+              {/* <button
                 onClick={() => handleNavigateToDashboard(file)}
                 disabled={!isFullyProcessed}
                 title={isFullyProcessed ? "View in Dashboard" : "Processing incomplete"}
@@ -199,7 +199,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     },
                   }}
                 />
-              </button>
+              </button> */}
             </div>
           </div>
         );
