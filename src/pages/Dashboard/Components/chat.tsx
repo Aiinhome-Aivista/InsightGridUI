@@ -443,23 +443,17 @@ export default function Chat() {
             type="text"
             value={viewName}
             onChange={(e) => setViewName(e.target.value)}
-            placeholder="Name and save your custom view"
-            className="text-gray-600 text-sm bg-transparent outline-none w-full"
-          />
-    {/* <button
-            onClick={() => setIsConfirmSaveModalOpen(true)}
-            disabled={!viewName.trim() || !isScriptRunSuccess}
-            className={`px-5 py-1.5 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
-              !viewName.trim() || !isScriptRunSuccess ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
+            placeholder={isScriptRunSuccess ? "Name and save your custom view" : "Run a script to enable saving"}
+            className={`text-gray-600 text-sm bg-transparent outline-none w-full ${
+              !isScriptRunSuccess ? 'cursor-not-allowed' : ''
             }`}
-          >
-      Save
-    </button> */}
+            disabled={!isScriptRunSuccess}
+          />
     <button
             onClick={() => setIsConfirmSaveModalOpen(true)}
-            disabled={!viewName.trim()}
+            disabled={!isScriptRunSuccess || !viewName.trim()}
             className={`px-5 py-1 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
-              !viewName.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
+              !isScriptRunSuccess || !viewName.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'
             }`}
           >
       Save
