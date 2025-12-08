@@ -12,6 +12,7 @@ import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ViewColumnRoundedIcon from '@mui/icons-material/ViewColumnRounded';
 import { useTheme } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import ApiServices from "../../services/ApiServices";
 
 const menuItems = [
   { name: "Dashboard", icon: HomeOutlinedIcon, path: "dashboard" },
@@ -29,7 +30,7 @@ export default function Sidebar() {
   const { theme } = useTheme();
   const location = useLocation();
   const activePath = location.pathname.split("/").pop() || "upload";
-  const [clickedTab, setClickedTab] = useState(""); 
+  const [clickedTab, setClickedTab] = useState("");
 
   useEffect(() => {
     const userDataString = localStorage.getItem("ig_user");
@@ -39,6 +40,28 @@ export default function Sidebar() {
       } catch (error) { console.error("Failed to parse user data from localStorage", error); }
     }
   }, []);
+
+  const handleTabClick = async (item) => {
+    console.log("Clicked Tab:", item.name);
+
+    if (item.path === "table-insights") {
+      const userData = JSON.parse(localStorage.getItem("ig_user") || "{}");
+      const createdBy = userData?.user_id;
+
+      if (!createdBy) {
+        console.error("User ID missing in localStorage");
+        return;
+      }
+
+      try {
+        await ApiServices.tracker({ created_by: createdBy });
+        console.log("Tracker API Success");
+      } catch (err) {
+        console.error("Tracker API Failed:", err);
+      }
+    }
+  };
+
   return (
     <aside
       className={`${collapsed ? "w-20" : "w-60"
@@ -82,10 +105,7 @@ export default function Sidebar() {
             const isActive = item.path === activePath;
             return (
               <Link to={item.path} key={item.name} className="no-underline"
-              onClick={() => {
-                console.log("Clicked Tab:", item.name);
-                setClickedTab(item.name);  
-              }} >
+                onClick={() => handleTabClick(item)} >
                 <div
                   className={`flex items-center ${collapsed ? "justify-center" : "justify-start"
                     } h-12 cursor-pointer rounded-lg transition px-3`}

@@ -209,8 +209,8 @@ export default function DashboardHeader({
     focus:ring-0 focus:outline-none
     shadow-none
   "
-  
-                  
+
+
                 panelClassName=" pl-4
     rounded-xl shadow-md
     text-[#6F6F6F] bg-white
@@ -247,11 +247,10 @@ export default function DashboardHeader({
               <Tippy content="Refresh" theme="gray">
                 <div
                   onClick={handleRefresh}
-                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
-                    isRefreshing
-                      ? "cursor-not-allowed"
-                      : "cursor-pointer hover:bg-gray-500/10"
-                  }`}
+                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer hover:bg-gray-500/10"
+                    }`}
                   style={{ borderColor: theme.border }}
                 >
                   {isRefreshing ? (
