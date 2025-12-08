@@ -36,18 +36,13 @@ class ApiServices {
   tracker(body) {
     return axios.post(POST_APIS.tracker, body);
   }
-  // tracker(user_id) {
-  //   return axios.get(GET_APIS.tracker, {
-  //     params: { user_id }
-  //   });
-  // }
 
 
   getDashboardData(body) {
     return axios.post(POST_APIS.get_dashboard_data, body);
   }
 
-  getChatHistory(body) {  
+  getChatHistory(body) {
     return axios.post(POST_APIS.get_chat_history, body);
   }
 
