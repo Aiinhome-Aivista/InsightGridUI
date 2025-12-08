@@ -22,7 +22,7 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
     filters={{
       global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
     }}
-    className="custom-table"
+    className="custom-table mb-5"
   >
   
 

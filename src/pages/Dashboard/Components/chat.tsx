@@ -357,7 +357,7 @@ export default function Chat() {
       )}
 
       {/* Chat Header */}
-      <div className="pb-2 bg-[#D9D9D91A] rounded-xl">
+      <div className="pb-5 bg-[#D9D9D91A] rounded-xl">
         <div className="px-5 pt-4">
           <h1 className="text-lg font-semibold text-gray-800">Speak to Data Doctor</h1>
           <div className="text-gray-500 text-md flex flex-row items-center gap-20 border-gray-200">
@@ -394,7 +394,7 @@ export default function Chat() {
         </div>
 
         {/* Chat Box */}
-        <div className="px-5 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2">
+        <div className="px-5 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2 ">
           <span>{activeChat?.question}</span>
         </div>
 

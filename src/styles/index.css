@@ -54,10 +54,12 @@ font-family: "Ballo Da 2",;
 
 .p-multiselect-header .p-checkbox {
   display: none !important;
+
 }
 .p-multiselect-items-wrapper {
   padding-top: 0 !important;
-  margin-top: -35px !important; /* adjust or remove based on height */
+  margin-top: -35px !important; 
+  /* adjust or remove based on height */
 }
 /* Show only checkbox tick when selected */
 .p-multiselect-item .p-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon {
@@ -70,6 +72,7 @@ font-family: "Ballo Da 2",;
   align-items: center !important;
   gap: 5px !important;
   padding: 10px 12px !important;
+  
 }
 
 /* Chip spacing fix */
