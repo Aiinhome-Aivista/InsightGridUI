@@ -1,7 +1,9 @@
 import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const Query = () => {
+  const navigate = useNavigate();
   return (
     <div className=" mx-auto px-6 py-8">
 
@@ -14,7 +16,10 @@ const Query = () => {
           </p>
         </div>
 
-        <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-md text-sm font-medium shadow mx-6">
+        <button
+          onClick={() => navigate("/layout/query-designer")}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-md text-sm font-medium shadow mx-6"
+        >
           Create Query
         </button>
 

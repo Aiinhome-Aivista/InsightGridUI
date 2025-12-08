@@ -13,7 +13,7 @@ import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 
 const menuItems = [
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
-  { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-designer" },
+  { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list" },
     // { name: "Report Designer", icon: DashboardRoundedIcon, path: "report-query" },
   { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
 
