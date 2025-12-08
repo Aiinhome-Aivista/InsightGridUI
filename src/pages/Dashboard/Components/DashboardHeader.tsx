@@ -10,6 +10,7 @@ import { Dropdown } from "primereact/dropdown";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
 import ApiServices from "../../../services/ApiServices";
+import AnimatedToggleButton from "./AnimatedToggleButton";
 
 
 interface HeaderProps {
@@ -163,27 +164,7 @@ export default function DashboardHeader({
             </div> */}
 
             {/* Center Search Bar */}
-            <div className="w-full md:flex-1 flex justify-center order-3 md:order-none">
-              <div className="relative w-full">
-                <SearchRoundedIcon
-                  className="absolute left-3 top-1/2 -translate-y-1/2"
-                  sx={{ color: theme.secondaryText }}
-                />
-
-                <InputText
-                  value={globalFilter}
-                  onChange={(e) => setGlobalFilter(e.target.value)}
-                  placeholder="Global Search"
-                  className="pl-10 w-full h-11 rounded-xl border text-sm"
-                  style={{
-                    backgroundColor: theme.background,
-                    color: theme.primaryText,
-                    borderColor: theme.border,
-                  }}
-                />
-              </div>
-            </div>
-
+           
             {/* Right Action Buttons */}
             <div className="flex items-center justify-center gap-3 md:gap-4">
               {/* View Dropdown */}
@@ -216,7 +197,14 @@ export default function DashboardHeader({
     text-[#6F6F6F] bg-white
   "
               />
-
+ <AnimatedToggleButton
+                options={toggleOptions}
+                defaultSelected={defaultSelectionIndex}
+                onChange={(_index, value) => {
+                  onViewChange(value as string);
+                }}
+                mode="text"
+              />
               
               <Tippy content="Select Columns" theme="gray">
                 <div
