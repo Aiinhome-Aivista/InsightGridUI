@@ -6,8 +6,9 @@ import Customize_page from "../pages/Customize/Customize_page";
 import Login from "../pages/Auth/Login";
 import LandingPage from "../pages/LandingPage/LandingPage";
 import ProtectedRoute from "./ProtectedRoute";
-import QueryDesigner from "../pages/Dashboard/QueryDesigner";
-import Query from "../pages/Dashboard/query";
+import QueryDesigner from "../pages/Dashboard/DataDoctorParent";
+import Query from "../pages/Dashboard/ShowQuery";
+import ShowQuery from "../pages/Dashboard/ShowQuery";
 
 function AppRoutes() {
   return (
@@ -19,7 +20,7 @@ function AppRoutes() {
           <Route path="/layout" element={<AppLayout />}>
             <Route index element={<Navigate to="upload" replace />} />
             <Route path="upload" element={<Upload_page />} />
-            <Route path="query-list" element={<Query />} />
+            <Route path="query-list" element={<ShowQuery />} />
               {/* <Route path="report-designer" element={<ReportDesigner />} /> */}
             <Route path="query-designer" element={<QueryDesigner />} />
             <Route path="customize" element={<Customize_page />} />

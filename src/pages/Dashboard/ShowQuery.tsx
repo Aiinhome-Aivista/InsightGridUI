@@ -2,7 +2,7 @@ import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
-const Query = () => {
+const ShowQuery = () => {
   const navigate = useNavigate();
   return (
     <div className=" mx-auto px-6 py-8">
@@ -111,4 +111,4 @@ const Query = () => {
   );
 };
 
-export default Query;
+export default ShowQuery;
