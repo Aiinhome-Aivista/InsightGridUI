@@ -1,7 +1,7 @@
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { FilterMatchMode } from "primereact/api";
-import "./primereact-table.css";
+import "../../../styles/primereact-table.css";
 
 interface ProductDataTableProps {
   data: any[];

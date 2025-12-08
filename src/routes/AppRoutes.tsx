@@ -2,7 +2,6 @@ import AppLayout from "../layout/AppLayout";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "../pages/Auth/AuthContext";
 import Upload_page from "../pages/Uploads/Upload_page";
-import Dashboard_page from "../pages/Dashboard/QueryDesigner";
 import Customize_page from "../pages/Customize/Customize_page";
 import Login from "../pages/Auth/Login";
 import LandingPage from "../pages/LandingPage/LandingPage";
@@ -22,6 +21,7 @@ function AppRoutes() {
             <Route index element={<Navigate to="upload" replace />} />
             <Route path="upload" element={<Upload_page />} />
             <Route path="query-designer" element={<QueryDesigner />} />
+              {/* <Route path="report-designer" element={<ReportDesigner />} /> */}
             <Route path="customize" element={<Customize_page />} />
   
           </Route>

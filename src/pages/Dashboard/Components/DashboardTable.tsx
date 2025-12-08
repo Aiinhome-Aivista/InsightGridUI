@@ -5,7 +5,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useTheme } from "../../../theme";
 import ProductDataTable from "../Components/DataTable";
 import { IconButton } from "@mui/material";
-import "./primereact-table.css";
+import "../../../styles/primereact-table.css";
 interface DashboardTableProps {
   data: any[];
   columns: { column_name: string }[];
