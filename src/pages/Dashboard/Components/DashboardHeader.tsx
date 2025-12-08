@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
@@ -145,21 +146,19 @@ export default function DashboardHeader({
         <div className="px-3 sm:px-4 lg:px-3 ">
           {/* Responsive Flex Container */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
-            {/* Left Section */}
-            {/* <div className="flex-shrink-0 text-center md:text-left">
-              <h1
-                className="text-xl font-semibold"
-                style={{ color: theme.primaryText }}
-              >
-                Tabular view
-              </h1>
-              <p
-                className="text-sm mt-1"
-                style={{ color: theme.secondaryText }}
-              >
-                Start by uploading a data file to create your first view.
-              </p>
-            </div> */}
+           {/* --- LEFT SECTION: Back Button & Text --- */}
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
+            >
+              <ArrowBackRoundedIcon fontSize="small" />
+            </button>
+            
+            <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
+              Query Designer
+            </h1>
+          </div>
 
             {/* Center Search Bar */}
            
