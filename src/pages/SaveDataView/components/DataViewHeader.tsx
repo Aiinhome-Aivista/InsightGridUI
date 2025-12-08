@@ -242,9 +242,11 @@
 
 import { useState, useRef } from "react";
 import { MultiSelect } from "primereact/multiselect";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import "../../../styles/tippy-theme.css";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import ForumIcon from "@mui/icons-material/Forum";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { InputText } from "primereact/inputtext";
@@ -262,6 +264,12 @@ export default function DataViewHeader({
   const navigate = useNavigate();
   const { theme } = useTheme();
   const multiSelectRef = useRef(null);
+  const trimToWords = (text, count = 3) => {
+  const words = text.split(" ");
+  return words.length > count
+    ? words.slice(0, count).join(" ") + "..."
+    : text;
+};
    const handleDropdownShow = () => {
     window.addEventListener("scroll", handleScroll, true);
   };
@@ -274,6 +282,19 @@ export default function DataViewHeader({
     multiSelectRef.current?.hide();
   };
 
+  const itemTemplate = (option) => {
+  if (!option) return null;
+
+  return (
+    <Tippy content={option.label} theme="gray" placement="top-start">
+      <div className="truncate max-w-[250px]">
+        {trimToWords(option.label, 3)}
+      </div>
+    </Tippy>
+  );
+};
+
+
   // --- Template for selected chip ---
   const selectedItemTemplate = (value) => {
     // const opt = tableOptions.find((o) => o.value === value);
@@ -284,18 +305,22 @@ export default function DataViewHeader({
     if (!opt) return null;
 
     return (
-      <div className="group inline-flex items-center bg-[#F3F4F6] text-[#4B5563] rounded-2xl px-2 py-0.5 text-xs font-medium border border-gray-200 mr-1 mb-1 transition-all">
-        <span>{opt.label}</span>
-        <div
-          className="ml-1.5 cursor-pointer flex items-center justify-center w-4 h-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-200 text-gray-400 hover:text-red-500"
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedTables(selectedTables.filter((s) => s !== value));
-          }}
-        >
-          <CloseRoundedIcon style={{ fontSize: "12px" }} />
+   <Tippy content={opt.label} theme="gray" placement="top">
+  <div className="group inline-flex items-center bg-[#F3F4F6] text-[#4B5563] rounded-2xl px-2 py-0.5 text-xs font-medium border border-gray-200 mr-1 mb-1">
+    <span className="truncate max-w-[120px]">{trimToWords(opt.label, 2)}</span>
+    ...
+  
+          <div
+            className="ml-1.5 cursor-pointer flex items-center justify-center w-4 h-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-200 text-gray-400 hover:text-red-500"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedTables(selectedTables.filter((s) => s !== value));
+            }}
+          >
+            <CloseRoundedIcon style={{ fontSize: "12px" }} />
+          </div>
         </div>
-      </div>
+      </Tippy>
     );
   };
 
@@ -325,8 +350,6 @@ export default function DataViewHeader({
             placeholder="Global Search"
           />
         </div>
-
-        {/* DROPDOWN + BUTTONS */}
         <div className="flex items-start md:items-center justify-center gap-3 md:gap-4">
           <MultiSelect
             ref={multiSelectRef}
@@ -340,15 +363,16 @@ export default function DataViewHeader({
             onShow={handleDropdownShow}
             onHide={handleDropdownHide}
             selectedItemTemplate={selectedItemTemplate}
-            className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0"
+            itemTemplate={itemTemplate}
+            className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10
+"
             style={{ padding: "4px 8px" }}
             panelClassName="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden mt-1"
               pt={{
                       wrapper: { className: "max-h-64 overflow-auto custom-scrollbar" },
                       header: { className: "p-1 bg-gray-50 border-b border-gray-100 text-sm font-medium text-gray-700" },
                       item: { className: "p-3 hover:bg-gray-50 text-sm text-gray-700 transition-colors cursor-pointer" },
-                      // Ensure label container allows wrapping inside the input
-                      labelContainer: { className: "flex flex-wrap gap-1 rounded-5xl  items-center flex-1" },
+                      labelContainer: { className: "flex flex-wrap gap-1 rounded-5xl  items-center flex-2" },
                       trigger: { className: "w-8 text-gray-400 flex rounded-5xl items-center justify-center" }
                   }}
           />

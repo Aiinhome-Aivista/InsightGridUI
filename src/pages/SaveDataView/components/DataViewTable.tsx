@@ -294,7 +294,7 @@ export default function DashboardTable({
                     className="text-xs mt-1"
                     style={{ color: theme.secondaryText }}
                   >
-                    This table displays all {table.title.toLowerCase()} details.
+                    This displays all {table.title.toLowerCase()} details.
                   </p>
                 </div>
 
