@@ -7,11 +7,11 @@ import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import ColumnSelectionPage from "../../../Modal/column-section-page";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
 import ApiServices from "../../../services/ApiServices";
-import AnimatedToggleButton from "../../../Modal/components/animated-toggle-button";
+
 
 interface HeaderProps {
   globalFilter: string;
@@ -218,15 +218,7 @@ export default function DashboardHeader({
   "
               />
 
-              <AnimatedToggleButton
-                options={toggleOptions}
-                defaultSelected={defaultSelectionIndex}
-                onChange={(_index, value) => {
-                  onViewChange(value as string);
-                }}
-                mode="text"
-              />
-
+              
               <Tippy content="Select Columns" theme="gray">
                 <div
                   onClick={() => setShowColumnModal(true)}
@@ -275,7 +267,6 @@ export default function DashboardHeader({
         </div>
       </header>
 
-      {showColumnModal && <ColumnSelectionPage onClose={() => setShowColumnModal(false)} />}
     </>
   );
 }

@@ -4,10 +4,11 @@ import FileDropZone from "./components/FileDropZone";
 import DataProcessing from "./components/DataProcessing";
 import FileNameInput from "./components/FileNameInput";
 import ApiService from "../../services/ApiServices";
-import { GET_APIS, POST_APIS } from "../../../connection";
+import { useAuth } from "../Auth/AuthContext";
 
 export default function UploadPage() {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const [processedFiles, setProcessedFiles] = useState<any[]>([]);
   const [sessionName, setSessionName] = useState("");
   const [sessionNameError, setSessionNameError] = useState("");
@@ -17,8 +18,7 @@ export default function UploadPage() {
   const isInitialMount = useRef(true);
   const uploadInProgress = useRef(false);
   const currentSessionRef = useRef<{ id: string, name: string } | null>(null);
-  const userData = JSON.parse(localStorage.getItem("ig_user"));
-  const createdBy = userData?.user_id || "";
+  const createdBy = user?.user_id || "";
   const [noFileMessage, setNoFileMessage] = useState("");
   useEffect(() => {
     if (isInitialMount.current) {
@@ -26,7 +26,7 @@ export default function UploadPage() {
       // trackFiles(createdBy);
       trackFiles({ created_by: createdBy });
     }
-  }, []);
+  }, [createdBy]);
 
   // async function trackFiles(userId: string) {
   //   try {

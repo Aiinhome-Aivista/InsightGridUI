@@ -1,12 +1,12 @@
 import { Alert, Snackbar } from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Union from "../../assets/Union.svg";
 import view_quilt from "../../assets/view_quilt.svg";
 import ApiServices from "../../services/ApiServices";
+import { useAuth } from "./AuthContext";
 
 export default function Login() {
-  const navigate = useNavigate();
+  const { login } = useAuth();
   const [user_email, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,12 +35,7 @@ export default function Login() {
           severity: "success",
         });
 
-        localStorage.setItem("ig_user", JSON.stringify(res.data));
-
-        // setTimeout(() => navigate("/layout/upload", { replace: true }), 1500);
-        setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
-
-
+        setTimeout(() => login(res.data), 1500);
         return;
       }
 

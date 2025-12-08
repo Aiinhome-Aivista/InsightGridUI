@@ -15,10 +15,8 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ApiServices from "../../services/ApiServices";
 
 const menuItems = [
-  { name: "Dashboard", icon: HomeOutlinedIcon, path: "dashboard" },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
-  { name: "Table Insights", icon: ViewColumnRoundedIcon, path: "table-insights" },
-  { name: "Graph Insights", icon: GridViewRoundedIcon, path: "table" },
+  { name: "query-designer", icon: ViewColumnRoundedIcon, path: "query-designer" },
   { name: "Setting", icon: SettingsRoundedIcon, path: "setting" },
   { name: "Download", icon: FileDownloadOutlinedIcon, path: "download" },
   { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },

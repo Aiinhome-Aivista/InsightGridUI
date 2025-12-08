@@ -1,15 +1,15 @@
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import { useState, useEffect } from "react";
 import Tooltip from "@mui/material/Tooltip";
-import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../theme";
 import LogoutModal from "../../Modal/LogoutModal";
+import { useAuth } from "../../pages/Auth/AuthContext";
 
 export default function Header() {
   const [formattedDate, setFormattedDate] = useState('');
   const [formattedTime, setFormattedTime] = useState('');
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -49,8 +49,7 @@ export default function Header() {
   };
 
   const confirmLogout = () => {
-    localStorage.clear();
-    navigate('/');
+    logout();
   };
 
   return (
