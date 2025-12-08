@@ -54,7 +54,6 @@
 //     multiSelectRef.current?.hide();
 //   };
 
-
 //   // --- CUSTOM TEMPLATE FOR SELECTED ITEMS (CHIPS) ---
 //   const selectedItemTemplate = (value: string) => {
 //     // Find the label corresponding to the selected value
@@ -258,11 +257,22 @@ export default function DataViewHeader({
   selectedTables,
   setSelectedTables,
   tableOptions,
-  onRefresh
+  onRefresh,
 }) {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const multiSelectRef = useRef(null);
+   const handleDropdownShow = () => {
+    window.addEventListener("scroll", handleScroll, true);
+  };
+
+  const handleDropdownHide = () => {
+    window.removeEventListener("scroll", handleScroll, true);
+  };
+
+  const handleScroll = () => {
+    multiSelectRef.current?.hide();
+  };
 
   // --- Template for selected chip ---
   const selectedItemTemplate = (value) => {
@@ -274,14 +284,15 @@ export default function DataViewHeader({
     if (!opt) return null;
 
     return (
-      <div className="group inline-flex items-center bg-gray-100 text-gray-700 rounded-md px-2 py-1 text-xs border mr-1 mb-1">
+      <div className="group inline-flex items-center bg-[#F3F4F6] text-[#4B5563] rounded-2xl px-2 py-0.5 text-xs font-medium border border-gray-200 mr-1 mb-1 transition-all">
         <span>{opt.label}</span>
         <div
-          className="ml-2 w-4 h-4 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100"
+          className="ml-1.5 cursor-pointer flex items-center justify-center w-4 h-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-200 text-gray-400 hover:text-red-500"
           onClick={(e) => {
             e.stopPropagation();
             setSelectedTables(selectedTables.filter((s) => s !== value));
-          }}>
+          }}
+        >
           <CloseRoundedIcon style={{ fontSize: "12px" }} />
         </div>
       </div>
@@ -290,13 +301,18 @@ export default function DataViewHeader({
 
   return (
     <header className="p-4">
-      <div className="flex flex-col md:flex-row justify-between items-center">
-
-        {/* LEFT */}
-        <div>
-          <h1 className="text-xl font-semibold" style={{ color: theme.primaryText }}>
-            Tabular View
+  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
+        <div className="flex-shrink-0 text-center md:text-left">
+          <h1
+            className="text-xl font-semibold"
+            style={{ color: theme.primaryText }}
+          >
+            Tabular view
           </h1>
+          <p className="text-sm mt-1" style={{ color: theme.secondaryText }}>
+            {" "}
+            Start by uploading a data file to create your first view.
+          </p>{" "}
         </div>
 
         {/* SEARCH */}
@@ -311,8 +327,7 @@ export default function DataViewHeader({
         </div>
 
         {/* DROPDOWN + BUTTONS */}
-        <div className="flex items-center gap-3">
-
+        <div className="flex items-start md:items-center justify-center gap-3 md:gap-4">
           <MultiSelect
             ref={multiSelectRef}
             value={selectedTables}
@@ -322,8 +337,20 @@ export default function DataViewHeader({
             display="chip"
             placeholder="Select Views"
             onChange={(e) => setSelectedTables(e.value)}
+            onShow={handleDropdownShow}
+            onHide={handleDropdownHide}
             selectedItemTemplate={selectedItemTemplate}
-            className="w-60 border rounded-xl"
+            className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0"
+            style={{ padding: "4px 8px" }}
+            panelClassName="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden mt-1"
+              pt={{
+                      wrapper: { className: "max-h-64 overflow-auto custom-scrollbar" },
+                      header: { className: "p-1 bg-gray-50 border-b border-gray-100 text-sm font-medium text-gray-700" },
+                      item: { className: "p-3 hover:bg-gray-50 text-sm text-gray-700 transition-colors cursor-pointer" },
+                      // Ensure label container allows wrapping inside the input
+                      labelContainer: { className: "flex flex-wrap gap-1 rounded-5xl  items-center flex-1" },
+                      trigger: { className: "w-8 text-gray-400 flex rounded-5xl items-center justify-center" }
+                  }}
           />
 
           {/* Chat */}

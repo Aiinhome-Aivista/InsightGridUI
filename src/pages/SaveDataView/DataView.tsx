@@ -202,9 +202,7 @@ export default function TableView() {
   };
 
   return (
-    <div className="h-full bg-[#D9D9D91A] rounded-xl m-5 max-w-screen">
-
-      {/* HEADER */}
+    <div className="h-full bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
       <DataViewHeader
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
@@ -213,8 +211,6 @@ export default function TableView() {
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
       />
-
-      {/* TABLE + SP */}
       <DataViewTable
         allData={allData}
         selectedTables={selectedTables}

@@ -15,7 +15,6 @@
 // import AnimatedToggleButton from "../../../Modal/components/animated-toggle-button";
 // import { ProcedureCodeBlock, ProcedureToggleButton } from "./SpDropDown";
 
-
 // interface DashboardTableProps {
 //   allData: { [key: string]: any[] };
 //   selectedTables: string[];
@@ -32,7 +31,7 @@
 //   const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
 //   const [toggleSelection, setToggleSelection] = useState(1);
 //   const [showChartView, setShowChartView] = useState(false);
-  
+
 //   // State for Procedure View (Default is true as requested)
 //   const [showProcedure, setShowProcedure] = useState(true);
 
@@ -93,11 +92,11 @@
 //                 </div>
 
 //                 <div className="flex items-center gap-3">
-                  
+
 //                   {/* COMPONENT: Procedure Toggle Button */}
-//                   <ProcedureToggleButton 
-//                     isOpen={showProcedure} 
-//                     onToggle={() => setShowProcedure(!showProcedure)} 
+//                   <ProcedureToggleButton
+//                     isOpen={showProcedure}
+//                     onToggle={() => setShowProcedure(!showProcedure)}
 //                   />
 
 //                   <AnimatedToggleButton
@@ -196,10 +195,6 @@
 //   );
 // }
 
-
-
-
-
 // 📌 DashboardTable.tsx — FULL DYNAMIC TABLE + PROCEDURE + CHART VIEW (PER-TABLE INDEPENDENT STATE)
 
 import { useState } from "react";
@@ -238,11 +233,21 @@ export default function DashboardTable({
   // -------------------------------------------------------
   // ⭐ PER-TABLE STATE (EVERY TABLE IS INDEPENDENT!)
   // -------------------------------------------------------
-  const [showProcedure, setShowProcedure] = useState<{ [key: string]: boolean }>({});
-  const [toggleSelection, setToggleSelection] = useState<{ [key: string]: number }>({});
-  const [showChartView, setShowChartView] = useState<{ [key: string]: boolean }>({});
-  const [selectedCharts, setSelectedCharts] = useState<{ [key: string]: string[] }>({});
-  const [isChartVisible, setIsChartVisible] = useState<{ [key: string]: boolean }>({});
+  const [showProcedure, setShowProcedure] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [toggleSelection, setToggleSelection] = useState<{
+    [key: string]: number;
+  }>({});
+  const [showChartView, setShowChartView] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [selectedCharts, setSelectedCharts] = useState<{
+    [key: string]: string[];
+  }>({});
+  const [isChartVisible, setIsChartVisible] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   // -------------------------------------------------------
   // Helper Body Renderer
@@ -272,27 +277,29 @@ export default function DashboardTable({
         return (
           <div key={tableKey} className="p-6 px-4">
             <div className="rounded-xl shadow-xs p-4 bg-white">
-
               {/* ------------------------------------------------ HEADER ------------------------------------------------ */}
               <div className="flex items-start justify-between mb-4">
-
                 {/* LEFT: Title */}
                 <div>
                   <h2
                     className="text-sm font-semibold flex items-center gap-2"
                     style={{ color: theme.primaryText }}
                   >
-                    <GridViewRoundedIcon sx={{ fontSize: "1rem", color: theme.primaryText }} />
+                    <GridViewRoundedIcon
+                      sx={{ fontSize: "1rem", color: theme.primaryText }}
+                    />
                     {table.title}
                   </h2>
-                  <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
+                  <p
+                    className="text-xs mt-1"
+                    style={{ color: theme.secondaryText }}
+                  >
                     This table displays all {table.title.toLowerCase()} details.
                   </p>
                 </div>
 
                 {/* RIGHT: Buttons */}
                 <div className="flex items-center gap-3">
-
                   {/* Procedure Toggle */}
                   <ProcedureToggleButton
                     isOpen={procedureVisible}
@@ -326,17 +333,32 @@ export default function DashboardTable({
                     ]}
                     defaultSelected={toggle}
                     onChange={(selectedIndex, value) => {
-                      setToggleSelection((prev) => ({ ...prev, [tableKey]: selectedIndex }));
+                      setToggleSelection((prev) => ({
+                        ...prev,
+                        [tableKey]: selectedIndex,
+                      }));
 
                       if (value === "chart") {
-                        setIsChartVisible((prev) => ({ ...prev, [tableKey]: true }));
+                        setIsChartVisible((prev) => ({
+                          ...prev,
+                          [tableKey]: true,
+                        }));
 
                         if (charts.length > 0) {
-                          setShowChartView((prev) => ({ ...prev, [tableKey]: true }));
+                          setShowChartView((prev) => ({
+                            ...prev,
+                            [tableKey]: true,
+                          }));
                         }
                       } else {
-                        setIsChartVisible((prev) => ({ ...prev, [tableKey]: false }));
-                        setShowChartView((prev) => ({ ...prev, [tableKey]: false }));
+                        setIsChartVisible((prev) => ({
+                          ...prev,
+                          [tableKey]: false,
+                        }));
+                        setShowChartView((prev) => ({
+                          ...prev,
+                          [tableKey]: false,
+                        }));
                       }
                     }}
                   />
@@ -344,7 +366,10 @@ export default function DashboardTable({
               </div>
 
               {/* ------------------------------------------------ PROCEDURE SQL ------------------------------------------------ */}
-              <ProcedureCodeBlock isVisible={procedureVisible} sql={table.procedure_sql} />
+              <ProcedureCodeBlock
+                isVisible={procedureVisible}
+                sql={table.procedure_sql}
+              />
 
               {/* ------------------------------------------------ TABLE OR CHART VIEW ------------------------------------------------ */}
               {showCharts && charts.length > 0 ? (
@@ -359,8 +384,14 @@ export default function DashboardTable({
                     }));
 
                     if (updated.length === 0) {
-                      setShowChartView((prev) => ({ ...prev, [tableKey]: false }));
-                      setToggleSelection((prev) => ({ ...prev, [tableKey]: 1 }));
+                      setShowChartView((prev) => ({
+                        ...prev,
+                        [tableKey]: false,
+                      }));
+                      setToggleSelection((prev) => ({
+                        ...prev,
+                        [tableKey]: 1,
+                      }));
                     }
                   }}
                 />
@@ -371,7 +402,8 @@ export default function DashboardTable({
                   rows={10}
                   sortMode="multiple"
                   scrollable
-                  scrollHeight="300px"
+                  scrollHeight="200px"
+                  style={{ maxWidth: "1330px" }}
                   filters={{
                     global: {
                       value: globalFilter,
@@ -390,7 +422,6 @@ export default function DashboardTable({
                   ))}
                 </DataTable>
               )}
-
             </div>
 
             {/* ------------------------------------------------ CHART SIDEBAR ------------------------------------------------ */}
