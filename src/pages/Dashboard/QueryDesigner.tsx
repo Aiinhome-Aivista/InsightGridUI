@@ -1,7 +1,7 @@
 import { useState } from "react";
 import DashboardHeader from "./Components/DashboardHeader";
 import DashboardTable from "./Components/DashboardTable";
-import Chat from "./Components/chat";
+import Chat from "./Components/DataDoctorChat";
 
 export default function Dashboard_page() {
   const [globalFilter, setGlobalFilter] = useState("");

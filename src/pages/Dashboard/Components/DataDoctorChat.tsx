@@ -4,7 +4,7 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import ApiService from "../../../services/ApiServices";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 // Assuming this path is correct based on your component structure
-import ProductDataTable from "../Components/DataTable";
+import ProductDataTable from "./DataTable";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
