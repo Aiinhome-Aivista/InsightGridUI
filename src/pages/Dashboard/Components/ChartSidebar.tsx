@@ -21,8 +21,18 @@ interface ChartOption {
   subtitle: string;
 }
 
+// Loader component
+const Loader = () => (
+  <div className="animate-spin">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="#5B21B6" strokeWidth="3" strokeLinecap="round" strokeDasharray="15 30" />
+    </svg>
+  </div>
+);
+
 export default function ChartSidebar({ onChartSelect, onClose, selectedCharts: initialSelectedCharts = [] }: ChartSidebarProps) {
   const [selectedCharts, setSelectedCharts] = useState<string[]>(initialSelectedCharts);
+  const [loadingChart, setLoadingChart] = useState<string | null>(null);
 
   useEffect(() => {
     setSelectedCharts(initialSelectedCharts);
@@ -74,12 +84,18 @@ export default function ChartSidebar({ onChartSelect, onClose, selectedCharts: i
   ];
 
   const handleChartClick = (chartType: string) => {
-    // CHANGED: Replace current selection with new chart instead of toggling
     const newSelection = selectedCharts.includes(chartType)
       ? [] // If clicking the same chart, deselect it
       : [chartType]; // Otherwise, replace with the new chart
 
     setSelectedCharts(newSelection);
+
+    // Show loader briefly after selection
+    setLoadingChart(chartType);
+    setTimeout(() => {
+      setLoadingChart(null);
+    }, 400);
+
     if (onChartSelect) {
       onChartSelect(newSelection);
     }
@@ -111,33 +127,42 @@ export default function ChartSidebar({ onChartSelect, onClose, selectedCharts: i
       </div>
       <div className="p-4">
         <div className="grid grid-cols-2 gap-4">
-          {chartOptions.map((chart) => (
-            <button
-              key={chart.id}
-              onClick={() => handleChartClick(chart.id)}
-              className={`flex flex-col items-center justify-center p-2 bg-gray-50 rounded-lg transition cursor-pointer border-2 ${selectedCharts.includes(chart.id)
-                ? 'border-blue-500 bg-blue-50 shadow-sm'
-                : 'border-transparent hover:border-blue-500 hover:shadow-sm'
-                }`}
-            >
-              <div className="w-full aspect-square flex items-center justify-center bg-gray-100 rounded-lg mb-2 relative">
-                <div className="flex items-center justify-center text-gray-700">
-                  {chart.icon}
+          {chartOptions.map((chart) => {
+            const isSelected = selectedCharts.includes(chart.id);
+            const isLoading = loadingChart === chart.id;
+
+            return (
+              <button
+                key={chart.id}
+                onClick={() => handleChartClick(chart.id)}
+                className={`flex flex-col items-center justify-center p-2 rounded-lg transition cursor-pointer border-2 ${isSelected
+                    ? 'border-transparent bg-purple-100 shadow-sm'
+                    : 'border-transparent bg-gray-50 hover:border-purple-600 hover:shadow-sm'
+                  }`}
+              >
+                <div className={`w-full aspect-square flex items-center justify-center rounded-lg mb-2 relative ${isSelected ? 'bg-purple-200' : 'bg-gray-100'
+                  }`}>
+                  {isLoading ? (
+                    <Loader />
+                  ) : (
+                    <>
+                      <div className={isSelected ? 'text-purple-700' : 'text-gray-700'}>
+                        {chart.icon}
+                      </div>
+
+                    </>
+                  )}
                 </div>
-                {selectedCharts.includes(chart.id) && (
-                  <div className="absolute top-1 right-1 bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                    ✓
-                  </div>
-                )}
-              </div>
-              <h4 className="text-sm font-semibold text-gray-900 text-center">
-                {chart.name}
-              </h4>
-              <p className="text-xs text-gray-500 mt-0.5 text-center">
-                {chart.subtitle}
-              </p>
-            </button>
-          ))}
+                <h4 className={`text-sm font-semibold text-center ${isSelected ? 'text-purple-700' : 'text-gray-900'
+                  }`}>
+                  {chart.name}
+                </h4>
+                <p className={`text-xs ${isSelected ? 'text-purple-500' : 'text-gray-500'}`}>
+                  {chart.subtitle}
+                </p>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
