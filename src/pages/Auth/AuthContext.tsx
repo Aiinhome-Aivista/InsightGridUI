@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, Dispatch, SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
@@ -6,6 +6,14 @@ interface AuthContextType {
   login: (userData: any) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  isLogoutModalOpen: boolean;
+  setIsLogoutModalOpen: Dispatch<SetStateAction<boolean>>;
+  isConfirmSaveModalOpen: boolean;
+  setIsConfirmSaveModalOpen: Dispatch<SetStateAction<boolean>>;
+  viewName: string;
+  setViewName: Dispatch<SetStateAction<string>>;
+  confirmSave: () => void;
+  setConfirmSaveAction: (action: () => void) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -13,6 +21,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
+  const [viewName, setViewName] = useState("");
+  const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => {});
+
 
   useEffect(() => {
     const storedUser = localStorage.getItem("ig_user");
@@ -29,14 +42,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     localStorage.removeItem("ig_user");
+    setIsLogoutModalOpen(false);
     setUser(null);
     navigate("/", { replace: true });
+  };
+
+  const confirmSave = () => {
+    if (confirmSaveAction) {
+      confirmSaveAction();
+    }
+    setIsConfirmSaveModalOpen(false);
   };
 
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ 
+      user, login, logout, isAuthenticated,
+      isLogoutModalOpen, setIsLogoutModalOpen,
+      isConfirmSaveModalOpen, setIsConfirmSaveModalOpen,
+      viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction
+    }}>
       {children}
     </AuthContext.Provider>
   );

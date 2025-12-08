@@ -1,18 +1,12 @@
-// ConfirmSaveView.tsx
 
 import React from "react";
+import { useAuth } from "../pages/Auth/AuthContext";
 
-interface ConfirmSaveViewProps {
-  viewName: string;
-  onCancel: () => void;
-  onConfirm: () => void;
-}
-
-export default function ConfirmSaveView({
-  viewName,
-  onCancel,
-  onConfirm,
-}: ConfirmSaveViewProps) {
+export default function ConfirmSaveView() {
+  const { isConfirmSaveModalOpen, setIsConfirmSaveModalOpen, viewName, confirmSave } = useAuth();
+  const onCancel = () => setIsConfirmSaveModalOpen(false);
+  const onConfirm = () => confirmSave();
+  if (!isConfirmSaveModalOpen) return null;
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="w-[550px] bg-[#D9D9D9] rounded-2xl shadow-lg border-[11px] border-white flex flex-col justify-center items-center gap-6 p-8">

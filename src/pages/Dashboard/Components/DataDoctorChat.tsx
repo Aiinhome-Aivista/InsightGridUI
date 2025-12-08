@@ -6,6 +6,7 @@ import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ProductDataTable from "./DataTable";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useAuth } from "../../Auth/AuthContext";
 import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
 
 interface ChatSession {
@@ -60,12 +61,13 @@ export default function Chat() {
   const [typewriterKey, setTypewriterKey] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
   const [isScriptRunSuccess, setIsScriptRunSuccess] = useState(false);
-  const [viewName, setViewName] = useState("");
   const scriptContainerRef = useRef<HTMLDivElement>(null);
   const activeChat = chats.find((c) => c.id === activeChatId);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
+  const { setIsConfirmSaveModalOpen, viewName, setViewName, setConfirmSaveAction } = useAuth();
+
+
   useEffect(() => {
     
     if (isSessionDataMissing) {
@@ -282,6 +284,10 @@ export default function Chat() {
     }
   }, [typedQuery]); // Dependency on typedQuery ensures it runs on each character addition
 
+  useEffect(() => {
+    setConfirmSaveAction(() => handleConfirmSave);
+  }, [activeChat, viewName, isScriptRunSuccess, tableData]);
+
   const handleConfirmSave = async () => {
     if (!activeChat || !viewName.trim()) return;
 
@@ -311,10 +317,6 @@ export default function Chat() {
       setIsConfirmSaveModalOpen(false);
       setViewName(""); // Clear input after saving
     }
-  };
-
-  const handleCancelSave = () => {
-    setIsConfirmSaveModalOpen(false);
   };
 
   return (
@@ -489,13 +491,7 @@ export default function Chat() {
           )}
         </div>
       </div>
-      {isConfirmSaveModalOpen && (
-        <ConfirmSaveView
-          viewName={viewName}
-          onCancel={handleCancelSave}
-          onConfirm={handleConfirmSave}
-        />
-      )}
+      <ConfirmSaveView />
     </div>
   );
 }

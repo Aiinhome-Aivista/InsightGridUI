@@ -8,8 +8,7 @@ import { useAuth } from "../../pages/Auth/AuthContext";
 export default function Header() {
   const [formattedDate, setFormattedDate] = useState('');
   const [formattedTime, setFormattedTime] = useState('');
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const { logout } = useAuth();
+  const { setIsLogoutModalOpen } = useAuth();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -45,11 +44,7 @@ export default function Header() {
   const { theme } = useTheme();
 
   const handleLogout = () => {
-    setIsLogoutModalOpen(true);
-  };
-
-  const confirmLogout = () => {
-    logout();
+    setIsLogoutModalOpen(true)
   };
 
   return (
@@ -102,11 +97,7 @@ export default function Header() {
           </div>
         </div>
       </header>
-      <LogoutModal
-        isOpen={isLogoutModalOpen}
-        onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={confirmLogout}
-      />
+      <LogoutModal />
     </>
   );
 }

@@ -1,18 +1,11 @@
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTheme } from "../theme";
+import { useAuth } from "../pages/Auth/AuthContext";
 
-interface LogoutModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => Promise<void> | void;
-}
-
-export default function LogoutModal({
-  isOpen,
-  onClose,
-  onConfirm,
-}: LogoutModalProps) {
+export default function LogoutModal() {
+  const { isLogoutModalOpen: isOpen, setIsLogoutModalOpen, logout: onConfirm } = useAuth();
+  const onClose = () => setIsLogoutModalOpen(false);
   if (!isOpen) return null;
   const { theme } = useTheme();
 
