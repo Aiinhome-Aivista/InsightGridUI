@@ -4,7 +4,7 @@ import DashboardTable from "./Components/DashboardTable";
 import Chat from "./Components/DataDoctorChat";
 
 export default function Dashboard_page() {
-  const [globalFilter, setGlobalFilter] = useState("");
+  
   const [viewSelection, setViewSelection] = useState('dataview');
   const [tableData, setTableData] = useState({
     rows: [],
@@ -31,14 +31,14 @@ export default function Dashboard_page() {
     <>
       <div className="flex flex-col bg-[#D9D9D91A] rounded-xl m-5 max-w-screen">
         <DashboardHeader
-          globalFilter={globalFilter}
-          setGlobalFilter={setGlobalFilter}
+        
+      
           onRefresh={handleRefresh}
           onTableSelect={handleTableDataSelect}
           viewSelection={viewSelection}
           onViewChange={setViewSelection}
         />
-        <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} globalFilter={globalFilter} tableName={tableData.tableName} viewSelection={viewSelection} />
+        <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} tableName={tableData.tableName} viewSelection={viewSelection} globalFilter={""} />
       </div>
       <div>
       <Chat/>

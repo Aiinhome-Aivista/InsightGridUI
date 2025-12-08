@@ -14,8 +14,7 @@ import AnimatedToggleButton from "./AnimatedToggleButton";
 
 
 interface HeaderProps {
-  globalFilter: string;
-  setGlobalFilter: (value: string) => void;
+
   onRefresh: () => void;
   onTableSelect?: (data: any) => void;
   viewSelection: string;
@@ -23,8 +22,7 @@ interface HeaderProps {
 }
 
 export default function DashboardHeader({
-  globalFilter,
-  setGlobalFilter,
+ 
   onRefresh,
   onTableSelect,
   viewSelection,

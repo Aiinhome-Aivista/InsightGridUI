@@ -3,7 +3,6 @@ import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useTheme } from "../../../theme";
-import AnimatedToggleButton from "../../../Modal/components/animated-toggle-button";
 import ProductDataTable from "../Components/DataTable";
 import { IconButton } from "@mui/material";
 import "./primereact-table.css";
