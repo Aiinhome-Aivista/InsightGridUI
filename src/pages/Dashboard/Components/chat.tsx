@@ -439,14 +439,14 @@ export default function Chat() {
 <div className="flex flex-row items-center justify-between px-5 pr-0">
   {/* Left empty space or other content can stay here */}
   <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-5 py-2 shadow-sm">
-  {/* <input
+  <input
             type="text"
             value={viewName}
             onChange={(e) => setViewName(e.target.value)}
             placeholder="Name and save your custom view"
             className="text-gray-600 text-sm bg-transparent outline-none w-full"
-          /> */}
-    <button
+          />
+    {/* <button
             onClick={() => setIsConfirmSaveModalOpen(true)}
             disabled={!viewName.trim() || !isScriptRunSuccess}
             className={`px-5 py-1.5 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
@@ -454,7 +454,7 @@ export default function Chat() {
             }`}
           >
       Save
-    </button>
+    </button> */}
     <button
             onClick={() => setIsConfirmSaveModalOpen(true)}
             disabled={!viewName.trim()}
