@@ -15,17 +15,13 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<PublicRoute component={LandingPage} />} />
         <Route path="/login" element={<PublicRoute component={Login} />} />
-
-        {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/layout" element={<AppLayout />}>
             <Route index element={<Navigate to="upload" replace />} />
             <Route path="upload" element={<Upload_page />} />
-            <Route path="query" element={<Query />} />
-            <Route path="query-designer" element={<QueryDesigner />} />
+            <Route path="query-designer" element={<Query />} />
               {/* <Route path="report-designer" element={<ReportDesigner />} /> */}
             <Route path="customize" element={<Customize_page />} />
-  
           </Route>
         </Route>
 
