@@ -93,7 +93,7 @@ export default function FileDropZone({ onUploadComplete, theme, disabled = false
 
   return (
     <div className="space-y-2">
-      <p className="text-sm font-medium" style={{ color: theme.primaryText }}>Upload File</p>
+      <p className="text-sm font-medium" style={{ color: theme.primaryText }}>Upload Files</p>
 
       <div
         onDragEnter={handleDrag}

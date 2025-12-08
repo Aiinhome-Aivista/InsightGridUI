@@ -35,7 +35,7 @@ export default function UploadIdle({ onFileSelect, disabled = false }: Props) {
           className="text-sm px-4 py-2 rounded-md border"
           style={{ backgroundColor: theme.surface, color: theme.primaryText, borderColor: theme.border }}
         >
-          Or Select a File
+          Or Select Files
         </span>
       </label>
     </div>
