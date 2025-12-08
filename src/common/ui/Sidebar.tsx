@@ -13,9 +13,11 @@ import ViewColumnRoundedIcon from '@mui/icons-material/ViewColumnRounded';
 import { useTheme } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ApiServices from "../../services/ApiServices";
+import { PiBracketsCurlyBold } from "react-icons/pi";
 
 const menuItems = [
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
+  { name: "Query", icon: PiBracketsCurlyBold, path: "query" },
   { name: "query-designer", icon: ViewColumnRoundedIcon, path: "query-designer" },
   { name: "Setting", icon: SettingsRoundedIcon, path: "setting" },
   { name: "Download", icon: FileDownloadOutlinedIcon, path: "download" },
