@@ -9,7 +9,7 @@ export default function VisualizationSection() {
         src={previewImage}
         alt="visual-preview"
         className="
-          absolute right-8 bottom-40 w-[680px] opacity-80 rounded-3xl
+          absolute right-20 bottom-40 top-20 w-[800px] opacity-80 rounded-3xl
           translate-y-10 
         "
         style={{
@@ -18,7 +18,7 @@ export default function VisualizationSection() {
       />
 
       {/* Content Container */}
-      <div className="max-w-[1350px] mx-auto flex items-center pl-10">
+      <div className="max-w-[1350px] mx-auto flex items-center pl-10 mt-24">
         {/* Left Text Column */}
         <div className="w-[55%] text-white">
 
