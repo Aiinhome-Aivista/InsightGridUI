@@ -46,7 +46,9 @@ const ShowQuery = () => {
   }, [user]);
   // handleEditClick and the placeholder fetchSavedQueries function are removed
 
-  const handleEditClick = (navigate) => {
+  // Outside component
+  const handleEditClick = (navigate, row) => {
+    console.log("Clicked row from showquery:", row);
     navigate("/layout/query-designer");
   };
 
@@ -140,7 +142,7 @@ const ShowQuery = () => {
                   <td className="px-6 py-4 text-gray-600">{query.rows_effected}</td>
                   <td className="px-6 py-4">
                     <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200"
-                      onClick={() => handleEditClick(navigate)} >
+                      onClick={() => handleEditClick(navigate, query)} >
                       Edit
                     </button>
                   </td>
