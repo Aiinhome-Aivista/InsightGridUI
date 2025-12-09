@@ -13,7 +13,7 @@ export const POST_APIS = {
   get_ui_data: `${BASE_URL}get_ui_data`,
   processSessionData: `${BASE_URL}process_session_data`,
   get_dashboard_data: `${BASE_URL}get_dashboard_data`,
-  save_chat: `${BASE_URL}save_chat`,
+  save_chat: `${BASE_URL}query_save`,
   get_chat_history: `${BASE_URL}get_chat_history`,
   get_table_data: `${BASE_URL}get_full_table_info`,
   get_saved_query_response: `${BASE_URL}get_saved_query_response`,
