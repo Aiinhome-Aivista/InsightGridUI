@@ -92,7 +92,7 @@ export default function Login() {
       <img
         src={Union}
         alt="cross-pattern"
-        className="absolute bottom-0 right-0 w-100"
+        className="absolute bottom-0 right-0 w-[800px]"
       />
       <div className="absolute top-8 left-10 flex items-center gap-2 text-white font-semibold text-lg">
         <span className="text-white/80">
@@ -112,7 +112,7 @@ export default function Login() {
             Customize Every View. Empower Every Decision.
           </p>
         </div>
-        <form onSubmit={handleLogin} className="mt-24 w-80 flex flex-col space-y-4">
+        <form onSubmit={handleLogin} className="mt-16 w-80 flex flex-col space-y-4">
           <input
             type="text"
             placeholder="User Name"
@@ -137,7 +137,7 @@ export default function Login() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <p className="text-white/70 text-xs absolute bottom-12">
+        <p className="text-white/70 text-xs absolute bottom-14">
           ©2025 Aiihome Technologies Pvt. Ltd. All rights reserved
         </p>
       </div>
