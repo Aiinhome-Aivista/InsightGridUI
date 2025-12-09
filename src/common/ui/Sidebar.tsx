@@ -96,8 +96,11 @@ export default function Sidebar() {
       <div className="mt-3 flex-1">
         <nav className="flex flex-col gap-1 px-2">
           {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = item.path === activePath;
+            const Icon = item.icon; 
+            let isActive = item.path === activePath;
+            if (item.path === 'query-list' && activePath === 'query-designer') {
+              isActive = true;
+            }
             return (
               <Link to={item.path} key={item.name} className="no-underline"
                 onClick={() => handleTabClick(item)} >
