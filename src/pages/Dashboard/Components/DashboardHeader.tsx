@@ -144,12 +144,12 @@ export default function DashboardHeader({
               
               // Panel (List) Styling
               panelClassName="
-                bg-white shadow-xl rounded-xl border border-gray-100 mt-2 overflow-hidden text-sm
+                bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
               "
               
               // PassThrough (PT) props for deep styling
               pt={{
-                root: { className: 'cursor-pointer shadow-sm' },
+                root: { className: 'cursor-pointer' },
                 input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
                 trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
                 list: { className: 'p-1' },
