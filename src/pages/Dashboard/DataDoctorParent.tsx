@@ -12,13 +12,16 @@ export default function Dashboard_page() {
     insights: [],
     tableName: "Product Details", // Default title
   });
+  const [tableOptions, setTableOptions] = useState([]);
 
   const handleTableDataSelect = (data: any) => {
     setTableData({
-      rows: data.rows || [],
-      columns: data.column_metadata || [],
-      insights: data.insights || [],
-      tableName: data.table_name || "Product Details",
+      rows: data.data || [],
+      columns: data.columns || [],
+      insights: Array.isArray(data.insights)
+        ? data.insights
+        : JSON.parse(data.insights || "[]"),
+      tableName: data.tableName || "Product Details",
     });
   };
 
@@ -52,15 +55,22 @@ export default function Dashboard_page() {
 
       console.log(" API Response:", response.data);
 
-      const data = response.data.data || {}; 
+      const responseData = response.data.data || {};
+      const tables = responseData.tables_dropdown || [];
+      setTableOptions(tables);
 
-      setTableData({
-        rows: data.rows || [],
-        columns: data.column_metadata || [],
-        insights: data.insights || [],
-        tableName: data.table_name || "Product Details",
-      });
+      if (tables.length > 0) {
+        const firstTableName = tables[0].value;
+        const firstTableData = responseData.details?.[firstTableName] || {};
+        let insights = [];
+        try {
+          insights = JSON.parse(firstTableData.insights || "[]");
+        } catch (e) {
+          console.error("Failed to parse insights:", e);
+        }
 
+        handleTableDataSelect({ ...firstTableData, tableName: firstTableName });
+      }
     } catch (error) {
       console.error(" API Error:", error);
     }
@@ -77,6 +87,7 @@ export default function Dashboard_page() {
         <DashboardHeader
           onRefresh={handleRefresh}
           onTableSelect={handleTableDataSelect}
+          tableOptions={tableOptions}
           viewSelection={viewSelection}
           onViewChange={setViewSelection}
         />
