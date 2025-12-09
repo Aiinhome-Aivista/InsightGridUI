@@ -11,7 +11,6 @@ import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
 
 interface ChatSession {
   id: number;
-  name: string;
   session_id: string;
   session_name: string;
   file_name: string;
@@ -24,13 +23,14 @@ interface TableData {
   rows: any[];
   columns: any[];
 }
-
 interface TableOption {
   label: string;
   value: string;
 }
-
-export default function Chat() {
+interface ChatProps {
+  onScriptRun: (data: TableData) => void;
+}
+export default function Chat({ onScriptRun }: ChatProps) {
   const { user } = useAuth();
   const getStoredUser = () => {
     try {
@@ -46,29 +46,22 @@ export default function Chat() {
     session_name: sessionData?.session_name || "Chat01",
   };
   const isSessionDataMissing = !defaultSession.session_id;
-  const [chats, setChats] = useState<ChatSession[]>([
-    {
-      id: 1,
-      name: defaultSession.session_name,
-      session_id: defaultSession.session_id,
-      session_name: defaultSession.session_name,
-      question: isSessionDataMissing ? "FATAL ERROR: Session ID Missing." : "Ask anything about your file…",
-      query: "",
-      logs: isSessionDataMissing ? ["CRITICAL: Missing session_id. Cannot communicate with API."] : [],
-    },
-  ]);
-
-  const [activeChatId, setActiveChatId] = useState(1);
+  const [chat, setChat] = useState<ChatSession>({
+    id: 1,
+    session_id: defaultSession.session_id,
+    session_name: defaultSession.session_name,
+    question: isSessionDataMissing ? "FATAL ERROR: Session ID Missing." : "Ask anything about your file…",
+    query: "",
+    logs: isSessionDataMissing ? ["CRITICAL: Missing session_id. Cannot communicate with API."] : [],
+    file_name: ""
+  });
   const [displayedLogs, setDisplayedLogs] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState("");
-  const [tableData, setTableData] = useState<TableData | null>(null);
-  const [tableOptions, setTableOptions] = useState<TableOption[]>([]);
+  const [inputValue, setInputValue] = useState(""); 
   const [typedQuery, setTypedQuery] = useState("");
   const [typewriterKey, setTypewriterKey] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isScriptRunSuccess, setIsScriptRunSuccess] = useState(false);
-  const scriptContainerRef = useRef<HTMLDivElement>(null);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
   const { setIsConfirmSaveModalOpen, viewName, setViewName, setConfirmSaveAction } = useAuth();
 
@@ -77,9 +70,7 @@ export default function Chat() {
     
     if (isSessionDataMissing) {
       console.error("API Call skipped: Cannot initialize chat due to missing session_id.");
-      setChats(chats => chats.map(chat =>
-        chat.id === 1 ? { ...chat, logs: ["CRITICAL: Missing session_id. Cannot communicate with API."] } : chat
-      ));
+      setChat(prevChat => ({ ...prevChat, logs: ["CRITICAL: Missing session_id. Cannot communicate with API."] }));
       return;
     }
 
@@ -92,16 +83,11 @@ export default function Chat() {
       .then((response) => {
         if (response.data.isSuccess) {
           const data = response.data.data;
-          setChats(chats => chats.map(chat => {
-            if (chat.id === 1) {
-              return {
-                ...chat,
-                question: data.user_query || payload.user_query,
-                query: data.ai_response || "-- No initial query generated.",
-                logs: data.logs || [],
-              };
-            }
-            return chat;
+          setChat(prevChat => ({
+            ...prevChat,
+            question: data.user_query || payload.user_query,
+            query: data.ai_response || "-- No initial query generated.",
+            logs: data.logs || [],
           }));
         }
       })
@@ -112,22 +98,14 @@ export default function Chat() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    const activeChat = chats.find((c) => c.id === activeChatId);
-    if (!inputValue.trim() || !activeChat) return;
-    if (!activeChat.session_id || !activeChat.session_name) {
+    if (!inputValue.trim() || !chat) return;
+    if (!chat.session_id || !chat.session_name) {
       const missingFields = [];
-      if (!activeChat.session_id) missingFields.push("session_id");
-      if (!activeChat.session_name) missingFields.push("session_name");
+      if (!chat.session_id) missingFields.push("session_id");
+      if (!chat.session_name) missingFields.push("session_name");
 
       console.error(`Cannot send message: Active chat session data is incomplete. Missing: ${missingFields.join(", ")}`);
-
-      // Provide user feedback without using alert()
-      const errorChat = chats.map((chat) =>
-        chat.id === activeChatId
-          ? { ...chat, logs: [`ERROR: Session data incomplete. Missing fields: ${missingFields.join(", ")}`] }
-          : chat
-      );
-      setChats(errorChat);
+      setChat(prevChat => ({ ...prevChat, logs: [`ERROR: Session data incomplete. Missing fields: ${missingFields.join(", ")}`] }));
       return;
     }
 
@@ -135,53 +113,36 @@ export default function Chat() {
     setIsSending(true);
     try {
       const payload = {
-        session_id: activeChat.session_id,
-        session_name: activeChat.session_name,
+        session_id: chat.session_id,
+        // session_name: chat.session_name,
+        created_by: userData?.user_id || "unknown",
         user_query: inputValue,
       };
       console.log("Sending Chat Payload:", payload);
 
-      // API call to ApiServices.chat(payload)
       const response = await ApiService.chat(payload);
       const result = response.data?.data || {};
 
-      const updatedChats = chats.map((chat) => {
-        if (chat.id === activeChatId) {
-          return {
-            ...chat,
-            question: result.user_query || inputValue,
-            query: result.ai_response || "",
-            ai_response: result.ai_response || "", 
-            logs: result.logs || ["Execution log not available."]
-          };
-        }
-        return chat;
-      });
-
-
-      setChats(updatedChats);
+      setChat(prevChat => ({
+        ...prevChat,
+        question: result.user_query || inputValue,
+        query: result.ai_response || "",
+        ai_response: result.ai_response || "",
+        logs: result.logs || ["Execution log not available."]
+      }));
       setDisplayedLogs([]);
       setTypewriterKey(prev => prev + 1);
       setInputValue("");
-      if (result.rows && result.columns) {
-        setTableData({ rows: result.rows, columns: result.columns });
-      } else {
-        setTableData(null); // Clear table if no data is returned
-        setIsScriptRunSuccess(false);
-      }
+      onScriptRun(null); // Clear the main table on new query
+      setIsScriptRunSuccess(false);
 
     } catch (error) {
       console.error("Chat API Error:", error);
 
-      const updatedChats = chats.map((chat) =>
-        chat.id === activeChatId
-          ? { ...chat, logs: ["ERROR: Something went wrong while calling API."] }
-          : chat
-      );
-
-      setChats(updatedChats);
+      setChat(prevChat => ({ ...prevChat, logs: ["ERROR: Something went wrong while calling API."] }));
       setTableData(null); // Clear table on error
       setIsScriptRunSuccess(false);
+      onScriptRun(null);
     } finally {
       setIsSending(false);
     }
@@ -205,16 +166,15 @@ export default function Chat() {
     return ""; // Return empty if no query is found
   };
   const handleRunScript = async () => {
-    if (!activeChat) {
-    const activeChat = chats.find((c) => c.id === activeChatId);
+    if (!chat) {
       setDisplayedLogs(["No active chat session."]);
       return;
     }
 
-    const cleanQuery = activeChat.ai_response?.trim() || "";
-    if (!cleanQuery || !activeChat.session_id) {
+    const executableQuery = extractSqlQuery(chat.query?.trim() || ""); // Extract clean query for execution
+    if (!executableQuery || !chat.session_id) {
       setDisplayedLogs(["No script to run."]);
-      setTableData(null);
+      onScriptRun(null);
       setIsScriptRunSuccess(false);
       return;
     }
@@ -222,7 +182,7 @@ export default function Chat() {
     setIsExecuting(true); // Start loading
     try {
       const payload = {
-        sql_query: cleanQuery
+        sql_query: executableQuery // Use the extracted query
       };
 
       console.log("Executing SQL Payload:", payload);
@@ -236,11 +196,11 @@ export default function Chat() {
           ? Object.keys(rows[0]).map(key => ({ column_name: key }))
           : [];
 
-        setTableData({ rows, columns });
+        onScriptRun({ rows, columns });
         setDisplayedLogs([response.data.message || "Execution successful."]);
         setIsScriptRunSuccess(true);
       } else {
-        setTableData(null);
+        onScriptRun(null);
         setDisplayedLogs([response.data.message || "Execution failed or returned no data."]);
         setIsScriptRunSuccess(false);
       }
@@ -248,7 +208,7 @@ export default function Chat() {
       console.error("Execute SQL API Error:", error);
       const errorMessage = error.response?.data?.message || "An error occurred while running the script.";
       setDisplayedLogs([`ERROR: ${errorMessage}`]);
-      setTableData(null);
+      onScriptRun(null);
       setIsScriptRunSuccess(false);
     } finally {
       setIsExecuting(false); // Stop loading
@@ -256,16 +216,10 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    setDisplayedLogs([]);
-    setTableData(null);
-    setIsScriptRunSuccess(false);
-  }, [activeChatId]);
-
-  // Effect to handle the typewriter animation
-  useEffect(() => {
-    const query = activeChat?.query || '';
+    const query = chat?.query || '';
     let i = 0;
     setTypedQuery(''); // Clear previous query
+    const scriptContainerRef = document.getElementById('script-container');
 
     const typingInterval = setInterval(() => {
       if (i < query.length) {
@@ -274,32 +228,27 @@ export default function Chat() {
       } else {
         clearInterval(typingInterval);
       }
+      if (scriptContainerRef) {
+        scriptContainerRef.scrollTop = scriptContainerRef.scrollHeight;
+      }
     }, 10); // Typing speed
 
     return () => {
       clearInterval(typingInterval);
     };
-  }, [activeChatId, typewriterKey]); // Rerun when chat changes or message is sent
-
-  // Effect to auto-scroll the script view as content is added
-  const activeChat = chats.find((c) => c.id === activeChatId);
-  useEffect(() => {
-    if (scriptContainerRef.current) {
-      scriptContainerRef.current.scrollTop = scriptContainerRef.current.scrollHeight;
-    }
-  }, [typedQuery]); // Dependency on typedQuery ensures it runs on each character addition
+  }, [chat, typewriterKey]); // Rerun when chat changes or message is sent
 
   useEffect(() => {
     setConfirmSaveAction(() => handleConfirmSave);
-  }, [activeChat, viewName, isScriptRunSuccess, tableData]);
-
+  }, [chat, viewName, isScriptRunSuccess]);
+  const [tableData, setTableData] = useState<TableData | null>(null);
   const handleConfirmSave = async () => {
-    if (!activeChat || !viewName.trim()) return;
+    if (!chat || !viewName.trim()) return;
 
     const payload = {
-      user_query: activeChat.question,
+      user_query: chat.question,
       is_execute: isScriptRunSuccess ? 1 : 0,
-      ai_response: activeChat.ai_response || "",
+      ai_response: chat.ai_response || "",
       created_by: userData?.user_id || "unknown",
       table_data: tableData || null,
     
@@ -334,41 +283,13 @@ export default function Chat() {
         <div className="px-5 pt-4">
           <h1 className="text-lg font-semibold text-gray-800">Speak to Data Doctor</h1>
           <div className="text-gray-500 text-md flex flex-row items-center gap-20 border-gray-200">
-       
-
-            <div className="border-b-2 border-[#D9D9D9] w-[100%] gap-6 mt-1 flex">
-              {chats.map((chat) => (
-                <button
-                  key={chat.id}
-                  onClick={() => setActiveChatId(chat.id)}
-                  disabled={isSessionDataMissing} // Disabled when session is missing
-                  className={`relative pb-2 pt-1 text-sm tracking-wide transition-colors ${activeChatId === chat.id
-                    ? "text-[#6A1B9A] font-medium"
-                    : "text-gray-500 hover:text-[#6A1B9A]"
-                    } ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {chat.name}
-
-                  {activeChatId === chat.id && (
-                    <span className="absolute left-0 right-0 -bottom-0.5 h-[3px] bg-[#6A1B9A] rounded"></span>
-                  )}
-                </button>
-              ))}
-
-              {/* <button
-                onClick={handleNewChat}
-                disabled={isSessionDataMissing} // Disabled when session is missing
-                className={`pb-2 pt-1 text-sm text-gray-500 hover:text-[#6A1B9A] transition-colors ${isSessionDataMissing ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                New
-              </button> */}
-            </div>
+            <div className="border-b-2 border-[#D9D9D9] w-[100%] gap-6 mt-1 flex" />
           </div>
         </div>
 
         {/* Chat Box */}
         <div className="px-5 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2 ">
-          <span>{activeChat?.question}</span>
+          <span>{chat?.question}</span>
         </div>
 
         {/* Input */}
@@ -446,7 +367,7 @@ export default function Chat() {
           </button>
 
           <div
-            ref={scriptContainerRef}
+            id="script-container"
             className="mt-10 text-sm font-mono relative min-h-[150px] max-h-[350px] overflow-y-auto max-w-[1300px]"
           >
             {/* This SyntaxHighlighter displays the progressively typed and highlighted query. */}
@@ -461,7 +382,7 @@ export default function Chat() {
                 wordBreak: 'break-word',
               }}
             >
-              {typedQuery + (typedQuery === (activeChat?.query || '') ? '' : ' ')}
+              {typedQuery + (typedQuery === (chat?.query || '') ? '' : ' ')}
             </SyntaxHighlighter>
           </div>
 
@@ -477,17 +398,6 @@ export default function Chat() {
                   {log}
                 </p>
               ))}
-            </div>
-          )}
-        </div>
-        <div className="mb-10 px-5">
-          {tableData && tableData.rows.length > 0 && (
-            <div className="p-2 bg-white rounded-xl shadow-md">
-              <ProductDataTable
-                data={tableData.rows}
-                columns={tableData.columns}
-                globalFilter={""}
-              />
             </div>
           )}
         </div>
