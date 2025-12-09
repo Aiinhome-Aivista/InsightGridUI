@@ -18,7 +18,7 @@ const ShowQuery = () => {
 
         <button
           onClick={() => navigate("/layout/query-designer")}
-          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-md text-sm font-medium shadow mx-6"
+          className="btn-primary shadow mx-6"
         >
           Create Query
         </button>
@@ -30,7 +30,7 @@ const ShowQuery = () => {
               <input
                 type="text"
                 placeholder="Global Search"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent)]"
               />
               <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m2.6-5.15a7.75 7.75 0 11-15.5 0 7.75 7.75 0 0115.5 0z" />
