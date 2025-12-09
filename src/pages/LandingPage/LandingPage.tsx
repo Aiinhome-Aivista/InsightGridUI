@@ -49,7 +49,7 @@ export default function LandingPage() {
         <span className="font-extrabold text-xl">IG</span>
       </div>
 
-      <div className="flex flex-col items-center mt-8">
+      <div className="flex flex-col items-center transform -translate-y-16">
         <h1 className="text-white text-4xl font-bold tracking-wide">
           InsightGrid
         </h1>

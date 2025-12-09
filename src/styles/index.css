@@ -129,7 +129,7 @@ font-family: "Ballo Da 2",;
   background: #888e92;
   /* Tailwind's blue-600 */
   border-radius: 10px;
-  border: 2px solid #dbeafe;
+  border: 2px solid transparent;
   /* Same as track for a nice padding effect */
 }
 /* Custom component styles */
@@ -161,4 +161,9 @@ font-family: "Ballo Da 2",;
     color: var(--theme-primary-text);
     border: 1px solid var(--theme-border);
   }
+
+  /* Target the table cells to add a bottom border */
+.custom-table .p-datatable-tbody > tr > td {
+    border-bottom: 1px solid #e5e7eb !important; /* Adjust color as needed */
+}
 }

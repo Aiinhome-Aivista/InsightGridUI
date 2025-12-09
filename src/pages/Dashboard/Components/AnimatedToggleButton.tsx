@@ -16,7 +16,8 @@ interface AnimatedToggleButtonProps {
   width?: string;
   height?: string;
   buttonPadding?: string;
-  gap?: string;
+  gap?: string; // Gap between buttons
+  containerPadding?: string; // New prop to control outer padding safely
   
   // Color customization
   backgroundColor?: string;
@@ -57,6 +58,7 @@ export default function AnimatedToggleButton({
   height = 'auto',
   buttonPadding = '0.5rem 1.5rem',
   gap = '0.25rem',
+  containerPadding = '0.25rem', // Extracted for safety
   
   backgroundColor = '#FFFFFF',
   activeBackgroundColor = '#D9D9D9',
@@ -87,7 +89,10 @@ export default function AnimatedToggleButton({
     onChange?.(index, options[index].value);
   };
   
-  const buttonWidth = `calc(${100 / options.length}% - ${gap})`;
+  // 1. Calculate the exact width of one button slot based on container size
+  // Formula: (100% - Total Gaps) / Number of Items
+  const totalGapSpace = `calc(${options.length - 1} * ${gap})`;
+  const buttonWidth = `calc((100% - ${totalGapSpace}) / ${options.length})`;
   
   const getFlexDirection = () => {
     if (iconPosition === 'top') return 'flex-col';
@@ -101,27 +106,32 @@ export default function AnimatedToggleButton({
   
   return (
     <div 
-      className="relative inline-flex"
+      className="relative grid items-center" // Changed to Grid
+      // The container itself doesn't need inline styles for grid anymore,
+      // but we'll keep the rest for customization.
       style={{
         backgroundColor,
         borderRadius,
-        padding: '0.25rem',
-        gap,
+        padding: containerPadding,
         width,
-        height
+        height,
+        gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))`,
+        gap: gap,
       }}
     >
       {/* Sliding Active Background */}
       <div
-        className="absolute transition-all"
+        className="h-full" // The slider will be a grid item itself
         style={{
-          top: '0.25rem',
-          bottom: '0.25rem',
+          gridColumn: `${selected + 1}`, // Move to the correct grid column
+          gridRow: '1', // Ensure it's on the first row
           backgroundColor: activeBackgroundColor,
           borderRadius: activeBorderRadius,
           boxShadow: shadow,
-          left: `calc(${selected * (100 / options.length)}% + 0.25rem)`,
-          width: buttonWidth,
+          // Animate grid-column change. Note: Not all browsers animate this smoothly,
+          // but for modern browsers it works well. A transform-based approach is
+          // more performant but harder to get right with gaps. This is simpler and more robust.
+          transitionProperty: 'grid-column, background-color',
           transitionDuration,
           transitionTimingFunction: transitionTiming
         }}
@@ -131,9 +141,13 @@ export default function AnimatedToggleButton({
       {options.map((option, index) => (
         <button
           key={index}
+          type="button"
           onClick={() => handleSelect(index)}
-          className={`relative z-10 flex items-center justify-center transition-colors ${getFlexDirection()}`}
+          // The button is now also a grid item, placed on top of the slider
+          className={`z-10 flex items-center justify-center transition-colors h-full w-full ${getFlexDirection()}`}
           style={{
+            gridColumn: `${index + 1}`, // Place button in its column
+            gridRow: '1', // Ensure it's on the first row
             padding: buttonPadding,
             fontSize,
             fontWeight,
@@ -142,8 +156,7 @@ export default function AnimatedToggleButton({
             transitionDuration,
             transitionTimingFunction: transitionTiming,
             gap: iconGap,
-            flex: 1,
-            minWidth: 0
+            // Removed margins/flex properties as Grid handles layout now
           }}
           onMouseEnter={(e) => {
             if (selected !== index) {
@@ -162,12 +175,10 @@ export default function AnimatedToggleButton({
             </span>
           )}
           {shouldShowText && option.label && (
-            <span className="whitespace-nowrap">{option.label}</span>
+            <span className="whitespace-nowrap truncate">{option.label}</span>
           )}
         </button>
       ))}
     </div>
   );
 }
-
-
