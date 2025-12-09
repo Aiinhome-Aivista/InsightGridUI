@@ -31,12 +31,19 @@ interface TableOption {
 }
 
 export default function Chat() {
-  const location = useLocation();
-  const sessionData = location.state;
+  const { user } = useAuth();
+  const getStoredUser = () => {
+    try {
+      const raw = localStorage.getItem("ig_user");
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  };
+  const sessionData = getStoredUser();
   const defaultSession = {
-    session_id: sessionData?.sessionId || "",
-    session_name: sessionData?.sessionName || "Chat01",
-    file_name: sessionData?.fileName || "unknown_file",
+    session_id: sessionData?.session_id || "",
+    session_name: sessionData?.session_name || "Chat01",
   };
   const isSessionDataMissing = !defaultSession.session_id;
   const [chats, setChats] = useState<ChatSession[]>([
@@ -45,7 +52,6 @@ export default function Chat() {
       name: defaultSession.session_name,
       session_id: defaultSession.session_id,
       session_name: defaultSession.session_name,
-      file_name: defaultSession.file_name,
       question: isSessionDataMissing ? "FATAL ERROR: Session ID Missing." : "Ask anything about your file…",
       query: "",
       logs: isSessionDataMissing ? ["CRITICAL: Missing session_id. Cannot communicate with API."] : [],
@@ -63,7 +69,6 @@ export default function Chat() {
   const [isSending, setIsSending] = useState(false);
   const [isScriptRunSuccess, setIsScriptRunSuccess] = useState(false);
   const scriptContainerRef = useRef<HTMLDivElement>(null);
-  const activeChat = chats.find((c) => c.id === activeChatId);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
   const { setIsConfirmSaveModalOpen, viewName, setViewName, setConfirmSaveAction } = useAuth();
 
@@ -81,7 +86,6 @@ export default function Chat() {
     const payload = {
       session_id: defaultSession.session_id,
       session_name: defaultSession.session_name,
-      file_name: defaultSession.file_name,
       user_query: " Hello, how can I help you?",
     };
     ApiService.chat(payload)
@@ -103,17 +107,17 @@ export default function Chat() {
       })
       .catch((error) => console.error("Error fetching initial UI data using chat API:", error));
 
-  }, [defaultSession.session_id, defaultSession.session_name, defaultSession.file_name, isSessionDataMissing]);
+  }, [defaultSession.session_id, defaultSession.session_name, isSessionDataMissing]);
 
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
+    const activeChat = chats.find((c) => c.id === activeChatId);
     if (!inputValue.trim() || !activeChat) return;
-    if (!activeChat.session_id || !activeChat.session_name || !activeChat.file_name) {
+    if (!activeChat.session_id || !activeChat.session_name) {
       const missingFields = [];
       if (!activeChat.session_id) missingFields.push("session_id");
       if (!activeChat.session_name) missingFields.push("session_name");
-      if (!activeChat.file_name) missingFields.push("file_name");
 
       console.error(`Cannot send message: Active chat session data is incomplete. Missing: ${missingFields.join(", ")}`);
 
@@ -133,7 +137,6 @@ export default function Chat() {
       const payload = {
         session_id: activeChat.session_id,
         session_name: activeChat.session_name,
-        file_name: activeChat.file_name,
         user_query: inputValue,
       };
       console.log("Sending Chat Payload:", payload);
@@ -203,6 +206,7 @@ export default function Chat() {
   };
   const handleRunScript = async () => {
     if (!activeChat) {
+    const activeChat = chats.find((c) => c.id === activeChatId);
       setDisplayedLogs(["No active chat session."]);
       return;
     }
@@ -278,6 +282,7 @@ export default function Chat() {
   }, [activeChatId, typewriterKey]); // Rerun when chat changes or message is sent
 
   // Effect to auto-scroll the script view as content is added
+  const activeChat = chats.find((c) => c.id === activeChatId);
   useEffect(() => {
     if (scriptContainerRef.current) {
       scriptContainerRef.current.scrollTop = scriptContainerRef.current.scrollHeight;
