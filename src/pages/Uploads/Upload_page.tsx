@@ -10,8 +10,8 @@ export default function UploadPage() {
   const { theme } = useTheme();
   const { user } = useAuth();
   const [processedFiles, setProcessedFiles] = useState<any[]>([]);
-  const [sessionName, setSessionName] = useState("");
-  const [sessionNameError, setSessionNameError] = useState("");
+  // const [sessionName, setSessionName] = useState("");
+  // const [sessionNameError, setSessionNameError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingFileName, setProcessingFileName] = useState("");
@@ -20,29 +20,37 @@ export default function UploadPage() {
   const currentSessionRef = useRef<{ id: string, name: string } | null>(null);
   const createdBy = user?.user_id || "";
   const [noFileMessage, setNoFileMessage] = useState("");
+  const sessionId = user?.session_id || "";
+
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      // trackFiles(createdBy);
-      trackFiles({ created_by: createdBy });
+      trackFiles();
     }
-  }, [createdBy]);
-
+  }, [createdBy,sessionId]);
   
-  async function trackFiles(payload: { created_by: string }) {
+  async function trackFiles() {
+    const payload = { created_by: createdBy, session_id: sessionId };
     try {
       const response = await ApiService.tracker(payload);
-      setProcessedFiles(response.data?.data || []);
-
-      if (response.data?.data.length === 0) {
-        setNoFileMessage(response.data?.message || "No files found");
+      if (response.data.isSuccess) {
+        const files = response.data?.data || [];
+        setProcessedFiles(files);
+        if (files.length === 0) {
+          setNoFileMessage(response.data?.message || "No files found");
+        } else {
+          setNoFileMessage("");
+        }
       } else {
-        setNoFileMessage("");
+        setProcessedFiles([]);
+        setNoFileMessage(response.data?.message || "Failed to retrieve files.");
       }
-
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error tracking files:", error);
-      setNoFileMessage(error.message);
+      const message =
+        error.response?.data?.message || error.message || "An unknown error occurred";
+      setProcessedFiles([]);
+      setNoFileMessage(message);
     }
   }
 
@@ -50,12 +58,12 @@ export default function UploadPage() {
   async function uploadFiles(files: File[]) {
     if (!files || files.length === 0) return;
 
-    if (!sessionName || sessionName.trim() === "") {
-      setSessionNameError("Session name is required before uploading files");
-      return;
-    }
+    // if (!sessionName || sessionName.trim() === "") {
+    //   setSessionNameError("Session name is required before uploading files");
+    //   return;
+    // }
 
-    setSessionNameError("");
+    // setSessionNameError("");
 
     if (uploadInProgress.current) return;
 
@@ -64,14 +72,14 @@ export default function UploadPage() {
     setIsProcessing(false);
 
     try {
-      const sessionId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-      const sessionNameTrimmed = sessionName.trim();
+      
+      // const sessionNameTrimmed = sessionName.trim();
 
-      currentSessionRef.current = { id: sessionId, name: sessionNameTrimmed };
+      // currentSessionRef.current = { id: sessionId, name: sessionNameTrimmed };
 
       const formData = new FormData();
       formData.append('session_id', sessionId);
-      formData.append('session_name', sessionNameTrimmed);
+      // formData.append('session_name', sessionNameTrimmed);
       formData.append('created_by', createdBy);
       files.forEach(file => {
         formData.append('files', file);
@@ -95,25 +103,28 @@ export default function UploadPage() {
       }
 
       const actualSessionId = uploadedFile.session_id || sessionId;
-      const actualSessionName = uploadedFile.session_name || sessionNameTrimmed;
-
-      currentSessionRef.current = {
-        id: actualSessionId,
-        name: actualSessionName
-      };
-
-      const waitTime = files.reduce((total, file) => total + file.size, 0) > 5000000 ? 10000 : 7000;
-
+      // const actualSessionName = uploadedFile.session_name || sessionNameTrimmed;
       setIsUploading(false);
-      setIsProcessing(true);
+      setIsProcessing(false);
 
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      // currentSessionRef.current = {
+      //   id: actualSessionId,
+      //   name: actualSessionName
+      // };
+      await trackFiles();
 
-      const verifySuccess = await verifyDataExists(actualSessionId, actualSessionName);
+      // const waitTime = files.reduce((total, file) => total + file.size, 0) > 5000000 ? 10000 : 7000;
 
-      if (!verifySuccess) {
-        throw new Error('Data verification failed. Please try processing again manually.');
-      }
+      // setIsUploading(false);
+      // setIsProcessing(true);
+
+      // await new Promise(resolve => setTimeout(resolve, waitTime));
+
+      // const verifySuccess = await verifyDataExists(actualSessionId, actualSessionName);
+
+      // if (!verifySuccess) {
+      //   throw new Error('Data verification failed. Please try processing again manually.');
+      // }
 
       // await processSessionData(actualSessionId, actualSessionName, );
 
@@ -236,6 +247,7 @@ export default function UploadPage() {
       /> */}
       <FileDropZone
         onUploadComplete={uploadFiles}
+       
         theme={theme}
         disabled={isUploading || isProcessing}
       />
@@ -255,8 +267,7 @@ export default function UploadPage() {
       )}
       {/* onRefresh={() => { trackFiles(createdBy) }}  */}
       {processedFiles.length > 0 ? (
-        <DataProcessing files={processedFiles} 
-        onRefresh={() => trackFiles({ created_by: createdBy })}
+        <DataProcessing files={processedFiles} onRefresh={trackFiles}
 />
       ) :
         (

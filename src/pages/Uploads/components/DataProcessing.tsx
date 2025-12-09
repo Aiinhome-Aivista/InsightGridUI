@@ -27,13 +27,13 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       const fileName = file.name || file.file_name;
       let progress = 0;
 
-      if (file.table_extract_status === 'Done') {
+      if (file.table_extraction_status?.toLowerCase() === 'done') {
         progress = 1;
       }
-      if (file.column_extract_status === 'Done') {
+      if (file.column_extraction_status?.toLowerCase() === 'done') {
         progress = 2;
       }
-      if (file.data_insights_status === 'Done' || file.relationship_mapping_status === 'Done') {
+      if (file.data_insights_status?.toLowerCase() === 'done' || file.relationship_mapping_status?.toLowerCase() === 'done') {
         progress = 3;
       }
 
@@ -104,7 +104,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
       {files.map((file, index) => {
         const fileName = file.name || file.file_name;
-        const session_name = file.session_name || "Untitled Session";
         const currentProgress = processingProgress[fileName] || 0;
         const isFullyProcessed = currentProgress >= TOTAL_STEPS;
 
@@ -114,15 +113,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             className="flex items-center rounded-lg px-4 py-3 w-full min-w-[80px] mb-3"
             style={{ backgroundColor: theme.secondaryBg }}
           >
-            <div className="relative group w-[20%] min-w-[150px] mr-4">
-                <div
-                className="text-sm font-medium truncate"
-                style={{ color: theme.primaryText }}
-              >
-                {session_name}
-              </div>
-              
-              </div>
             <div className="relative group w-[20%] min-w-[150px] mr-4">
             
               <div
@@ -171,7 +161,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               className="text-xs text-center min-w-[80px] mx-4 w-[5%]"
               style={{ color: theme.secondaryText }}
             >
-              {file.file_size || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+              {file.file_size_mb ? `${file.file_size_mb}MB` : (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
             </div>
 
             <div
