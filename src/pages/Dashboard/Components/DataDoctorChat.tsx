@@ -255,13 +255,21 @@ export default function Chat() {
 
   useEffect(() => {
     const query = chat?.query || "";
-    let i = 0;
     setTypedQuery(""); // Clear previous query
     const scriptContainerRef = document.getElementById("script-container");
 
+    if (!query) return; // No query, nothing to type
+
+    let i = 0;
+    // Set the first character immediately
+    if (query.length > 0) {
+      setTypedQuery(query.charAt(0));
+      i = 1; // Start interval from the second character
+    }
+
     const typingInterval = setInterval(() => {
       if (i < query.length) {
-        setTypedQuery((prev) => prev + query.charAt(i));
+        setTypedQuery(prev => prev + query.charAt(i));
         i++;
       } else {
         clearInterval(typingInterval);
@@ -380,7 +388,7 @@ export default function Chat() {
       <div className="bg-[#D9D9D91A] p-2 mt-5 rounded-xl">
         <div className="flex flex-row items-center justify-between px-5">
           <h1 className="text-lg font-semibold text-gray-800 mt-1">
-            Script view
+          Generated Procedure
             <p className="text-sm text-gray-500 mb-4">Run available script</p>
           </h1>
 
@@ -472,7 +480,7 @@ export default function Chat() {
             {" "}
             <ProductDataTable
               data={tableData.rows}
-              columns={tableData.columns}
+              columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}
               globalFilter={""}
             />{" "}
           </div>
