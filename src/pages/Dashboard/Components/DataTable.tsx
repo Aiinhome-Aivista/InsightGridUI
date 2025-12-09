@@ -12,7 +12,7 @@ interface ProductDataTableProps {
 export default function ProductDataTable({ data, globalFilter, columns = [] }: ProductDataTableProps) {
   return (
    <div style={{ maxWidth: "100%", overflow: "auto" }}>
-  <DataTable
+<DataTable
     value={data}
     globalFilter={globalFilter}
     sortMode="multiple"
@@ -23,6 +23,13 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
       global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
     }}
     className="custom-table mb-5"
+    stripedRows
+    
+    // 1. Remove or set showGridlines to false to avoid vertical lines
+    showGridlines={false} 
+    
+    // 2. Add this to create the divider line
+    rowClassName={() => "border-b border-gray-200"} 
   >
   
 
