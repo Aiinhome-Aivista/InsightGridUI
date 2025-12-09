@@ -50,6 +50,10 @@ class ApiServices {
     return axios.post(POST_APIS.get_saved_query_response, body);
   }
 
+   getTableData(body){
+    return axios.post(POST_APIS.get_table_data, body);
+   }
+
 
 }
 
