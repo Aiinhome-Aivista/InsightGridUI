@@ -34,11 +34,7 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
     className="custom-table mb-5"
     stripedRows
     
-    // 1. Remove or set showGridlines to false to avoid vertical lines
-    showGridlines={true} 
-    
-    // 2. Add this to create the divider line
-    rowClassName={() => "border-b border-gray-200"} 
+    rowClassName={() => "border-b border-gray-200"}
   >
   
 
@@ -48,6 +44,9 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
           field={col.column_name}
           header={formatHeader(col.column_name)}
           sortable
+          pt={{
+            headerCell: { className: 'bg-gray-200' }
+          }}
         />
       ))}
     </DataTable>

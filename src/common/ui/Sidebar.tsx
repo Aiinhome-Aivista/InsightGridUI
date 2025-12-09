@@ -12,10 +12,12 @@ import DataObjectRoundedIcon from '@mui/icons-material/DataObjectRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 
 const menuItems = [
+    { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard" },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list" },
     // { name: "Report Designer", icon: DashboardRoundedIcon, path: "report-query" },
   { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
+
 
 ];
 

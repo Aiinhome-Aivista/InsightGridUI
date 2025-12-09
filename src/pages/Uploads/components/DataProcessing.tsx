@@ -50,7 +50,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         await onRefresh();
       }
     } finally {
-      // Keep spinning for at least 500ms for smooth animation
       setTimeout(() => {
         setIsRefreshing(false);
       }, 500);
@@ -102,7 +101,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         />
       </div>
 
-      {files.map((file, index) => {
+      {/* {files.map((file, index) => {
         const fileName = file.name || file.file_name;
         const currentProgress = processingProgress[fileName] || 0;
         const isFullyProcessed = currentProgress >= TOTAL_STEPS;
@@ -121,8 +120,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               >
                 {fileName}
               </div>
-
-              {/* Tooltip */}
               <div className="
                   absolute left-1/2 -translate-x-1/2 mt-1
                   hidden group-hover:block
@@ -155,7 +152,72 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                   </div>
                 );
               })}
+            </div> */}
+            {files.map((file, index) => {
+        const fileName = file.name || file.file_name;
+      const currentProgress = processingProgress[fileName] || 0;
+  const isFullyProcessed = currentProgress >= TOTAL_STEPS;
+
+  // THEN add this
+   const extractionFailed =
+    file.table_extraction_status?.toLowerCase() === "failed" ||
+    file.table_extraction_status?.toLowerCase() === "pending";
+        return (
+          <div
+            key={index}
+            className="flex items-center rounded-lg px-4 py-3 w-full min-w-[80px] mb-3"
+            style={{ backgroundColor: theme.secondaryBg }}
+          >
+            <div className="relative group w-[20%] min-w-[150px] mr-4">
+            
+              <div
+                className="text-sm font-medium truncate"
+                style={{ color: theme.primaryText }}
+              >
+                {fileName}
+              </div>
+
+              {/* Tooltip */}
+              <div className="
+                  absolute left-1/2 -translate-x-1/2 mt-1
+                  hidden group-hover:block
+                  whitespace-nowrap
+                  bg-[#888585] text-white text-xs px-2 py-1 rounded
+                  shadow-lg z-10
+                "
+              >
+                {fileName}
+              </div>
             </div>
+
+           <div className="flex items-center min-w-[380px] w-[50%]">
+  {extractionFailed ? (
+    <p className="text-red-500 text-sm font-medium">
+      File Extraction Failed
+    </p>
+  ) : (
+    STEPS.map((stepName, stepIndex) => {
+      const isCompleted = stepIndex < currentProgress;
+      const iconColor = isCompleted ? theme.accent : theme.secondaryText;
+
+      return (
+        <div
+          key={stepIndex}
+          className="flex flex-col items-center flex-1"
+          style={{ color: iconColor }}
+        >
+          {isCompleted ? (
+            <CheckCircleIcon sx={{ fontSize: 20, color: iconColor }} />
+          ) : (
+            <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: iconColor }} />
+          )}
+          <span className="text-[10px] mt-1">{stepName}</span>
+        </div>
+      );
+    })
+  )}
+</div>
+
 
             <div
               className="text-xs text-center min-w-[80px] mx-4 w-[5%]"

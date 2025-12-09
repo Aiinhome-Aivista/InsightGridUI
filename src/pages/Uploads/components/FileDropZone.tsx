@@ -18,12 +18,30 @@ export default function FileDropZone({ onUploadComplete, theme, disabled = false
   const [files, setFiles] = useState<File[]>([]);
   const uploadCalledRef = useRef(false); // Prevent duplicate calls
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+  const [error, setError] = useState<string>("");
+
   const startUpload = (selectedFiles: File[]) => {
     if (!selectedFiles || selectedFiles.length === 0 || disabled) {
       return;
     }
 
-    setFiles(selectedFiles);
+    setError("");
+
+    // separate valid and invalid files by size
+    const validFiles = selectedFiles.filter((f) => f.size <= MAX_FILE_SIZE);
+    const invalidCount = selectedFiles.length - validFiles.length;
+
+    if (validFiles.length === 0) {
+      setError("Files larger than 10 MB are not allowed.");
+      return;
+    }
+
+    if (invalidCount > 0) {
+      setError(`${invalidCount} files ignored — max size 10 MB.`);
+    }
+
+    setFiles(validFiles);
     setUploading(true);
     setProgress(0);
     setUploadComplete(false);
@@ -36,16 +54,17 @@ export default function FileDropZone({ onUploadComplete, theme, disabled = false
     setProgress(0);
     setUploadComplete(false);
     uploadCalledRef.current = false;
+    setError("");
   };
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragActive(false);
-    
+
     if (disabled) {
       return;
     }
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       startUpload(Array.from(e.dataTransfer.files));
     }
@@ -53,11 +72,11 @@ export default function FileDropZone({ onUploadComplete, theme, disabled = false
 
   const handleDrag = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    
+
     if (disabled) {
       return;
     }
-    
+
     if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
     }
@@ -68,20 +87,20 @@ export default function FileDropZone({ onUploadComplete, theme, disabled = false
 
   useEffect(() => {
     if (!uploading || files.length === 0) return;
-    
+
     const interval = setInterval(() => {
       setProgress((p) => {
         if (p >= 100) {
           clearInterval(interval);
           setUploading(false);
           setUploadComplete(true);
-          
+
           // Call onUploadComplete only once
           if (!uploadCalledRef.current) {
             uploadCalledRef.current = true;
             setTimeout(() => onUploadComplete(files), 300);
           }
-          
+
           return 100;
         }
         return p + 1.2;
@@ -123,6 +142,8 @@ export default function FileDropZone({ onUploadComplete, theme, disabled = false
           </>
         ) : null}
       </div>
+
+      {error && <div className="text-sm text-red-600 mt-2">{error}</div>}
     </div>
   );
 }

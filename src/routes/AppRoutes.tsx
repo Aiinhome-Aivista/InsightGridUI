@@ -7,9 +7,8 @@ import Login from "../pages/Auth/Login";
 import LandingPage from "../pages/LandingPage/LandingPage";
 import ProtectedRoute from "./ProtectedRoute";
 import QueryDesigner from "../pages/Dashboard/DataDoctorParent";
-import Query from "../pages/Dashboard/ShowQuery";
 import ShowQuery from "../pages/Dashboard/ShowQuery";
-
+import Dashboard from "../pages/Dashboard/Components/Dashboard";
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -24,6 +23,7 @@ function AppRoutes() {
               {/* <Route path="report-designer" element={<ReportDesigner />} /> */}
             <Route path="query-designer" element={<QueryDesigner />} />
             <Route path="customize" element={<Customize_page />} />
+            <Route path="dashboard" element={<Dashboard />} />
           </Route>
         </Route>
 
