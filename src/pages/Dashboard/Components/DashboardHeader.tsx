@@ -172,33 +172,39 @@ export default function DashboardHeader({
               </h1>
             </div>
             <div className="flex items-center justify-center gap-3 md:gap-4">
-              <Dropdown
-                ref={dropdownRef}
-                value={selectedView}
-                options={tableOptions}
-                onChange={handleViewChange}
-                loading={isLoading}
-                onShow={handleDropdownShow}
-                onHide={handleDropdownHide}
-                filter
-                placeholder="Select table"
-                className="p-4
-    w-80 h-11
-    border border-[#E5E5E5]
-    rounded-xl
-    text-[#6F6F6F]
-    text-sm
-    flex items-center
-    bg-white
-    focus:ring-0 focus:outline-none
-    shadow-none
-  
-  "
-                panelClassName=" pl-4
-    rounded-xl shadow-md
-    text-[#6F6F6F] bg-white
-  "
-              />
+<Dropdown
+              ref={dropdownRef}
+              value={selectedView}
+              options={tableOptions}
+              onChange={handleViewChange}
+              loading={isLoading}
+              placeholder="Product Details"
+              
+              // Base Container Styling
+              className="
+                w-72 h-11
+                bg-gray-50 hover:bg-gray-100
+                border border-gray-200 
+                rounded-lg 
+                flex items-center justify-between
+                transition-all duration-200
+              "
+              
+              // Panel (List) Styling
+              panelClassName="
+                bg-white shadow-xl rounded-xl border border-gray-100 mt-2 overflow-hidden text-sm
+              "
+              
+              // PassThrough (PT) props for deep styling
+              pt={{
+                root: { className: 'cursor-pointer shadow-sm' },
+                input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
+                trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
+                list: { className: 'p-1' },
+                item: { className: 'px-3 py-2 rounded-md hover:bg-gray-50 text-gray-700 cursor-pointer transition-colors mb-0.5' },
+                itemLabel: { className: 'font-medium' }
+              }}
+            />
               <AnimatedToggleButton
                 options={toggleOptions}
                 defaultSelected={defaultSelectionIndex}
