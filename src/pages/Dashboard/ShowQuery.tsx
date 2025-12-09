@@ -15,6 +15,16 @@ const ShowQuery = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
 
+  const formatTo12Hour = (timeStr) => {
+    if (!timeStr) return "";
+    const [hour, minute, second] = timeStr.split(":");
+    let h = parseInt(hour);
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12; // converts '00' → 12 AM
+    return `${h}:${minute} ${ampm}`;
+  };
+
+
   const fetchSavedQueries = async () => {
     setIsLoading(true);
     setError(null);
@@ -112,7 +122,7 @@ const ShowQuery = () => {
       </div>
 
 
-      {isLoading ? ( 
+      {isLoading ? (
         <div className="flex justify-center items-center py-10">
           <AutorenewRoundedIcon className="w-8 h-8 animate-spin text-gray-500" />
         </div>
@@ -135,10 +145,10 @@ const ShowQuery = () => {
               {filteredQueries.map((query) => (
                 <tr key={query.id}>
                   <td className="px-6 py-4 font-medium">{query.query_title}</td>
-                   <td className="px-6 py-4 text-gray-600">{query.created_date}</td>
-                  <td className="px-6 py-4 text-gray-600">{query.created_at}</td>
-                   <td className="px-6 py-4 text-gray-600">{query.query_time}</td>
-                   
+                  <td className="px-6 py-4 text-gray-600">{query.created_date}</td>
+                  <td className="px-6 py-4 text-gray-600">{formatTo12Hour(query.created_at)}</td>
+                  <td className="px-6 py-4 text-gray-600">{query.query_time}</td>
+
                   <td className="px-6 py-4 text-gray-600">{query.rows_effected}</td>
                   <td className="px-6 py-4">
                     <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200"
