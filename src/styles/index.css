@@ -129,7 +129,7 @@ font-family: "Ballo Da 2",;
   background: #888e92;
   /* Tailwind's blue-600 */
   border-radius: 10px;
-  border: 2px solid #dbeafe;
+  border: 2px solid transparent;
   /* Same as track for a nice padding effect */
 }
 /* Custom component styles */
