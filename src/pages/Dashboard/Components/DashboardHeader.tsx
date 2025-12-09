@@ -18,6 +18,7 @@ interface HeaderProps {
   onTableSelect?: (data: any) => void;
   tableOptions: any[];
   viewSelection: string;
+  isLoading: boolean;
   onViewChange: (view: string) => void;
 }
 
@@ -26,14 +27,14 @@ export default function DashboardHeader({
   onTableSelect,
   tableOptions,
   viewSelection,
+  isLoading,
   onViewChange,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { theme } = useTheme();
   const [selectedView, setSelectedView] = useState(null);
-  const location = useLocation();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isChanging, setIsChanging] = useState(false);
   const dropdownRef = useRef<Dropdown>(null);
   const navigate = useNavigate();
   const toggleOptions = [
@@ -55,29 +56,30 @@ export default function DashboardHeader({
     const selectedTable = e.value;
     setSelectedView(selectedTable);
 
-    const sessionData = location.state;
-    if (
-      sessionData?.sessionId &&
-      sessionData?.sessionName &&
-      sessionData?.fileName &&
-      selectedTable
-    ) {
+    const getStoredUser = () => {
+      try {
+        const raw = localStorage.getItem("ig_user");
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    };
+    const user = getStoredUser();
+
+    if (user && selectedTable) {
       const payload = {
-        session_id: sessionData.sessionId,
-        session_name: sessionData.sessionName,
-        file_name: sessionData.fileName,
+        session_id: user.session_id,
+        created_by: user.user_id,
         table_name: selectedTable,
       };
 
-      setIsLoading(true);
+      setIsChanging(true);
       ApiServices.getUiData(payload)
         .then((response) => {
-          if (onTableSelect) {
-            onTableSelect(response.data.data);
-          }
+          onTableSelect?.(response.data.details[selectedTable]);
         })
         .catch((error) => console.error("Error fetching table data:", error))
-        .finally(() => setIsLoading(false));
+        .finally(() => setIsChanging(false));
     }
   };
   const handleRefresh = () => {
@@ -129,9 +131,12 @@ export default function DashboardHeader({
               value={selectedView}
               options={tableOptions}
               onChange={handleViewChange}
-              loading={isLoading}
+              loading={isLoading || isChanging}
+              loadingIcon={<AutorenewRoundedIcon className="w-5 h-5 animate-spin" />}
               placeholder="Product Details"
-              
+              onShow={handleDropdownShow}
+                onHide={handleDropdownHide}
+
               // Base Container Styling
               className="
                 w-72 h-11

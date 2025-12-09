@@ -13,6 +13,7 @@ export default function Dashboard_page() {
     tableName: "Product Details", // Default title
   });
   const [tableOptions, setTableOptions] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
 
   const handleTableDataSelect = (data: any) => {
     setTableData({
@@ -41,6 +42,7 @@ export default function Dashboard_page() {
   };
 
   const fetchTableData = async () => {
+    setIsFetching(true);
     const user = getStoredUser();
 
     const payload = {
@@ -73,6 +75,8 @@ export default function Dashboard_page() {
       }
     } catch (error) {
       console.error(" API Error:", error);
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -89,6 +93,7 @@ export default function Dashboard_page() {
           onTableSelect={handleTableDataSelect}
           tableOptions={tableOptions}
           viewSelection={viewSelection}
+          isLoading={isFetching}
           onViewChange={setViewSelection}
         />
         <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} tableName={tableData.tableName} viewSelection={viewSelection} globalFilter={""} />
