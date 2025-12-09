@@ -149,12 +149,12 @@ export default function DashboardHeader({
               
               // Panel (List) Styling
               panelClassName="
-                bg-white shadow-xl rounded-xl border border-gray-100 mt-2 overflow-hidden text-sm
+                bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
               "
               
               // PassThrough (PT) props for deep styling
               pt={{
-                root: { className: 'cursor-pointer shadow-sm' },
+                root: { className: 'cursor-pointer' },
                 input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
                 trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
                 list: { className: 'p-1' },
@@ -171,7 +171,7 @@ export default function DashboardHeader({
                 mode="text"
               />
 
-              <Tippy content="Select Columns" theme="gray">
+              {/* <Tippy content="Select Columns" theme="gray">
                 <div
                   onClick={() => setShowColumnModal(true)}
                   className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
@@ -186,7 +186,7 @@ export default function DashboardHeader({
                     }}
                   />
                 </div>
-              </Tippy>
+              </Tippy> */}
               <Tippy content="Refresh" theme="gray">
                 <div
                   onClick={handleRefresh}
