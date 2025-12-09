@@ -15,4 +15,9 @@ export const POST_APIS = {
   save_chat: `${BASE_URL}save_chat`,
   tracker: `${BASE_URL}tracker`,
   get_chat_history: `${BASE_URL}get_chat_history`,
+
+
+
+
+  get_table_data: `${BASE_URL}get_full_table_info`,
 };
