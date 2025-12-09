@@ -16,6 +16,7 @@ import AnimatedToggleButton from "./AnimatedToggleButton";
 interface HeaderProps {
   onRefresh: () => void;
   onTableSelect?: (data: any) => void;
+  tableOptions: any[];
   viewSelection: string;
   onViewChange: (view: string) => void;
 }
@@ -23,6 +24,7 @@ interface HeaderProps {
 export default function DashboardHeader({
   onRefresh,
   onTableSelect,
+  tableOptions,
   viewSelection,
   onViewChange,
 }: HeaderProps) {
@@ -30,7 +32,6 @@ export default function DashboardHeader({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { theme } = useTheme();
   const [selectedView, setSelectedView] = useState(null);
-  const [tableOptions, setTableOptions] = useState([]);
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef<Dropdown>(null);
@@ -45,59 +46,10 @@ export default function DashboardHeader({
   );
 
   useEffect(() => {
-    const sessionData = location.state;
-
-    if (
-      sessionData?.sessionId &&
-      sessionData?.sessionName &&
-      sessionData?.fileName
-    ) {
-      const payload = {
-        session_id: sessionData.sessionId,
-        session_name: sessionData.sessionName,
-        file_name: sessionData.fileName,
-      };
-
-      ApiServices.getUiData(payload)
-        .then((response) => {
-          if (response.data.isSuccess) {
-            // The initial response might contain the list of tables
-            if (response.data.data.tables) {
-              const tables = response.data.data.tables.map((table: string) => ({
-                label: table,
-                value: table, // Use the actual table name as the value
-              }));
-              setTableOptions(tables);
-              if (tables.length > 0 && onTableSelect) {
-                const firstTable = tables[0].value;
-                setSelectedView(firstTable);
-                setIsLoading(true);
-
-                const tablePayload = { ...payload, table_name: firstTable };
-                ApiServices.getUiData(tablePayload)
-                  .then((tableResponse) => {
-                    if (tableResponse.data.isSuccess) {
-                      onTableSelect(tableResponse.data.data);
-                    }
-                  })
-                  .catch((err) =>
-                    console.error(
-                      "Error fetching data for the first table:",
-                      err
-                    )
-                  )
-                  .finally(() => setIsLoading(false));
-              }
-            }
-            // If a table is already selected (e.g. on page load with state), pass its data up
-            else if (onTableSelect && response.data.data.rows) {
-              onTableSelect(response.data.data);
-            }
-          }
-        })
-        .catch((error) => console.error("Error fetching UI data:", error));
+    if (tableOptions.length > 0 && !selectedView) {
+      setSelectedView(tableOptions[0].value);
     }
-  }, []);
+  }, [tableOptions, selectedView]);
 
   const handleViewChange = (e: { value: any }) => {
     const selectedTable = e.value;
