@@ -24,15 +24,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
   const [viewName, setViewName] = useState("");
-  const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => {});
+  const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
 
+
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("ig_user");
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  // }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("ig_user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+
+    try {
+      if (storedUser && storedUser !== "undefined") {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (err) {
+      console.error("Invalid user JSON:", err);
+      localStorage.removeItem("ig_user");
+      setUser(null);
     }
   }, []);
+
 
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
@@ -57,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ 
+    <AuthContext.Provider value={{
       user, login, logout, isAuthenticated,
       isLogoutModalOpen, setIsLogoutModalOpen,
       isConfirmSaveModalOpen, setIsConfirmSaveModalOpen,
