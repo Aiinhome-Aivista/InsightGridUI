@@ -35,7 +35,7 @@ export default function Login() {
           severity: "success",
         });
 
-        setTimeout(() => login(res.data), 1500);
+        setTimeout(() => login(res), 1500);
         return;
       }
 

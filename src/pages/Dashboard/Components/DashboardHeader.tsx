@@ -13,9 +13,7 @@ import { useTheme } from "../../../theme";
 import ApiServices from "../../../services/ApiServices";
 import AnimatedToggleButton from "./AnimatedToggleButton";
 
-
 interface HeaderProps {
-
   onRefresh: () => void;
   onTableSelect?: (data: any) => void;
   viewSelection: string;
@@ -23,7 +21,6 @@ interface HeaderProps {
 }
 
 export default function DashboardHeader({
- 
   onRefresh,
   onTableSelect,
   viewSelection,
@@ -39,16 +36,22 @@ export default function DashboardHeader({
   const dropdownRef = useRef<Dropdown>(null);
   const navigate = useNavigate();
   const toggleOptions = [
-    { label: "Meta Data", value: 'metadata' },
-    { label: "Data View", value: 'dataview' },
-    { label: "Insights", value: 'insights' },
+    { label: "Meta Data", value: "metadata" },
+    { label: "Data View", value: "dataview" },
+    { label: "Insights", value: "insights" },
   ];
-  const defaultSelectionIndex = toggleOptions.findIndex(opt => opt.value === viewSelection);
+  const defaultSelectionIndex = toggleOptions.findIndex(
+    (opt) => opt.value === viewSelection
+  );
 
   useEffect(() => {
     const sessionData = location.state;
 
-    if (sessionData?.sessionId && sessionData?.sessionName && sessionData?.fileName) {
+    if (
+      sessionData?.sessionId &&
+      sessionData?.sessionName &&
+      sessionData?.fileName
+    ) {
       const payload = {
         session_id: sessionData.sessionId,
         session_name: sessionData.sessionName,
@@ -72,12 +75,17 @@ export default function DashboardHeader({
 
                 const tablePayload = { ...payload, table_name: firstTable };
                 ApiServices.getUiData(tablePayload)
-                  .then(tableResponse => {
+                  .then((tableResponse) => {
                     if (tableResponse.data.isSuccess) {
                       onTableSelect(tableResponse.data.data);
                     }
                   })
-                  .catch(err => console.error("Error fetching data for the first table:", err))
+                  .catch((err) =>
+                    console.error(
+                      "Error fetching data for the first table:",
+                      err
+                    )
+                  )
                   .finally(() => setIsLoading(false));
               }
             }
@@ -96,7 +104,12 @@ export default function DashboardHeader({
     setSelectedView(selectedTable);
 
     const sessionData = location.state;
-    if (sessionData?.sessionId && sessionData?.sessionName && sessionData?.fileName && selectedTable) {
+    if (
+      sessionData?.sessionId &&
+      sessionData?.sessionName &&
+      sessionData?.fileName &&
+      selectedTable
+    ) {
       const payload = {
         session_id: sessionData.sessionId,
         session_name: sessionData.sessionName,
@@ -106,12 +119,12 @@ export default function DashboardHeader({
 
       setIsLoading(true);
       ApiServices.getUiData(payload)
-        .then(response => {
+        .then((response) => {
           if (onTableSelect) {
             onTableSelect(response.data.data);
           }
         })
-        .catch(error => console.error("Error fetching table data:", error))
+        .catch((error) => console.error("Error fetching table data:", error))
         .finally(() => setIsLoading(false));
     }
   };
@@ -123,7 +136,7 @@ export default function DashboardHeader({
     onRefresh();
 
     // Simulate a refresh delay
-    setTimeout(() => setIsRefreshing(false), 1500);
+    setTimeout(() => setIsRefreshing(false), 1000);
   };
 
   const handleDropdownShow = () => {
@@ -146,25 +159,19 @@ export default function DashboardHeader({
         <div className="px-3 sm:px-4 lg:px-3 ">
           {/* Responsive Flex Container */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
-           {/* --- LEFT SECTION: Back Button & Text --- */}
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <button 
-              onClick={() => navigate(-1)} 
-              className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
-            >
-              <ArrowBackRoundedIcon fontSize="small" />
-            </button>
-            
-            <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
-              Query Designer
-            </h1>
-          </div>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <button
+                onClick={() => navigate(-1)}
+                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
+              >
+                <ArrowBackRoundedIcon fontSize="small" />
+              </button>
 
-            {/* Center Search Bar */}
-           
-            {/* Right Action Buttons */}
+              <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
+                Query Designer
+              </h1>
+            </div>
             <div className="flex items-center justify-center gap-3 md:gap-4">
-              {/* View Dropdown */}
               <Dropdown
                 ref={dropdownRef}
                 value={selectedView}
@@ -187,14 +194,12 @@ export default function DashboardHeader({
     shadow-none
   
   "
-
-
                 panelClassName=" pl-4
     rounded-xl shadow-md
     text-[#6F6F6F] bg-white
   "
               />
- <AnimatedToggleButton
+              <AnimatedToggleButton
                 options={toggleOptions}
                 defaultSelected={defaultSelectionIndex}
                 onChange={(_index, value) => {
@@ -202,7 +207,7 @@ export default function DashboardHeader({
                 }}
                 mode="text"
               />
-              
+
               <Tippy content="Select Columns" theme="gray">
                 <div
                   onClick={() => setShowColumnModal(true)}
@@ -219,15 +224,14 @@ export default function DashboardHeader({
                   />
                 </div>
               </Tippy>
-
-              {/* Refresh */}
               <Tippy content="Refresh" theme="gray">
                 <div
                   onClick={handleRefresh}
-                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
-                    ? "cursor-not-allowed"
-                    : "cursor-pointer hover:bg-gray-500/10"
-                    }`}
+                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
+                    isRefreshing
+                      ? "cursor-not-allowed"
+                      : "cursor-pointer hover:bg-gray-500/10"
+                  }`}
                   style={{ borderColor: theme.border }}
                 >
                   {isRefreshing ? (
@@ -250,7 +254,6 @@ export default function DashboardHeader({
           </div>
         </div>
       </header>
-
     </>
   );
 }

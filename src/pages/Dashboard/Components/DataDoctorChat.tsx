@@ -292,7 +292,6 @@ export default function Chat() {
     if (!activeChat || !viewName.trim()) return;
 
     const payload = {
-      chat_title: viewName,
       user_query: activeChat.question,
       is_execute: isScriptRunSuccess ? 1 : 0,
       ai_response: activeChat.ai_response || "",
@@ -305,14 +304,11 @@ export default function Chat() {
       const response = await ApiService.saveChat(payload);
       if (response.data.isSuccess) {
         console.log("Chat saved successfully:", response.data.message);
-        // Optionally, show a success toast/notification to the user
       } else {
         console.error("Failed to save chat:", response.data.message);
-        // Optionally, show an error toast/notification
       }
     } catch (error) {
       console.error("Error saving chat:", error);
-      // Optionally, show an error toast/notification
     } finally {
       setIsConfirmSaveModalOpen(false);
       setViewName(""); // Clear input after saving
