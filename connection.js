@@ -8,7 +8,6 @@ export const POST_APIS = {
   login: `${BASE_URL}login`,
   fileUpload: `${BASE_URL}upload_files`,
   tracker: `${BASE_URL}get_file_status`,
-  // fileUpload: `${BASE_URL}upload_files_count`,
   chat_ai: `${BASE_URL}chat_ai`,
   execute_sql: `${BASE_URL}execute_sql`,
   get_ui_data: `${BASE_URL}get_ui_data`,
@@ -17,4 +16,5 @@ export const POST_APIS = {
   save_chat: `${BASE_URL}save_chat`,
   get_chat_history: `${BASE_URL}get_chat_history`,
   get_table_data: `${BASE_URL}get_full_table_info`,
+  get_saved_query_response: `${BASE_URL}get_saved_query_response`,
 };

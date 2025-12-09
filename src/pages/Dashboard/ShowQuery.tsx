@@ -1,9 +1,45 @@
+import { useEffect, useState } from "react";
 import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import ApiServices from "../../services/ApiServices";
+import { useAuth } from "../Auth/AuthContext";
 
 const ShowQuery = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [queries, setQueries] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSavedQueries = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const payload = { session_id: user?.session_id, created_by: user?.user_id };
+        const response = await ApiServices.getSavedQueryResponse(payload);
+        if (response.data.isSuccess) {
+          setQueries(response.data.data.queries || []);
+        } else {
+          setError(response.data.message || "Failed to load queries.");
+        }
+      } catch (err) {
+        setError("An error occurred while fetching saved queries.");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user?.session_id && user?.user_id) {
+      fetchSavedQueries();
+    } else {
+      setIsLoading(false);
+      setError("User session not found. Please log in again.");
+    }
+  }, [user]);
+
   return (
     <div className=" mx-auto px-6 py-8">
 
@@ -46,66 +82,43 @@ const ShowQuery = () => {
       </div>
 
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-500 text-xs">
-            <tr>
-              <th className="text-left px-6 py-3 font-medium">Query</th>
-              <th className="text-left px-6 py-3 font-medium">Time</th>
-              <th className="text-left px-6 py-3 font-medium">Row Effected</th>
-              <th className="text-left px-6 py-3 font-medium">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-
-            <tr>
-              <td className="px-6 py-4 font-medium">
-                Category and product relation
-              </td>
-              <td className="px-6 py-4 text-gray-600">10 mints</td>
-              <td className="px-6 py-4 text-gray-600">10,000</td>
-              <td className="px-6 py-4">
-                <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200">
-                  Edit
-                </button>
-              </td>
-            </tr>
-
-            <tr>
-              <td className="px-6 py-4 font-medium">
-                Category Details
-              </td>
-              <td className="px-6 py-4 text-gray-600">22 mints</td>
-              <td className="px-6 py-4 text-gray-600">12,000</td>
-              <td className="px-6 py-4">
-                <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200">
-                  Edit
-                </button>
-              </td>
-            </tr>
-
-            <tr>
-              <td className="px-6 py-4 font-medium">
-                Show salary details for April month
-              </td>
-              <td className="px-6 py-4 text-gray-600">7 mints</td>
-              <td className="px-6 py-4 text-gray-600">8,000</td>
-              <td className="px-6 py-4">
-                <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200">
-                  Edit
-                </button>
-              </td>
-            </tr>
-
-          </tbody>
-        </table>
-      </div>
-
-      {/* <div className="flex flex-col justify-center w-full">
-        <MdOutlineHourglassEmpty size={50} />
-        <p className="text-gray-500 text-lg ml-4 mt-3">Empty Query list</p>
-      </div> */}
+      {isLoading ? (
+        <div className="text-center py-10">Loading queries...</div>
+      ) : error ? (
+        <div className="text-center py-10 text-red-500">{error}</div>
+      ) : queries.length > 0 ? (
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 text-gray-500 text-xs">
+              <tr>
+                <th className="text-left px-6 py-3 font-medium">Query</th>
+                <th className="text-left px-6 py-3 font-medium">Time</th>
+                <th className="text-left px-6 py-3 font-medium">Row Effected</th>
+                <th className="text-left px-6 py-3 font-medium">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {queries.map((query) => (
+                <tr key={query.id}>
+                  <td className="px-6 py-4 font-medium">{query.query_title}</td>
+                  <td className="px-6 py-4 text-gray-600">{query.created_at}</td>
+                  <td className="px-6 py-4 text-gray-600">{query.rows_effected}</td>
+                  <td className="px-6 py-4">
+                    <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200">
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center w-full mt-20">
+          <MdOutlineHourglassEmpty size={50} className="text-gray-400" />
+          <p className="text-gray-500 text-lg mt-3">Empty Query list</p>
+        </div>
+      )}
 
     </div>
   );
