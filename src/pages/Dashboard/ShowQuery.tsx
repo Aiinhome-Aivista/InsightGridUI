@@ -15,13 +15,60 @@ const ShowQuery = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const formatTo12Hour = (timeStr) => {
-    if (!timeStr) return "";
-    const [hour, minute, second] = timeStr.split(":");
-    let h = parseInt(hour);
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12; // converts '00' → 12 AM
-    return `${h}:${minute} ${ampm}`;
+  // const formatTo12Hour = (timeStr) => {
+  //   if (!timeStr) return "";
+  //   const [hour, minute, second] = timeStr.split(":");
+  //   let h = parseInt(hour);
+  //   const ampm = h >= 12 ? "PM" : "AM";
+  //   h = h % 12 || 12; // converts '00' → 12 AM
+  //   return `${h}:${minute} ${ampm}`;
+  // };
+
+  const timeAgo = (dateStr: string, timeStr: string) => {
+    if (!dateStr || !timeStr) return "";
+
+    try {
+      // Convert DD-MM-YYYY → YYYY-MM-DD
+      const [d, m, y] = dateStr.split("-");
+      const isoDate = `${y}-${m}-${d}`;
+
+      // Convert 12hr → 24hr with JS
+      const cleanTime = new Date(`1970-01-01 ${timeStr}`).toLocaleTimeString("en-GB", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+
+      const fullTimestamp = `${isoDate} ${cleanTime}`;
+
+      const created = new Date(fullTimestamp);
+      const now = new Date();
+
+      let diffMs = now.getTime() - created.getTime();
+      if (diffMs < 0) return "Just now";
+
+      const seconds = Math.floor(diffMs / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      const months = Math.floor(days / 30);
+      const years = Math.floor(days / 365);
+
+      if (seconds < 5) return "Just now";
+      if (seconds < 60) return `${seconds} sec ago`;
+      if (minutes < 60) return `${minutes} min ago`;
+      if (hours < 24) return `${hours} hr ago`;
+      if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
+      if (days < 30) return `${Math.floor(days / 7)} week${days >= 14 ? "s" : ""} ago`;
+      if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`;
+
+      return `${years} year${years > 1 ? "s" : ""} ago`;
+
+    } catch (e) {
+      console.error("timeAgo parse error:", e);
+      return "";
+    }
   };
 
 
@@ -146,7 +193,7 @@ const ShowQuery = () => {
                 <tr key={query.id}>
                   <td className="px-6 py-4 font-medium">{query.query_title}</td>
                   <td className="px-6 py-4 text-gray-600">{query.created_date}</td>
-                  <td className="px-6 py-4 text-gray-600">{formatTo12Hour(query.created_at)}</td>
+                  <td className="px-6 py-4 text-gray-600">{timeAgo(query.created_date, query.created_at)}</td>
                   <td className="px-6 py-4 text-gray-600">{query.query_time}</td>
 
                   <td className="px-6 py-4 text-gray-600">{query.rows_effected}</td>
