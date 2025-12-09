@@ -166,7 +166,7 @@ export default function DashboardHeader({
                 mode="text"
               />
 
-              <Tippy content="Select Columns" theme="gray">
+              {/* <Tippy content="Select Columns" theme="gray">
                 <div
                   onClick={() => setShowColumnModal(true)}
                   className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
@@ -181,7 +181,7 @@ export default function DashboardHeader({
                     }}
                   />
                 </div>
-              </Tippy>
+              </Tippy> */}
               <Tippy content="Refresh" theme="gray">
                 <div
                   onClick={handleRefresh}
