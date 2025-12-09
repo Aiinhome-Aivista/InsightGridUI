@@ -64,6 +64,7 @@ export default function Chat() {
   const [isExecuting, setIsExecuting] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isScriptRunSuccess, setIsScriptRunSuccess] = useState(false);
+  const [executionMeta, setExecutionMeta] = useState<{ rows_effected?: number | string; query_time?: string } | null>(null);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
   const {
     setIsConfirmSaveModalOpen,
@@ -224,12 +225,18 @@ export default function Chat() {
 
         setTableData({ rows, columns });
         setDisplayedLogs([response.data.message || "Execution successful."]);
+        // capture execution metadata if provided by backend
+        setExecutionMeta({
+          rows_effected: response.data.data.total_rows ?? rows.length,
+          query_time: response.data.data.execution_time ?? "",
+        });
         setIsScriptRunSuccess(true);
       } else {
         setTableData(null);
         setDisplayedLogs([
           response.data.message || "Execution failed or returned no data.",
         ]);
+        setExecutionMeta(null);
         setIsScriptRunSuccess(false);
       }
     } catch (error) {
@@ -239,6 +246,7 @@ export default function Chat() {
         "An error occurred while running the script.";
       setDisplayedLogs([`ERROR: ${errorMessage}`]);
       setTableData(null);
+      setExecutionMeta(null);
       setIsScriptRunSuccess(false);
     } finally {
       setIsExecuting(false); // Stop loading
@@ -271,6 +279,8 @@ export default function Chat() {
   useEffect(() => {
     setConfirmSaveAction(() => handleConfirmSave);
   }, [chat, viewName, isScriptRunSuccess, tableData]);
+
+
   const handleConfirmSave = async () => {
     if (!chat || !viewName.trim()) return;
 
@@ -279,7 +289,11 @@ export default function Chat() {
       is_execute: isScriptRunSuccess ? 1 : 0,
       ai_response: chat.ai_response || "",
       created_by: userData?.user_id || "unknown",
-      table_data: tableData || null,
+      // row_data: tableData || null,
+      session_id: chat.session_id,
+      rows_effected: executionMeta?.rows_effected ?? "",
+      query_time: executionMeta?.query_time ?? "",
+      query_title: viewName || "",
     };
 
     try {
