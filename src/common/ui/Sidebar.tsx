@@ -16,6 +16,7 @@ const menuItems = [
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list" },
     // { name: "Report Designer", icon: DashboardRoundedIcon, path: "report-query" },
   { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
+  { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard" },
 
 ];
 
