@@ -31,7 +31,6 @@ export default function Dashboard_page() {
   };
 
 
-
   const getStoredUser = () => {
     try {
       const raw = localStorage.getItem("ig_user");
