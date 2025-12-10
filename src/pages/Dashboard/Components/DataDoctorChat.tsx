@@ -184,7 +184,6 @@ export default function Chat({
     try {
       const payload = {
         session_id: chat.session_id,
-        session_name: chat.session_name, // Re-enabled session_name
         created_by: userData?.user_id || "unknown",
         user_query: inputValue,
       };
