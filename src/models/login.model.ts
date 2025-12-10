@@ -6,6 +6,7 @@ export interface LoginPayload {
 }
 
 export interface LoginUserData {
+  full_name: string;
   user_name: string;
   userId: string;
   username: string;

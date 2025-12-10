@@ -27,7 +27,6 @@ export default function Sidebar() {
   const { theme } = useTheme();
   const location = useLocation();
   const activePath = location.pathname.split("/").pop() || "upload";
-  const [clickedTab, setClickedTab] = useState("");
 
   useEffect(() => {
     const userDataString = localStorage.getItem("ig_user");
@@ -39,7 +38,6 @@ export default function Sidebar() {
   }, []);
 
   const handleTabClick = async (item) => {
-    console.log("Clicked Tab:", item.name);
 
     if (item.path === "table-insights") {
       const userData = JSON.parse(localStorage.getItem("ig_user") || "{}");
@@ -75,7 +73,7 @@ export default function Sidebar() {
 
         {!collapsed && (
           <p className="ml-3 font-medium" style={{ color: theme.primaryText }}>
-            {user?.user_name || "User"}
+            {user?.full_name || "User"}
           </p>
         )}
 
