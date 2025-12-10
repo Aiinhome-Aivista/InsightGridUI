@@ -121,7 +121,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         </Tippy>
       </div>
 
-      <div className="max-h-[25vh] overflow-y-auto pr-2">
+      <div className="max-h-[30vh] overflow-y-auto pr-2">
         {files.map((file, index) => {
         const fileName = file.name || file.file_name;
         const currentProgress = processingProgress[fileName] || 0;
