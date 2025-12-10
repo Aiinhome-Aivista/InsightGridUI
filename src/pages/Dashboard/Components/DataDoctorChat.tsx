@@ -72,6 +72,8 @@ export default function Chat({
   const [isScriptRunSuccess, setIsScriptRunSuccess] = useState(false);
   const [executionMeta, setExecutionMeta] = useState<{ rows_effected?: number | string; query_time?: string } | null>(null);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
+  const [chatHistory, setChatHistory] = useState<string[]>([]);
+
   const {
     setIsConfirmSaveModalOpen,
     viewName,
@@ -205,6 +207,9 @@ export default function Chat({
       setInputValue("");
       setTableData(null); // Clear the local table on new query
       setIsScriptRunSuccess(false);
+      // Add only user message to chat history
+      setChatHistory((prev) => [...prev, inputValue]);
+
     } catch (error) {
       console.error("Chat API Error:", error);
 
@@ -391,8 +396,20 @@ export default function Chat({
         </div>
 
         {/* Chat Box */}
-        <div className="px-5 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2 ">
-          <span>{chat?.question}</span>
+        <div className="px-5 py-6 text-gray-700 whitespace-pre-line flex items-end gap-2 ">
+          {/* <span>{chat?.question}</span> */}
+          <span><div className="flex flex-col gap-3 px-5 py-6">
+            {chatHistory.map((msg, i) => (
+              <div
+                key={i}
+                className="bg-blue-50 border border-blue-200 text-gray-800 
+                 px-4 py-2 rounded-lg shadow-sm w-fit max-w-[80%]"
+              >
+                {msg}
+              </div>
+            ))}
+          </div>
+          </span>
         </div>
 
         {/* Input */}
