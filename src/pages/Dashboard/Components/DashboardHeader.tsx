@@ -1,14 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
-import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { useLocation, useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
 import ApiServices from "../../../services/ApiServices";
 import AnimatedToggleButton from "./AnimatedToggleButton";
@@ -18,7 +15,13 @@ interface HeaderProps {
   onTableSelect?: (data: any) => void;
   tableOptions: any[];
   viewSelection: string;
+  isLoading: boolean;
   onViewChange: (view: string) => void;
+
+  passedData?: {
+    user_query: string;
+    query_title: string;
+  };
 }
 
 export default function DashboardHeader({
@@ -26,14 +29,15 @@ export default function DashboardHeader({
   onTableSelect,
   tableOptions,
   viewSelection,
+  isLoading,
   onViewChange,
+  passedData,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { theme } = useTheme();
   const [selectedView, setSelectedView] = useState(null);
-  const location = useLocation();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isChanging, setIsChanging] = useState(false);
   const dropdownRef = useRef<Dropdown>(null);
   const navigate = useNavigate();
   const toggleOptions = [
@@ -55,29 +59,30 @@ export default function DashboardHeader({
     const selectedTable = e.value;
     setSelectedView(selectedTable);
 
-    const sessionData = location.state;
-    if (
-      sessionData?.sessionId &&
-      sessionData?.sessionName &&
-      sessionData?.fileName &&
-      selectedTable
-    ) {
+    const getStoredUser = () => {
+      try {
+        const raw = localStorage.getItem("ig_user");
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    };
+    const user = getStoredUser();
+
+    if (user && selectedTable) {
       const payload = {
-        session_id: sessionData.sessionId,
-        session_name: sessionData.sessionName,
-        file_name: sessionData.fileName,
+        session_id: user.session_id,
+        created_by: user.user_id,
         table_name: selectedTable,
       };
 
-      setIsLoading(true);
+      setIsChanging(true);
       ApiServices.getUiData(payload)
         .then((response) => {
-          if (onTableSelect) {
-            onTableSelect(response.data.data);
-          }
+          onTableSelect?.(response.data.details[selectedTable]);
         })
         .catch((error) => console.error("Error fetching table data:", error))
-        .finally(() => setIsLoading(false));
+        .finally(() => setIsChanging(false));
     }
   };
   const handleRefresh = () => {
@@ -119,21 +124,32 @@ export default function DashboardHeader({
                 <ArrowBackRoundedIcon fontSize="small" />
               </button>
 
-              <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
-                Query Designer
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
+                  Query Designer
+                </h1>
+
+                {passedData?.query_title && (
+                  <span className="text-sm text-gray-500 -mt-1">
+                    {passedData.query_title}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex items-center justify-center gap-3 md:gap-4">
-<Dropdown
-              ref={dropdownRef}
-              value={selectedView}
-              options={tableOptions}
-              onChange={handleViewChange}
-              loading={isLoading}
-              placeholder="Product Details"
-              
-              // Base Container Styling
-              className="
+              <Dropdown
+                ref={dropdownRef}
+                value={selectedView}
+                options={tableOptions}
+                onChange={handleViewChange}
+                loading={isLoading || isChanging}
+                loadingIcon={<AutorenewRoundedIcon className="w-5 h-5 animate-spin" />}
+                placeholder="Product Details"
+                onShow={handleDropdownShow}
+                onHide={handleDropdownHide}
+
+                // Base Container Styling
+                className="
                 w-72 h-11
                 bg-gray-50 hover:bg-gray-100
                 border border-gray-200 
@@ -166,30 +182,13 @@ export default function DashboardHeader({
                 mode="text"
               />
 
-              {/* <Tippy content="Select Columns" theme="gray">
-                <div
-                  onClick={() => setShowColumnModal(true)}
-                  className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
-                  style={{ borderColor: theme.border }}
-                >
-                  <ViewColumnRoundedIcon
-                    className="w-5 h-5"
-                    sx={{
-                      color: theme.secondaryText,
-                      transition: "color 0.2s",
-                      "&:hover": { color: theme.primaryText },
-                    }}
-                  />
-                </div>
-              </Tippy> */}
               <Tippy content="Refresh" theme="gray">
                 <div
                   onClick={handleRefresh}
-                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
-                    isRefreshing
-                      ? "cursor-not-allowed"
-                      : "cursor-pointer hover:bg-gray-500/10"
-                  }`}
+                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer hover:bg-gray-500/10"
+                    }`}
                   style={{ borderColor: theme.border }}
                 >
                   {isRefreshing ? (

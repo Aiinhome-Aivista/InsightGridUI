@@ -19,6 +19,8 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
   const { theme } = useTheme();
   const [isExpanded, setIsExpanded] = useState(true);
 
+  const filteredColumns = columns.filter(col => col.column_name !== 'row_hash');
+
   return (
     <div className="px-4">
       <div className="rounded-xl shadow-xs" >
@@ -60,7 +62,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
               
               <div className="p-4 min-h-[200px]  max-h-[200px]flex items-center justify-center custom-table mb-5">
                 <div className="flex flex-wrap gap-3">
-                  {columns.map(col => (
+                  {filteredColumns.map(col => (
                     <span key={col.column_name} className="px-5 py-2 bg-gray-200 text-gray-700 rounded-full text-sm">
                       {col.column_name}
                     </span>
@@ -69,7 +71,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
               </div>
             )}
             {viewSelection === 'dataview' && (
-              <ProductDataTable data={data} globalFilter={globalFilter} columns={columns} />
+              <ProductDataTable data={data} globalFilter={globalFilter} columns={filteredColumns} />
             )}
             {viewSelection === 'insights' && (
               <div className="custom-table mb-5">

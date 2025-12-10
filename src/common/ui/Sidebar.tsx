@@ -15,11 +15,12 @@ import "../../styles/tippy-theme.css";
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 
 const menuItems = [
+    { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard" },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list" },
     // { name: "Report Designer", icon: DashboardRoundedIcon, path: "report-query" },
   { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
-  { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard" },
+
 
 ];
 
@@ -29,7 +30,6 @@ export default function Sidebar() {
   const { theme } = useTheme();
   const location = useLocation();
   const activePath = location.pathname.split("/").pop() || "upload";
-  const [clickedTab, setClickedTab] = useState("");
 
   useEffect(() => {
     const userDataString = localStorage.getItem("ig_user");
@@ -41,7 +41,6 @@ export default function Sidebar() {
   }, []);
 
   const handleTabClick = async (item) => {
-    console.log("Clicked Tab:", item.name);
 
     if (item.path === "table-insights") {
       const userData = JSON.parse(localStorage.getItem("ig_user") || "{}");
@@ -73,6 +72,7 @@ export default function Sidebar() {
           }`}
         style={{ borderColor: theme.border }}
       >
+<<<<<<< HEAD
         <Tippy
           content={user?.user_name || "User"}
           placement="right"
@@ -88,6 +88,15 @@ export default function Sidebar() {
             )}
           </div>
         </Tippy>
+=======
+        <AccountCircleRoundedIcon sx={{ color: theme.secondaryText, fontSize: "2rem" }} />
+
+        {!collapsed && (
+          <p className="ml-3 font-medium" style={{ color: theme.primaryText }}>
+            {user?.full_name || "User"}
+          </p>
+        )}
+>>>>>>> b7ae5d8fed776273e53a8e74176fddb8566f9fcd
 
         <button
           type="button"
@@ -108,8 +117,11 @@ export default function Sidebar() {
       <div className="mt-3 flex-1">
         <nav className="flex flex-col gap-1 px-2">
           {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = item.path === activePath;
+            const Icon = item.icon; 
+            let isActive = item.path === activePath;
+            if (item.path === 'query-list' && activePath === 'query-designer') {
+              isActive = true;
+            }
             return (
               <Tippy
                 content={item.name}
