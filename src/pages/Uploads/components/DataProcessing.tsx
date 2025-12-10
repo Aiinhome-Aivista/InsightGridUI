@@ -22,6 +22,16 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const formatTo12Hour = (timeStr) => {
+    if (!timeStr) return "";
+    const [hour, minute, second] = timeStr.split(":");
+    let h = parseInt(hour);
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12; // converts '00' → 12 AM
+    return `${h}:${minute} ${ampm}`;
+  };
+
+
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
 
@@ -69,7 +79,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           sessionId: file.session_id,
           sessionName: file.session_name,
           fileName: fileName
-      
+
         }
       });
     }
@@ -87,11 +97,10 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         <Tippy content="Refresh" theme="gray">
           <div
             onClick={handleRefresh}
-            className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
-              isRefreshing
+            className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
                 ? "cursor-not-allowed"
                 : "cursor-pointer hover:bg-gray-500/10"
-            }`}
+              }`}
             style={{ borderColor: theme.border }}
           >
             {isRefreshing ? (
@@ -117,6 +126,10 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         const currentProgress = processingProgress[fileName] || 0;
         const isFullyProcessed = currentProgress >= TOTAL_STEPS;
 
+        // THEN add this
+        const extractionFailed =
+          file.table_extraction_status?.toLowerCase() === "failed" ||
+          file.table_extraction_status?.toLowerCase() === "pending";
         return (
           <div
             key={index}
@@ -124,7 +137,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             style={{ backgroundColor: theme.secondaryBg }}
           >
             <div className="relative group w-[20%] min-w-[150px] mr-4">
-            
+
               <div
                 className="text-sm font-medium truncate"
                 style={{ color: theme.primaryText }}
@@ -146,39 +159,46 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             </div>
 
             <div className="flex items-center min-w-[380px] w-[50%]">
-              {STEPS.map((stepName, stepIndex) => {
-                const isCompleted = stepIndex < currentProgress;
-                const iconColor = isCompleted ? theme.accent : theme.secondaryText;
+              {extractionFailed ? (
+                <p className="text-red-500 text-sm font-medium">
+                  File Extraction Failed
+                </p>
+              ) : (
+                STEPS.map((stepName, stepIndex) => {
+                  const isCompleted = stepIndex < currentProgress;
+                  const iconColor = isCompleted ? theme.accent : theme.secondaryText;
 
-                return (
-                  <div
-                    key={stepIndex}
-                    className="flex flex-col items-center flex-1"
-                    style={{ color: iconColor }}
-                  >
-                    {isCompleted ? (
-                      <CheckCircleIcon sx={{ fontSize: 20, color: iconColor }} />
-                    ) : (
-                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: iconColor }} />
-                    )}
-                    <span className="text-[10px] mt-1">{stepName}</span>
-                  </div>
-                );
-              })}
+                  return (
+                    <div
+                      key={stepIndex}
+                      className="flex flex-col items-center flex-1"
+                      style={{ color: iconColor }}
+                    >
+                      {isCompleted ? (
+                        <CheckCircleIcon sx={{ fontSize: 20, color: iconColor }} />
+                      ) : (
+                        <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: iconColor }} />
+                      )}
+                      <span className="text-[10px] mt-1">{stepName}</span>
+                    </div>
+                  );
+                })
+              )}
             </div>
+
 
             <div
               className="text-xs text-center min-w-[80px] mx-4 w-[5%]"
               style={{ color: theme.secondaryText }}
             >
-              {file.file_size_mb ? `${file.file_size_mb}MB` : (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+              {file.file_size_mb ? `${file.file_size_mb}` : (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
             </div>
 
             <div
               className="text-xs text-center min-w-[180px] mx-4 w-[20%]"
               style={{ color: theme.secondaryText }}
             >
-              {file.created_at || new Date().toLocaleDateString()}
+              {formatTo12Hour(file.created_at) || new Date().toLocaleDateString()}
             </div>
 
             <div className="flex items-center min-w-[60px] justify-end w-[5%]">

@@ -10,7 +10,7 @@ export const POST_APIS = {
   tracker: `${BASE_URL}get_file_status`,
   chat_ai: `${BASE_URL}chat_ai`,
   execute_sql: `${BASE_URL}execute_sql`,
-  get_ui_data: `${BASE_URL}get_ui_data`,
+  // get_ui_data: `${BASE_URL}get_ui_data`,
   processSessionData: `${BASE_URL}process_session_data`,
   get_dashboard_data: `${BASE_URL}get_dashboard_data`,
   save_chat: `${BASE_URL}query_save`,
