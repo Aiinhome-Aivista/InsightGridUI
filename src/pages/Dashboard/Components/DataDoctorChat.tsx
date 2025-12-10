@@ -550,6 +550,9 @@ export default function Chat({
         {tableData && tableData.rows.length > 0 && (
           <div className="p-2 bg-white rounded-xl shadow-md">
             {" "}
+            <div className="px-4 py-2 text-sm font-medium text-gray-600">
+              Total Rows: {executionMeta?.rows_effected ?? tableData.rows.length}
+            </div>
             <ProductDataTable
               data={tableData.rows}
               columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}
