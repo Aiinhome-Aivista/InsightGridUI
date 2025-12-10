@@ -142,9 +142,9 @@ export default function DashboardHeader({
                 value={selectedView}
                 options={tableOptions}
                 onChange={handleViewChange}
-                loading={isLoading || isChanging}
-                loadingIcon={<AutorenewRoundedIcon className="w-5 h-5 animate-spin" />}
-                placeholder="Product Details"
+                // loading={isLoading || isChanging}
+                // loadingIcon={<AutorenewRoundedIcon className="w-5 h-5 animate-spin" />}
+                placeholder="Select Table"
                 onShow={handleDropdownShow}
                 onHide={handleDropdownHide}
 

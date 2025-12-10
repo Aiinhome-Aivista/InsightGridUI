@@ -11,12 +11,12 @@ export default function ConfirmSaveView() {
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="w-[550px] bg-[#D9D9D9] rounded-2xl shadow-lg border-[11px] border-white flex flex-col justify-center items-center gap-6 p-8">
         <div className="text-center">
-          <p className="text-gray-600 text-lg">View Name</p>
+          <p className="text-gray-600 text-lg">Query Name</p>
           <h2 className="text-2xl font-semibold text-gray-700">{viewName}</h2>
         </div>
 
         <p className="text-gray-600 text-xl">
-          Are you confirm you want save the view?
+          Do you want to save the query?
         </p>
 
         <div className="flex gap-4">

@@ -175,7 +175,7 @@ const ShowQuery = () => {
                 <th className="text-left px-6 py-3 font-medium">Query</th>
                 <th className="text-left px-6 py-3 font-medium">Query Saving Date</th>
                 <th className="text-left px-6 py-3 font-medium">Query Saving Time</th>
-                <th className="text-left px-6 py-3 font-medium">Executing Time</th>
+                {/* <th className="text-left px-6 py-3 font-medium">Executing Time</th> */}
                 <th className="text-left px-6 py-3 font-medium">Row Effected</th>
                 <th className="text-left px-6 py-3 font-medium">Action</th>
               </tr>
@@ -186,7 +186,7 @@ const ShowQuery = () => {
                   <td className="px-6 py-4 font-medium">{query.query_title}</td>
                   <td className="px-6 py-4 text-gray-600">{query.created_date}</td>
                   <td className="px-6 py-4 text-gray-600">{timeAgo(query.created_date, query.created_at)}</td>
-                  <td className="px-6 py-4 text-gray-600">{query.query_time}</td>
+                  {/* <td className="px-6 py-4 text-gray-600">{query.query_time}</td> */}
 
                   <td className="px-6 py-4 text-gray-600">{query.rows_effected}</td>
                   <td className="px-6 py-4">
