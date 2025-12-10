@@ -19,7 +19,7 @@ export default function UploadIdle({ onFileSelect, disabled = false }: Props) {
 
       <p className="text-sm mt-2" style={{ color: theme.secondaryText }}>
         Click to upload or drag and drop <br />
-        CSV, XLSX , XLS, XML, SQL, DUMP (MAX 10MB)
+        CSV (MAX 10MB)
       </p>
 
       <label className={`mt-3 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
@@ -32,8 +32,11 @@ export default function UploadIdle({ onFileSelect, disabled = false }: Props) {
           disabled={disabled}
         />
         <span
-          className="text-sm px-4 py-2 rounded-md border"
-          style={{ backgroundColor: theme.surface, color: theme.primaryText, borderColor: theme.border }}
+          className="text-sm px-4 py-2 rounded-md border transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+          style={{
+            color: theme.primaryText,
+            borderColor: theme.border,
+          }}
         >
           Or Select Files
         </span>
