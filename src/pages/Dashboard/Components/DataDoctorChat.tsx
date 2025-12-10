@@ -122,39 +122,39 @@ export default function Chat({
 
 
 
-  useEffect(() => {
-    if (isSessionDataMissing) {
-      console.error(
-        "API Call skipped: Cannot initialize chat due to missing session_id."
-      );
-      setChat((prevChat) => ({
-        ...prevChat,
-        logs: ["CRITICAL: Missing session_id. Cannot communicate with API."],
-      }));
-      return;
-    }
+  // useEffect(() => {
+  //   if (isSessionDataMissing) {
+  //     console.error(
+  //       "API Call skipped: Cannot initialize chat due to missing session_id."
+  //     );
+  //     setChat((prevChat) => ({
+  //       ...prevChat,
+  //       logs: ["CRITICAL: Missing session_id. Cannot communicate with API."],
+  //     }));
+  //     return;
+  //   }
 
-    const payload = {
-      session_id: defaultSession.session_id,
-      session_name: defaultSession.session_name, // Re-enabled session_name
-      user_query: " Hello, how can I help you?",
-    };
-    ApiService.chat(payload)
-      .then((response) => {
-        if (response.data.isSuccess) {
-          const data = response.data.data;
-          setChat((prevChat) => ({
-            ...prevChat,
-            question: data.user_query || payload.user_query,
-            query: data.ai_response || "-- No initial query generated.",
-            logs: data.logs || [],
-          }));
-        }
-      })
-      .catch((error) =>
-        console.error("Error fetching initial UI data using chat API:", error)
-      );
-  }, [defaultSession.session_id, isSessionDataMissing]);
+  //   const payload = {
+  //     session_id: defaultSession.session_id,
+  //     session_name: defaultSession.session_name, // Re-enabled session_name
+  //     user_query: " Hello, how can I help you?",
+  //   };
+  //   ApiService.chat(payload)
+  //     .then((response) => {
+  //       if (response.data.isSuccess) {
+  //         const data = response.data.data;
+  //         setChat((prevChat) => ({
+  //           ...prevChat,
+  //           question: data.user_query || payload.user_query,
+  //           query: data.ai_response || "-- No initial query generated.",
+  //           logs: data.logs || [],
+  //         }));
+  //       }
+  //     })
+  //     .catch((error) =>
+  //       console.error("Error fetching initial UI data using chat API:", error)
+  //     );
+  // }, [defaultSession.session_id, isSessionDataMissing]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
