@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
 import { useNavigate, useLocation } from "react-router-dom";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ApiServices from "../../services/ApiServices";
 import { useAuth } from "../Auth/AuthContext";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import { useTheme } from "../../theme";
 
 const ShowQuery = () => {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ const ShowQuery = () => {
   const location = useLocation();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
+  const { theme } = useTheme();
 
   const timeAgo = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return "";
@@ -94,6 +97,15 @@ const ShowQuery = () => {
     }
   }, [user]);
   // handleEditClick and the placeholder fetchSavedQueries function are removed
+  const handleRefresh = async () => {
+    if (isRefreshing) return;
+
+    setIsRefreshing(true);
+    setGlobalFilter("");
+    await fetchSavedQueries();
+    // isRefreshing is set to false in fetchSavedQueries' finally block
+  };
+
 
   // Outside component
   const handleDetailsClick = (rowData) => {
@@ -135,7 +147,7 @@ const ShowQuery = () => {
                 placeholder="Global Search"
                 value={globalFilter}
                 onChange={(e) => setGlobalFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent)]"
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent)]"
               />
               <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m2.6-5.15a7.75 7.75 0 11-15.5 0 7.75 7.75 0 0115.5 0z" />
@@ -144,19 +156,30 @@ const ShowQuery = () => {
           </div>
 
           {/* Refresh icon */}
-          <div
-            style={{ backgroundColor: '#D9D9D9' }}
-            className={`p-3 rounded-xl cursor-pointer transition-all duration-200 ${isRefreshing ? 'opacity-70' : 'hover:bg-gray-300'}`}
-            onClick={async () => {
-              if (!isRefreshing) { 
-                setIsRefreshing(true);
-                setGlobalFilter("");
-                await fetchSavedQueries();
-              }
-            }}
-          >
-            <LuRefreshCw className={isRefreshing ? 'animate-spin' : ''} />
-          </div>
+          <Tippy content="Refresh" theme="gray">
+            <div
+              onClick={handleRefresh}
+              className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
+                ? "cursor-not-allowed"
+                : "cursor-pointer hover:bg-gray-500/10"
+                }`}
+              style={{ borderColor: theme.border }}
+            >
+              {isRefreshing ? (
+                <AutorenewRoundedIcon
+                  className="w-5 h-5 animate-spin"
+                  sx={{ color: theme.secondaryText }}
+                />
+              ) : (
+                <AutorenewRoundedIcon
+                  className="w-5 h-5"
+                  sx={{
+                    color: theme.secondaryText,
+                  }}
+                />
+              )}
+            </div>
+          </Tippy>
         </div>
       </div>
 
@@ -170,26 +193,26 @@ const ShowQuery = () => {
       ) : filteredQueries.length > 0 ? (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-500 text-xs">
+            <thead className="bg-gray-100 text-gray-500 text-sm uppercase">
               <tr>
-                <th className="text-left px-6 py-3 font-medium">Query</th>
-                <th className="text-left px-6 py-3 font-medium">Query Saving Date</th>
-                <th className="text-left px-6 py-3 font-medium">Query Saving Time</th>
-                <th className="text-left px-6 py-3 font-medium">Executing Time</th>
-                <th className="text-left px-6 py-3 font-medium">Row Effected</th>
-                <th className="text-left px-6 py-3 font-medium">Action</th>
+                <th className="text-left px-5 py-1 font-semibold">Query</th>
+                <th className="text-left px-5 py-1 font-semibold">Query Saving Date</th>
+                <th className="text-left px-5 py-1 font-semibold">Query Saving Time</th>
+                <th className="text-left px-5 py-1 font-semibold">Executing Time</th>
+                <th className="text-left px-5 py-1 font-semibold">Row Effected</th>
+                <th className="text-right px-5 py-1 font-semibold">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-gray-100">
               {filteredQueries.map((query) => (
-                <tr key={query.id}>
-                  <td className="px-6 py-4 font-medium">{query.query_title}</td>
-                  <td className="px-6 py-4 text-gray-600">{query.created_date}</td>
-                  <td className="px-6 py-4 text-gray-600">{timeAgo(query.created_date, query.created_at)}</td>
-                  <td className="px-6 py-4 text-gray-600">{query.query_time}</td>
+                <tr key={query.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-1 text-xs font-normal">{query.query_title}</td>
+                  <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.created_date}</td>
+                  <td className="px-6 py-1 text-gray-600 text-xs font-normal">{timeAgo(query.created_date, query.created_at)}</td>
+                  <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.query_time}</td>
 
-                  <td className="px-6 py-4 text-gray-600">{query.rows_effected}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.rows_effected}</td>
+                  <td className="px-6 py-1 text-right">
                     <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200"
                       onClick={() => handleDetailsClick(query)} >
                       Edit
