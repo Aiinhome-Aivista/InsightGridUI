@@ -397,7 +397,7 @@ export default function Chat({
         {/* Input */}
         <form
           onSubmit={handleSendMessage}
-          className="mx-4 border rounded-xl flex justify-between items-center px-5 py-2 mt-20 text-gray-500 bg-white"
+          className="mx-4 border rounded-xl flex justify-between items-center px-5 py-2 mt-20 text-gray-500"
         >
           {/* <input
             type="text"
