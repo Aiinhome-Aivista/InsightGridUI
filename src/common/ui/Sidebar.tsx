@@ -73,13 +73,21 @@ export default function Sidebar() {
           }`}
         style={{ borderColor: theme.border }}
       >
-        <AccountCircleRoundedIcon sx={{ color: theme.secondaryText, fontSize: "2rem" }} />
-
-        {!collapsed && (
-          <p className="ml-3 font-medium" style={{ color: theme.primaryText }}>
-            {user?.user_name || "User"}
-          </p>
-        )}
+        <Tippy
+          content={user?.user_name || "User"}
+          placement="right"
+          theme="gray"
+          disabled={!collapsed}
+        >
+          <div className="flex items-center">
+            <AccountCircleRoundedIcon sx={{ color: theme.secondaryText, fontSize: "2rem" }} />
+            {!collapsed && (
+              <p className="ml-3 font-medium" style={{ color: theme.primaryText }}>
+                {user?.user_name || "User"}
+              </p>
+            )}
+          </div>
+        </Tippy>
 
         <button
           type="button"
@@ -112,11 +120,14 @@ export default function Sidebar() {
               >
                 <Link to={item.path} className="no-underline" onClick={() => handleTabClick(item)}>
                   <div
-                    className={`flex items-center ${collapsed ? "justify-center" : "justify-start"
-                      } h-12 cursor-pointer rounded-lg transition px-3`}
+                    className={`flex items-center ${
+                      collapsed ? 'justify-center' : 'justify-start'
+                    } h-12 cursor-pointer rounded-lg transition-colors duration-200 px-3 ${
+                      isActive ? '' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                    } `}
                     style={{
-                      backgroundColor: isActive ? theme.accent : "transparent",
-                      color: isActive ? theme.background : theme.primaryText,
+                      backgroundColor: isActive ? theme.accent : undefined,
+                      color: isActive ? theme.background : theme.primaryText, // Keep color logic as it works
                       border: isActive ? `1px solid ${theme.accent}` : "1px solid transparent",
                     }}
                   >
