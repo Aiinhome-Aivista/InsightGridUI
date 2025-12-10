@@ -6,7 +6,7 @@
 /* Custom base styles */
 @layer base {
   :root {
-font-family: "Ballo Da 2",;
+    font-family: "Ballo Da 2", ;
     --theme-background: #FBFBFB;
     --theme-secondary-bg: #EAEAEA;
     --theme-surface: #ffffff;
@@ -21,14 +21,18 @@ font-family: "Ballo Da 2",;
     color: var(--theme-primary-text);
   }
 }
+
 /* Remove double check mark */
 .p-multiselect-item .p-checkbox .p-checkbox-box .p-checkbox-icon {
   display: none !important;
 }
+
 /* Fix close icon alignment */
 .p-multiselect-header .p-multiselect-close {
-  margin-right: 6px !important; /* adjust spacing */
-  margin-top: 2px !important;   /* vertical alignment */
+  margin-right: 6px !important;
+  /* adjust spacing */
+  margin-top: 2px !important;
+  /* vertical alignment */
   display: flex !important;
   align-items: center !important;
 }
@@ -49,22 +53,26 @@ font-family: "Ballo Da 2",;
 }
 
 .p-multiselect-close:hover {
-  background-color: #e5e7eb !important; /* light gray hover */
+  background-color: #e5e7eb !important;
+  /* light gray hover */
 }
 
 .p-multiselect-header .p-checkbox {
   display: none !important;
 
 }
+
 .p-multiselect-items-wrapper {
   padding-top: 0 !important;
-  margin-top: -35px !important; 
+  margin-top: -35px !important;
   /* adjust or remove based on height */
 }
+
 /* Show only checkbox tick when selected */
 .p-multiselect-item .p-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon {
   display: block !important;
 }
+
 /* Fix MultiSelect dropdown arrow position */
 .p-multiselect-trigger {
   position: absolute !important;
@@ -78,7 +86,8 @@ font-family: "Ballo Da 2",;
 /* Ensure chips don't push dropdown arrow */
 .p-multiselect {
   position: relative !important;
-  padding-right: 32px !important; /* space for arrow */
+  padding-right: 32px !important;
+  /* space for arrow */
 }
 
 /* Proper spacing between checkbox and text */
@@ -87,7 +96,7 @@ font-family: "Ballo Da 2",;
   align-items: center !important;
   gap: 5px !important;
   padding: 10px 12px !important;
-  
+
 }
 
 /* Chip spacing fix */
@@ -110,7 +119,8 @@ font-family: "Ballo Da 2",;
 
 /* Optional: max table width */
 .custom-table {
-  max-width: 1780px;   /* You can adjust */
+  max-width: 1780px;
+  /* You can adjust */
 }
 
 /* Scrollbar styles for WebKit browsers */
@@ -132,6 +142,7 @@ font-family: "Ballo Da 2",;
   border: 2px solid transparent;
   /* Same as track for a nice padding effect */
 }
+
 /* Custom component styles */
 @layer components {
   .btn-primary {
@@ -163,7 +174,8 @@ font-family: "Ballo Da 2",;
   }
 
   /* Target the table cells to add a bottom border */
-.custom-table .p-datatable-tbody > tr > td {
-    border-bottom: 1px solid #e5e7eb !important; /* Adjust color as needed */
-}
+  .custom-table .p-datatable-tbody>tr>td {
+    border-bottom: 1px solid #f3f4f6 !important;
+    /* Adjust color as needed */
+  }
 }

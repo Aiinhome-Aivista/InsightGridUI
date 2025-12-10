@@ -20,36 +20,37 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
   };
 
   return (
-   <div style={{ maxWidth: "100%", overflow: "auto" }}>
-<DataTable
-    value={data}
-    globalFilter={globalFilter}
-    sortMode="multiple"
-    scrollable
-    scrollHeight="200px"
-    style={{ maxWidth: "1300px" }}
-    filters={{
-      global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
-    }}
-    className="custom-table mb-5"
-    stripedRows
-    
-    rowClassName={() => "border-b border-gray-200"}
-  >
-  
+    <div style={{ maxWidth: "100%", overflow: "auto" }}>
+      <DataTable
+        value={data}
+        globalFilter={globalFilter}
+        sortMode="multiple"
+        scrollable
+        scrollHeight="200px"
+        style={{ width: "100%" }}
+        filters={{
+          global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
+        }}
+        className="custom-table mb-5"
+        stripedRows
 
-      {columns.map((col) => (
-        <Column
-          key={col.column_name}
-          field={col.column_name}
-          header={formatHeader(col.column_name)}
-          sortable
-          pt={{
-            headerCell: { className: 'bg-gray-200' }
-          }}
-        />
-      ))}
-    </DataTable>
+        rowClassName={() => "border-b border-gray-200"}
+      >
+
+
+        {columns.map((col) => (
+          <Column
+            style={{ whiteSpace: "nowrap", width: "auto" }}
+            key={col.column_name}
+            field={col.column_name}
+            header={formatHeader(col.column_name)}
+            sortable
+            pt={{
+              headerCell: { className: 'bg-gray-200' }
+            }}
+          />
+        ))}
+      </DataTable>
     </div>
   );
 }
