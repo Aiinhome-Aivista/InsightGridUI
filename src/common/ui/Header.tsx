@@ -50,7 +50,7 @@ export default function Header() {
   return (
     <>
       <header
-        className="flex justify-between items-center px-6 h-14 border-b shadow-sm"
+        className="flex justify-between items-center px-6 h-14 border-b"
         style={{
           backgroundColor: theme.surface,
           borderColor: theme.border,

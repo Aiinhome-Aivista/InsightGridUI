@@ -1,14 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
-import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { useLocation, useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
 import ApiServices from "../../../services/ApiServices";
 import AnimatedToggleButton from "./AnimatedToggleButton";
@@ -160,22 +157,22 @@ export default function DashboardHeader({
                 flex items-center justify-between
                 transition-all duration-200
               "
-
-                // Panel (List) Styling
-                panelClassName="
-                bg-white shadow-xl rounded-xl border border-gray-100 mt-2 overflow-hidden text-sm
+              
+              // Panel (List) Styling
+              panelClassName="
+                bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
               "
-
-                // PassThrough (PT) props for deep styling
-                pt={{
-                  root: { className: 'cursor-pointer shadow-sm' },
-                  input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
-                  trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
-                  list: { className: 'p-1' },
-                  item: { className: 'px-3 py-2 rounded-md hover:bg-gray-50 text-gray-700 cursor-pointer transition-colors mb-0.5' },
-                  itemLabel: { className: 'font-medium' }
-                }}
-              />
+              
+              // PassThrough (PT) props for deep styling
+              pt={{
+                root: { className: 'cursor-pointer' },
+                input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
+                trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
+                list: { className: 'p-1' },
+                item: { className: 'px-3 py-2 rounded-md hover:bg-gray-50 text-gray-700 cursor-pointer transition-colors mb-0.5' },
+                itemLabel: { className: 'font-medium' }
+              }}
+            />
               <AnimatedToggleButton
                 options={toggleOptions}
                 defaultSelected={defaultSelectionIndex}
@@ -185,22 +182,6 @@ export default function DashboardHeader({
                 mode="text"
               />
 
-              <Tippy content="Select Columns" theme="gray">
-                <div
-                  onClick={() => setShowColumnModal(true)}
-                  className="relative text-center border rounded-xl w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-500/10 transition-colors"
-                  style={{ borderColor: theme.border }}
-                >
-                  <ViewColumnRoundedIcon
-                    className="w-5 h-5"
-                    sx={{
-                      color: theme.secondaryText,
-                      transition: "color 0.2s",
-                      "&:hover": { color: theme.primaryText },
-                    }}
-                  />
-                </div>
-              </Tippy>
               <Tippy content="Refresh" theme="gray">
                 <div
                   onClick={handleRefresh}
