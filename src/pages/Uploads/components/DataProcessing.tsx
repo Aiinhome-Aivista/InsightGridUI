@@ -223,7 +223,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               className="text-xs text-center min-w-[80px] mx-4 w-[5%]"
               style={{ color: theme.secondaryText }}
             >
-              {file.file_size_mb ? `${file.file_size_mb}MB` : (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+              {file.file_size_mb ? `${file.file_size_mb}` : (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
             </div>
 
             <div

@@ -26,14 +26,14 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
       <div className="rounded-xl shadow-xs" >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
-          <div>
+          {/* <div>
             <h2 className="text-md font-semibold flex items-center gap-2" style={{ color: theme.primaryText }}>
               {tableName} 
             </h2>
             <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
               This table is showing all {tableName} 
             </p>
-          </div>
+          </div> */}
 
           {/* <div className="flex items-center gap-2">
             <AnimatedToggleButton

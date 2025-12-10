@@ -77,9 +77,9 @@ export default function DashboardHeader({
       };
 
       setIsChanging(true);
-      ApiServices.getUiData(payload)
+      ApiServices.getTableData(payload)
         .then((response) => {
-          onTableSelect?.(response.data.details[selectedTable]);
+          onTableSelect?.(response.data.data.details[selectedTable]);
         })
         .catch((error) => console.error("Error fetching table data:", error))
         .finally(() => setIsChanging(false));
@@ -129,11 +129,11 @@ export default function DashboardHeader({
                   Query Designer
                 </h1>
 
-                {passedData?.query_title && (
+                {/* {passedData?.query_title && (
                   <span className="text-sm text-gray-500 -mt-1">
                     {passedData.query_title}
                   </span>
-                )}
+                )} */}
               </div>
             </div>
             <div className="flex items-center justify-center gap-3 md:gap-4">
