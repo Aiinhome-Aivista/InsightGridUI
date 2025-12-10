@@ -137,7 +137,7 @@ const ShowQuery = () => {
 
           <button
             onClick={() => navigate("/layout/query-designer")}
-            className="bg-[#2563eb] hover:bg-[#462bd5] text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
+            className="bg-blue-400 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
             style={{ width: '108px', height: '45px' }}
           >
             Create Query
