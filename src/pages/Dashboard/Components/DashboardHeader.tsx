@@ -49,12 +49,6 @@ export default function DashboardHeader({
     (opt) => opt.value === viewSelection
   );
 
-  useEffect(() => {
-    if (tableOptions.length > 0 && !selectedView) {
-      setSelectedView(tableOptions[0].value);
-    }
-  }, [tableOptions, selectedView]);
-
   const handleViewChange = (e: { value: any }) => {
     const selectedTable = e.value;
     setSelectedView(selectedTable);
@@ -144,7 +138,7 @@ export default function DashboardHeader({
                 onChange={handleViewChange}
                 // loading={isLoading || isChanging}
                 // loadingIcon={<AutorenewRoundedIcon className="w-5 h-5 animate-spin" />}
-                placeholder="Select Table"
+                placeholder="Select a Table"
                 onShow={handleDropdownShow}
                 onHide={handleDropdownHide}
 

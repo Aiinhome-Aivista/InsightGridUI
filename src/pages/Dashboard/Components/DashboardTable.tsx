@@ -21,6 +21,16 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
 
   const filteredColumns = columns.filter(col => col.column_name !== 'row_hash');
 
+  if (!tableName) {
+    return (
+      <div className="px-4">
+        <div className="rounded-xl shadow-xs min-h-[248px] flex items-center justify-center bg-white text-gray-500">
+          <p>Please select a table to view its data.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-4">
       <div className="rounded-xl shadow-xs" >

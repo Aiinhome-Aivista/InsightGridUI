@@ -25,6 +25,7 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
         value={data}
         globalFilter={globalFilter}
         sortMode="multiple"
+        emptyMessage="No data available for this table."
         scrollable
         scrollHeight="200px"
         style={{ width: "100%" }}
