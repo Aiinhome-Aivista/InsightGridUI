@@ -176,7 +176,7 @@ const ShowQuery = () => {
                 <th className="text-left px-6 py-3 font-medium">Query Saving Date</th>
                 <th className="text-left px-6 py-3 font-medium">Query Saving Time</th>
                 {/* <th className="text-left px-6 py-3 font-medium">Executing Time</th> */}
-                <th className="text-left px-6 py-3 font-medium">Row Effected</th>
+                <th className="text-left px-6 py-3 font-medium">Rows Effected</th>
                 <th className="text-left px-6 py-3 font-medium">Action</th>
               </tr>
             </thead>
