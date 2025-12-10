@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ApiServices from "../../services/ApiServices";
 import { useAuth } from "../Auth/AuthContext";
@@ -12,17 +12,9 @@ const ShowQuery = () => {
   const [queries, setQueries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
-
-  // const formatTo12Hour = (timeStr) => {
-  //   if (!timeStr) return "";
-  //   const [hour, minute, second] = timeStr.split(":");
-  //   let h = parseInt(hour);
-  //   const ampm = h >= 12 ? "PM" : "AM";
-  //   h = h % 12 || 12; // converts '00' → 12 AM
-  //   return `${h}:${minute} ${ampm}`;
-  // };
 
   const timeAgo = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return "";
@@ -104,9 +96,9 @@ const ShowQuery = () => {
   // handleEditClick and the placeholder fetchSavedQueries function are removed
 
   // Outside component
-  const handleEditClick = (navigate, row) => {
-    console.log("Clicked row from showquery:", row);
-    navigate("/layout/query-designer");
+  const handleDetailsClick = (rowData) => {
+    // console.log("row data workflow", rowData);
+    navigate("/layout/query-designer", { state: { ...location.state, data: rowData, type: 'workflow' } });
   };
 
   const filteredQueries = queries.filter((query) => {
@@ -156,7 +148,7 @@ const ShowQuery = () => {
             style={{ backgroundColor: '#D9D9D9' }}
             className={`p-3 rounded-xl cursor-pointer transition-all duration-200 ${isRefreshing ? 'opacity-70' : 'hover:bg-gray-300'}`}
             onClick={async () => {
-              if (!isRefreshing) { // Prevent multiple rapid clicks
+              if (!isRefreshing) { 
                 setIsRefreshing(true);
                 setGlobalFilter("");
                 await fetchSavedQueries();
@@ -199,7 +191,7 @@ const ShowQuery = () => {
                   <td className="px-6 py-4 text-gray-600">{query.rows_effected}</td>
                   <td className="px-6 py-4">
                     <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200"
-                      onClick={() => handleEditClick(navigate, query)} >
+                      onClick={() => handleDetailsClick(query)} >
                       Edit
                     </button>
                   </td>

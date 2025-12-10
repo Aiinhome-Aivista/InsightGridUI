@@ -18,6 +18,7 @@ interface ChatSession {
   query: string;
   logs: string[];
   ai_response?: string;
+
 }
 interface TableData {
   rows: any[];
@@ -27,7 +28,12 @@ interface TableOption {
   label: string;
   value: string;
 }
-export default function Chat() {
+export default function Chat({
+  passedData,
+}: {
+  passedData?: { user_query: string; query_title: string; ai_response: string };
+}) {
+
   const { user } = useAuth();
   const getStoredUser = () => {
     try {
@@ -72,6 +78,49 @@ export default function Chat() {
     setViewName,
     setConfirmSaveAction,
   } = useAuth();
+
+  // useEffect(() => {
+  //   console.log("Chat received passedData:", passedData);
+
+  //   if (passedData?.user_query) {
+  //     setInputValue(passedData.user_query);
+  //   }
+
+  //   if (passedData?.query_title) {
+  //     setViewName(passedData.query_title);
+  //   }
+
+  // }, [passedData]);
+
+  useEffect(() => {
+    console.log("Chat received passedData:", passedData);
+
+    if (!passedData) return;
+
+    if (passedData.user_query) {
+      setInputValue(passedData.user_query);
+    }
+
+    if (passedData.query_title) {
+      setViewName(passedData.query_title);
+    }
+
+    if (passedData.ai_response) {
+      setChat((prevChat) => ({
+        ...prevChat,
+        query: passedData.ai_response,
+        ai_response: passedData.ai_response,
+      }));
+
+      // IMPORTANT: trigger typewriter effect immediately
+      setTypedQuery(passedData.ai_response);
+      setTypewriterKey((prev) => prev + 1);
+    }
+  }, [passedData]);
+
+
+
+
 
   useEffect(() => {
     if (isSessionDataMissing) {
@@ -351,7 +400,7 @@ export default function Chat() {
           onSubmit={handleSendMessage}
           className="mx-4 border rounded-xl flex justify-between items-center px-5 py-2 mt-20 text-gray-500 bg-white"
         >
-          <input
+          {/* <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
@@ -361,19 +410,31 @@ export default function Chat() {
                 : "Ask a question to generate a script..."
             }
             disabled={isSessionDataMissing || isSending} // Disabled when session is missing or sending
-            className={`w-full h-full bg-transparent outline-none text-sm text-gray-800 ${
-              isSessionDataMissing || isSending ? "cursor-not-allowed" : ""
-            }`}
+            className={`w-full h-full bg-transparent outline-none text-sm text-gray-800 ${isSessionDataMissing || isSending ? "cursor-not-allowed" : ""
+              }`}
+          /> */}
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder={
+              passedData
+                ? "" // If editing → no placeholder
+                : "Ask a question to generate a script..."
+            }
+            disabled={isSessionDataMissing || isSending}
+            className="w-full h-full bg-transparent outline-none text-sm text-gray-800"
           />
+
+
 
           <button
             type="submit"
             disabled={isSessionDataMissing || isSending} // Disabled when session is missing or sending
-            className={`p-2 rounded-full hover:bg-gray-100 ${
-              isSessionDataMissing || isSending
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
+            className={`p-2 rounded-full hover:bg-gray-100 ${isSessionDataMissing || isSending
+              ? "opacity-50 cursor-not-allowed"
+              : ""
+              }`}
           >
             {isSending ? (
               <AutorenewRoundedIcon className="w-6 h-6 text-gray-600 animate-spin" />
@@ -388,14 +449,14 @@ export default function Chat() {
       <div className="bg-[#D9D9D91A] p-2 mt-5 rounded-xl">
         <div className="flex flex-row items-center justify-between px-5">
           <h1 className="text-lg font-semibold text-gray-800 mt-1">
-          Generated Procedure
+            Generated Procedure
             <p className="text-sm text-gray-500 mb-4">Run available script</p>
           </h1>
 
           <div className="flex flex-row items-center justify-between px-5 pr-0">
             {/* Left empty space or other content can stay here */}
             <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-5 py-2 shadow-sm">
-              <input
+              {/* <input
                 type="text"
                 value={viewName}
                 onChange={(e) => setViewName(e.target.value)}
@@ -404,19 +465,32 @@ export default function Chat() {
                     ? "Name and save your custom view"
                     : "Run a script to enable saving"
                 }
-                className={`text-gray-600 text-sm bg-transparent outline-none w-full ${
-                  !isScriptRunSuccess ? "cursor-not-allowed" : ""
-                }`}
+                className={`text-gray-600 text-sm bg-transparent outline-none w-full ${!isScriptRunSuccess ? "cursor-not-allowed" : ""
+                  }`}
+                disabled={!isScriptRunSuccess}
+              /> */}
+              <input
+                type="text"
+                value={viewName}
+                onChange={(e) => setViewName(e.target.value)}
+                placeholder={
+                  passedData?.query_title
+                    ? ""
+                    : "Run a script to enable saving"
+                }
                 disabled={!isScriptRunSuccess}
               />
+
+
+
+
               <button
                 onClick={() => setIsConfirmSaveModalOpen(true)}
                 disabled={!isScriptRunSuccess || !viewName.trim()}
-                className={`px-5 py-1 rounded-md bg-gray-200 text-gray-600 text-sm transition ${
-                  !isScriptRunSuccess || !viewName.trim()
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-gray-300"
-                }`}
+                className={`px-5 py-1 rounded-md bg-gray-200 text-gray-600 text-sm transition ${!isScriptRunSuccess || !viewName.trim()
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-300"
+                  }`}
               >
                 Save
               </button>
@@ -428,11 +502,10 @@ export default function Chat() {
           <button
             onClick={handleRunScript}
             disabled={isSessionDataMissing || isExecuting} // Disabled when session is missing or executing
-            className={`absolute right-6 top-6 px-5 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${
-              isSessionDataMissing || isExecuting
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-300"
-            }`}
+            className={`absolute right-6 top-6 px-5 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${isSessionDataMissing || isExecuting
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-gray-300"
+              }`}
           >
             {isExecuting ? "Running..." : "Run"}
           </button>
