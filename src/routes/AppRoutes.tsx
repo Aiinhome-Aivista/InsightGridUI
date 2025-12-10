@@ -1,5 +1,5 @@
 import AppLayout from "../layout/AppLayout";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "../pages/Auth/AuthContext";
 import Upload_page from "../pages/Uploads/Upload_page";
 import Customize_page from "../pages/Customize/Customize_page";
@@ -13,7 +13,7 @@ function AppRoutes() {
   return (
     <AuthProvider>
       <Routes>
-        <Route path="/" element={<PublicRoute component={LandingPage} />} />
+        <Route path="/" element={<RootRoute />} />
         <Route path="/login" element={<PublicRoute component={Login} />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/layout" element={<AppLayout />}>
@@ -33,9 +33,20 @@ function AppRoutes() {
   );
 }
 
+const RootRoute = () => {
+  const { isAuthenticated } = useAuth();
+  // If authenticated, redirect to the main dashboard/upload page. Otherwise, show the landing page.
+  return isAuthenticated ? <Navigate to="/layout/upload" replace /> : <LandingPage />;
+};
+
 const PublicRoute = ({ component: Component }) => {
   const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <Navigate to="/layout/upload" replace /> : <Component />;
+  const location = useLocation();
+  const from = (location.state as any)?.from?.pathname || "/layout/upload";
+
+  // This component should only prevent authenticated users from seeing the login page.
+  const isLoginPage = location.pathname === '/login';
+  return isAuthenticated && isLoginPage ? <Navigate to={from} replace /> : <Component />;
 };
 
 export default AppRoutes;
