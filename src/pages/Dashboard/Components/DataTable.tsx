@@ -27,7 +27,7 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
         sortMode="multiple"
         scrollable
         scrollHeight="200px"
-        style={{ maxWidth: "1355px" }}
+        style={{ width: "100%" }}
         filters={{
           global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
         }}
@@ -40,6 +40,7 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
 
         {columns.map((col) => (
           <Column
+            style={{ whiteSpace: "nowrap", width: "auto" }}
             key={col.column_name}
             field={col.column_name}
             header={formatHeader(col.column_name)}
