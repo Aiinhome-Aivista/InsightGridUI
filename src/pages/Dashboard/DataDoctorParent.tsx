@@ -100,9 +100,10 @@ export default function Dashboard_page() {
           viewSelection={viewSelection}
           isLoading={isFetching}
           onViewChange={setViewSelection}
-           passedData={passedData}
+          passedData={passedData}
+          onTableLoading={setIsFetching}
         />
-        <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} tableName={tableData.tableName} viewSelection={viewSelection} globalFilter={""} />
+        <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} tableName={tableData.tableName} viewSelection={viewSelection} globalFilter={""} isLoading={isFetching} />
       </div>
       <div>
         <Chat 

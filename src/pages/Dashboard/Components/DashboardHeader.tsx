@@ -17,6 +17,7 @@ interface HeaderProps {
   viewSelection: string;
   isLoading: boolean;
   onViewChange: (view: string) => void;
+  onTableLoading?: (isLoading: boolean) => void;
 
   passedData?: {
     user_query: string;
@@ -32,6 +33,7 @@ export default function DashboardHeader({
   isLoading,
   onViewChange,
   passedData,
+  onTableLoading,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -71,12 +73,16 @@ export default function DashboardHeader({
       };
 
       setIsChanging(true);
+      onTableLoading?.(true);
       ApiServices.getTableData(payload)
         .then((response) => {
           onTableSelect?.(response.data.data.details[selectedTable]);
         })
         .catch((error) => console.error("Error fetching table data:", error))
-        .finally(() => setIsChanging(false));
+        .finally(() => {
+          setIsChanging(false);
+          onTableLoading?.(false);
+        });
     }
   };
   const handleRefresh = () => {

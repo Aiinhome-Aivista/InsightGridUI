@@ -2,6 +2,7 @@ import { useState } from "react";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { useTheme } from "../../../theme";
 import ProductDataTable from "../Components/DataTable";
 import { IconButton } from "@mui/material";
@@ -13,18 +14,29 @@ interface DashboardTableProps {
   globalFilter: string;
   tableName: string;
   viewSelection: string;
+  isLoading?: boolean;
 }
 
-export default function DashboardTable({ data, columns, insights, globalFilter, tableName, viewSelection }: DashboardTableProps) {
+export default function DashboardTable({ data, columns, insights, globalFilter, tableName, viewSelection, isLoading }: DashboardTableProps) {
   const { theme } = useTheme();
   const [isExpanded, setIsExpanded] = useState(true);
 
   const filteredColumns = columns.filter(col => col.column_name !== 'row_hash');
 
+  if (isLoading) {
+    return (
+      <div className="px-4 mb-5">
+        <div className="rounded-xl shadow-xs min-h-[200px] max-h-[200px] flex items-center justify-center bg-white text-gray-500">
+          <AutorenewRoundedIcon className="w-8 h-8 animate-spin text-gray-400" />
+        </div>
+      </div>
+    );
+  }
+
   if (!tableName) {
     return (
-      <div className="px-4">
-        <div className="rounded-xl shadow-xs min-h-[248px] flex items-center justify-center bg-white text-gray-500">
+      <div className="px-4 mb-5">
+        <div className="rounded-xl shadow-xs min-h-[200px] max-h-[200px] flex items-center justify-center bg-white text-gray-500">
           <p>Please select a table to view its data.</p>
         </div>
       </div>
