@@ -20,6 +20,11 @@ interface HeaderProps {
   viewSelection: string;
   isLoading: boolean;
   onViewChange: (view: string) => void;
+
+  passedData?: {
+    user_query: string;
+    query_title: string;
+  };
 }
 
 export default function DashboardHeader({
@@ -29,6 +34,7 @@ export default function DashboardHeader({
   viewSelection,
   isLoading,
   onViewChange,
+  passedData,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -121,24 +127,32 @@ export default function DashboardHeader({
                 <ArrowBackRoundedIcon fontSize="small" />
               </button>
 
-              <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
-                Query Designer
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
+                  Query Designer
+                </h1>
+
+                {passedData?.query_title && (
+                  <span className="text-sm text-gray-500 -mt-1">
+                    {passedData.query_title}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex items-center justify-center gap-3 md:gap-4">
-<Dropdown
-              ref={dropdownRef}
-              value={selectedView}
-              options={tableOptions}
-              onChange={handleViewChange}
-              loading={isLoading || isChanging}
-              loadingIcon={<AutorenewRoundedIcon className="w-5 h-5 animate-spin" />}
-              placeholder="Product Details"
-              onShow={handleDropdownShow}
+              <Dropdown
+                ref={dropdownRef}
+                value={selectedView}
+                options={tableOptions}
+                onChange={handleViewChange}
+                loading={isLoading || isChanging}
+                loadingIcon={<AutorenewRoundedIcon className="w-5 h-5 animate-spin" />}
+                placeholder="Product Details"
+                onShow={handleDropdownShow}
                 onHide={handleDropdownHide}
 
-              // Base Container Styling
-              className="
+                // Base Container Styling
+                className="
                 w-72 h-11
                 bg-gray-50 hover:bg-gray-100
                 border border-gray-200 
@@ -146,22 +160,22 @@ export default function DashboardHeader({
                 flex items-center justify-between
                 transition-all duration-200
               "
-              
-              // Panel (List) Styling
-              panelClassName="
+
+                // Panel (List) Styling
+                panelClassName="
                 bg-white shadow-xl rounded-xl border border-gray-100 mt-2 overflow-hidden text-sm
               "
-              
-              // PassThrough (PT) props for deep styling
-              pt={{
-                root: { className: 'cursor-pointer shadow-sm' },
-                input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
-                trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
-                list: { className: 'p-1' },
-                item: { className: 'px-3 py-2 rounded-md hover:bg-gray-50 text-gray-700 cursor-pointer transition-colors mb-0.5' },
-                itemLabel: { className: 'font-medium' }
-              }}
-            />
+
+                // PassThrough (PT) props for deep styling
+                pt={{
+                  root: { className: 'cursor-pointer shadow-sm' },
+                  input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
+                  trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
+                  list: { className: 'p-1' },
+                  item: { className: 'px-3 py-2 rounded-md hover:bg-gray-50 text-gray-700 cursor-pointer transition-colors mb-0.5' },
+                  itemLabel: { className: 'font-medium' }
+                }}
+              />
               <AnimatedToggleButton
                 options={toggleOptions}
                 defaultSelected={defaultSelectionIndex}
@@ -190,11 +204,10 @@ export default function DashboardHeader({
               <Tippy content="Refresh" theme="gray">
                 <div
                   onClick={handleRefresh}
-                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
-                    isRefreshing
-                      ? "cursor-not-allowed"
-                      : "cursor-pointer hover:bg-gray-500/10"
-                  }`}
+                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer hover:bg-gray-500/10"
+                    }`}
                   style={{ borderColor: theme.border }}
                 >
                   {isRefreshing ? (

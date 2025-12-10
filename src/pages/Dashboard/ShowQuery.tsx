@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ApiServices from "../../services/ApiServices";
 import { useAuth } from "../Auth/AuthContext";
 
@@ -11,6 +11,7 @@ const ShowQuery = () => {
   const [queries, setQueries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchSavedQueries = async () => {
@@ -41,9 +42,9 @@ const ShowQuery = () => {
   }, [user]);
 
   // Outside component
-  const handleEditClick = (navigate, row) => {
-    console.log("Clicked row from showquery:", row);
-    navigate("/layout/query-designer");
+  const handleDetailsClick = (rowData) => {
+    // console.log("row data workflow", rowData);
+    navigate("/layout/query-designer", { state: { ...location.state, data: rowData, type: 'workflow' } });
   };
 
   return (
@@ -111,7 +112,7 @@ const ShowQuery = () => {
                   <td className="px-6 py-4 text-gray-600">{query.rows_effected}</td>
                   <td className="px-6 py-4">
                     <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200"
-                      onClick={() => handleEditClick(navigate, query)} >
+                      onClick={() => handleDetailsClick(query)} >
                       Edit
                     </button>
                   </td>

@@ -3,6 +3,7 @@ import DashboardHeader from "./Components/DashboardHeader";
 import DashboardTable from "./Components/DashboardTable";
 import Chat from "./Components/DataDoctorChat";
 import ApiServices from "../../services/ApiServices";
+import { useLocation } from "react-router-dom";
 
 export default function Dashboard_page() {
   const [viewSelection, setViewSelection] = useState('dataview');
@@ -14,6 +15,9 @@ export default function Dashboard_page() {
   });
   const [tableOptions, setTableOptions] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
+  const location = useLocation();
+  const [passedData, setPassedData] = useState({ user_query: "", query_title: "", ai_response: "" });
+  
 
   const handleTableDataSelect = (data: any) => {
     setTableData({
@@ -25,6 +29,21 @@ export default function Dashboard_page() {
       tableName: data.tableName || "Product Details",
     });
   };
+
+  useEffect(() => {
+  if (location.state && location.state.data) {
+    const rowData = location.state.data;
+
+    setPassedData({
+      user_query: rowData.user_query || "",
+      query_title: rowData.query_title || "",
+      ai_response: rowData.ai_response || "",
+    });
+
+    console.log("Received user_query & query_title:", rowData.user_query, rowData.query_title, rowData.ai_response);
+  }
+}, [location.state]);
+
 
   const handleRefresh = () => {
     console.log("Refresh triggered");
@@ -94,11 +113,14 @@ export default function Dashboard_page() {
           viewSelection={viewSelection}
           isLoading={isFetching}
           onViewChange={setViewSelection}
+           passedData={passedData}
         />
         <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} tableName={tableData.tableName} viewSelection={viewSelection} globalFilter={""} />
       </div>
       <div>
-        <Chat />
+        <Chat 
+         passedData={passedData}
+         />
       </div>
     </>
   );
