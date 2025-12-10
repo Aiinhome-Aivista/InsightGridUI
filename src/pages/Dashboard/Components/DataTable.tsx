@@ -25,9 +25,10 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
         value={data}
         globalFilter={globalFilter}
         sortMode="multiple"
+        emptyMessage="No data available for this table."
         scrollable
         scrollHeight="200px"
-        style={{ width: "100%" }}
+        style={{ width: "100%", maxWidth: "1340px",minWidth:"1345px" }}
         filters={{
           global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
         }}

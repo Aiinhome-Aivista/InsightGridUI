@@ -17,6 +17,7 @@ interface HeaderProps {
   viewSelection: string;
   isLoading: boolean;
   onViewChange: (view: string) => void;
+  onTableLoading?: (isLoading: boolean) => void;
 
   passedData?: {
     user_query: string;
@@ -32,6 +33,7 @@ export default function DashboardHeader({
   isLoading,
   onViewChange,
   passedData,
+  onTableLoading,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -48,12 +50,6 @@ export default function DashboardHeader({
   const defaultSelectionIndex = toggleOptions.findIndex(
     (opt) => opt.value === viewSelection
   );
-
-  useEffect(() => {
-    if (tableOptions.length > 0 && !selectedView) {
-      setSelectedView(tableOptions[0].value);
-    }
-  }, [tableOptions, selectedView]);
 
   const handleViewChange = (e: { value: any }) => {
     const selectedTable = e.value;
@@ -77,12 +73,16 @@ export default function DashboardHeader({
       };
 
       setIsChanging(true);
+      onTableLoading?.(true);
       ApiServices.getTableData(payload)
         .then((response) => {
           onTableSelect?.(response.data.data.details[selectedTable]);
         })
         .catch((error) => console.error("Error fetching table data:", error))
-        .finally(() => setIsChanging(false));
+        .finally(() => {
+          setIsChanging(false);
+          onTableLoading?.(false);
+        });
     }
   };
   const handleRefresh = () => {
@@ -144,7 +144,7 @@ export default function DashboardHeader({
                 onChange={handleViewChange}
                 // loading={isLoading || isChanging}
                 // loadingIcon={<AutorenewRoundedIcon className="w-5 h-5 animate-spin" />}
-                placeholder="Select Table"
+                placeholder="Select a Table"
                 onShow={handleDropdownShow}
                 onHide={handleDropdownHide}
 

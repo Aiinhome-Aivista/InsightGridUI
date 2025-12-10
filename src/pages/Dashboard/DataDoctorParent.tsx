@@ -11,7 +11,7 @@ export default function Dashboard_page() {
     rows: [],
     columns: [],
     insights: [],
-    tableName: "Product Details", // Default title
+    tableName: "", // Default title
   });
   const [tableOptions, setTableOptions] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
@@ -78,19 +78,6 @@ export default function Dashboard_page() {
       const responseData = response.data.data || {};
       const tables = responseData.tables_dropdown || [];
       setTableOptions(tables);
-
-      if (tables.length > 0) {
-        const firstTableName = tables[0].value;
-        const firstTableData = responseData.details?.[firstTableName] || {};
-        let insights = [];
-        try {
-          insights = JSON.parse(firstTableData.insights || "[]");
-        } catch (e) {
-          console.error("Failed to parse insights:", e);
-        }
-
-        handleTableDataSelect({ ...firstTableData, tableName: firstTableName });
-      }
     } catch (error) {
       console.error(" API Error:", error);
     } finally {
@@ -113,9 +100,10 @@ export default function Dashboard_page() {
           viewSelection={viewSelection}
           isLoading={isFetching}
           onViewChange={setViewSelection}
-           passedData={passedData}
+          passedData={passedData}
+          onTableLoading={setIsFetching}
         />
-        <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} tableName={tableData.tableName} viewSelection={viewSelection} globalFilter={""} />
+        <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} tableName={tableData.tableName} viewSelection={viewSelection} globalFilter={""} isLoading={isFetching} />
       </div>
       <div>
         <Chat 

@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
     setUser(userData);
-    navigate("/layout/upload", { replace: true });
+    navigate("/layout/dashboard", { replace: true });
   };
 
   const logout = () => {
