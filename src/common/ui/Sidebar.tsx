@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
@@ -9,6 +11,7 @@ import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import { useTheme } from "../../theme";
 import ApiServices from "../../services/ApiServices";
 import DataObjectRoundedIcon from '@mui/icons-material/DataObjectRounded';
+import "../../styles/tippy-theme.css";
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 
 const menuItems = [
@@ -100,30 +103,37 @@ export default function Sidebar() {
             const Icon = item.icon;
             const isActive = item.path === activePath;
             return (
-              <Link to={item.path} key={item.name} className="no-underline"
-                onClick={() => handleTabClick(item)} >
-                <div
-                  className={`flex items-center ${collapsed ? "justify-center" : "justify-start"
-                    } h-12 cursor-pointer rounded-lg transition px-3`}
-                  style={{
-                    backgroundColor: isActive ? theme.accent : "transparent",
-                    color: isActive ? theme.background : theme.primaryText,
-                    border: isActive ? `1px solid ${theme.accent}` : "1px solid transparent",
-                  }}
-                >
-                  <Icon
-                    sx={{
+              <Tippy
+                content={item.name}
+                placement="right"
+                theme="gray"
+                disabled={!collapsed}
+                key={item.name}
+              >
+                <Link to={item.path} className="no-underline" onClick={() => handleTabClick(item)}>
+                  <div
+                    className={`flex items-center ${collapsed ? "justify-center" : "justify-start"
+                      } h-12 cursor-pointer rounded-lg transition px-3`}
+                    style={{
+                      backgroundColor: isActive ? theme.accent : "transparent",
                       color: isActive ? theme.background : theme.primaryText,
-                      fontSize: "1.1rem",
+                      border: isActive ? `1px solid ${theme.accent}` : "1px solid transparent",
                     }}
-                  />
-                  {!collapsed && (
-                    <span className="ml-3 text-sm font-medium capitalize">
-                      {item.name}
-                    </span>
-                  )}
-                </div>
-              </Link>
+                  >
+                    <Icon
+                      sx={{
+                        color: isActive ? theme.background : theme.primaryText,
+                        fontSize: "1.1rem",
+                      }}
+                    />
+                    {!collapsed && (
+                      <span className="ml-3 text-sm font-medium capitalize">
+                        {item.name}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              </Tippy>
             );
           })}
         </nav>

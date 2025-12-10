@@ -84,7 +84,7 @@ const ShowQuery = () => {
       {/* Table */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-500 text-xs">
+          <thead className="bg-gray-100 text-gray-500 text-xs uppercase">
             <tr>
               <th className="text-left px-6 py-3 font-medium">Query</th>
               <th className="text-left px-6 py-3 font-medium">Time</th>
