@@ -133,8 +133,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         return (
           <div
             key={index}
-            className="flex items-center rounded-lg px-4 py-3 w-full min-w-[80px] mb-3"
-            style={{ backgroundColor: theme.secondaryBg, transition: 'background-color 0.2s' }}
+            className="flex items-center rounded-lg p-3 w-full min-w-[80px] mb-3 bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
           >
             <div className="relative group w-[20%] min-w-[150px]">
 
