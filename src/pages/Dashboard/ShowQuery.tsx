@@ -201,38 +201,21 @@ const ShowQuery = () => {
           <table className="w-full text-sm">
             <thead className="bg-gray-100 text-gray-500 text-sm uppercase">
               <tr>
-<<<<<<< HEAD
                 <th className="text-left px-5 py-1 font-semibold">Query</th>
                 <th className="text-left px-5 py-1 font-semibold">Query Saving Date</th>
                 <th className="text-left px-5 py-1 font-semibold">Query Saving Time</th>
-                <th className="text-left px-5 py-1 font-semibold">Executing Time</th>
+                {/* <th className="text-left px-5 py-1 font-semibold">Executing Time</th> */}
                 <th className="text-left px-5 py-1 font-semibold">Row Effected</th>
                 <th className="text-right px-5 py-1 font-semibold">Action</th>
-=======
-                <th className="text-left px-6 py-3 font-medium">Query</th>
-                <th className="text-left px-6 py-3 font-medium">Query Saving Date</th>
-                <th className="text-left px-6 py-3 font-medium">Query Saving Time</th>
-                {/* <th className="text-left px-6 py-3 font-medium">Executing Time</th> */}
-                <th className="text-left px-6 py-3 font-medium">Rows Effected</th>
-                <th className="text-left px-6 py-3 font-medium">Action</th>
->>>>>>> af5e5a82042eb106a0d497f49efd01ae37a605e4
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filteredQueries.map((query) => (
-<<<<<<< HEAD
                 <tr key={query.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-1 text-xs font-normal">{query.query_title}</td>
                   <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.created_date}</td>
                   <td className="px-6 py-1 text-gray-600 text-xs font-normal">{timeAgo(query.created_date, query.created_at)}</td>
-                  <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.query_time}</td>
-=======
-                <tr key={query.id}>
-                  <td className="px-6 py-4 font-medium">{query.query_title}</td>
-                  <td className="px-6 py-4 text-gray-600">{query.created_date}</td>
-                  <td className="px-6 py-4 text-gray-600">{timeAgo(query.created_date, query.created_at)}</td>
-                  {/* <td className="px-6 py-4 text-gray-600">{query.query_time}</td> */}
->>>>>>> af5e5a82042eb106a0d497f49efd01ae37a605e4
+                  {/* <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.query_time}</td> */}
 
                   <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.rows_effected}</td>
                   <td className="px-6 py-1 text-right">
