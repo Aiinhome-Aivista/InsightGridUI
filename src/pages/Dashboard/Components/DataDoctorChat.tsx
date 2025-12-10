@@ -55,7 +55,7 @@ export default function Chat({
     session_name: defaultSession.session_name, // Re-enabled session_name
     question: isSessionDataMissing
       ? "FATAL ERROR: Session ID Missing."
-      : "Ask anything about your file…",
+      : "How can I assist you right now?",
     query: "",
     logs: isSessionDataMissing
       ? ["CRITICAL: Missing session_id. Cannot communicate with API."]
