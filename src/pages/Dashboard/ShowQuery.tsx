@@ -1,23 +1,3 @@
-<<<<<<< HEAD
-import { useState } from "react";
-import Tippy from "@tippyjs/react";
-import { MdOutlineHourglassEmpty } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
-import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import { useTheme } from "../../theme";
-
-const ShowQuery = () => {
-  const navigate = useNavigate();
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const { theme } = useTheme();
-
-  const handleRefresh = () => {
-    if (isRefreshing) return;
-    setIsRefreshing(true);
-    // Simulate a refresh delay
-    setTimeout(() => setIsRefreshing(false), 1000);
-  };
-=======
 import { useEffect, useState } from "react";
 import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
@@ -127,7 +107,6 @@ const ShowQuery = () => {
     );
   });
 
->>>>>>> b7ae5d8fed776273e53a8e74176fddb8566f9fcd
   return (
     <div className=" mx-auto px-6 py-8">
 
@@ -165,34 +144,6 @@ const ShowQuery = () => {
           </div>
 
           {/* Refresh icon */}
-<<<<<<< HEAD
-              <Tippy content="Refresh" theme="gray">
-                <div
-                  onClick={handleRefresh}
-                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
-                    isRefreshing
-                      ? "cursor-not-allowed"
-                      : "cursor-pointer hover:bg-gray-500/10"
-                  }`}
-                  style={{ borderColor: theme.border }}
-                >
-                  {isRefreshing ? (
-                    <AutorenewRoundedIcon
-                      className="w-5 h-5 animate-spin"
-                      sx={{ color: theme.secondaryText }}
-                    />
-                  ) : (
-                    <AutorenewRoundedIcon
-                      className="w-5 h-5"
-                      sx={{
-                        color: theme.secondaryText,
-                        "&:hover": { color: theme.primaryText },
-                      }}
-                    />
-                  )}
-                </div>
-              </Tippy>
-=======
           <div
             style={{ backgroundColor: '#D9D9D9' }}
             className={`p-3 rounded-xl cursor-pointer transition-all duration-200 ${isRefreshing ? 'opacity-70' : 'hover:bg-gray-300'}`}
@@ -206,25 +157,10 @@ const ShowQuery = () => {
           >
             <LuRefreshCw className={isRefreshing ? 'animate-spin' : ''} />
           </div>
->>>>>>> b7ae5d8fed776273e53a8e74176fddb8566f9fcd
         </div>
       </div>
 
 
-<<<<<<< HEAD
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-500 text-xs uppercase">
-            <tr>
-              <th className="text-left px-6 py-3 font-medium">Query</th>
-              <th className="text-left px-6 py-3 font-medium">Time</th>
-              <th className="text-left px-6 py-3 font-medium">Row Effected</th>
-              <th className="text-left px-6 py-3 font-medium">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-=======
       {isLoading ? (
         <div className="flex justify-center items-center py-10">
           <AutorenewRoundedIcon className="w-8 h-8 animate-spin text-gray-500" />
@@ -251,7 +187,6 @@ const ShowQuery = () => {
                   <td className="px-6 py-4 text-gray-600">{query.created_date}</td>
                   <td className="px-6 py-4 text-gray-600">{timeAgo(query.created_date, query.created_at)}</td>
                   <td className="px-6 py-4 text-gray-600">{query.query_time}</td>
->>>>>>> b7ae5d8fed776273e53a8e74176fddb8566f9fcd
 
                   <td className="px-6 py-4 text-gray-600">{query.rows_effected}</td>
                   <td className="px-6 py-4">

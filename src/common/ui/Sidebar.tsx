@@ -72,7 +72,6 @@ export default function Sidebar() {
           }`}
         style={{ borderColor: theme.border }}
       >
-<<<<<<< HEAD
         <Tippy
           content={user?.user_name || "User"}
           placement="right"
@@ -88,15 +87,6 @@ export default function Sidebar() {
             )}
           </div>
         </Tippy>
-=======
-        <AccountCircleRoundedIcon sx={{ color: theme.secondaryText, fontSize: "2rem" }} />
-
-        {!collapsed && (
-          <p className="ml-3 font-medium" style={{ color: theme.primaryText }}>
-            {user?.full_name || "User"}
-          </p>
-        )}
->>>>>>> b7ae5d8fed776273e53a8e74176fddb8566f9fcd
 
         <button
           type="button"
