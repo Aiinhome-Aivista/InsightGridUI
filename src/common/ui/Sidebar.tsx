@@ -31,8 +31,7 @@ export default function Sidebar() {
   const [user, setUser] = useState<LoginUserData | null>(null);
   const { theme } = useTheme();
   const location = useLocation();
-  const { setIsLogoutModalOpen } = useAuth();
-  const activePath = location.pathname.split("/").pop() || "upload";
+  const activePath = location.pathname.split("/").pop();
 
   useEffect(() => {
     const userDataString = localStorage.getItem("ig_user");
