@@ -80,7 +80,7 @@ export default function Header() {
             <p>
               {formattedDate} | {formattedTime}
             </p>
-            <Tooltip title="Logout" arrow>
+            {/* <Tooltip title="Logout" arrow>
               <LogoutRoundedIcon
                 onClick={handleLogout}
                 sx={{
@@ -93,7 +93,7 @@ export default function Header() {
                   },
                 }}
               />
-            </Tooltip>
+            </Tooltip> */}
           </div>
         </div>
       </header>

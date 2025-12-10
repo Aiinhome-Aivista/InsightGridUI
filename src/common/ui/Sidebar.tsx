@@ -6,12 +6,14 @@ import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import type { LoginUserData } from "../../models/login.model";
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import { useTheme } from "../../theme";
 import ApiServices from "../../services/ApiServices";
 import DataObjectRoundedIcon from '@mui/icons-material/DataObjectRounded';
 import "../../styles/tippy-theme.css";
+import { useAuth } from "../../pages/Auth/AuthContext";
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 
 const menuItems = [
@@ -29,6 +31,7 @@ export default function Sidebar() {
   const [user, setUser] = useState<LoginUserData | null>(null);
   const { theme } = useTheme();
   const location = useLocation();
+  const { setIsLogoutModalOpen } = useAuth();
   const activePath = location.pathname.split("/").pop() || "upload";
 
   useEffect(() => {
@@ -58,6 +61,10 @@ export default function Sidebar() {
         console.error("Tracker API Failed:", err);
       }
     }
+  };
+
+  const handleLogout = () => {
+    setIsLogoutModalOpen(true);
   };
 
   return (
@@ -150,6 +157,29 @@ export default function Sidebar() {
             );
           })}
         </nav>
+      </div>
+
+      {/* Logout Button */}
+      <div className={`px-3 py-4`} style={{ borderColor: theme.border }}>
+        <Tippy
+          content="Logout"
+          placement="right"
+          theme="gray"
+          disabled={!collapsed}
+        >
+          <div
+            onClick={handleLogout}
+            className={`flex items-center h-12 cursor-pointer rounded-lg transition-colors duration-200 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 ${collapsed ? 'justify-center' : 'justify-start'}`}
+          >
+            <LogoutRoundedIcon
+              sx={{
+                color: theme.secondaryText,
+                fontSize: "1.2rem",
+              }}
+            />
+            {!collapsed && <span className="ml-3 text-sm font-medium" style={{ color: theme.secondaryText }}>Logout</span>}
+          </div>
+        </Tippy>
       </div>
     </aside>
   );
