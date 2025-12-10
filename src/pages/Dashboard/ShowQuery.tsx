@@ -123,62 +123,68 @@ const ShowQuery = () => {
     <div className=" mx-auto px-6 py-8">
 
       {/* Header */}
-      <div className="flex items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Query Designer</h1>
-          <p className="text-sm text-gray-500">
-            Start by uploading a data file to create your first view.
-          </p>
-        </div>
-
-        <button
-          onClick={() => navigate("/layout/query-designer")}
-          className="btn-primary shadow mx-6"
-        >
-          Create Query
-        </button>
-
-        <div className="ml-auto flex items-center gap-4">
-          {/* Search */}
-          <div className="flex justify-end">
-            <div className="relative w-[25rem]">
-              <input
-                type="text"
-                placeholder="Global Search"
-                value={globalFilter}
-                onChange={(e) => setGlobalFilter(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent)]"
-              />
-              <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m2.6-5.15a7.75 7.75 0 11-15.5 0 7.75 7.75 0 0115.5 0z" />
-              </svg>
-            </div>
+{/* Header Container */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        
+        {/* Left Side: Title text AND Action Button grouped together */}
+        <div className="flex items-center gap-8">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900 leading-tight">Query Designer</h1>
+            <p className="text-sm text-gray-500 mt-1 whitespace-nowrap">
+              Start by uploading a data file to create your first view.
+            </p>
           </div>
 
-          {/* Refresh icon */}
-          <Tippy content="Refresh" theme="gray">
-            <div
-              onClick={handleRefresh}
-              className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
-                ? "cursor-not-allowed"
-                : "cursor-pointer hover:bg-gray-500/10"
-                }`}
-              style={{ borderColor: theme.border }}
-            >
-              {isRefreshing ? (
-                <AutorenewRoundedIcon
-                  className="w-5 h-5 animate-spin"
-                  sx={{ color: theme.secondaryText }}
-                />
-              ) : (
-                <AutorenewRoundedIcon
-                  className="w-5 h-5"
-                  sx={{
-                    color: theme.secondaryText,
-                  }}
-                />
-              )}
+          <button
+            onClick={() => navigate("/layout/query-designer")}
+            className="bg-[#2563eb] hover:bg-[#462bd5] text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
+            style={{ width: '108px', height: '45px' }}
+          >
+            Create Query
+          </button>
+        </div>
+
+        {/* Right Side: Search & Refresh */}
+        <div className="flex items-center gap-3">
+          
+          {/* Query Designer */}
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg 
+                className="h-4 w-4 text-gray-400 group-focus-within:text-[#5433FF] transition-colors" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
+            <input
+              type="text"
+              placeholder="Global Search"
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#5433FF] focus:border-transparent outline-none transition-all"
+              style={{ width: '568px', height: '45px' }}
+            />
+          </div>
+
+          {/* Refresh Icon */}
+          <Tippy content="Refresh" theme="gray">
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className={`
+                w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 
+                bg-gray-50 hover:bg-gray-100 transition-all
+                ${isRefreshing ? "opacity-70 cursor-wait" : "cursor-pointer"}
+              `}
+            >
+              <AutorenewRoundedIcon 
+                className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""}`} 
+                fontSize="small"
+              />
+            </button>
           </Tippy>
         </div>
       </div>
