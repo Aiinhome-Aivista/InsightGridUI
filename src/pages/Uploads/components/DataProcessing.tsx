@@ -87,7 +87,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between mb-4 m-2">
+      <div className="flex items-center justify-between mb-4 px-2">
         <label
           className="block text-sm font-medium"
           style={{ color: theme.primaryText }}
@@ -121,12 +121,12 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         </Tippy>
       </div>
 
-      {files.map((file, index) => {
+      <div className="max-h-[25vh] overflow-y-auto pr-2">
+        {files.map((file, index) => {
         const fileName = file.name || file.file_name;
         const currentProgress = processingProgress[fileName] || 0;
         const isFullyProcessed = currentProgress >= TOTAL_STEPS;
 
-        // THEN add this
         const extractionFailed =
           file.table_extraction_status?.toLowerCase() === "failed" ||
           file.table_extraction_status?.toLowerCase() === "pending";
@@ -134,9 +134,9 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           <div
             key={index}
             className="flex items-center rounded-lg px-4 py-3 w-full min-w-[80px] mb-3"
-            style={{ backgroundColor: theme.secondaryBg }}
+            style={{ backgroundColor: theme.secondaryBg, transition: 'background-color 0.2s' }}
           >
-            <div className="relative group w-[20%] min-w-[150px] mr-4">
+            <div className="relative group w-[20%] min-w-[150px]">
 
               <div
                 className="text-sm font-medium truncate"
@@ -158,7 +158,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               </div>
             </div>
 
-            <div className="flex items-center min-w-[380px] w-[50%]">
+            <div className="flex items-center min-w-[380px] w-[50%] px-4">
               {extractionFailed ? (
                 <p className="text-red-500 text-sm font-medium">
                   File Extraction Failed
@@ -187,21 +187,23 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             </div>
 
 
-            <div
-              className="text-xs text-center min-w-[80px] mx-4 w-[5%]"
-              style={{ color: theme.secondaryText }}
-            >
-              {file.file_size_mb ? `${file.file_size_mb}` : (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+            {/* Wrapper to group size and time, and push them to the right */}
+            <div className="flex items-center justify-end flex-grow ml-auto">
+              <div
+                className="text-xs text-center min-w-[80px] px-2"
+                style={{ color: theme.secondaryText }}
+              >
+                {file.file_size_mb ? `${file.file_size_mb}` : (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+              </div>
+              <div
+                className="text-xs text-right min-w-[180px] px-2"
+                style={{ color: theme.secondaryText }}
+              >
+                {formatTo12Hour(file.created_at) || new Date().toLocaleDateString()}
+              </div>
             </div>
 
-            <div
-              className="text-xs text-center min-w-[180px] mx-4 w-[20%]"
-              style={{ color: theme.secondaryText }}
-            >
-              {formatTo12Hour(file.created_at) || new Date().toLocaleDateString()}
-            </div>
-
-            <div className="flex items-center min-w-[60px] justify-end w-[5%]">
+            {/* <div className="flex items-center min-w-[60px] justify-end w-[5%]"> */}
 
               {/* <button
                 onClick={() => handleNavigateToDashboard(file)}
@@ -220,10 +222,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                   }}
                 />
               </button> */}
-            </div>
+            {/* </div> */}
           </div>
         );
-      })}
+        })}
+      </div>
     </div>
   );
 }
