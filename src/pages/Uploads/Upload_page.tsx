@@ -4,6 +4,7 @@ import FileDropZone from "./components/FileDropZone";
 import DataProcessing from "./components/DataProcessing";
 import ApiService from "../../services/ApiServices";
 import { useAuth } from "../Auth/AuthContext";
+import TableImportModal from "./modal/table-import-modal";
 
 export default function UploadPage() {
   const { theme } = useTheme();
@@ -17,6 +18,10 @@ export default function UploadPage() {
   const createdBy = user?.user_id || "";
   const [noFileMessage, setNoFileMessage] = useState("");
   const sessionId = user?.session_id || "";
+  
+  // ADD THESE TWO LINES
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState("");
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -24,6 +29,8 @@ export default function UploadPage() {
       trackFiles();
     }
   }, [createdBy,sessionId]);
+
+  
   
   async function trackFiles() {
     const payload = { created_by: createdBy, session_id: sessionId };
@@ -86,12 +93,18 @@ export default function UploadPage() {
       }
 
       const actualSessionId = uploadedFile.session_id || sessionId;
-      // const actualSessionName = uploadedFile.session_name || sessionNameTrimmed;
       setIsUploading(false);
       setIsProcessing(false);
 
       await trackFiles();
+<<<<<<< HEAD
 
+=======
+      
+      // ADD THESE TWO LINES TO OPEN MODAL AFTER UPLOAD
+      setUploadedFileName(files.length > 1 ? `${files.length} files` : files[0].name);
+      setIsModalOpen(true);
+>>>>>>> 9be2ffd1ca9c5f0ec1f6604038e9c762e3357b8a
 
     } catch (error: any) {
       console.error('Error uploading files:', error);
@@ -102,7 +115,43 @@ export default function UploadPage() {
     }
   }
 
+<<<<<<< HEAD
   
+=======
+  async function verifyDataExists(sessionId: string, sessionName: string): Promise<boolean> {
+    try {
+      const response = await ApiService.tracker({ created_by: createdBy });
+      const filesList = response.data?.data || [];
+
+      const fileExists = filesList.some(
+        (file: any) =>
+          file.session_id === sessionId &&
+          file.session_name === sessionName
+      );
+
+      if (!fileExists) {
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        const retryResponse = await ApiService.tracker({ created_by: createdBy });
+        const retryFilesList = retryResponse.data?.data || [];
+        const retryExists = retryFilesList.some(
+          (file: any) =>
+            file.session_id === sessionId &&
+            file.session_name === sessionName
+        );
+
+        return retryExists;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error verifying data:', error);
+      return false;
+    }
+  }
+
+
+>>>>>>> 9be2ffd1ca9c5f0ec1f6604038e9c762e3357b8a
   return (
     <div className="w-full rounded-lg p-8">
       <h2
@@ -121,10 +170,10 @@ export default function UploadPage() {
 
       <FileDropZone
         onUploadComplete={uploadFiles}
-       
         theme={theme}
         disabled={isUploading || isProcessing}
       />
+      
       {isProcessing && (
         <div className="flex flex-col items-center justify-center gap-3 mt-4">
           <div className="flex items-center gap-3">
@@ -139,22 +188,26 @@ export default function UploadPage() {
           </div>
         </div>
       )}
-      {/* onRefresh={() => { trackFiles(createdBy) }}  */}
+      
       {processedFiles.length > 0 ? (
-        <DataProcessing files={processedFiles} onRefresh={trackFiles}
-/>
-      ) :
-        (
-          <div className="flex justify-center mt-40">
-            <p
-              className="text-center text-sm"
-              style={{ color: theme.secondaryText }}
-            >
-              {noFileMessage}
-            </p>
-          </div>
-        )
-      }
+        <DataProcessing files={processedFiles} onRefresh={trackFiles} />
+      ) : (
+        <div className="flex justify-center mt-40">
+          <p
+            className="text-center text-sm"
+            style={{ color: theme.secondaryText }}
+          >
+            {noFileMessage}
+          </p>
+        </div>
+      )}
+      
+      {/* ADD THIS MODAL COMPONENT AT THE END */}
+      <TableImportModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        uploadedFileName={uploadedFileName}
+      />
     </div>
   );
 }
