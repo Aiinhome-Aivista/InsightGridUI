@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil } from 'lucide-react';
+import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'lucide-react';
 
 // AddCardRoundedIcon replacement
 const AddCardIcon = ({ className }: { className?: string }) => (
@@ -28,7 +28,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
     const [tableName, setTableName] = useState(uploadedFileName.replace(/\.[^/.]+$/, ''));
     const [isEditingTableName, setIsEditingTableName] = useState(false);
     const [tempTableName, setTempTableName] = useState('');
-    const [step, setStep] = useState<'configure' | 'preview'>('configure');
+    const [step, setStep] = useState<'configure' | 'preview' | 'loading' | 'success'>('configure');
     const [slideDirection, setSlideDirection] = useState<'none' | 'left' | 'right'>('none');
     const [columns, setColumns] = useState<Column[]>([
         { id: '1', name: 'id', dataType: 'INT', length: 10, isEditing: false },
@@ -78,14 +78,28 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
     };
 
     const handleNext = () => {
-        setSlideDirection('left');
-        setTimeout(() => {
-            setStep('preview');
-            setSlideDirection('right');
+        if (step === 'configure') {
+            setSlideDirection('left');
             setTimeout(() => {
+                setStep('preview');
+                setSlideDirection('right');
+                setTimeout(() => {
+                    setSlideDirection('none');
+                }, 50);
+            }, 300);
+        } else if (step === 'preview') {
+            // Show loading state
+            setSlideDirection('left');
+            setTimeout(() => {
+                setStep('loading');
                 setSlideDirection('none');
-            }, 50);
-        }, 300);
+                
+                // Simulate loading for 1 second, then show success
+                setTimeout(() => {
+                    setStep('success');
+                }, 1000);
+            }, 300);
+        }
     };
 
     const handleBack = () => {
@@ -358,7 +372,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                     </div>
                                 </div>
                             </>
-                        ) : (
+                        ) : step === 'preview' ? (
                             <>
                                 {/* Uploaded File Section - Same as before */}
                                 <div className="mb-4">
@@ -378,7 +392,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
                                         <h4 className="text-xs font-semibold text-gray-900">
-                                            Column Preview(Showing 5 out of 10,000)
+                                            Column Preview (Showing 5 out of 10,000)
                                         </h4>
                                     </div>
                                     <div className="rounded-lg overflow-hidden">
@@ -410,6 +424,74 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                     </div>
                                 </div>
                             </>
+                        ) : step === 'loading' ? (
+                            <div className="flex flex-col items-center justify-center h-full">
+                                <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
+                                <p className="text-sm text-gray-600">Creating table...</p>
+                            </div>
+                        ) : (
+                            <>
+                                {/* Success State */}
+                                <div className="flex flex-col h-full">
+                                    <div className="mb-6">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </div>
+                                            <h4 className="text-sm font-semibold text-gray-900">
+                                                Table "{tableName}" created with {columns.length} columns
+                                            </h4>
+                                        </div>
+                                    </div>
+
+                                    {/* Display Created Columns */}
+                                    <div>
+                                        <h4 className="text-xs font-semibold text-gray-900 mb-2">
+                                            Created Columns
+                                        </h4>
+                                        <div className="rounded-lg overflow-hidden border border-gray-200">
+                                            {/* Table Header */}
+                                            <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200">
+                                                <div className="col-span-4 px-3 py-2">
+                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
+                                                        Column Name
+                                                    </span>
+                                                </div>
+                                                <div className="col-span-4 px-3 py-2">
+                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
+                                                        Data Type
+                                                    </span>
+                                                </div>
+                                                <div className="col-span-4 px-3 py-2">
+                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
+                                                        Length
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Table Rows */}
+                                            {columns.map((column, index) => (
+                                                <div
+                                                    key={column.id}
+                                                    className="grid grid-cols-12 border-b border-gray-200 last:border-b-0 bg-white"
+                                                >
+                                                    <div className="col-span-4 px-3 py-2.5">
+                                                        <span className="text-xs text-gray-700 font-medium">{column.name}</span>
+                                                    </div>
+                                                    <div className="col-span-4 px-3 py-2.5">
+                                                        <span className="text-xs text-gray-600">{column.dataType}</span>
+                                                    </div>
+                                                    <div className="col-span-4 px-3 py-2.5">
+                                                        <span className="text-xs text-gray-600">{column.length}</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>
@@ -424,18 +506,29 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                             Back
                         </button>
                     )}
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-1.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium text-xs"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={handleNext}
-                        className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs"
-                    >
-                        Next
-                    </button>
+                    {step === 'success' ? (
+                        <button
+                            onClick={onClose}
+                            className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs"
+                        >
+                            Done
+                        </button>
+                    ) : step !== 'loading' && (
+                        <>
+                            <button
+                                onClick={onClose}
+                                className="px-4 py-1.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium text-xs"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleNext}
+                                className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs"
+                            >
+                                Next
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
