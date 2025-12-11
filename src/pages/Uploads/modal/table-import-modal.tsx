@@ -112,7 +112,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                 }}
             >
                 {/* Modal Content */}
-                <div className="p-4 overflow-y-auto flex-1">
+                <div className="p-12 overflow-y-auto flex-1">
                     <div className={`transition-all duration-300 ${
                         slideDirection === 'left' ? '-translate-x-full opacity-0' : 
                         slideDirection === 'right' ? 'translate-x-full opacity-0' : 
@@ -161,7 +161,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                             <select
                                                 value={selectedTable}
                                                 onChange={(e) => setSelectedTable(e.target.value)}
-                                                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs text-gray-700"
+                                                className="w-full px-3 py-2 bg-white border border-gray-300 border-opacity-30 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs text-gray-700"
                                             >
                                                 <option value="">Select Table</option>
                                                 <option value="table1">Table 1</option>
@@ -187,7 +187,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                                             type="text"
                                                             value={tempTableName}
                                                             onChange={(e) => setTempTableName(e.target.value)}
-                                                            className="text-xs text-gray-700 border border-gray-300 rounded px-2 py-1 flex-1"
+                                                            className="text-xs text-gray-700 border border-gray-300 border-opacity-30 rounded px-2 py-1 flex-1"
                                                             autoFocus
                                                         />
                                                         <button
@@ -222,26 +222,26 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                             Extracted Column
                                         </h4>
                                     </div>
-                                    <div className="border border-gray-200 rounded-lg overflow-hidden">
+                                    <div className="rounded-lg overflow-hidden">
                                         {/* Table Header */}
-                                        <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200">
+                                        <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200 border-opacity-30">
                                             <div className="col-span-4 px-3 py-2">
-                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
                                                     Column Name
                                                 </span>
                                             </div>
                                             <div className="col-span-3 px-3 py-2">
-                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
                                                     Data Type
                                                 </span>
                                             </div>
                                             <div className="col-span-3 px-3 py-2">
-                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
                                                     Length
                                                 </span>
                                             </div>
                                             <div className="col-span-2 px-3 py-2 flex items-center gap-1">
-                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
                                                     Action
                                                 </span>
                                                 <button
@@ -249,7 +249,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                                     className="text-gray-400 hover:text-blue-600 transition-colors"
                                                     title="Add Row"
                                                 >
-                                                    <AddCardIcon className="w-3.5 h-3.5" />
+                                                    <AddCardIcon className="w-3.5 h-3.5 text-[#3D5B81]" />
                                                 </button>
                                             </div>
                                         </div>
@@ -258,7 +258,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                         {columns.map((column) => (
                                             <div
                                                 key={column.id}
-                                                className="grid grid-cols-12 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors"
+                                                className="grid grid-cols-12 border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
                                             >
                                                 <div className="col-span-4 px-3 py-2.5">
                                                     {column.isEditing ? (
@@ -266,7 +266,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                                             type="text"
                                                             value={column.name}
                                                             onChange={(e) => handleColumnChange(column.id, 'name', e.target.value)}
-                                                            className="w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                                                            className="w-full px-2 py-1.5 border border-gray-300 border-opacity-30 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
                                                             placeholder="Column name"
                                                         />
                                                     ) : (
@@ -278,7 +278,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                                         <select
                                                             value={column.dataType}
                                                             onChange={(e) => handleColumnChange(column.id, 'dataType', e.target.value)}
-                                                            className="w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                                                            className="w-full px-2 py-1.5 border border-gray-300 border-opacity-30 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
                                                         >
                                                             <option value="INT">INT</option>
                                                             <option value="VARCHAR">VARCHAR</option>
@@ -298,7 +298,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                                             type="number"
                                                             value={column.length}
                                                             onChange={(e) => handleColumnChange(column.id, 'length', parseInt(e.target.value) || 0)}
-                                                            className="w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                                                            className="w-full px-2 py-1.5 border border-gray-300 border-opacity-30 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
                                                             placeholder="Length"
                                                         />
                                                     ) : (
@@ -381,12 +381,12 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                             Column Preview(Showing 5 out of 10,000)
                                         </h4>
                                     </div>
-                                    <div className="border border-gray-200 rounded-lg overflow-hidden">
+                                    <div className="rounded-lg overflow-hidden">
                                         {/* Table Header */}
-                                        <div className="grid bg-gray-50 border-b border-gray-200" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))` }}>
+                                        <div className="grid bg-gray-50 border-b border-gray-200 border-opacity-30" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))` }}>
                                             {columns.map((column) => (
-                                                <div key={column.id} className="px-3 py-2 border-r border-gray-200 last:border-r-0">
-                                                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                <div key={column.id} className="px-3 py-2 border-r border-gray-200 border-opacity-30 last:border-r-0">
+                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
                                                         {column.name}
                                                     </span>
                                                 </div>
@@ -395,10 +395,10 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
 
                                         {/* Sample Data Rows */}
                                         {[1, 2, 3, 4, 5].map((rowIndex) => (
-                                            <div key={rowIndex} className="grid border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))` }}>
+                                            <div key={rowIndex} className="grid border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))` }}>
                                                 {columns.map((column) => (
-                                                    <div key={column.id} className="px-3 py-2.5 border-r border-gray-200 last:border-r-0">
-                                                        <span className="text-xs text-gray-700">
+                                                    <div key={column.id} className="px-3 py-2.5 border-r border-gray-200 border-opacity-30 last:border-r-0">
+                                                        <span className="text-xs text-[#3D5B81]">
                                                             {column.dataType === 'INT' ? rowIndex : 
                                                              column.name === 'Full Name' ? `User ${rowIndex}` : 
                                                              `Sample ${rowIndex}`}
@@ -431,16 +431,10 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                         Cancel
                     </button>
                     <button
-                        onClick={() => {
-                            if (step === 'configure') {
-                                handleNext();
-                            } else {
-                                console.log('Import completed', { columns, createNewTable, selectedTable, tableName });
-                            }
-                        }}
+                        onClick={handleNext}
                         className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs"
                     >
-                        {step === 'configure' ? 'Next' : 'Import'}
+                        Next
                     </button>
                 </div>
             </div>
