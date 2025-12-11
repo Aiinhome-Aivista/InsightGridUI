@@ -18,7 +18,7 @@ export default function UploadPage() {
   const createdBy = user?.user_id || "";
   const [noFileMessage, setNoFileMessage] = useState("");
   const sessionId = user?.session_id || "";
-  
+
   // ADD THESE TWO LINES
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
@@ -28,10 +28,10 @@ export default function UploadPage() {
       isInitialMount.current = false;
       trackFiles();
     }
-  }, [createdBy,sessionId]);
+  }, [createdBy, sessionId]);
 
-  
-  
+
+
   async function trackFiles() {
     const payload = { created_by: createdBy, session_id: sessionId };
     try {
@@ -58,9 +58,61 @@ export default function UploadPage() {
   }
 
 
+  // async function uploadFiles(files: File[]) {
+  //   if (!files || files.length === 0) return;
+
+  //   if (uploadInProgress.current) return;
+
+  //   uploadInProgress.current = true;
+  //   setIsUploading(true);
+  //   setIsProcessing(false);
+
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append('session_id', sessionId);
+  //     formData.append('created_by', createdBy);
+  //     files.forEach(file => {
+  //       formData.append('files', file);
+  //     });
+
+  //     setProcessingFileName(files.length > 1 ? `${files.length} files` : files[0].name);
+
+  //     const uploadResponse = await ApiService.fileUpload(formData);
+  //     const responseData = uploadResponse.data;
+
+  //     if (!responseData.isSuccess) {
+  //       throw new Error(responseData.message || 'Upload failed');
+  //     }
+
+  //     const uploadedFile = responseData.data && responseData.data.length > 0
+  //       ? responseData.data[0]
+  //       : null;
+
+  //     if (!uploadedFile) {
+  //       throw new Error('No file data returned from upload');
+  //     }
+
+  //     const actualSessionId = uploadedFile.session_id || sessionId;
+  //     setIsUploading(false);
+  //     setIsProcessing(false);
+
+  //     await trackFiles();
+
+  //     // ADD THESE TWO LINES TO OPEN MODAL AFTER UPLOAD
+  //     setUploadedFileName(files.length > 1 ? `${files.length} files` : files[0].name);
+  //     setIsModalOpen(true);
+
+  //   } catch (error: any) {
+  //     console.error('Error uploading files:', error);
+  //     alert(`Error uploading files: ${error.message || 'Please try again.'}`);
+  //     setIsUploading(false);
+  //     setIsProcessing(false);
+  //     uploadInProgress.current = false;
+  //   }
+  // }
+
   async function uploadFiles(files: File[]) {
     if (!files || files.length === 0) return;
-
     if (uploadInProgress.current) return;
 
     uploadInProgress.current = true;
@@ -69,49 +121,59 @@ export default function UploadPage() {
 
     try {
       const formData = new FormData();
-      formData.append('session_id', sessionId);
-      formData.append('created_by', createdBy);
-      files.forEach(file => {
-        formData.append('files', file);
+      formData.append("action", "upload"); // hardcoded
+      formData.append("session_id", sessionId);
+      formData.append("created_by", createdBy);
+
+      files.forEach((file) => {
+        formData.append("files", file);
       });
 
-      setProcessingFileName(files.length > 1 ? `${files.length} files` : files[0].name);
+      setProcessingFileName(
+        files.length > 1 ? `${files.length} files` : files[0].name
+      );
 
       const uploadResponse = await ApiService.fileUpload(formData);
-      const responseData = uploadResponse.data;
 
-      if (!responseData.isSuccess) {
-        throw new Error(responseData.message || 'Upload failed');
+      // Minimal useful logs
+      console.log("Upload Response:", uploadResponse?.data);
+
+      const responseData = uploadResponse?.data;
+      if (!responseData?.isSuccess) {
+        console.error("Upload failed:", responseData?.message);
+        return;
       }
 
-      const uploadedFile = responseData.data && responseData.data.length > 0
-        ? responseData.data[0]
-        : null;
+      const uploadedFile =
+        responseData.data && responseData.data.length > 0
+          ? responseData.data[0]
+          : null;
 
       if (!uploadedFile) {
-        throw new Error('No file data returned from upload');
+        console.error("No file info returned from server.");
+        return;
       }
 
-      const actualSessionId = uploadedFile.session_id || sessionId;
       setIsUploading(false);
       setIsProcessing(false);
 
       await trackFiles();
-      
-      // ADD THESE TWO LINES TO OPEN MODAL AFTER UPLOAD
-      setUploadedFileName(files.length > 1 ? `${files.length} files` : files[0].name);
-      setIsModalOpen(true);
 
+      setUploadedFileName(
+        files.length > 1 ? `${files.length} files` : files[0].name
+      );
+      setIsModalOpen(true);
     } catch (error: any) {
-      console.error('Error uploading files:', error);
-      alert(`Error uploading files: ${error.message || 'Please try again.'}`);
+      console.error("Upload error:", error?.message || error);
+    } finally {
+      uploadInProgress.current = false;
       setIsUploading(false);
       setIsProcessing(false);
-      uploadInProgress.current = false;
     }
   }
 
-  
+
+
   return (
     <div className="w-full rounded-lg p-8">
       <h2
@@ -133,7 +195,7 @@ export default function UploadPage() {
         theme={theme}
         disabled={isUploading || isProcessing}
       />
-      
+
       {isProcessing && (
         <div className="flex flex-col items-center justify-center gap-3 mt-4">
           <div className="flex items-center gap-3">
@@ -148,7 +210,7 @@ export default function UploadPage() {
           </div>
         </div>
       )}
-      
+
       {processedFiles.length > 0 ? (
         <DataProcessing files={processedFiles} onRefresh={trackFiles} />
       ) : (
@@ -161,7 +223,7 @@ export default function UploadPage() {
           </p>
         </div>
       )}
-      
+
       {/* ADD THIS MODAL COMPONENT AT THE END */}
       <TableImportModal
         isOpen={isModalOpen}
