@@ -28,19 +28,10 @@ const menuItems = [
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(true);
-  const [user, setUser] = useState<LoginUserData | null>(null);
   const { theme } = useTheme();
   const location = useLocation();
   const activePath = location.pathname.split("/").pop();
-
-  useEffect(() => {
-    const userDataString = localStorage.getItem("ig_user");
-    if (userDataString) {
-      try {
-        setUser(JSON.parse(userDataString));
-      } catch (error) { console.error("Failed to parse user data from localStorage", error); }
-    }
-  }, []);
+  const { user, setIsLogoutModalOpen } = useAuth();
 
   const handleTabClick = async (item) => {
 
@@ -79,7 +70,7 @@ export default function Sidebar() {
         style={{ borderColor: theme.border }}
       >
         <Tippy
-          content={user?.user_name || "User"}
+          content={user?.full_name || "User"}
           placement="right"
           theme="gray"
           disabled={!collapsed}
@@ -88,7 +79,7 @@ export default function Sidebar() {
             <AccountCircleRoundedIcon sx={{ color: theme.secondaryText, fontSize: "2rem" }} />
             {!collapsed && (
               <p className="ml-3 font-medium" style={{ color: theme.primaryText }}>
-                {user?.user_name || "User"}
+                {user?.full_name || "User"}
               </p>
             )}
           </div>

@@ -19,7 +19,16 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    try {
+      const storedUser = localStorage.getItem("ig_user");
+      return storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
+    } catch (err) {
+      console.error("Invalid user JSON:", err);
+      localStorage.removeItem("ig_user");
+      return null;
+    }
+  });
   const navigate = useNavigate();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
@@ -27,32 +36,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
 
 
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("ig_user");
-  //   if (storedUser) {
-  //     setUser(JSON.parse(storedUser));
-  //   }
-  // }, []);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("ig_user");
-
-    try {
-      if (storedUser && storedUser !== "undefined") {
-        setUser(JSON.parse(storedUser));
-      }
-    } catch (err) {
-      console.error("Invalid user JSON:", err);
-      localStorage.removeItem("ig_user");
-      setUser(null);
-    }
-  }, []);
-
 
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
     setUser(userData);
-    navigate("/layout/upload", { replace: true });
+    navigate("/layout/dashboard", { replace: true });
   };
 
   const logout = () => {

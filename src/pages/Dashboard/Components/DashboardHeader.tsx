@@ -5,7 +5,7 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
 import { Dropdown } from "primereact/dropdown";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
 import ApiServices from "../../../services/ApiServices";
 import AnimatedToggleButton from "./AnimatedToggleButton";
@@ -17,6 +17,7 @@ interface HeaderProps {
   viewSelection: string;
   isLoading: boolean;
   onViewChange: (view: string) => void;
+  onTableLoading?: (isLoading: boolean) => void;
 
   passedData?: {
     user_query: string;
@@ -32,6 +33,7 @@ export default function DashboardHeader({
   isLoading,
   onViewChange,
   passedData,
+  onTableLoading,
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -48,12 +50,6 @@ export default function DashboardHeader({
   const defaultSelectionIndex = toggleOptions.findIndex(
     (opt) => opt.value === viewSelection
   );
-
-  useEffect(() => {
-    if (tableOptions.length > 0 && !selectedView) {
-      setSelectedView(tableOptions[0].value);
-    }
-  }, [tableOptions, selectedView]);
 
   const handleViewChange = (e: { value: any }) => {
     const selectedTable = e.value;
@@ -77,12 +73,16 @@ export default function DashboardHeader({
       };
 
       setIsChanging(true);
+      onTableLoading?.(true);
       ApiServices.getTableData(payload)
         .then((response) => {
           onTableSelect?.(response.data.data.details[selectedTable]);
         })
         .catch((error) => console.error("Error fetching table data:", error))
-        .finally(() => setIsChanging(false));
+        .finally(() => {
+          setIsChanging(false);
+          onTableLoading?.(false);
+        });
     }
   };
   const handleRefresh = () => {
@@ -142,37 +142,41 @@ export default function DashboardHeader({
                 value={selectedView}
                 options={tableOptions}
                 onChange={handleViewChange}
-                loading={isLoading || isChanging}
-                loadingIcon={<AutorenewRoundedIcon className="w-5 h-5 animate-spin" />}
-                placeholder="Product Details"
+                // loading={isLoading || isChanging}
+                // loadingIcon={<AutorenewRoundedIcon className="w-5 h-5 animate-spin" />}
+                placeholder="Select a Table"
                 onShow={handleDropdownShow}
                 onHide={handleDropdownHide}
 
-                // Base Container Styling
                 className="
-                w-72 h-11
-                bg-gray-50 hover:bg-gray-100
-                border border-gray-200 
-                rounded-lg 
-                flex items-center justify-between
-                transition-all duration-200
-              "
-              
+                  w-72 h-11
+                  bg-gray-50 hover:bg-gray-100
+                  border border-gray-200 
+                  rounded-lg 
+                  flex items-center justify-between
+                  transition-all duration-200
+                "
+
               // Panel (List) Styling
-              panelClassName="
-                bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
-              "
-              
+                panelClassName="
+                  bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
+                "
+
               // PassThrough (PT) props for deep styling
-              pt={{
-                root: { className: 'cursor-pointer' },
-                input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
-                trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
-                list: { className: 'p-1' },
-                item: { className: 'px-3 py-2 rounded-md hover:bg-gray-50 text-gray-700 cursor-pointer transition-colors mb-0.5' },
-                itemLabel: { className: 'font-medium' }
-              }}
-            />
+                pt={{
+                  root: { className: 'cursor-pointer' },
+                  input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
+                  trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
+                  list: { className: 'p-1' },
+                  item: ({ context }: any) => ({
+                    className: `px-3 py-2 rounded-md text-gray-700 cursor-pointer transition-colors mb-0.5 ${context.selected
+                      ? 'bg-gray-100 hover:bg-gray-200 font-semibold'
+                      : 'hover:bg-gray-50'
+                      }`
+                  }),
+                  itemLabel: { className: 'font-medium' }
+                }}
+              />
               <AnimatedToggleButton
                 options={toggleOptions}
                 defaultSelected={defaultSelectionIndex}

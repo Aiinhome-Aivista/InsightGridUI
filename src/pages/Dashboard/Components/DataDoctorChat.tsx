@@ -55,7 +55,7 @@ export default function Chat({
     session_name: defaultSession.session_name, // Re-enabled session_name
     question: isSessionDataMissing
       ? "FATAL ERROR: Session ID Missing."
-      : "Ask anything about your file…",
+      : "How can I assist you right now?",
     query: "",
     logs: isSessionDataMissing
       ? ["CRITICAL: Missing session_id. Cannot communicate with API."]
@@ -468,18 +468,21 @@ export default function Chat({
                   }`}
                 disabled={!isScriptRunSuccess}
               /> */}
-              <input
-                type="text"
-                value={viewName}
-                onChange={(e) => setViewName(e.target.value)}
-                placeholder={
-                  passedData?.query_title
-                    ? ""
-                    : "Run a script to enable saving"
-                }
-                disabled={!isScriptRunSuccess}
-              />
-
+           
+         <input
+  type="text"
+  value={viewName}
+  onChange={(e) => setViewName(e.target.value)}
+  placeholder={
+    passedData?.query_title ? "" : "Run a script to enable saving"
+  }
+  disabled={!isScriptRunSuccess}
+  className="
+    focus:outline-none focus:ring-0
+    disabled:bg-gray-200 disabled:text-gray-500
+    disabled:border-gray-300
+  "
+/>
 
 
 
@@ -550,6 +553,7 @@ export default function Chat({
         {tableData && tableData.rows.length > 0 && (
           <div className="p-2 bg-white rounded-xl shadow-md">
             {" "}
+           
             <ProductDataTable
               data={tableData.rows}
               columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}

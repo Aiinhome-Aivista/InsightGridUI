@@ -137,7 +137,7 @@ const ShowQuery = () => {
 
           <button
             onClick={() => navigate("/layout/query-designer")}
-            className="bg-[#2563eb] hover:bg-[#462bd5] text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
+            className="bg-blue-400 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
             style={{ width: '108px', height: '45px' }}
           >
             Create Query
@@ -204,7 +204,7 @@ const ShowQuery = () => {
                 <th className="text-left px-5 py-1 font-semibold">Query</th>
                 <th className="text-left px-5 py-1 font-semibold">Query Saving Date</th>
                 <th className="text-left px-5 py-1 font-semibold">Query Saving Time</th>
-                <th className="text-left px-5 py-1 font-semibold">Executing Time</th>
+                {/* <th className="text-left px-5 py-1 font-semibold">Executing Time</th> */}
                 <th className="text-left px-5 py-1 font-semibold">Row Effected</th>
                 <th className="text-right px-5 py-1 font-semibold">Action</th>
               </tr>
@@ -215,7 +215,7 @@ const ShowQuery = () => {
                   <td className="px-6 py-1 text-xs font-normal">{query.query_title}</td>
                   <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.created_date}</td>
                   <td className="px-6 py-1 text-gray-600 text-xs font-normal">{timeAgo(query.created_date, query.created_at)}</td>
-                  <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.query_time}</td>
+                  {/* <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.query_time}</td> */}
 
                   <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.rows_effected}</td>
                   <td className="px-6 py-1 text-right">
