@@ -13,8 +13,8 @@ function AppRoutes() {
   return (
     <AuthProvider>
       <Routes>
-        <Route path="/" element={<RootRoute />} />
-        <Route path="/login" element={<PublicRoute component={Login} />} />
+         <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/layout" element={<AppLayout />}>
             <Route index element={<Navigate to="upload" replace />} />
