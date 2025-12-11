@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { useTheme } from "../../theme";
 import FileDropZone from "./components/FileDropZone";
 import DataProcessing from "./components/DataProcessing";
-// import FileNameInput from "./components/FileNameInput";
 import ApiService from "../../services/ApiServices";
 import { useAuth } from "../Auth/AuthContext";
 
@@ -10,14 +9,11 @@ export default function UploadPage() {
   const { theme } = useTheme();
   const { user } = useAuth();
   const [processedFiles, setProcessedFiles] = useState<any[]>([]);
-  // const [sessionName, setSessionName] = useState("");
-  // const [sessionNameError, setSessionNameError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingFileName, setProcessingFileName] = useState("");
   const isInitialMount = useRef(true);
   const uploadInProgress = useRef(false);
-  const currentSessionRef = useRef<{ id: string, name: string } | null>(null);
   const createdBy = user?.user_id || "";
   const [noFileMessage, setNoFileMessage] = useState("");
   const sessionId = user?.session_id || "";
@@ -58,13 +54,6 @@ export default function UploadPage() {
   async function uploadFiles(files: File[]) {
     if (!files || files.length === 0) return;
 
-    // if (!sessionName || sessionName.trim() === "") {
-    //   setSessionNameError("Session name is required before uploading files");
-    //   return;
-    // }
-
-    // setSessionNameError("");
-
     if (uploadInProgress.current) return;
 
     uploadInProgress.current = true;
@@ -72,14 +61,8 @@ export default function UploadPage() {
     setIsProcessing(false);
 
     try {
-      
-      // const sessionNameTrimmed = sessionName.trim();
-
-      // currentSessionRef.current = { id: sessionId, name: sessionNameTrimmed };
-
       const formData = new FormData();
       formData.append('session_id', sessionId);
-      // formData.append('session_name', sessionNameTrimmed);
       formData.append('created_by', createdBy);
       files.forEach(file => {
         formData.append('files', file);
@@ -107,26 +90,8 @@ export default function UploadPage() {
       setIsUploading(false);
       setIsProcessing(false);
 
-      // currentSessionRef.current = {
-      //   id: actualSessionId,
-      //   name: actualSessionName
-      // };
       await trackFiles();
 
-      // const waitTime = files.reduce((total, file) => total + file.size, 0) > 5000000 ? 10000 : 7000;
-
-      // setIsUploading(false);
-      // setIsProcessing(true);
-
-      // await new Promise(resolve => setTimeout(resolve, waitTime));
-
-      // const verifySuccess = await verifyDataExists(actualSessionId, actualSessionName);
-
-      // if (!verifySuccess) {
-      //   throw new Error('Data verification failed. Please try processing again manually.');
-      // }
-
-      // await processSessionData(actualSessionId, actualSessionName, );
 
     } catch (error: any) {
       console.error('Error uploading files:', error);
@@ -137,86 +102,7 @@ export default function UploadPage() {
     }
   }
 
-  async function verifyDataExists(sessionId: string, sessionName: string): Promise<boolean> {
-    try {
-      // const response = await ApiService.tracker(createdBy);
-      const response = await ApiService.tracker({ created_by: createdBy });
-      const filesList = response.data?.data || [];
-
-      const fileExists = filesList.some(
-        (file: any) =>
-          file.session_id === sessionId &&
-          file.session_name === sessionName
-      );
-
-      if (!fileExists) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-
-        // const retryResponse = await ApiService.tracker();
-        const retryResponse = await ApiService.tracker({ created_by: createdBy });
-        const retryFilesList = retryResponse.data?.data || [];
-        const retryExists = retryFilesList.some(
-          (file: any) =>
-            file.session_id === sessionId &&
-            file.session_name === sessionName
-        );
-
-        return retryExists;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error verifying data:', error);
-      return false;
-    }
-  }
-
-  // async function processSessionData(sessionId: string, sessionNameTrimmed: string) {
-  //   try {
-  //     const requestBody = {
-  //       session_id: sessionId,
-  //       session_name: sessionNameTrimmed,
-  //       created_by: createdBy
-  //     };
-
-  //     const processResponse = await ApiService.processSessionData(requestBody);
-
-  //     const globalOps = processResponse.data?.global_operations;
-  //     if (globalOps) {
-  //       const hasLLMError = Object.values(globalOps).some(
-  //         (ops: any) => Array.isArray(ops) && ops.includes("LLM Error")
-  //       );
-
-  //       if (hasLLMError) {
-  //         alert('Processing completed but some AI features failed. You can retry processing from the dashboard.');
-  //       }
-  //     }
-
-  //     // await trackFiles(createdBy);
-  //     await trackFiles({ created_by: createdBy });
-
-
-  //     setIsProcessing(false);
-  //     setProcessingFileName("");
-  //     uploadInProgress.current = false;
-
-  //   } catch (processError: any) {
-  //     console.error('Process session data error:', processError);
-
-  //     setIsProcessing(false);
-  //     setProcessingFileName("");
-  //     uploadInProgress.current = false;
-
-  //     alert(
-  //       `Processing failed: ${processError.message}\n\n` +
-  //       `Session ID: ${sessionId}\n` +
-  //       `Session Name: ${sessionNameTrimmed}\n\n` +
-  //       `Please try again using the retry button.`
-  //     );
-  //   }
-  // }
-
-
+  
   return (
     <div className="w-full rounded-lg p-8">
       <h2
@@ -233,18 +119,6 @@ export default function UploadPage() {
         Start by uploading a data file to create your first view.
       </p>
 
-      {/* <FileNameInput
-        theme={theme}
-        value={sessionName}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          setSessionName(e.target.value);
-          if (sessionNameError) {
-            setSessionNameError("");
-          }
-        }}
-        error={sessionNameError}
-        disabled={isUploading || isProcessing}
-      /> */}
       <FileDropZone
         onUploadComplete={uploadFiles}
        
