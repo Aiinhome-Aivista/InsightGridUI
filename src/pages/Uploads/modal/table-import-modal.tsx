@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil ,Loader2 } from 'lucide-react';
 
 // AddCardRoundedIcon replacement
 const AddCardIcon = ({ className }: { className?: string }) => (
@@ -12,29 +12,53 @@ interface Column {
     id: string;
     name: string;
     dataType: string;
-    length: number;
+    length: number | string;
+    primary: boolean;
     isEditing: boolean;
+}
+
+interface ApiData {
+    existing_tables: any[];
+    file_name: string;
+    file_size: string;
+    new_table_schema: { column: string; datatype: string; length: string | number | null; primary: boolean }[];
+    suggested_table_name: string;
+    table_dropdown: any[];
 }
 
 interface TableImportModalProps {
     isOpen: boolean;
     onClose: () => void;
     uploadedFileName: string;
+    apiData?: ApiData;
 }
 
-const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModalProps) => {
-    const [createNewTable, setCreateNewTable] = useState<'yes' | 'no'>('no');
+const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableImportModalProps) => {
+    const [createNewTable, setCreateNewTable] = useState<'yes' | 'no'>('yes');
     const [selectedTable, setSelectedTable] = useState('');
     const [tableName, setTableName] = useState(uploadedFileName.replace(/\.[^/.]+$/, ''));
     const [isEditingTableName, setIsEditingTableName] = useState(false);
     const [tempTableName, setTempTableName] = useState('');
     const [step, setStep] = useState<'configure' | 'preview' | 'loading' | 'success'>('configure');
     const [slideDirection, setSlideDirection] = useState<'none' | 'left' | 'right'>('none');
-    const [columns, setColumns] = useState<Column[]>([
-        { id: '1', name: 'id', dataType: 'INT', length: 10, isEditing: false },
-        { id: '2', name: 'Full Name', dataType: 'VARCHAR', length: 100, isEditing: false },
-        { id: '3', name: 'Address', dataType: 'VARCHAR', length: 100, isEditing: false },
-    ]);
+    const [columns, setColumns] = useState<Column[]>([]);
+
+    useEffect(() => {
+        if (isOpen && apiData) {
+            setTableName(apiData.suggested_table_name || uploadedFileName.replace(/\.[^/.]+$/, ''));
+            if (apiData.new_table_schema) {
+                const mappedColumns = apiData.new_table_schema.map((col, index) => ({
+                    id: String(index),
+                    name: col.column,
+                    dataType: col.datatype,
+                    length: col.length ?? '',
+                    primary: col.primary || false,
+                    isEditing: false
+                }));
+                setColumns(mappedColumns);
+            }
+        }
+    }, [isOpen, apiData, uploadedFileName]);
 
     const handleEditClick = (id: string) => {
         setColumns(columns.map(col =>
@@ -42,7 +66,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
         ));
     };
 
-    const handleColumnChange = (id: string, field: keyof Column, value: string | number) => {
+    const handleColumnChange = (id: string, field: keyof Column, value: any) => {
         setColumns(columns.map(col =>
             col.id === id ? { ...col, [field]: value } : col
         ));
@@ -54,6 +78,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
             name: '',
             dataType: 'VARCHAR',
             length: 100,
+            primary: false,
             isEditing: true
         };
         setColumns([...columns, newColumn]);
@@ -178,9 +203,11 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                                 className="w-full px-3 py-2 bg-white border border-gray-300 border-opacity-30 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs text-gray-700"
                                             >
                                                 <option value="">Select Table</option>
-                                                <option value="table1">Table 1</option>
-                                                <option value="table2">Table 2</option>
-                                                <option value="table3">Table 3</option>
+                                                {apiData?.table_dropdown?.map((table: any, index: number) => (
+                                                    <option key={index} value={table.value || table}>
+                                                        {table.label || table}
+                                                    </option>
+                                                ))}
                                             </select>
                                             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                                         </div>
@@ -238,24 +265,29 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                     </div>
                                     <div className="rounded-lg overflow-hidden">
                                         {/* Table Header */}
-                                        <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200 border-opacity-30">
-                                            <div className="col-span-4 px-3 py-2">
-                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
+                                        <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200">
+                                            <div className="col-span-3 px-3 py-2">
+                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Column Name
                                                 </span>
                                             </div>
-                                            <div className="col-span-3 px-3 py-2">
-                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
+                                            <div className="col-span-2 px-3 py-2">
+                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Data Type
                                                 </span>
                                             </div>
-                                            <div className="col-span-3 px-3 py-2">
-                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
+                                            <div className="col-span-2 px-3 py-2">
+                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Length
                                                 </span>
                                             </div>
-                                            <div className="col-span-2 px-3 py-2 flex items-center gap-1">
-                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
+                                            <div className="col-span-2 px-3 py-2">
+                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                    Primary Key
+                                                </span>
+                                            </div>
+                                            <div className="col-span-3 px-3 py-2 flex items-center gap-1">
+                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Action
                                                 </span>
                                                 <button
@@ -274,7 +306,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                                 key={column.id}
                                                 className="grid grid-cols-12 border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
                                             >
-                                                <div className="col-span-4 px-3 py-2.5">
+                                                <div className="col-span-3 px-3 py-2.5">
                                                     {column.isEditing ? (
                                                         <input
                                                             type="text"
@@ -287,7 +319,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                                         <span className="text-xs text-gray-700">{column.name}</span>
                                                     )}
                                                 </div>
-                                                <div className="col-span-3 px-3 py-2.5">
+                                                <div className="col-span-2 px-3 py-2.5">
                                                     {column.isEditing ? (
                                                         <select
                                                             value={column.dataType}
@@ -306,20 +338,37 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
                                                         <span className="text-xs text-gray-500">{column.dataType}</span>
                                                     )}
                                                 </div>
-                                                <div className="col-span-3 px-3 py-2.5">
+                                                <div className="col-span-2 px-3 py-2.5">
                                                     {column.isEditing ? (
                                                         <input
                                                             type="number"
                                                             value={column.length}
-                                                            onChange={(e) => handleColumnChange(column.id, 'length', parseInt(e.target.value) || 0)}
-                                                            className="w-full px-2 py-1.5 border border-gray-300 border-opacity-30 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                                                            onChange={(e) => handleColumnChange(column.id, 'length', e.target.value)}
+                                                            className="w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
                                                             placeholder="Length"
                                                         />
                                                     ) : (
                                                         <span className="text-xs text-gray-500">{column.length}</span>
                                                     )}
                                                 </div>
-                                                <div className="col-span-2 px-3 py-2.5 flex items-center gap-2">
+                                                <div className="col-span-2 px-3 py-2.5 flex items-center justify-center">
+                                                    {column.isEditing ? (
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={column.primary}
+                                                            onChange={(e) => handleColumnChange(column.id, 'primary', e.target.checked)}
+                                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                                                        />
+                                                    ) : (
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={column.primary}
+                                                            disabled
+                                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded cursor-not-allowed"
+                                                        />
+                                                    )}
+                                                </div>
+                                                <div className="col-span-3 px-3 py-2.5 flex items-center gap-2">
                                                     {column.isEditing ? (
                                                         <>
                                                             <button
