@@ -276,7 +276,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                     </div>
                                     <div className="rounded-lg overflow-hidden">
                                         {/* Table Header */}
-                                        <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200">
+                                        <div className="grid bg-gray-50 border-b border-gray-200" style={{ gridTemplateColumns: createNewTable === 'yes' ? 'repeat(12, minmax(0, 1fr))' : 'repeat(9, minmax(0, 1fr))' }}>
                                             <div className="col-span-3 px-3 py-2">
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Column Name
@@ -297,25 +297,28 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                     Primary Key
                                                 </span>
                                             </div>
-                                            <div className="col-span-3 px-3 py-2 flex items-center gap-1">
-                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                    Action
-                                                </span>
-                                                <button
-                                                    onClick={handleAddColumn}
-                                                    className="text-gray-400 hover:text-blue-600 transition-colors"
-                                                    title="Add Row"
-                                                >
-                                                    <AddCardIcon className="w-3.5 h-3.5 text-[#3D5B81]" />
-                                                </button>
-                                            </div>
+                                            {createNewTable === 'yes' && (
+                                                <div className="col-span-3 px-3 py-2 flex items-center gap-1">
+                                                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                        Action
+                                                    </span>
+                                                    <button
+                                                        onClick={handleAddColumn}
+                                                        className="text-gray-400 hover:text-blue-600 transition-colors"
+                                                        title="Add Row"
+                                                    >
+                                                        <AddCardIcon className="w-3.5 h-3.5 text-[#3D5B81]" />
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Table Rows */}
                                         {columns.map((column) => (
                                             <div
                                                 key={column.id}
-                                                className="grid grid-cols-12 border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
+                                                className="grid border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
+                                                style={{ gridTemplateColumns: createNewTable === 'yes' ? 'repeat(12, minmax(0, 1fr))' : 'repeat(9, minmax(0, 1fr))' }}
                                             >
                                                 <div className="col-span-3 px-3 py-2.5">
                                                     {column.isEditing ? (
@@ -379,29 +382,31 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                         />
                                                     )}
                                                 </div>
-                                                <div className="col-span-3 px-3 py-2.5 flex items-center gap-2">
-                                                    {column.isEditing ? (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleSave(column.id)}
-                                                                className="text-gray-400 hover:text-green-600 transition-colors"
-                                                                title="Save"
-                                                            >
-                                                                <Save className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleEditClick(column.id)}
-                                                                className="text-gray-400 hover:text-blue-600 transition-colors"
-                                                                title="Edit"
-                                                            >
-                                                                <Edit2 className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </div>
+                                                {createNewTable === 'yes' && (
+                                                    <div className="col-span-3 px-3 py-2.5 flex items-center gap-2">
+                                                        {column.isEditing ? (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => handleSave(column.id)}
+                                                                    className="text-gray-400 hover:text-green-600 transition-colors"
+                                                                    title="Save"
+                                                                >
+                                                                    <Save className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => handleEditClick(column.id)}
+                                                                    className="text-gray-400 hover:text-blue-600 transition-colors"
+                                                                    title="Edit"
+                                                                >
+                                                                    <Edit2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
