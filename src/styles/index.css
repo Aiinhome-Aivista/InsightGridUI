@@ -118,10 +118,10 @@
 
 
 /* Optional: max table width */
-.custom-table {
+/* .custom-table {
   max-width: 1780px;
-  /* You can adjust */
-}
+
+} */
 
 /* Scrollbar styles for WebKit browsers */
 ::-webkit-scrollbar {
