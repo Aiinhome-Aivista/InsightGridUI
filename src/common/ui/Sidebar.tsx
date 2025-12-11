@@ -28,20 +28,10 @@ const menuItems = [
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(true);
-  const [user, setUser] = useState<LoginUserData | null>(null);
   const { theme } = useTheme();
   const location = useLocation();
   const activePath = location.pathname.split("/").pop();
-  const { setIsLogoutModalOpen } = useAuth();
-
-  useEffect(() => {
-    const userDataString = localStorage.getItem("ig_user");
-    if (userDataString) {
-      try {
-        setUser(JSON.parse(userDataString));
-      } catch (error) { console.error("Failed to parse user data from localStorage", error); }
-    }
-  }, []);
+  const { user, setIsLogoutModalOpen } = useAuth();
 
   const handleTabClick = async (item) => {
 
