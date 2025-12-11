@@ -97,14 +97,10 @@ export default function UploadPage() {
       setIsProcessing(false);
 
       await trackFiles();
-<<<<<<< HEAD
-
-=======
       
       // ADD THESE TWO LINES TO OPEN MODAL AFTER UPLOAD
       setUploadedFileName(files.length > 1 ? `${files.length} files` : files[0].name);
       setIsModalOpen(true);
->>>>>>> 9be2ffd1ca9c5f0ec1f6604038e9c762e3357b8a
 
     } catch (error: any) {
       console.error('Error uploading files:', error);
@@ -115,43 +111,7 @@ export default function UploadPage() {
     }
   }
 
-<<<<<<< HEAD
   
-=======
-  async function verifyDataExists(sessionId: string, sessionName: string): Promise<boolean> {
-    try {
-      const response = await ApiService.tracker({ created_by: createdBy });
-      const filesList = response.data?.data || [];
-
-      const fileExists = filesList.some(
-        (file: any) =>
-          file.session_id === sessionId &&
-          file.session_name === sessionName
-      );
-
-      if (!fileExists) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-
-        const retryResponse = await ApiService.tracker({ created_by: createdBy });
-        const retryFilesList = retryResponse.data?.data || [];
-        const retryExists = retryFilesList.some(
-          (file: any) =>
-            file.session_id === sessionId &&
-            file.session_name === sessionName
-        );
-
-        return retryExists;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error verifying data:', error);
-      return false;
-    }
-  }
-
-
->>>>>>> 9be2ffd1ca9c5f0ec1f6604038e9c762e3357b8a
   return (
     <div className="w-full rounded-lg p-8">
       <h2
