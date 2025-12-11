@@ -103,14 +103,25 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
     };
 
     const handleBack = () => {
-        setSlideDirection('right');
-        setTimeout(() => {
-            setStep('configure');
-            setSlideDirection('left');
+        if (step === 'success') {
+            setSlideDirection('right');
             setTimeout(() => {
-                setSlideDirection('none');
-            }, 50);
-        }, 300);
+                setStep('preview');
+                setSlideDirection('left');
+                setTimeout(() => {
+                    setSlideDirection('none');
+                }, 50);
+            }, 300);
+        } else if (step === 'preview') {
+            setSlideDirection('right');
+            setTimeout(() => {
+                setStep('configure');
+                setSlideDirection('left');
+                setTimeout(() => {
+                    setSlideDirection('none');
+                }, 50);
+            }, 300);
+        }
     };
 
     if (!isOpen) return null;
@@ -498,7 +509,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName }: TableImportModa
 
                 {/* Modal Footer */}
                 <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-end gap-2">
-                    {step === 'preview' && (
+                    {(step === 'preview' || step === 'success') && (
                         <button
                             onClick={handleBack}
                             className="px-4 py-1.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium text-xs"
