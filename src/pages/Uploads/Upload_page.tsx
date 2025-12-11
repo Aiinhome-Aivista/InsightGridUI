@@ -22,6 +22,7 @@ export default function UploadPage() {
   // ADD THESE TWO LINES
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
+  const [uploadResponseData, setUploadResponseData] = useState<any>(null);
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -152,6 +153,7 @@ export default function UploadPage() {
 
       // SUCCESS — OPEN MODAL
       setUploadedFileName(fileInfo.file_name || files[0].name);
+      setUploadResponseData(fileInfo);
       setIsModalOpen(true);
 
       setIsUploading(false);
@@ -225,6 +227,7 @@ export default function UploadPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         uploadedFileName={uploadedFileName}
+        apiData={uploadResponseData}
       />
     </div>
   );
