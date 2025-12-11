@@ -479,8 +479,7 @@ export default function Chat({
   disabled={!isScriptRunSuccess}
   className="
     focus:outline-none focus:ring-0
-    disabled:bg-gray-200 disabled:text-gray-500
-    disabled:border-gray-300
+   
   "
 />
 
