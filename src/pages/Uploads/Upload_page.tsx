@@ -121,7 +121,7 @@ export default function UploadPage() {
 
     try {
       const formData = new FormData();
-      formData.append("action", "upload"); // hardcoded
+      formData.append("action", "upload");
       formData.append("session_id", sessionId);
       formData.append("created_by", createdBy);
 
@@ -134,35 +134,30 @@ export default function UploadPage() {
       );
 
       const uploadResponse = await ApiService.fileUpload(formData);
-
-      // Minimal useful logs
       console.log("Upload Response:", uploadResponse?.data);
 
       const responseData = uploadResponse?.data;
+
       if (!responseData?.isSuccess) {
         console.error("Upload failed:", responseData?.message);
         return;
       }
 
-      const uploadedFile =
-        responseData.data && responseData.data.length > 0
-          ? responseData.data[0]
-          : null;
-
-      if (!uploadedFile) {
-        console.error("No file info returned from server.");
+      //  FIX: Response "data" is an object, not an array
+      const fileInfo = responseData.data;
+      if (!fileInfo) {
+        console.error("File info missing.");
         return;
       }
+
+      // SUCCESS — OPEN MODAL
+      setUploadedFileName(fileInfo.file_name || files[0].name);
+      setIsModalOpen(true);
 
       setIsUploading(false);
       setIsProcessing(false);
 
       await trackFiles();
-
-      setUploadedFileName(
-        files.length > 1 ? `${files.length} files` : files[0].name
-      );
-      setIsModalOpen(true);
     } catch (error: any) {
       console.error("Upload error:", error?.message || error);
     } finally {
@@ -171,6 +166,7 @@ export default function UploadPage() {
       setIsProcessing(false);
     }
   }
+
 
 
 
