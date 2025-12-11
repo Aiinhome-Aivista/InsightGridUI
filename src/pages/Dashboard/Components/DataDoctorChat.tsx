@@ -474,7 +474,7 @@ export default function Chat({
   value={viewName}
   onChange={(e) => setViewName(e.target.value)}
   placeholder={
-    passedData?.query_title ? "" : "Run a script to enable saving"
+    passedData?.query_title ? "" : "Please enter query name.."
   }
   disabled={!isScriptRunSuccess}
   className="
