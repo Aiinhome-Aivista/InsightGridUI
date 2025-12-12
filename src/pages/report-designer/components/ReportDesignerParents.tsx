@@ -84,38 +84,29 @@ export default function TableView() {
     }
   }, [selectedTables]);
 
-  // const handleRunScript = async () => {
 
-  //   try {
-  //     const payload = {
-  //       sql_query:  ""
-  //     };
+  const handleRunScript = async (sqlQuery: string) => {
+    try {
+      const payload = { sql_query: sqlQuery };
 
-  //     console.log("Executing SQL Payload:", payload);
+      const response = await ApiServices.executeSql(payload);
+      const api = response.data.data;
 
-  //     const response = await ApiServices.executeSql(payload);
-  //   } catch (error) {
-  //     console.error("Execute SQL API Error:", error);
-  //   } finally {
-  //   }
-  // };
-const handleRunScript = async (sqlQuery: string) => {
-  try {
-    const payload = {
-      sql_query: sqlQuery
-    };
+      const formatted = {
+        [sqlQuery]: {
+          title: "SQL Result",
+          rows: api.rows,
+          columns: api.columns.map((col) => ({ column_name: col })),
+          procedure_sql: sqlQuery
+        }
+      };
 
-    console.log("Executing SQL Payload:", payload);
+      setAllData(formatted);
 
-    const response = await ApiServices.executeSql(payload);
-    console.log("Execute SQL API Response:", response); // 👉 PRINT
-
-    return response;
-  } catch (error) {
-    console.error("Execute SQL API Error:", error);
-  }
-};
-
+    } catch (error) {
+      console.error("Execute SQL API Error:", error);
+    }
+  };
 
   return (
     <div className="h-full bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
