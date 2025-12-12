@@ -1,11 +1,16 @@
 
 import React from "react";
 import { useAuth } from "../pages/Auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ConfirmSaveView() {
   const { isConfirmSaveModalOpen, setIsConfirmSaveModalOpen, viewName, confirmSave } = useAuth();
+  const navigate = useNavigate();
   const onCancel = () => setIsConfirmSaveModalOpen(false);
-  const onConfirm = () => confirmSave();
+  const onConfirm = () => {
+    confirmSave();
+    navigate("/layout/query-list");
+  };
   if (!isConfirmSaveModalOpen) return null;
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
