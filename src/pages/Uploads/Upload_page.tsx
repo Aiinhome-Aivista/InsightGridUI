@@ -24,6 +24,9 @@ export default function UploadPage() {
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [uploadResponseData, setUploadResponseData] = useState<any>(null);
 
+
+  
+
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;

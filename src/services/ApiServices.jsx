@@ -19,11 +19,26 @@ class ApiServices {
   }
 
 
+  // fileUpload(formData) {
+  //   return axios.post(POST_APIS.fileUpload, formData, {
+  //     headers: { 'Content-Type': 'multipart/form-data' },
+  //   });
+  // }
+
+  // For file upload (FormData)
   fileUpload(formData) {
     return axios.post(POST_APIS.fileUpload, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { "Content-Type": "multipart/form-data" }
     });
   }
+
+  // For preview (JSON)
+  preview(payload) {
+    return axios.post(POST_APIS.fileUpload, payload, {
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
 
   processSessionData(body) {
     return axios.post(POST_APIS.processSessionData, body);
@@ -50,9 +65,9 @@ class ApiServices {
     return axios.post(POST_APIS.get_saved_query_response, body);
   }
 
-   getTableData(body){
+  getTableData(body) {
     return axios.post(POST_APIS.get_table_data, body);
-   }
+  }
 
 
 }
