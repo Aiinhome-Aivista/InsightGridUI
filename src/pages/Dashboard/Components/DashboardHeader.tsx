@@ -150,7 +150,6 @@ export default function DashboardHeader({
 
                 className="
                   w-72 h-11
-                  bg-gray-50 hover:bg-gray-100
                   border border-gray-200 
                   rounded-lg 
                   flex items-center justify-between

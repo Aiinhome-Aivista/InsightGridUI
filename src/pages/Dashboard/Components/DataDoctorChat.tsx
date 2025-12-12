@@ -468,20 +468,20 @@ export default function Chat({
                   }`}
                 disabled={!isScriptRunSuccess}
               /> */}
-           
-         <input
-  type="text"
-  value={viewName}
-  onChange={(e) => setViewName(e.target.value)}
-  placeholder={
-    passedData?.query_title ? "" : "Please enter query name.."
-  }
-  disabled={!isScriptRunSuccess}
-  className="
+
+              <input
+                type="text"
+                value={viewName}
+                onChange={(e) => setViewName(e.target.value)}
+                placeholder={
+                  passedData?.query_title ? "" : "Please enter query name.."
+                }
+                disabled={!isScriptRunSuccess}
+                className="
     focus:outline-none focus:ring-0
    
   "
-/>
+              />
 
 
 
@@ -545,22 +545,24 @@ export default function Chat({
               ))}
             </div>
           )}
+
+        </div>
+        <div className="m-5">
+          {" "}
+          {tableData && tableData.rows.length > 0 && (
+            <div className=" bg-white rounded-xl shadow-md">
+              {" "}
+
+              <ProductDataTable
+                data={tableData.rows}
+                columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}
+                globalFilter={""}
+              />{" "}
+            </div>
+          )}{" "}
         </div>
       </div>
-      <div className="mb-10 px-5">
-        {" "}
-        {tableData && tableData.rows.length > 0 && (
-          <div className="p-2 bg-white rounded-xl shadow-md">
-            {" "}
-           
-            <ProductDataTable
-              data={tableData.rows}
-              columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}
-              globalFilter={""}
-            />{" "}
-          </div>
-        )}{" "}
-      </div>
+
       <ConfirmSaveView />
     </div>
   );

@@ -20,7 +20,6 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
   };
 
   return (
-    <div style={{ maxWidth: "100%", overflow: "auto" }}>
       <DataTable
         value={data}
         globalFilter={globalFilter}
@@ -28,11 +27,11 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
         emptyMessage="No data available for this table."
         scrollable
         scrollHeight="200px"
-        style={{ maxWidth: "1340px",minWidth:"1345px" }}
+        style={{ width: "100%" }}
         filters={{
           global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
         }}
-        className="custom-table mb-5"
+        className="custom-table"
         stripedRows
 
         rowClassName={() => "border-b border-gray-200"}
@@ -52,6 +51,5 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
           />
         ))}
       </DataTable>
-    </div>
   );
 }
