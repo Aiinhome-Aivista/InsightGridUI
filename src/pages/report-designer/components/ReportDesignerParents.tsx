@@ -10,6 +10,7 @@ export default function TableView() {
   const [tableOptions, setTableOptions] = useState<any[]>([]);
   const [selectedTables, setSelectedTables] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     getSavedQueryResponse();
@@ -75,8 +76,17 @@ export default function TableView() {
     }
   };
 
-  const handleRefresh = () => {
-    console.log("Refreshing...");
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      if (selectedTables.length > 0) {
+        await handleRunScript(selectedTables[0]);
+      } else {
+        await getSavedQueryResponse();
+      }
+    } finally {
+      setIsRefreshing(false);
+    }
   };
   useEffect(() => {
     if (selectedTables.length > 0) {
@@ -117,6 +127,7 @@ export default function TableView() {
         setSelectedTables={setSelectedTables}
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
         onRunScript={handleRunScript} // 👉 ADD THIS
       />
       {!loading && (!tableOptions || tableOptions.length === 0) ? (
