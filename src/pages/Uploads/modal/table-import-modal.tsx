@@ -3,11 +3,11 @@ import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'luci
 import ApiService from '../../../services/ApiServices';
 
 // AddCardRoundedIcon replacement
-const AddCardIcon = ({ className }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2zm-9 6h2v2h2v-2h2v-2h-2v-2h-2v2H9v2z" />
-    </svg>
-);
+// const AddCardIcon = ({ className }: { className?: string }) => (
+//     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+//         <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2zm-9 6h2v2h2v-2h2v-2h-2v-2h-2v2H9v2z" />
+//     </svg>
+// );
 
 interface Column {
     id: string;
@@ -355,7 +355,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 {/* Create New Table Section */}
                                 <div className="mb-4">
                                     <h4 className="text-xs font-semibold text-gray-900 mb-2">
-                                        Do you want to create new table?
+                                        Do you want to create a new table?
                                     </h4>
                                     <div className="flex gap-4">
                                         <label className="flex items-center cursor-pointer">
@@ -395,7 +395,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 onChange={(e) => setSelectedTable(e.target.value)}
                                                 className="w-full px-3 py-2 bg-white border border-gray-300 border-opacity-30 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs text-gray-700"
                                             >
-                                                <option value="">Select Table</option>
+                                                <option value="">Select a Table</option>
                                                 {apiData?.existing_tables?.map((table: any, index: number) => (
                                                     <option key={index} value={table.table_name}>
                                                         {table.table_name}
@@ -408,12 +408,13 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 )}
 
                                 {/* Uploaded File Section */}
-                                <div className="mb-4">
-                                    <h4 className="text-xs font-semibold text-gray-900 mb-2">
+                                <div className="mb-1 flex flex-row gap-5">
+                                    <h4 className="text-xs font-semibold text-gray-900">
                                         Uploaded File - {uploadedFileName}
                                     </h4>
-                                    <div className="flex items-center justify-between mt-2">
-                                        {createNewTable === 'yes' && (
+                                    <div className="flex items-center justify-between text-xs font-semibold text-gray-900 ">
+                                        Table Name-
+                                         {createNewTable === 'yes' && (
                                             <div className="flex items-center">
                                                 {isEditingTableName ? (
                                                     <>
@@ -453,7 +454,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
                                         <h4 className="text-xs font-semibold text-gray-900">
-                                            Extracted Column
+                                            Extracted Columns
                                         </h4>
                                     </div>
                                     <div className="rounded-lg overflow-hidden">
@@ -489,7 +490,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                         className="text-gray-400 hover:text-blue-600 transition-colors"
                                                         title="Add Row"
                                                     >
-                                                        <AddCardIcon className="w-3.5 h-3.5 text-[#3D5B81]" />
+                                                        {/* <AddCardIcon className="w-3.5 h-3.5 text-[#3D5B81]" /> */}
                                                     </button>
                                                 </div>
                                             )}
