@@ -107,7 +107,7 @@ export default function TableView() {
       console.error("Execute SQL API Error:", error);
     }
   };
-
+  
   return (
     <div className="h-full bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
       <DataViewHeader
@@ -119,11 +119,17 @@ export default function TableView() {
         onRefresh={handleRefresh}
         onRunScript={handleRunScript} // 👉 ADD THIS
       />
-      <DataViewTable
-        allData={allData}
-        selectedTables={selectedTables}
-        globalFilter={globalFilter}
-      />
+      {!loading && (!tableOptions || tableOptions.length === 0) ? (
+        <div className="flex items-center justify-center h-96">
+          <p className="text-gray-500 text-lg">No data found</p>
+        </div>
+      ) : (
+        <DataViewTable
+          allData={allData}
+          selectedTables={selectedTables}
+          globalFilter={globalFilter}
+        />
+      )}
     </div>
   );
 }
