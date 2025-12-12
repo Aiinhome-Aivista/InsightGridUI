@@ -119,7 +119,7 @@ export default function TableView() {
   };
   
   return (
-    <div className="h-full bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
+    <div className="h-[90%] bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
       <DataViewHeader
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
