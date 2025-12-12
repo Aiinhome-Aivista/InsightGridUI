@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import DataViewHeader from "./DataViewHeader";
-import DataViewTable from "./DataViewTable";
+import DataViewHeader from "./ReportDesignerHeader";
+import DataViewTable from "./ReportDesignerTable";
 import { useTheme } from "../../../theme";
 import ApiServices from "../../../services/ApiServices";
 export default function TableView() {

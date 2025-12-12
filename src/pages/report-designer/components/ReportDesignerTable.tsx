@@ -11,7 +11,7 @@ import Tippy from "@tippyjs/react";
 import "../../../styles/tippy-theme.css";
 import "../../../styles/primereact-table.css";
 
-import ChartSidebar from "../components/ChartSidebar";
+import ChartSidebar from "./ChartSidebar";
 // import RenderCharts from "../../Dashboard/Components/RenderCharts";
 import AnimatedToggleButton from "../../Dashboard/Components/AnimatedToggleButton";
 
