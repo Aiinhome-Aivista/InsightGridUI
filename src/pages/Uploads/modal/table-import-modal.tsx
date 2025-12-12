@@ -296,10 +296,13 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 }}
             >
                 {/* Modal Content */}
-                <div className="p-12 overflow-y-auto flex-1">
-                    <div className={`transition-all duration-300 ${slideDirection === 'left' ? '-translate-x-full opacity-0' :
-                        slideDirection === 'right' ? 'translate-x-full opacity-0' :
-                            'translate-x-0 opacity-100'
+                <div className="p-12 overflow-y-auto flex-1 relative">
+                    <div className={`transition-all duration-300 ${(step === 'loading' || step === 'success')
+                        ? 'absolute inset-0 flex items-center justify-center'
+                        : ''
+                        } ${slideDirection === 'left' ? '-translate-x-full opacity-0' :
+                            slideDirection === 'right' ? 'translate-x-full opacity-0' :
+                                'translate-x-0 opacity-100'
                         }`}>
                         {step === 'configure' ? (
                             <>
@@ -707,28 +710,25 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             </>
 
                         ) : step === 'loading' ? (
-                            <div className="flex flex-col items-center justify-center h-full">
+                            <div className="flex flex-col items-center justify-center">
                                 <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
                                 <p className="text-sm text-gray-600">Creating table...</p>
                             </div>
                         ) : (
                             <>
                                 {/* Success State */}
-                                <div className="flex flex-col h-full">
 
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        </div>
-                                        <h4 className="text-sm font-semibold text-gray-900">
-                                            {insertResponse?.summary_message
-                                                ? insertResponse.summary_message
-                                                : `Table "${tableName}" created successfully`}
-                                        </h4>
-
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
                                     </div>
+                                    <h4 className="text-sm font-semibold text-gray-900">
+                                        {insertResponse?.summary_message
+                                            ? insertResponse.summary_message
+                                            : `Table "${tableName}" created successfully`}
+                                    </h4>
                                 </div>
                             </>
                         )}
