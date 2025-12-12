@@ -186,9 +186,9 @@ export default function DashboardHeader({
               <Tippy content="Refresh" theme="gray">
                 <div
                   onClick={handleRefresh}
-                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
+                  className={`relative text-center bg-[#D9D9D9] border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
                     ? "cursor-not-allowed"
-                    : "cursor-pointer hover:bg-gray-500/10"
+                    : "cursor-pointer"
                     }`}
                   style={{ borderColor: theme.border }}
                 >
