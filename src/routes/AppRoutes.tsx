@@ -8,6 +8,7 @@ import LandingPage from "../pages/LandingPage/LandingPage";
 import ProtectedRoute from "./ProtectedRoute";
 import QueryDesigner from "../pages/Dashboard/DataDoctorParent";
 import ShowQuery from "../pages/Dashboard/ShowQuery";
+import ReportDesignerParents from "../pages/report-designer/components/ReportDesignerParents";
 import Dashboard from "../pages/Dashboard/Components/Dashboard";
 function AppRoutes() {
   return (
@@ -20,7 +21,7 @@ function AppRoutes() {
             <Route index element={<Navigate to="upload" replace />} />
             <Route path="upload" element={<Upload_page />} />
             <Route path="query-list" element={<ShowQuery />} />
-              {/* <Route path="report-designer" element={<ReportDesigner />} /> */}
+            <Route path="report-designer" element={<ReportDesignerParents />} />
             <Route path="query-designer" element={<QueryDesigner />} />
             <Route path="customize" element={<Customize_page />} />
             <Route path="dashboard" element={<Dashboard />} />

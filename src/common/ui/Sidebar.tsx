@@ -15,15 +15,13 @@ import DataObjectRoundedIcon from '@mui/icons-material/DataObjectRounded';
 import "../../styles/tippy-theme.css";
 import { useAuth } from "../../pages/Auth/AuthContext";
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
-
+import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
 const menuItems = [
     { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard" },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list" },
-    // { name: "Report Designer", icon: DashboardRoundedIcon, path: "report-query" },
+  { name: "Report Designer", icon: SummarizeOutlinedIcon , path: "report-designer" },
   { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
-
-
 ];
 
 export default function Sidebar() {
