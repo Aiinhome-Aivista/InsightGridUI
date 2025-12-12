@@ -1,6 +1,6 @@
 
-import { useState, useRef } from "react";
-import { MultiSelect } from "primereact/multiselect";
+import { useState,useRef } from "react";
+import { Dropdown, } from "primereact/dropdown";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
@@ -8,7 +8,6 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ForumIcon from "@mui/icons-material/Forum";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { InputText } from "primereact/inputtext";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
@@ -24,24 +23,13 @@ export default function DataViewHeader({
   isRefreshing,
 }) {
   const navigate = useNavigate();
+   const dropdownRef = useRef<Dropdown>(null);
   const { theme } = useTheme();
-  const multiSelectRef = useRef(null);
   const trimToWords = (text, count = 3) => {
     const words = text.split(" ");
     return words.length > count
       ? words.slice(0, count).join(" ") + "..."
       : text;
-  };
-  const handleDropdownShow = () => {
-    window.addEventListener("scroll", handleScroll, true);
-  };
-
-  const handleDropdownHide = () => {
-    window.removeEventListener("scroll", handleScroll, true);
-  };
-
-  const handleScroll = () => {
-    multiSelectRef.current?.hide();
   };
 
   const itemTemplate = (option) => {
@@ -56,35 +44,18 @@ export default function DataViewHeader({
     );
   };
 
-
-  // --- Template for selected chip ---
-  const selectedItemTemplate = (value) => {
-    // const opt = tableOptions.find((o) => o.value === value);
-    const opt = Array.isArray(tableOptions)
-      ? tableOptions.find((o) => o.value === value)
-      : null;
-
-    if (!opt) return null;
-
-    return (
-      <Tippy content={opt.label} theme="gray" placement="top">
-        <div className="group inline-flex items-center bg-[#F3F4F6] text-[#4B5563] rounded-2xl px-2 py-0.5 text-xs font-medium border border-gray-200 mr-1 mb-1">
-          <span className="truncate max-w-[120px]">{trimToWords(opt.label, 2)}</span>
-          ...
-
-          <div
-            className="ml-1.5 cursor-pointer flex items-center justify-center w-4 h-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-200 text-gray-400 hover:text-red-500"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedTables(selectedTables.filter((s) => s !== value));
-            }}
-          >
-            <CloseRoundedIcon style={{ fontSize: "12px" }} />
-          </div>
-        </div>
-      </Tippy>
-    );
+  const handleDropdownShow = () => {
+    window.addEventListener("scroll", handleScroll, true);
   };
+
+  const handleDropdownHide = () => {
+    window.removeEventListener("scroll", handleScroll, true);
+  };
+
+  const handleScroll = () => {
+    dropdownRef.current?.hide();
+  };
+  // (We keep selectedTables as array for backward compatibility with parent)
 
   return (
     <header className="p-4">
@@ -130,40 +101,23 @@ export default function DataViewHeader({
           />
         </div>
         <div className="flex items-start md:items-center justify-center gap-3 md:gap-4">
-          <MultiSelect
-            ref={multiSelectRef}
-            value={selectedTables}
+          <Dropdown
+            value={Array.isArray(selectedTables) && selectedTables.length > 0 ? selectedTables[0] : null}
             options={tableOptions}
+                onShow={handleDropdownShow}
+                onHide={handleDropdownHide}
+  ref={dropdownRef}
             optionLabel="label"
             optionValue="value"
-            display="chip"
             placeholder="Select Views"
-            // onChange={(e) => setSelectedTables(e.value)}
-            onShow={handleDropdownShow}
-            onHide={handleDropdownHide}
-            selectedItemTemplate={selectedItemTemplate}
             itemTemplate={itemTemplate}
             onChange={(e) => {
-              setSelectedTables(e.value);
-
-              const selectedSql = e.value[0]; // because MultiSelect = array
-
-              if (selectedSql) {
-                onRunScript(selectedSql); // 👉 CALL API HERE
-              }
+              const val = e.value;
+              setSelectedTables(val ? [val] : []);
+              if (val) onRunScript(val);
             }}
-
-            className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10
-"
-            style={{ padding: "4px 8px" }}
+            className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0"
             panelClassName="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden mt-1"
-            pt={{
-              wrapper: { className: "max-h-64 overflow-auto custom-scrollbar" },
-              header: { className: "p-1 bg-gray-50 border-b border-gray-100 text-sm font-medium text-gray-700" },
-              item: { className: "p-3 hover:bg-gray-50 text-sm text-gray-700 transition-colors cursor-pointer" },
-              labelContainer: { className: "flex flex-wrap gap-1 rounded-5xl  items-center flex-2" },
-              trigger: { className: "w-8 text-gray-400 flex rounded-5xl items-center justify-center" }
-            }}
           />
 
           {/* Chat */}
