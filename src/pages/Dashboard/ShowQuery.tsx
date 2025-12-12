@@ -137,8 +137,14 @@ const ShowQuery = () => {
 
           <button
             onClick={() => navigate("/layout/query-designer")}
-            className="bg-[#4319C2] hover:bg-[#321391] text-white rounded-xl text-[12px] font-medium transition-all flex items-center justify-center"
-            style={{ width: '108px', height: '45px' }}
+            className="text-white rounded-xl text-[12px] font-medium transition-all flex items-center justify-center"
+            style={{
+              width: '108px',
+              height: '45px',
+              backgroundColor: theme.accent,
+              // You might need to define a hover color based on your theme structure, e.g., theme.accentHover
+              // or use a utility to darken theme.accent for the hover state if not provided by theme.
+            }}
           >
             Create Query
           </button>
