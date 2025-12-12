@@ -205,7 +205,7 @@ export default function TableView() {
     <div className="h-full bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
       <DataViewHeader
         globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
+        globalFilter={setGlobalFilter}
         selectedTables={selectedTables}
         setSelectedTables={setSelectedTables}
         tableOptions={tableOptions}

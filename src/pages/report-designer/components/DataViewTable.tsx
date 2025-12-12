@@ -11,13 +11,14 @@ import Tippy from "@tippyjs/react";
 import "../../../styles/tippy-theme.css";
 import "../../Dashboard/Components/primereact-table.css";
 
-import ChartSidebar from "../../Dashboard/Components/ChartSidebar";
+import ChartSidebar from "../components/ChartSidebar";
 // import RenderCharts from "../../Dashboard/Components/RenderCharts";
 import AnimatedToggleButton from "../../Dashboard/Components/AnimatedToggleButton";
 
 // import { ProcedureCodeBlock, ProcedureToggleButton } from "./SpDropDown";
 import { useTheme } from "../../../theme";
 import { ProcedureCodeBlock, ProcedureToggleButton } from "./SpDropDown";
+import RenderCharts from "./render-charts";
 
 interface DashboardTableProps {
   allData: { [key: string]: any }; // tables: { paid_orders: {...}, electronics_orders: {...} }
