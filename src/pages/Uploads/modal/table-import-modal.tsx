@@ -30,11 +30,12 @@ interface ApiData {
 interface TableImportModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onFinish?: () => void;
     uploadedFileName: string;
     apiData?: ApiData;
 }
 
-const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableImportModalProps) => {
+const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData }: TableImportModalProps) => {
 
     console.log("🔍 TableImportModal received apiData:", apiData);
     const [createNewTable, setCreateNewTable] = useState<'yes' | 'no'>('yes');
@@ -767,7 +768,10 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                     )}
                     {step === 'success' ? (
                         <button
-                            onClick={onClose}
+                            onClick={() => {
+                                if (onFinish) onFinish();
+                                onClose();
+                            }}
                             className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs"
                         >
                             Finish
