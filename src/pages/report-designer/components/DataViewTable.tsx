@@ -55,12 +55,24 @@ export default function DashboardTable({
   // -------------------------------------------------------
   // Helper Body Renderer
   // -------------------------------------------------------
-  const purchaseBody = (row: any) => (
-    <Tag
-      value={row.purchase}
-      className="px-4 py-1 rounded-full bg-green-100 text-green-600 text-xs font-medium border-none"
-    />
-  );
+  const getSeverity = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'paid':
+        return 'success';
+      case 'pending':
+        return 'warning';
+      case 'failed':
+        return 'danger';
+      default:
+        return null;
+    }
+  };
+
+  const statusBodyTemplate = (rowData: any) => {
+    const status = rowData.payment_status;
+    if (!status) return null;
+    return <Tag value={status} severity={getSeverity(status)} />;
+  };
 
   return (
     <div>
@@ -216,11 +228,12 @@ export default function DashboardTable({
                   className="custom-table"
                 >
                   {/* Dynamic Columns */}
-                  {table.columns.map((colName: string, index: number) => (
+                  {table.columns.map((col: { column_name: string }, index: number) => (
                     <Column
                       key={index}
-                      field={colName}
-                      header={colName.replace(/_/g, " ").toUpperCase()}
+                      field={col.column_name}
+                      header={col.column_name.replace(/_/g, " ").toUpperCase()}
+                      body={col.column_name === 'payment_status' ? statusBodyTemplate : null}
                     />
                   ))}
                 </DataTable>
