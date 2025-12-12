@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect, Dispatch, SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+interface TableData {
+  rows: any[];
+  columns: any[];
+}
 interface AuthContextType {
   user: any;
   login: (userData: any) => void;
@@ -9,6 +13,8 @@ interface AuthContextType {
   isLogoutModalOpen: boolean;
   setIsLogoutModalOpen: Dispatch<SetStateAction<boolean>>;
   isConfirmSaveModalOpen: boolean;
+  downloadData: { rows: any[]; columns: any[] } | null;
+  setDownloadData:  Dispatch<TableData | null>;
   setIsConfirmSaveModalOpen: Dispatch<SetStateAction<boolean>>;
   viewName: string;
   setViewName: Dispatch<SetStateAction<string>>;
@@ -33,6 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
   const [viewName, setViewName] = useState("");
+  const [downloadData, setDownloadData] = useState<TableData | null>(null);
   const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
 
 
@@ -64,6 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user, login, logout, isAuthenticated,
       isLogoutModalOpen, setIsLogoutModalOpen,
       isConfirmSaveModalOpen, setIsConfirmSaveModalOpen,
+      downloadData, setDownloadData,
       viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction
     }}>
       {children}

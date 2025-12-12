@@ -34,6 +34,7 @@ export default function Chat({
   passedData?: { user_query: string; query_title: string; ai_response: string };
 }) {
 
+   const { setDownloadData } = useAuth();
   const navigate = useNavigate();
   const { user } = useAuth();
   const getStoredUser = () => {
@@ -273,6 +274,7 @@ export default function Chat({
             : [];
 
         setTableData({ rows, columns });
+        setDownloadData({ rows, columns });
         setDisplayedLogs([response.data.message || "Execution successful."]);
         // capture execution metadata if provided by backend
         setExecutionMeta({

@@ -2,10 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
+import DownloadView from "../../utils/download/downloadView";
+import { AuthProvider, useAuth } from "../Auth/AuthContext";
 
 const ReportDesignManage = () => {
   const navigate = useNavigate();
   const [globalFilter, setGlobalFilter] = useState("");
+  const {downloadData} = useAuth();
+
 
   const queries = [
     {
@@ -104,7 +108,8 @@ const ReportDesignManage = () => {
           </button>
         </div>
       </div>
-
+      
+     <DownloadView data={downloadData} />;
       {/* Table Section */}
       {filteredQueries.length > 0 ? (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
