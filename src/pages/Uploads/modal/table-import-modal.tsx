@@ -2,12 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'lucide-react';
 import ApiService from '../../../services/ApiServices';
 
-// AddCardRoundedIcon replacement
-// const AddCardIcon = ({ className }: { className?: string }) => (
-//     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-//         <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2zm-9 6h2v2h2v-2h2v-2h-2v-2h-2v2H9v2z" />
-//     </svg>
-// );
 
 interface Column {
     id: string;
@@ -51,6 +45,9 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     const [insertResponse, setInsertResponse] = useState<any>(null);
     const [insertData, setInsertData] = useState<"yes" | "no" | "">("");
     const [totalRows, settotalRows] = useState("");
+    const [isSchemaMismatch, setIsSchemaMismatch] = useState(false);
+    const [schemaMismatchData, setSchemaMismatchData] = useState(null);
+
 
 
 
@@ -143,90 +140,11 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         setIsEditingTableName(false);
     };
 
-    // const handleNext = async () => {
-
-    //     // STEP 1 → CONFIGURE SCREEN: CALL PREVIEW API
-    //     if (step === "configure") {
-
-    //         // Build updated schema (JSON)
-    //         const schema = columns.map(col => ({
-    //             column: col.name,
-    //             datatype: col.dataType,
-    //             length: col.length,
-    //             primary: col.primary
-    //         }));
-
-    //         // Build JSON payload
-    //         const payload = {
-    //             action: "preview",
-    //             session_id: sessionId,      // from localStorage
-    //             created_by: createdBy,      // from localStorage
-    //             table_name: tableName,
-    //             file_name: apiData?.file_name,
-    //             schema: schema,             // FULL JSON ARRAY
-    //             is_existing: createNewTable === "no"
-    //         };
-
-    //         console.log("Sending preview JSON payload:", payload);
-
-    //         // try {
-    //         //     // CALL JSON API (NOT form-data API)
-    //         //     const response = await ApiService.preview(payload);
-    //         //     console.log(" Preview Response:", response.data);
-
-    //         //     // Example: If backend returns preview sample rows
-    //         //     // setPreviewData(response.data.data);
-
-    //         // } catch (err) {
-    //         //     console.error(" Preview API Error:", err);
-    //         // }
-
-    //         try {
-    //             const response = await ApiService.preview(payload);
-    //             console.log("📥 Preview Response:", response.data);
-
-    //             // 🔥 STORE PREVIEW ROWS FROM BACKEND
-    //             const rows = response?.data?.data?.preview_rows || [];
-    //             setPreviewRows(rows);
-
-    //         } catch (err) {
-    //             console.error("❌ Preview API Error:", err);
-    //         }
-
-
-    //         // Move to Preview UI
-    //         setSlideDirection("left");
-    //         setTimeout(() => {
-    //             setStep("preview");
-    //             setSlideDirection("right");
-    //             setTimeout(() => setSlideDirection("none"), 50);
-    //         }, 300);
-
-    //         return;
-    //     }
-
-    //     // STEP 2 → PREVIEW SCREEN → loading → success
-    //     if (step === "preview") {
-    //         setSlideDirection("left");
-
-    //         setTimeout(() => {
-    //             setStep("loading");
-    //             setSlideDirection("none");
-
-    //             setTimeout(() => {
-    //                 setStep("success");
-    //             }, 1000);
-    //         }, 300);
-
-    //         return;
-    //     }
-    // };
 
     const handleNext = async () => {
 
         // STEP 1 → CONFIGURE SCREEN (Preview)
         if (step === "configure") {
-
             const schema = columns.map(col => ({
                 column: col.name,
                 datatype: col.dataType,
@@ -244,17 +162,33 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 is_existing: createNewTable === "no"
             };
 
-            console.log("📤 Sending preview payload:", previewPayload);
-
             try {
                 const response = await ApiService.preview(previewPayload);
-                console.log("📥 Preview Response:", response.data);
+                const res = response.data;
 
-                setPreviewRows(response?.data?.data?.preview_rows || []);
-                settotalRows(response?.data?.data?.total_rows || "");
+                console.log(" Preview Response:", res);
+
+                //  CASE 1: SCHEMA MISMATCH
+                if (res.isSuccess === false && res.message?.toLowerCase().includes("schema mismatch")) {
+
+                    setIsSchemaMismatch(true);
+                    setSchemaMismatchData(res.data); 
+
+                    // clear preview rows so table is not shown
+                    setPreviewRows([]);
+                    settotalRows("");
+
+                } else {
+                    //  CASE 2: VALID PREVIEW
+                    setIsSchemaMismatch(false);
+
+                    setPreviewRows(res?.data?.preview_rows || []);
+                    settotalRows(res?.data?.total_rows || "");
+                }
 
             } catch (err) {
-                console.error("❌ Preview API Error:", err);
+                console.error(" Preview API Error:", err);
+                setIsSchemaMismatch(true);
             }
 
             setSlideDirection("left");
@@ -266,6 +200,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
             return;
         }
+
 
         // STEP 2 → PREVIEW SCREEN (Insert Data)
         if (step === "preview") {
@@ -485,13 +420,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                         Action
                                                     </span>
-                                                    {/* <button
-                                                        onClick={handleAddColumn}
-                                                        className="text-gray-400 hover:text-blue-600 transition-colors"
-                                                        title="Add Row"
-                                                    >
-                                                        <AddCardIcon className="w-3.5 h-3.5 text-[#3D5B81]" />
-                                                    </button> */}
+                                                  
                                                     <button
                                                         onClick={handleAddColumn}
                                                         className="p-1.5 bg-[#3D5B811A] rounded-full text-gray-700 hover:text-blue-600 transition"
@@ -594,7 +523,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                                     <Edit2 className="w-3.5 h-3.5" />
                                                                 </button>
                                                             </>
-                                                            
+
                                                         )}
                                                     </div>
                                                 )}
@@ -602,31 +531,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         ))}
                                     </div>
                                 </div>
-                                {/* <div className="mt-8">
-                                    <h4 className="text-xs font-semibold text-gray-900 mb-2">
-                                        Insert Data
-                                    </h4>
-                                    <div className="flex gap-4">
-                                        <label className="flex items-center cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="insertData"
-                                                value="yes"
-                                                className="w-3 h-3 text-blue-600 border-gray-300 focus:ring-blue-500"
-                                            />
-                                            <span className="ml-1.5 text-xs text-gray-700">Yes</span>
-                                        </label>
-                                        <label className="flex items-center cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="insertData"
-                                                value="no"
-                                                className="w-3 h-3 text-blue-600 border-gray-300 focus:ring-blue-500"
-                                            />
-                                            <span className="ml-1.5 text-xs text-gray-700">No</span>
-                                        </label>
-                                    </div>
-                                </div> */}
+                               
                                 <div className="mt-8">
                                     <h4 className="text-xs font-semibold text-gray-900 mb-2">
                                         Insert Data
@@ -660,7 +565,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             </>
                         ) : step === 'preview' ? (
                             <>
-                                {/* Uploaded File Section - Same as before */}
+                                {/* Uploaded File Section */}
                                 <div className="mb-4">
                                     <h4 className="text-xs font-semibold text-gray-900 mb-2">
                                         Uploaded File - {uploadedFileName}
@@ -668,59 +573,108 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     <div className="flex items-center justify-between mt-2">
                                         {createNewTable === 'yes' && (
                                             <div className="flex items-center">
-                                                <p className="text-xs text-gray-700 font-medium flex-1">{tableName}</p>
+                                                <p className="text-xs text-gray-700 font-medium flex-1">
+                                                    {tableName}
+                                                </p>
                                             </div>
                                         )}
                                     </div>
                                 </div>
 
-                                {/* Column Preview Table */}
-                                <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-xs font-semibold text-gray-900">
-                                            Column Preview (Showing 5 out of {totalRows} rows)
+                                {/*  CASE 1: SCHEMA MISMATCH (SHOW ONLY MESSAGE) */}
+                                {isSchemaMismatch ? (
+                                    <div className="p-4 bg-red-50 border border-red-300 rounded-lg">
+
+                                        <h4 className="text-sm font-semibold text-red-700 mb-2">
+                                            {schemaMismatchData?.message || "Schema mismatch detected"}
                                         </h4>
-                                    </div>
-                                    <div className="rounded-lg overflow-hidden">
-                                        {/* Table Header */}
-                                        <div className="grid bg-gray-50 border-b border-gray-200 border-opacity-30" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))` }}>
-                                            {columns.map((column) => (
-                                                <div key={column.id} className="px-3 py-2 border-r border-gray-200 border-opacity-30 last:border-r-0">
-                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
-                                                        {column.name}
-                                                    </span>
-                                                </div>
-                                            ))}
+
+                                        {/* EXTRA COLUMNS IN CSV */}
+                                        <div className="mt-3">
+                                            <p className="text-xs font-semibold text-red-600 mb-1">Extra Columns in CSV:</p>
+                                            <ul className="list-disc list-inside text-xs text-gray-700">
+                                                {schemaMismatchData?.extra_in_csv?.map((item, index) => (
+                                                    <li key={index}>{item}</li>
+                                                ))}
+                                            </ul>
                                         </div>
-                                        {/* REAL PREVIEW DATA FROM BACKEND */}
-                                        {previewRows.length > 0 ? (
-                                            previewRows.map((row, rowIndex) => (
+
+                                        {/* MISSING COLUMNS IN CSV */}
+                                        <div className="mt-4">
+                                            <p className="text-xs font-semibold text-red-600 mb-1">Missing Columns in CSV:</p>
+                                            <ul className="list-disc list-inside text-xs text-gray-700">
+                                                {schemaMismatchData?.missing_in_csv?.map((item, index) => (
+                                                    <li key={index}>{item}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/*  CASE 2: NORMAL PREVIEW TABLE */}
+                                        <div>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-xs font-semibold text-gray-900">
+                                                    Column Preview (Showing 5 out of {totalRows} rows)
+                                                </h4>
+                                            </div>
+
+                                            <div className="rounded-lg overflow-hidden">
+
+                                                {/* Table Header */}
                                                 <div
-                                                    key={rowIndex}
-                                                    className="grid border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
-                                                    style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))` }}
+                                                    className="grid bg-gray-50 border-b border-gray-200 border-opacity-30"
+                                                    style={{
+                                                        gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))`
+                                                    }}
                                                 >
                                                     {columns.map((column) => (
                                                         <div
                                                             key={column.id}
-                                                            className="px-3 py-2.5 border-r border-gray-200 border-opacity-30 last:border-r-0"
+                                                            className="px-3 py-2 border-r border-gray-200 border-opacity-30 last:border-r-0"
                                                         >
-                                                            <span className="text-xs text-[#3D5B81]">
-                                                                {String(row[column.name]) ?? ""}
+                                                            <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
+                                                                {column.name}
                                                             </span>
                                                         </div>
                                                     ))}
                                                 </div>
-                                            ))
-                                        ) : (
-                                            <p className="text-xs text-gray-500 p-4">
-                                                No preview data available.
-                                            </p>
-                                        )}
 
-                                    </div>
-                                </div>
+                                                {/* Preview Rows */}
+                                                {previewRows.length > 0 ? (
+                                                    previewRows.map((row, rowIndex) => (
+                                                        <div
+                                                            key={rowIndex}
+                                                            className="grid border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
+                                                            style={{
+                                                                gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))`
+                                                            }}
+                                                        >
+                                                            {columns.map((column) => (
+                                                                <div
+                                                                    key={column.id}
+                                                                    className="px-3 py-2.5 border-r border-gray-200 border-opacity-30 last:border-r-0"
+                                                                >
+                                                                    <span className="text-xs text-[#3D5B81]">
+                                                                        {String(row[column.name]) ?? ""}
+                                                                    </span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p className="text-xs text-gray-500 p-4">
+                                                        No preview data available.
+                                                    </p>
+                                                )}
+
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </>
+
                         ) : step === 'loading' ? (
                             <div className="flex flex-col items-center justify-center h-full">
                                 <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
@@ -730,23 +684,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             <>
                                 {/* Success State */}
                                 <div className="flex flex-col h-full">
-                                    {/* <div className="mb-6">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            </div>
-
-                                            <h4 className="text-sm font-semibold text-gray-900">
-                                                {insertResponse?.summary_message
-                                                    ? insertResponse.summary_message
-                                                    : `Table "${tableName}" created successfully`}
-                                            </h4>
-
-                                        </div>
-                                    </div> */}
-
+                                  
                                     <div className="flex items-center gap-2 mb-2">
                                         <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                                             <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -802,15 +740,16 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             </button> */}
                             <button
                                 onClick={handleNext}
-                                disabled={insertData !== "yes"}
+                                disabled={insertData !== "yes" || isSchemaMismatch}
                                 className={`px-4 py-1.5 rounded-lg font-medium text-xs transition-colors
-        ${insertData === "yes"
+        ${insertData === "yes" && !isSchemaMismatch
                                         ? "bg-blue-600 text-white hover:bg-blue-700"
                                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
                                     }`}
                             >
                                 Next
                             </button>
+
 
                         </>
                     )}
