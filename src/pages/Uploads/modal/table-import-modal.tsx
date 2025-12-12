@@ -161,34 +161,46 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 schema: schema,
                 is_existing: createNewTable === "no"
             };
-
             try {
                 const response = await ApiService.preview(previewPayload);
                 const res = response.data;
 
-                console.log(" Preview Response:", res);
+                // SUCCESS CASE → no mismatch
+                setIsSchemaMismatch(false);
+                setSchemaMismatchData(null);
+                setPreviewRows(res?.data?.preview_rows || []);
+                settotalRows(res?.data?.total_rows || []);
 
-                //  CASE 1: SCHEMA MISMATCH
-                if (res.isSuccess === false && res.message?.toLowerCase().includes("schema mismatch")) {
+            } catch (err) {
+                console.log("Preview API Error:", err);
 
+                const apiRes = err?.response?.data;
+
+                // CHECK IF 400 ERROR CONTAINS SCHEMA MISMATCH
+                if (
+                    err?.response?.status === 400 &&
+                    apiRes?.message?.toLowerCase().includes("schema mismatch")
+                ) {
                     setIsSchemaMismatch(true);
-                    setSchemaMismatchData(res.data); 
 
-                    // clear preview rows so table is not shown
+                    setSchemaMismatchData({
+                        message: apiRes.message,
+                        extra_in_csv: apiRes?.data?.extra_in_csv || [],
+                        missing_in_csv: apiRes?.data?.missing_in_csv || []
+                    });
+
                     setPreviewRows([]);
                     settotalRows("");
 
                 } else {
-                    //  CASE 2: VALID PREVIEW
-                    setIsSchemaMismatch(false);
-
-                    setPreviewRows(res?.data?.preview_rows || []);
-                    settotalRows(res?.data?.total_rows || "");
+                    // Unknown error
+                    setIsSchemaMismatch(true);
+                    setSchemaMismatchData({
+                        message: "Unexpected error",
+                        extra_in_csv: [],
+                        missing_in_csv: []
+                    });
                 }
-
-            } catch (err) {
-                console.error(" Preview API Error:", err);
-                setIsSchemaMismatch(true);
             }
 
             setSlideDirection("left");
@@ -420,7 +432,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                         Action
                                                     </span>
-                                                  
+
                                                     <button
                                                         onClick={handleAddColumn}
                                                         className="p-1.5 bg-[#3D5B811A] rounded-full text-gray-700 hover:text-blue-600 transition"
@@ -531,7 +543,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         ))}
                                     </div>
                                 </div>
-                               
+
                                 <div className="mt-8">
                                     <h4 className="text-xs font-semibold text-gray-900 mb-2">
                                         Insert Data
@@ -684,7 +696,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             <>
                                 {/* Success State */}
                                 <div className="flex flex-col h-full">
-                                  
+
                                     <div className="flex items-center gap-2 mb-2">
                                         <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                                             <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
