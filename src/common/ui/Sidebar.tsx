@@ -107,6 +107,9 @@ export default function Sidebar() {
             if (item.path === 'query-list' && activePath === 'query-designer') {
               isActive = true;
             }
+            if (item.path === 'report-designer' && activePath === 'report-designer-view') {
+              isActive = true;
+            }
             return (
               <Tippy
                 content={item.name}

@@ -4,6 +4,7 @@ import { MultiSelect } from "primereact/multiselect";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ForumIcon from "@mui/icons-material/Forum";
@@ -88,19 +89,29 @@ export default function DataViewHeader({
   return (
     <header className="p-4">
   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
-        <div className="flex-shrink-0 text-center md:text-left">
-          <h1
-            className="text-xl font-semibold"
-            style={{ color: theme.primaryText }}
-          >
-            Tabular view
-          </h1>
+   <div className="px-3 sm:px-4 lg:px-3 ">
+          {/* Responsive Flex Container */}
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <button
+                onClick={() => navigate(-1)}
+                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
+              >
+                <ArrowBackRoundedIcon fontSize="small" />
+              </button>
+
+              <div className="flex flex-col gap-1">
+                <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
+                  Query Designer
+                </h1>
           <p className="text-sm mt-1" style={{ color: theme.secondaryText }}>
             {" "}
             Start by uploading a data file to create your first view.
           </p>{" "}
         </div>
-
+ </div>
+  </div>
+   </div>
         {/* SEARCH */}
         <div className="relative w-full md:w-1/2 my-3 md:my-0 text-gray-500">
           <SearchRoundedIcon className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
