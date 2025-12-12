@@ -9,7 +9,7 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import Tippy from "@tippyjs/react";
 
 import "../../../styles/tippy-theme.css";
-import "../../Dashboard/Components/primereact-table.css";
+// import "../../../styles/primereact-table.css";
 
 import ChartSidebar from "../components/ChartSidebar";
 // import RenderCharts from "../../Dashboard/Components/render-charts";
@@ -28,7 +28,7 @@ interface DashboardTableProps {
 export default function DashboardTable({
   allData,
   selectedTables,
-  globalFilter,
+  globalFilter:string,
 }: DashboardTableProps) {
   const { theme } = useTheme();
 
@@ -206,12 +206,12 @@ export default function DashboardTable({
                   scrollable
                   scrollHeight="200px"
                   style={{ maxWidth: "1330px" }}
-                  filters={{
-                    global: {
-                      value: globalFilter,
-                      matchMode: FilterMatchMode.CONTAINS,
-                    },
-                  }}
+                  // filters={{
+                  //   global: {
+                  //     value: globalFilter,
+                  //     matchMode: FilterMatchMode.CONTAINS,
+                  //   },
+                  // }}
                   className="custom-table"
                 >
                   {/* Dynamic Columns */}

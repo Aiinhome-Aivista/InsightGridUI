@@ -9,7 +9,7 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import Tippy from "@tippyjs/react";
 
 import "../../../styles/tippy-theme.css";
-import "../../Dashboard/Components/primereact-table.css";
+import "../../../styles/primereact-table.css";
 
 import ChartSidebar from "../components/ChartSidebar";
 // import RenderCharts from "../../Dashboard/Components/RenderCharts";

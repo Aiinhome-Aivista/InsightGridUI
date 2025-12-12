@@ -56,9 +56,9 @@
 //  TableView.tsx — FULL DYNAMIC VERSION
 
 import { useEffect, useState } from "react";
-import DataViewHeader from "../components/DataViewHeader";
-import DataViewTable from "../components/DataViewTable";
-// import { useTheme } from "../../theme";
+import DataViewHeader from "./DataViewHeader";
+import DataViewTable from "./DataViewTable";
+import { useTheme } from "../../../theme";
 import ApiServices from "../../../services/ApiServices";
 
 // MOCK API RESPONSE (same structure as backend)
@@ -127,7 +127,7 @@ import ApiServices from "../../../services/ApiServices";
 
 
 export default function TableView() {
-//   const { theme } = useTheme();
+  const { theme } = useTheme();
 
   // Inputs
   const [globalFilter, setGlobalFilter] = useState("");
@@ -153,6 +153,7 @@ export default function TableView() {
 
       // Extract user_id for created_by
       const createdBy = userData?.user_id;
+      const sessionId = userData?.session_id;
 
       if (!createdBy) {
         console.error("No user_id found in localStorage ig_user.");
@@ -162,7 +163,8 @@ export default function TableView() {
 
       // Build payload dynamically
       const payload = {
-        created_by: createdBy
+        created_by: createdBy,
+        session_id: sessionId
       };
 
       //  Call API
@@ -173,11 +175,11 @@ export default function TableView() {
       const apiData = response.data.data;
       console.log("dataview response", apiData);
 
-      setAllData(apiData.tables);
-      setTableOptions(apiData.dropdown_options);
+      // setAllData(apiData.tables);
+      setTableOptions(apiData.tables_dropdown);
 
       if (apiData.dropdown_options?.length > 0) {
-        setSelectedTables([apiData.dropdown_options[0].value]);
+        setSelectedTables([apiData.tables_dropdown[0].value]);
       }
 
     } catch (err) {
@@ -205,11 +207,13 @@ export default function TableView() {
     <div className="h-full bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
       <DataViewHeader
         globalFilter={globalFilter}
-        globalFilter={setGlobalFilter}
+        setGlobalFilter={setGlobalFilter}
         selectedTables={selectedTables}
         setSelectedTables={setSelectedTables}
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
+
+
       />
       <DataViewTable
         allData={allData}
