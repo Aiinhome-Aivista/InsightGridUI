@@ -1,253 +1,399 @@
-import { useState } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { FilterMatchMode } from "primereact/api";
-import { Tag } from "primereact/tag";
+// import { useState, useRef } from "react";
+// import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+// import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
+// import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+// import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+// import Tippy from "@tippyjs/react";
+// import "tippy.js/dist/tippy.css";
+// import "../../../styles/tippy-theme.css";
+// import { InputText } from "primereact/inputtext";
+// import ForumIcon from "@mui/icons-material/Forum";
+// import { useNavigate } from "react-router-dom";
+// import { useTheme } from "../../../theme";
+// import { MultiSelect } from "primereact/multiselect";
 
-import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
-import BarChartIcon from "@mui/icons-material/BarChart";
+// interface HeaderProps {
+//   globalFilter: string;
+//   setGlobalFilter: (value: string) => void;
+//   onRefresh: () => void;
+//   selectedTables: string[];
+//   setSelectedTables: (value: string[]) => void;
+//   tableOptions: { label: string; value: string }[];
+// }
+
+// export default function DashboardHeader({
+//   globalFilter,
+//   setGlobalFilter,
+//   onRefresh,
+//   selectedTables,
+//   setSelectedTables,
+//   tableOptions,
+// }: HeaderProps) {
+//   const [showColumnModal, setShowColumnModal] = useState(false);
+//   const [isRefreshing, setIsRefreshing] = useState(false);
+//   const { theme } = useTheme();
+//   const navigate = useNavigate();
+//   const multiSelectRef = useRef(null);
+
+//   const handleRefresh = () => {
+//     if (isRefreshing) return;
+//     setIsRefreshing(true);
+//     onRefresh();
+//     setTimeout(() => setIsRefreshing(false), 1500);
+//   };
+
+//   const handleDropdownShow = () => {
+//     window.addEventListener("scroll", handleScroll, true);
+//   };
+
+//   const handleDropdownHide = () => {
+//     window.removeEventListener("scroll", handleScroll, true);
+//   };
+
+//   const handleScroll = () => {
+//     multiSelectRef.current?.hide();
+//   };
+
+//   // --- CUSTOM TEMPLATE FOR SELECTED ITEMS (CHIPS) ---
+//   const selectedItemTemplate = (value: string) => {
+//     // Find the label corresponding to the selected value
+//     const option = tableOptions.find((opt) => opt.value === value);
+//     const label = option ? option.label : value;
+
+//     if (!label) return null;
+
+//     return (
+//       // Added 'group' class here to control hover state of children
+//       <div className="group inline-flex items-center bg-[#F3F4F6] text-[#4B5563] rounded-md px-2 py-0.5 text-xs font-medium border border-gray-200 mr-1 mb-1 transition-all">
+//         <span>{label}</span>
+
+//         {/* Custom Close Icon */}
+//         <div
+//           role="button"
+//           onClick={(e) => {
+//             e.preventDefault();
+//             e.stopPropagation(); // Stop dropdown from opening
+//             const newValue = selectedTables.filter((val) => val !== value);
+//             setSelectedTables(newValue);
+//           }}
+//           // Added: 'opacity-0' (hidden) and 'group-hover:opacity-100' (show on hover)
+//           className="ml-1.5 cursor-pointer flex items-center justify-center w-4 h-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-200 text-gray-400 hover:text-red-500"
+//         >
+//           <CloseRoundedIcon style={{ fontSize: "12px", fontWeight: "bold" }} />
+//         </div>
+//       </div>
+//     );
+//   };
+
+//   return (
+//     <>
+//       <header className="w-full">
+//         <div className="px-4 sm:px-4 lg:px-7">
+//           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
+//             {/* Left Section */}
+//             <div className="flex-shrink-0 text-center md:text-left">
+//               <h1
+//                 className="text-xl font-semibold"
+//                 style={{ color: theme.primaryText }}
+//               >
+//                 Tabular view
+//               </h1>
+//               <p
+//                 className="text-sm mt-1"
+//                 style={{ color: theme.secondaryText }}
+//               >
+//                 Start by uploading a data file to create your first view.
+//               </p>
+//             </div>
+
+//             {/* Center Search Bar */}
+//             <div className="w-full md:flex-1 flex justify-center order-3 md:order-none">
+//               <div className="relative w-full">
+//                 <SearchRoundedIcon
+//                   className="absolute left-3 top-1/2 -translate-y-1/2"
+//                   sx={{ color: theme.secondaryText }}
+//                 />
+
+//                 <InputText
+//                   value={globalFilter}
+//                   onChange={(e) => setGlobalFilter(e.target.value)}
+//                   placeholder="Global Search"
+//                   className="pl-10 w-full h-10 rounded-xl border text-sm focus:ring-1 focus:ring-gray-300"
+//                   style={{
+//                     backgroundColor: theme.background,
+//                     color: theme.primaryText,
+//                     borderColor: theme.border,
+//                   }}
+//                 />
+//               </div>
+//             </div>
+
+//             {/* Right Action Buttons */}
+//             <div className="flex items-start md:items-center justify-center gap-3 md:gap-4">
+
+//               {/* --- MULTISELECT --- */}
+//               <div className="w-full md:w-auto">
+//                 <MultiSelect
+//                   ref={multiSelectRef}
+//                   value={selectedTables}
+//                   options={tableOptions}
+//                   onChange={(e) => setSelectedTables(e.value)}
+//                   optionLabel="label"
+//                   optionValue="value"
+//                   placeholder="Select Views"
+//                   display="chip"
+//                   selectedItemTemplate={selectedItemTemplate}
+//                   onShow={handleDropdownShow}
+//                   onHide={handleDropdownHide}
+
+//                   // STYLE FIXES:
+//                   // flex-wrap: Ensures chips flow to next line
+//                   // content-center: Vertically aligns items
+//                   className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0"
+
+//                   // Adjusted padding to look balanced
+//                   style={{ padding: '4px 8px' }}
+
+//                   panelClassName="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden mt-1"
+
+//                   pt={{
+//                       wrapper: { className: "max-h-64 overflow-auto custom-scrollbar" },
+//                       header: { className: "p-3 bg-gray-50 border-b border-gray-100 text-sm font-medium text-gray-700" },
+//                       item: { className: "p-3 hover:bg-gray-50 text-sm text-gray-700 transition-colors cursor-pointer" },
+//                       // Ensure label container allows wrapping inside the input
+//                       labelContainer: { className: "flex flex-wrap gap-1 rounded-5xl  items-center flex-1" },
+//                       trigger: { className: "w-8 text-gray-400 flex rounded-5xl items-center justify-center" }
+//                   }}
+//                 />
+//               </div>
+
+//               {/* Chat Button */}
+//               <Tippy content="InsightGrid Chat" theme="gray">
+//                 <div
+//                   onClick={() => navigate("/layout/chatScreen")}
+//                   className="relative text-center border rounded-xl w-[42px] h-[42px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+//                   style={{ borderColor: theme.border }}
+//                 >
+//                   <ForumIcon
+//                     className="w-5 h-5"
+//                     sx={{
+//                       color: theme.secondaryText,
+//                       transition: "color 0.2s",
+//                       "&:hover": { color: theme.primaryText },
+//                     }}
+//                   />
+//                 </div>
+//               </Tippy>
+
+//               {/* Columns Button */}
+//               <Tippy content="Select Columns" theme="gray">
+//                 <div
+//                   onClick={() => setShowColumnModal(true)}
+//                   className="relative text-center border rounded-xl w-[42px] h-[42px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+//                   style={{ borderColor: theme.border }}
+//                 >
+//                   <ViewColumnRoundedIcon
+//                     className="w-5 h-5"
+//                     sx={{
+//                       color: theme.secondaryText,
+//                       transition: "color 0.2s",
+//                       "&:hover": { color: theme.primaryText },
+//                     }}
+//                   />
+//                 </div>
+//               </Tippy>
+
+//               {/* Refresh Button */}
+//               <Tippy content="Refresh" theme="gray">
+//                 <div
+//                   onClick={handleRefresh}
+//                   className={`relative text-center border rounded-xl w-[42px] h-[42px] flex items-center justify-center transition-colors ${
+//                     isRefreshing
+//                       ? "cursor-not-allowed bg-gray-50"
+//                       : "cursor-pointer hover:bg-gray-50"
+//                   }`}
+//                   style={{ borderColor: theme.border }}
+//                 >
+//                   {isRefreshing ? (
+//                     <AutorenewRoundedIcon
+//                       className="w-5 h-5 animate-spin"
+//                       sx={{ color: theme.secondaryText }}
+//                     />
+//                   ) : (
+//                     <AutorenewRoundedIcon
+//                       className="w-5 h-5"
+//                       sx={{
+//                         color: theme.secondaryText,
+//                         "&:hover": { color: theme.primaryText },
+//                       }}
+//                     />
+//                   )}
+//                 </div>
+//               </Tippy>
+//             </div>
+//           </div>
+//         </div>
+//       </header>
+//     </>
+//   );
+// }
+
+// 📌 DataViewHeader.tsx (DYNAMIC DROPDOWN AND SEARCH)
+
+import { useState, useRef } from "react";
+import { MultiSelect } from "primereact/multiselect";
 import Tippy from "@tippyjs/react";
-
+import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
-// import "../../../styles/primereact-table.css";
-
-import ChartSidebar from "../components/ChartSidebar";
-// import RenderCharts from "../../Dashboard/Components/render-charts";
-import AnimatedToggleButton from "../../Dashboard/Components/AnimatedToggleButton";
-
-import { ProcedureCodeBlock, ProcedureToggleButton } from "../components/SpDropDown";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+import ForumIcon from "@mui/icons-material/Forum";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { InputText } from "primereact/inputtext";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
-import RenderCharts from "./render-charts";
 
-interface DashboardTableProps {
-  allData: { [key: string]: any }; // tables: { paid_orders: {...}, electronics_orders: {...} }
-  selectedTables: string[];
-  globalFilter: string;
-}
-
-export default function DashboardTable({
-  allData,
+export default function DataViewHeader({
+  globalFilter,
+  setGlobalFilter,
   selectedTables,
-  globalFilter:string,
-}: DashboardTableProps) {
+  setSelectedTables,
+  tableOptions,
+  onRefresh,
+}) {
+  const navigate = useNavigate();
   const { theme } = useTheme();
+  const multiSelectRef = useRef(null);
+  const trimToWords = (text, count = 3) => {
+  const words = text.split(" ");
+  return words.length > count
+    ? words.slice(0, count).join(" ") + "..."
+    : text;
+};
+   const handleDropdownShow = () => {
+    window.addEventListener("scroll", handleScroll, true);
+  };
 
-  // -------------------------------------------------------
-  // ⭐ PER-TABLE STATE (EVERY TABLE IS INDEPENDENT!)
-  // -------------------------------------------------------
-  const [showProcedure, setShowProcedure] = useState<{
-    [key: string]: boolean;
-  }>({});
-  const [toggleSelection, setToggleSelection] = useState<{
-    [key: string]: number;
-  }>({});
-  const [showChartView, setShowChartView] = useState<{
-    [key: string]: boolean;
-  }>({});
-  const [selectedCharts, setSelectedCharts] = useState<{
-    [key: string]: string[];
-  }>({});
-  const [isChartVisible, setIsChartVisible] = useState<{
-    [key: string]: boolean;
-  }>({});
+  const handleDropdownHide = () => {
+    window.removeEventListener("scroll", handleScroll, true);
+  };
 
-  // -------------------------------------------------------
-  // Helper Body Renderer
-  // -------------------------------------------------------
-  const purchaseBody = (row: any) => (
-    <Tag
-      value={row.purchase}
-      className="px-4 py-1 rounded-full bg-green-100 text-green-600 text-xs font-medium border-none"
-    />
-  );
+  const handleScroll = () => {
+    multiSelectRef.current?.hide();
+  };
+
+  const itemTemplate = (option) => {
+  if (!option) return null;
 
   return (
-    <div>
-      {selectedTables.map((tableKey) => {
-        const table = allData[tableKey];
-        if (!table) return null;
+    <Tippy content={option.label} theme="gray" placement="top-start">
+      <div className="truncate max-w-[250px]">
+        {trimToWords(option.label, 3)}
+      </div>
+    </Tippy>
+  );
+};
 
-        // -------------------------------------------------------
-        // Load per-table state values
-        // -------------------------------------------------------
-        const procedureVisible = showProcedure[tableKey] ?? true;
-        const chartSidebarVisible = isChartVisible[tableKey] ?? false;
-        const charts = selectedCharts[tableKey] ?? [];
-        const toggle = toggleSelection[tableKey] ?? 1;
-        const showCharts = showChartView[tableKey] ?? false;
 
-        return (
-          <div key={tableKey} className="p-6 px-4">
-            <div className="rounded-xl shadow-xs p-4 bg-white">
-              {/* ------------------------------------------------ HEADER ------------------------------------------------ */}
-              <div className="flex items-start justify-between mb-4">
-                {/* LEFT: Title */}
-                <div>
-                  <h2
-                    className="text-sm font-semibold flex items-center gap-2"
-                    style={{ color: theme.primaryText }}
-                  >
-                    <GridViewRoundedIcon
-                      sx={{ fontSize: "1rem", color: theme.primaryText }}
-                    />
-                    {table.title}
-                  </h2>
-                  <p
-                    className="text-xs mt-1"
-                    style={{ color: theme.secondaryText }}
-                  >
-                    This displays all {table.title.toLowerCase()} details.
-                  </p>
-                </div>
+  // --- Template for selected chip ---
+  const selectedItemTemplate = (value) => {
+    // const opt = tableOptions.find((o) => o.value === value);
+    const opt = Array.isArray(tableOptions)
+      ? tableOptions.find((o) => o.value === value)
+      : null;
 
-                {/* RIGHT: Buttons */}
-                <div className="flex items-center gap-3">
-                  {/* Procedure Toggle */}
-                  <ProcedureToggleButton
-                    isOpen={procedureVisible}
-                    onToggle={() =>
-                      setShowProcedure((prev) => ({
-                        ...prev,
-                        [tableKey]: !procedureVisible,
-                      }))
-                    }
-                  />
+    if (!opt) return null;
 
-                  {/* Table / Chart Toggle */}
-                  <AnimatedToggleButton
-                    options={[
-                      {
-                        icon: (
-                          <Tippy content="Chart View">
-                            <BarChartIcon />
-                          </Tippy>
-                        ),
-                        value: "chart",
-                      },
-                      {
-                        icon: (
-                          <Tippy content="Table View">
-                            <GridViewRoundedIcon />
-                          </Tippy>
-                        ),
-                        value: "table",
-                      },
-                    ]}
-                    defaultSelected={toggle}
-                    onChange={(selectedIndex, value) => {
-                      setToggleSelection((prev) => ({
-                        ...prev,
-                        [tableKey]: selectedIndex,
-                      }));
-
-                      if (value === "chart") {
-                        setIsChartVisible((prev) => ({
-                          ...prev,
-                          [tableKey]: true,
-                        }));
-
-                        if (charts.length > 0) {
-                          setShowChartView((prev) => ({
-                            ...prev,
-                            [tableKey]: true,
-                          }));
-                        }
-                      } else {
-                        setIsChartVisible((prev) => ({
-                          ...prev,
-                          [tableKey]: false,
-                        }));
-                        setShowChartView((prev) => ({
-                          ...prev,
-                          [tableKey]: false,
-                        }));
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* ------------------------------------------------ PROCEDURE SQL ------------------------------------------------ */}
-              <ProcedureCodeBlock
-                isVisible={procedureVisible}
-                sql={table.procedure_sql}
-              />
-
-              {/* ------------------------------------------------ TABLE OR CHART VIEW ------------------------------------------------ */}
-              {showCharts && charts.length > 0 ? (
-                <RenderCharts
-                  selectedCharts={charts}
-                  onRemoveChart={(chartType) => {
-                    const updated = charts.filter((c) => c !== chartType);
-
-                    setSelectedCharts((prev) => ({
-                      ...prev,
-                      [tableKey]: updated,
-                    }));
-
-                    if (updated.length === 0) {
-                      setShowChartView((prev) => ({
-                        ...prev,
-                        [tableKey]: false,
-                      }));
-                      setToggleSelection((prev) => ({
-                        ...prev,
-                        [tableKey]: 1,
-                      }));
-                    }
-                  }}
-                />
-              ) : (
-                <DataTable
-                  value={table.rows}
-                  paginator={false}
-                  rows={10}
-                  sortMode="multiple"
-                  scrollable
-                  scrollHeight="200px"
-                  style={{ maxWidth: "1330px" }}
-                  // filters={{
-                  //   global: {
-                  //     value: globalFilter,
-                  //     matchMode: FilterMatchMode.CONTAINS,
-                  //   },
-                  // }}
-                  className="custom-table"
-                >
-                  {/* Dynamic Columns */}
-                  {table.columns.map((colName: string, index: number) => (
-                    <Column
-                      key={index}
-                      field={colName}
-                      header={colName.replace(/_/g, " ").toUpperCase()}
-                    />
-                  ))}
-                </DataTable>
-              )}
-            </div>
-
-            {/* ------------------------------------------------ CHART SIDEBAR ------------------------------------------------ */}
-            {chartSidebarVisible && (
-              <ChartSidebar
-                onChartSelect={(chartSelection) => {
-                  setSelectedCharts((prev) => ({
-                    ...prev,
-                    [tableKey]: chartSelection,
-                  }));
-
-                  if (chartSelection.length > 0) {
-                    setShowChartView((prev) => ({ ...prev, [tableKey]: true }));
-                  }
-                }}
-                selectedCharts={charts}
-                onClose={() =>
-                  setIsChartVisible((prev) => ({ ...prev, [tableKey]: false }))
-                }
-              />
-            )}
+    return (
+   <Tippy content={opt.label} theme="gray" placement="top">
+  <div className="group inline-flex items-center bg-[#F3F4F6] text-[#4B5563] rounded-2xl px-2 py-0.5 text-xs font-medium border border-gray-200 mr-1 mb-1">
+    <span className="truncate max-w-[120px]">{trimToWords(opt.label, 2)}</span>
+    ...
+  
+          <div
+            className="ml-1.5 cursor-pointer flex items-center justify-center w-4 h-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-200 text-gray-400 hover:text-red-500"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedTables(selectedTables.filter((s) => s !== value));
+            }}
+          >
+            <CloseRoundedIcon style={{ fontSize: "12px" }} />
           </div>
-        );
-      })}
-    </div>
+        </div>
+      </Tippy>
+    );
+  };
+
+  return (
+    <header className="p-4">
+  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
+        <div className="flex-shrink-0 text-center md:text-left">
+          <h1
+            className="text-xl font-semibold"
+            style={{ color: theme.primaryText }}
+          >
+            Tabular view
+          </h1>
+          <p className="text-sm mt-1" style={{ color: theme.secondaryText }}>
+            {" "}
+            Start by uploading a data file to create your first view.
+          </p>{" "}
+        </div>
+
+        {/* SEARCH */}
+        <div className="relative w-full md:w-1/2 my-3 md:my-0">
+          <SearchRoundedIcon className="absolute left-3 top-1/2 -translate-y-1/2" />
+          <InputText
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="pl-10 w-full h-10 rounded-xl border"
+            placeholder="Global Search"
+          />
+        </div>
+        <div className="flex items-start md:items-center justify-center gap-3 md:gap-4">
+          <MultiSelect
+            ref={multiSelectRef}
+            value={selectedTables}
+            options={tableOptions}
+            optionLabel="label"
+            optionValue="value"
+            display="chip"
+            placeholder="Select Views"
+            onChange={(e) => setSelectedTables(e.value)}
+            onShow={handleDropdownShow}
+            onHide={handleDropdownHide}
+            selectedItemTemplate={selectedItemTemplate}
+            itemTemplate={itemTemplate}
+            className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10
+"
+            style={{ padding: "4px 8px" }}
+            panelClassName="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden mt-1"
+              pt={{
+                      wrapper: { className: "max-h-64 overflow-auto custom-scrollbar" },
+                      header: { className: "p-1 bg-gray-50 border-b border-gray-100 text-sm font-medium text-gray-700" },
+                      item: { className: "p-3 hover:bg-gray-50 text-sm text-gray-700 transition-colors cursor-pointer" },
+                      labelContainer: { className: "flex flex-wrap gap-1 rounded-5xl  items-center flex-2" },
+                      trigger: { className: "w-8 text-gray-400 flex rounded-5xl items-center justify-center" }
+                  }}
+          />
+
+          {/* Chat */}
+          <div
+            className="border rounded-xl p-2 cursor-pointer"
+            onClick={() => navigate("/layout/chatScreen")}
+          >
+            <ForumIcon />
+          </div>
+
+          {/* Refresh */}
+          <div
+            className="border rounded-xl p-2 cursor-pointer"
+            onClick={onRefresh}
+          >
+            <AutorenewRoundedIcon />
+          </div>
+        </div>
+      </div>
+    </header>
   );
 }

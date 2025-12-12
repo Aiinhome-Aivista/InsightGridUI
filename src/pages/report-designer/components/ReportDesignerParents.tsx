@@ -175,7 +175,7 @@ export default function TableView() {
       const apiData = response.data.data;
       console.log("dataview response", apiData);
 
-      // setAllData(apiData.tables);
+      setAllData(apiData.tables_data);
       setTableOptions(apiData.tables_dropdown);
 
       if (apiData.dropdown_options?.length > 0) {
