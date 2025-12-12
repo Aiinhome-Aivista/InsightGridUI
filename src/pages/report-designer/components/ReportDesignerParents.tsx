@@ -10,6 +10,7 @@ export default function TableView() {
   const [tableOptions, setTableOptions] = useState<any[]>([]);
   const [selectedTables, setSelectedTables] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     getSavedQueryResponse();
@@ -75,8 +76,17 @@ export default function TableView() {
     }
   };
 
-  const handleRefresh = () => {
-    console.log("Refreshing...");
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      if (selectedTables.length > 0) {
+        await handleRunScript(selectedTables[0]);
+      } else {
+        await getSavedQueryResponse();
+      }
+    } finally {
+      setIsRefreshing(false);
+    }
   };
   useEffect(() => {
     if (selectedTables.length > 0) {
@@ -107,7 +117,7 @@ export default function TableView() {
       console.error("Execute SQL API Error:", error);
     }
   };
-
+  
   return (
     <div className="h-full bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
       <DataViewHeader
@@ -117,13 +127,20 @@ export default function TableView() {
         setSelectedTables={setSelectedTables}
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
         onRunScript={handleRunScript} // 👉 ADD THIS
       />
-      <DataViewTable
-        allData={allData}
-        selectedTables={selectedTables}
-        globalFilter={globalFilter}
-      />
+      {!loading && (!tableOptions || tableOptions.length === 0) ? (
+        <div className="flex items-center justify-center h-96">
+          <p className="text-gray-500 text-lg">No data found</p>
+        </div>
+      ) : (
+        <DataViewTable
+          allData={allData}
+          selectedTables={selectedTables}
+          globalFilter={globalFilter}
+        />
+      )}
     </div>
   );
 }

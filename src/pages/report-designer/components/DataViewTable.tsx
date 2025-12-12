@@ -116,7 +116,7 @@ export default function DashboardTable({
                 {/* RIGHT: Buttons */}
                 <div className="flex items-center gap-3">
                   {/* Procedure Toggle */}
-                  <ProcedureToggleButton
+                  {/* <ProcedureToggleButton
                     isOpen={procedureVisible}
                     onToggle={() =>
                       setShowProcedure((prev) => ({
@@ -124,10 +124,10 @@ export default function DashboardTable({
                         [tableKey]: !procedureVisible,
                       }))
                     }
-                  />
+                  /> */}
 
                   {/* Table / Chart Toggle */}
-                  <AnimatedToggleButton
+                  {/* <AnimatedToggleButton
                     options={[
                       {
                         icon: (
@@ -176,15 +176,15 @@ export default function DashboardTable({
                         }));
                       }
                     }}
-                  />
+                  /> */}
                 </div>
               </div>
 
               {/* ------------------------------------------------ PROCEDURE SQL ------------------------------------------------ */}
-              <ProcedureCodeBlock
+              {/* <ProcedureCodeBlock
                 isVisible={procedureVisible}
                 sql={table.procedure_sql}
-              />
+              /> */}
 
               {/* ------------------------------------------------ TABLE OR CHART VIEW ------------------------------------------------ */}
               {showCharts && charts.length > 0 ? (
@@ -241,7 +241,7 @@ export default function DashboardTable({
             </div>
 
             {/* ------------------------------------------------ CHART SIDEBAR ------------------------------------------------ */}
-            {chartSidebarVisible && (
+            {/* {chartSidebarVisible && (
               <ChartSidebar
                 onChartSelect={(chartSelection) => {
                   setSelectedCharts((prev) => ({
@@ -258,7 +258,7 @@ export default function DashboardTable({
                   setIsChartVisible((prev) => ({ ...prev, [tableKey]: false }))
                 }
               />
-            )}
+            )} */}
           </div>
         );
       })}

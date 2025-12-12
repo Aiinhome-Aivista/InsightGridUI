@@ -20,6 +20,7 @@ export default function DataViewHeader({
   tableOptions,
   onRefresh,
   onRunScript,   
+  isRefreshing,
 }) {
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -101,12 +102,12 @@ export default function DataViewHeader({
         </div>
 
         {/* SEARCH */}
-        <div className="relative w-full md:w-1/2 my-3 md:my-0">
-          <SearchRoundedIcon className="absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="relative w-full md:w-1/2 my-3 md:my-0 text-gray-500">
+          <SearchRoundedIcon className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <InputText
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-10 w-full h-10 rounded-xl border"
+            className="pl-10 w-full h-10 rounded-xl border focus:outline-none focus:ring-0"
             placeholder="Global Search"
           />
         </div>
@@ -160,7 +161,7 @@ export default function DataViewHeader({
             className="border rounded-xl p-2 cursor-pointer"
             onClick={onRefresh}
           >
-            <AutorenewRoundedIcon />
+            <AutorenewRoundedIcon className={isRefreshing ? "animate-spin" : ""} />
           </div>
         </div>
       </div>
