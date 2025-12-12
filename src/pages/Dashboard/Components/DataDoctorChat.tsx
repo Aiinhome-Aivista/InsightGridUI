@@ -445,7 +445,7 @@ export default function Chat({
       </div>
 
       {/* Script Section */}
-      <div className="bg-[#D9D9D91A] p-2 mt-5 rounded-xl">
+      <div className="bg-[#D9D9D91A] p-2 mt-3 rounded-xl">
         <div className="flex flex-row items-center justify-between px-5">
           <h1 className="text-lg font-semibold text-gray-800 mt-1">
             Generated Procedure
@@ -488,7 +488,7 @@ export default function Chat({
               <button
                 onClick={() => setIsConfirmSaveModalOpen(true)}
                 disabled={!isScriptRunSuccess || !viewName.trim()}
-                className={`px-5 py-1 rounded-md bg-gray-200 text-gray-600 text-sm transition ${!isScriptRunSuccess || !viewName.trim()
+                className={`w-[36px] h-[25px] flex items-center justify-center rounded-[5px] bg-gray-200 text-gray-600 text-[10px] font-semibold leading-[15px] transition ${!isScriptRunSuccess || !viewName.trim()
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:bg-gray-300"
                   }`}
@@ -503,10 +503,11 @@ export default function Chat({
           <button
             onClick={handleRunScript}
             disabled={isSessionDataMissing || isExecuting} // Disabled when session is missing or executing
-            className={`absolute right-6 top-6 px-5 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${isSessionDataMissing || isExecuting
+            style={{ width: isExecuting ? "auto" : "31px" }}
+            className={`absolute right-6 top-6 h-[25px] flex items-center justify-center rounded-[5px] bg-gray-200 text-gray-700 text-[10px] font-semibold leading-[15px] transition-colors ${isSessionDataMissing || isExecuting
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-gray-300"
-              }`}
+              } ${isExecuting ? "px-3" : "px-0"}`}
           >
             {isExecuting ? "Running..." : "Run"}
           </button>
