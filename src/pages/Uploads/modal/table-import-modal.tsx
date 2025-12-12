@@ -128,6 +128,10 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         ));
     };
 
+    const handleDeleteColumn = (id: string) => {
+        setColumns(columns.filter(col => col.id !== id));
+    };
+
     const handleEditTableName = () => {
         setTempTableName(tableName);
         setIsEditingTableName(true);
@@ -524,7 +528,15 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                                 >
                                                                     <Save className="w-3.5 h-3.5" />
                                                                 </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteColumn(column.id)}
+                                                                    className="text-gray-400 hover:text-red-600 transition-colors"
+                                                                    title="Delete"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </button>
                                                             </>
+
                                                         ) : (
                                                             <>
                                                                 <button
@@ -533,6 +545,13 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                                     title="Edit"
                                                                 >
                                                                     <Edit2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteColumn(column.id)}
+                                                                    className="text-gray-400 hover:text-red-600 transition-colors"
+                                                                    title="Delete"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
                                                                 </button>
                                                             </>
 
