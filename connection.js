@@ -6,7 +6,8 @@ export const GET_APIS = {
 
 export const POST_APIS = {
   login: `${BASE_URL}login`,
-  fileUpload: `${BASE_URL}upload_files`,
+  // fileUpload: `${BASE_URL}upload_files`,
+  fileUpload: `${BASE_URL}upload_files_new`,
   tracker: `${BASE_URL}get_file_status`,
   chat_ai: `${BASE_URL}chat_ai`,
   execute_sql: `${BASE_URL}execute_sql`,

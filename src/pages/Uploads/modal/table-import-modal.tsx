@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil ,Loader2 } from 'lucide-react';
+import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'lucide-react';
+import ApiService from '../../../services/ApiServices';
 
 // AddCardRoundedIcon replacement
 const AddCardIcon = ({ className }: { className?: string }) => (
@@ -34,6 +35,8 @@ interface TableImportModalProps {
 }
 
 const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableImportModalProps) => {
+
+    console.log("🔍 TableImportModal received apiData:", apiData);
     const [createNewTable, setCreateNewTable] = useState<'yes' | 'no'>('yes');
     const [selectedTable, setSelectedTable] = useState('');
     const [tableName, setTableName] = useState(uploadedFileName.replace(/\.[^/.]+$/, ''));
@@ -42,6 +45,16 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
     const [step, setStep] = useState<'configure' | 'preview' | 'loading' | 'success'>('configure');
     const [slideDirection, setSlideDirection] = useState<'none' | 'left' | 'right'>('none');
     const [columns, setColumns] = useState<Column[]>([]);
+    const [previewRows, setPreviewRows] = useState<any[]>([]);
+    //for session_id and created_by
+    const [insertResponse, setInsertResponse] = useState<any>(null);
+
+
+
+    const storedUser = JSON.parse(localStorage.getItem("ig_user") || "{}");
+
+    const sessionId = storedUser?.session_id || "";
+    const createdBy = storedUser?.user_id || "";
 
     useEffect(() => {
         if (isOpen && apiData) {
@@ -102,30 +115,171 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
         setIsEditingTableName(false);
     };
 
-    const handleNext = () => {
-        if (step === 'configure') {
-            setSlideDirection('left');
+    // const handleNext = async () => {
+
+    //     // STEP 1 → CONFIGURE SCREEN: CALL PREVIEW API
+    //     if (step === "configure") {
+
+    //         // Build updated schema (JSON)
+    //         const schema = columns.map(col => ({
+    //             column: col.name,
+    //             datatype: col.dataType,
+    //             length: col.length,
+    //             primary: col.primary
+    //         }));
+
+    //         // Build JSON payload
+    //         const payload = {
+    //             action: "preview",
+    //             session_id: sessionId,      // from localStorage
+    //             created_by: createdBy,      // from localStorage
+    //             table_name: tableName,
+    //             file_name: apiData?.file_name,
+    //             schema: schema,             // FULL JSON ARRAY
+    //             is_existing: createNewTable === "no"
+    //         };
+
+    //         console.log("Sending preview JSON payload:", payload);
+
+    //         // try {
+    //         //     // CALL JSON API (NOT form-data API)
+    //         //     const response = await ApiService.preview(payload);
+    //         //     console.log(" Preview Response:", response.data);
+
+    //         //     // Example: If backend returns preview sample rows
+    //         //     // setPreviewData(response.data.data);
+
+    //         // } catch (err) {
+    //         //     console.error(" Preview API Error:", err);
+    //         // }
+
+    //         try {
+    //             const response = await ApiService.preview(payload);
+    //             console.log("📥 Preview Response:", response.data);
+
+    //             // 🔥 STORE PREVIEW ROWS FROM BACKEND
+    //             const rows = response?.data?.data?.preview_rows || [];
+    //             setPreviewRows(rows);
+
+    //         } catch (err) {
+    //             console.error("❌ Preview API Error:", err);
+    //         }
+
+
+    //         // Move to Preview UI
+    //         setSlideDirection("left");
+    //         setTimeout(() => {
+    //             setStep("preview");
+    //             setSlideDirection("right");
+    //             setTimeout(() => setSlideDirection("none"), 50);
+    //         }, 300);
+
+    //         return;
+    //     }
+
+    //     // STEP 2 → PREVIEW SCREEN → loading → success
+    //     if (step === "preview") {
+    //         setSlideDirection("left");
+
+    //         setTimeout(() => {
+    //             setStep("loading");
+    //             setSlideDirection("none");
+
+    //             setTimeout(() => {
+    //                 setStep("success");
+    //             }, 1000);
+    //         }, 300);
+
+    //         return;
+    //     }
+    // };
+
+    const handleNext = async () => {
+
+        // STEP 1 → CONFIGURE SCREEN (Preview)
+        if (step === "configure") {
+
+            const schema = columns.map(col => ({
+                column: col.name,
+                datatype: col.dataType,
+                length: col.length,
+                primary: col.primary
+            }));
+
+            const previewPayload = {
+                action: "preview",
+                session_id: sessionId,
+                created_by: createdBy,
+                table_name: tableName,
+                file_name: apiData?.file_name,
+                schema: schema,
+                is_existing: createNewTable === "no"
+            };
+
+            console.log("📤 Sending preview payload:", previewPayload);
+
+            try {
+                const response = await ApiService.preview(previewPayload);
+                console.log("📥 Preview Response:", response.data);
+
+                setPreviewRows(response?.data?.data?.preview_rows || []);
+
+            } catch (err) {
+                console.error("❌ Preview API Error:", err);
+            }
+
+            setSlideDirection("left");
             setTimeout(() => {
-                setStep('preview');
-                setSlideDirection('right');
-                setTimeout(() => {
-                    setSlideDirection('none');
-                }, 50);
+                setStep("preview");
+                setSlideDirection("right");
+                setTimeout(() => setSlideDirection("none"), 50);
             }, 300);
-        } else if (step === 'preview') {
-            // Show loading state
-            setSlideDirection('left');
+
+            return;
+        }
+
+        // STEP 2 → PREVIEW SCREEN (Insert Data)
+        if (step === "preview") {
+
+            setStep("loading");
+
+            const schema = columns.map(col => ({
+                column: col.name,
+                datatype: col.dataType,
+                length: col.length,
+                primary: col.primary
+            }));
+
+            const insertPayload = {
+                action: "insert_data",
+                session_id: sessionId,
+                created_by: createdBy,
+                file_name: apiData?.file_name,
+                table_name: tableName,
+                is_existing: createNewTable === "no",
+                schema: schema
+            };
+
+            console.log("📤 Sending insert_data payload:", insertPayload);
+
+            try {
+                const response = await ApiService.preview(insertPayload);
+                console.log("📥 Insert Response:", response.data);
+
+                setInsertResponse(response?.data?.data);
+            } catch (err) {
+                console.error("❌ Insert API Error:", err);
+            }
+
             setTimeout(() => {
-                setStep('loading');
-                setSlideDirection('none');
-                
-                // Simulate loading for 1 second, then show success
-                setTimeout(() => {
-                    setStep('success');
-                }, 1000);
-            }, 300);
+                setStep("success");
+            }, 800);
+
+            return;
         }
     };
+
+
 
     const handleBack = () => {
         if (step === 'success') {
@@ -163,11 +317,10 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
             >
                 {/* Modal Content */}
                 <div className="p-12 overflow-y-auto flex-1">
-                    <div className={`transition-all duration-300 ${
-                        slideDirection === 'left' ? '-translate-x-full opacity-0' : 
-                        slideDirection === 'right' ? 'translate-x-full opacity-0' : 
-                        'translate-x-0 opacity-100'
-                    }`}>
+                    <div className={`transition-all duration-300 ${slideDirection === 'left' ? '-translate-x-full opacity-0' :
+                        slideDirection === 'right' ? 'translate-x-full opacity-0' :
+                            'translate-x-0 opacity-100'
+                        }`}>
                         {step === 'configure' ? (
                             <>
                                 {/* Create New Table Section */}
@@ -406,7 +559,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                         ))}
                                     </div>
                                 </div>
-                                <div className="mt-8">
+                                {/* <div className="mt-8">
                                     <h4 className="text-xs font-semibold text-gray-900 mb-2">
                                         Insert Data
                                     </h4>
@@ -430,7 +583,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                             <span className="ml-1.5 text-xs text-gray-700">No</span>
                                         </label>
                                     </div>
-                                </div>
+                                </div> */}
                             </>
                         ) : step === 'preview' ? (
                             <>
@@ -466,21 +619,32 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                 </div>
                                             ))}
                                         </div>
+                                        {/* REAL PREVIEW DATA FROM BACKEND */}
+                                        {previewRows.length > 0 ? (
+                                            previewRows.map((row, rowIndex) => (
+                                                <div
+                                                    key={rowIndex}
+                                                    className="grid border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
+                                                    style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))` }}
+                                                >
+                                                    {columns.map((column) => (
+                                                        <div
+                                                            key={column.id}
+                                                            className="px-3 py-2.5 border-r border-gray-200 border-opacity-30 last:border-r-0"
+                                                        >
+                                                            <span className="text-xs text-[#3D5B81]">
+                                                                {String(row[column.name]) ?? ""}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-xs text-gray-500 p-4">
+                                                No preview data available.
+                                            </p>
+                                        )}
 
-                                        {/* Sample Data Rows */}
-                                        {[1, 2, 3, 4, 5].map((rowIndex) => (
-                                            <div key={rowIndex} className="grid border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))` }}>
-                                                {columns.map((column) => (
-                                                    <div key={column.id} className="px-3 py-2.5 border-r border-gray-200 border-opacity-30 last:border-r-0">
-                                                        <span className="text-xs text-[#3D5B81]">
-                                                            {column.dataType === 'INT' ? rowIndex : 
-                                                             column.name === 'Full Name' ? `User ${rowIndex}` : 
-                                                             `Sample ${rowIndex}`}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ))}
                                     </div>
                                 </div>
                             </>
@@ -493,62 +657,35 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                             <>
                                 {/* Success State */}
                                 <div className="flex flex-col h-full">
-                                    <div className="mb-6">
+                                    {/* <div className="mb-6">
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                                                 <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                 </svg>
                                             </div>
+
                                             <h4 className="text-sm font-semibold text-gray-900">
-                                                Table "{tableName}" created with {columns.length} columns
+                                                {insertResponse?.summary_message
+                                                    ? insertResponse.summary_message
+                                                    : `Table "${tableName}" created successfully`}
                                             </h4>
-                                        </div>
-                                    </div>
 
-                                    {/* Display Created Columns */}
-                                    <div>
-                                        <h4 className="text-xs font-semibold text-gray-900 mb-2">
-                                            Created Columns
+                                        </div>
+                                    </div> */}
+
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                        <h4 className="text-sm font-semibold text-gray-900">
+                                            {insertResponse?.summary_message
+                                                ? insertResponse.summary_message
+                                                : `Table "${tableName}" created successfully`}
                                         </h4>
-                                        <div className="rounded-lg overflow-hidden border border-gray-200">
-                                            {/* Table Header */}
-                                            <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200">
-                                                <div className="col-span-4 px-3 py-2">
-                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
-                                                        Column Name
-                                                    </span>
-                                                </div>
-                                                <div className="col-span-4 px-3 py-2">
-                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
-                                                        Data Type
-                                                    </span>
-                                                </div>
-                                                <div className="col-span-4 px-3 py-2">
-                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
-                                                        Length
-                                                    </span>
-                                                </div>
-                                            </div>
 
-                                            {/* Table Rows */}
-                                            {columns.map((column, index) => (
-                                                <div
-                                                    key={column.id}
-                                                    className="grid grid-cols-12 border-b border-gray-200 last:border-b-0 bg-white"
-                                                >
-                                                    <div className="col-span-4 px-3 py-2.5">
-                                                        <span className="text-xs text-gray-700 font-medium">{column.name}</span>
-                                                    </div>
-                                                    <div className="col-span-4 px-3 py-2.5">
-                                                        <span className="text-xs text-gray-600">{column.dataType}</span>
-                                                    </div>
-                                                    <div className="col-span-4 px-3 py-2.5">
-                                                        <span className="text-xs text-gray-600">{column.length}</span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
                                     </div>
                                 </div>
                             </>
