@@ -50,7 +50,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     //for session_id and created_by
     const [insertResponse, setInsertResponse] = useState<any>(null);
     const [insertData, setInsertData] = useState<"yes" | "no" | "">("");
-    const [totalRows,settotalRows] = useState("");
+    const [totalRows, settotalRows] = useState("");
 
 
 
@@ -289,15 +289,15 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 schema: schema
             };
 
-            console.log("📤 Sending insert_data payload:", insertPayload);
+            console.log(" Sending insert_data payload:", insertPayload);
 
             try {
                 const response = await ApiService.preview(insertPayload);
-                console.log("📥 Insert Response:", response.data);
+                console.log(" Insert Response:", response.data);
 
                 setInsertResponse(response?.data?.data);
             } catch (err) {
-                console.error("❌ Insert API Error:", err);
+                console.error(" Insert API Error:", err);
             }
 
             setTimeout(() => {
@@ -408,13 +408,13 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 )}
 
                                 {/* Uploaded File Section */}
-                                <div className="mb-1 flex flex-row gap-5">
+                                <div className="mb-1 flex flex-row text-center items-center gap-5">
                                     <h4 className="text-xs font-semibold text-gray-900">
-                                        Uploaded File - {uploadedFileName}
+                                        Uploaded File  -  {uploadedFileName}
                                     </h4>
                                     <div className="flex items-center justify-between text-xs font-semibold text-gray-900 ">
-                                        Table Name-
-                                         {createNewTable === 'yes' && (
+                                        Table Name  -
+                                        {createNewTable === 'yes' && (
                                             <div className="flex items-center">
                                                 {isEditingTableName ? (
                                                     <>
@@ -485,13 +485,21 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                         Action
                                                     </span>
-                                                    <button
+                                                    {/* <button
                                                         onClick={handleAddColumn}
                                                         className="text-gray-400 hover:text-blue-600 transition-colors"
                                                         title="Add Row"
                                                     >
-                                                        {/* <AddCardIcon className="w-3.5 h-3.5 text-[#3D5B81]" /> */}
+                                                        <AddCardIcon className="w-3.5 h-3.5 text-[#3D5B81]" />
+                                                    </button> */}
+                                                    <button
+                                                        onClick={handleAddColumn}
+                                                        className="p-1.5 bg-[#3D5B811A] rounded-full text-gray-700 hover:text-blue-600 transition"
+                                                        title="Add Row"
+                                                    >
+                                                        <Plus className="w-3.5 h-3.5" />
                                                     </button>
+
                                                 </div>
                                             )}
                                         </div>
@@ -586,6 +594,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                                     <Edit2 className="w-3.5 h-3.5" />
                                                                 </button>
                                                             </>
+                                                            
                                                         )}
                                                     </div>
                                                 )}
