@@ -48,6 +48,9 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
     const [previewRows, setPreviewRows] = useState<any[]>([]);
     //for session_id and created_by
     const [insertResponse, setInsertResponse] = useState<any>(null);
+    const [insertData, setInsertData] = useState<"yes" | "no" | "">("");
+    const [totalRows,settotalRows] = useState("");
+
 
 
 
@@ -247,6 +250,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                 console.log("📥 Preview Response:", response.data);
 
                 setPreviewRows(response?.data?.data?.preview_rows || []);
+                settotalRows(response?.data?.data?.total_rows || "");
 
             } catch (err) {
                 console.error("❌ Preview API Error:", err);
@@ -612,6 +616,36 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                         </label>
                                     </div>
                                 </div> */}
+                                <div className="mt-8">
+                                    <h4 className="text-xs font-semibold text-gray-900 mb-2">
+                                        Insert Data
+                                    </h4>
+                                    <div className="flex gap-4">
+                                        <label className="flex items-center cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="insertData"
+                                                value="yes"
+                                                checked={insertData === "yes"}
+                                                onChange={() => setInsertData("yes")}
+                                                className="w-3 h-3 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                            />
+                                            <span className="ml-1.5 text-xs text-gray-700">Yes</span>
+                                        </label>
+                                        <label className="flex items-center cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="insertData"
+                                                value="no"
+                                                checked={insertData === "no"}
+                                                onChange={() => setInsertData("no")}
+                                                className="w-3 h-3 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                            />
+                                            <span className="ml-1.5 text-xs text-gray-700">No</span>
+                                        </label>
+                                    </div>
+                                </div>
+
                             </>
                         ) : step === 'preview' ? (
                             <>
@@ -633,7 +667,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
                                         <h4 className="text-xs font-semibold text-gray-900">
-                                            Column Preview (Showing 5 out of 10,000)
+                                            Column Preview (Showing 5 out of {totalRows} rows)
                                         </h4>
                                     </div>
                                     <div className="rounded-lg overflow-hidden">
@@ -746,12 +780,24 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                             >
                                 Cancel
                             </button>
-                            <button
+                            {/* <button
                                 onClick={handleNext}
                                 className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs"
                             >
                                 Next
+                            </button> */}
+                            <button
+                                onClick={handleNext}
+                                disabled={insertData !== "yes"}
+                                className={`px-4 py-1.5 rounded-lg font-medium text-xs transition-colors
+        ${insertData === "yes"
+                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    }`}
+                            >
+                                Next
                             </button>
+
                         </>
                     )}
                 </div>
