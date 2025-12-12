@@ -477,18 +477,11 @@ export default function Chat({
                   passedData?.query_title ? "" : "Please enter query name.."
                 }
                 disabled={!isScriptRunSuccess}
-                className="
-    focus:outline-none focus:ring-0
-   
-  "
-              />
-
-
-
+                className="focus:outline-none focus:ring-0" />
               <button
                 onClick={() => setIsConfirmSaveModalOpen(true)}
                 disabled={!isScriptRunSuccess || !viewName.trim()}
-                className={`px-5 py-1 rounded-md bg-gray-200 text-gray-600 text-sm transition ${!isScriptRunSuccess || !viewName.trim()
+                className={`px-3 py-2 rounded-md bg-gray-200 text-gray-600 text-sm transition ${!isScriptRunSuccess || !viewName.trim()
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:bg-gray-300"
                   }`}
@@ -503,7 +496,7 @@ export default function Chat({
           <button
             onClick={handleRunScript}
             disabled={isSessionDataMissing || isExecuting} // Disabled when session is missing or executing
-            className={`absolute right-6 top-6 px-5 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${isSessionDataMissing || isExecuting
+            className={`absolute right-6 top-6 px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${isSessionDataMissing || isExecuting
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-gray-300"
               }`}

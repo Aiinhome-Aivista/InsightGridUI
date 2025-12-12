@@ -2,7 +2,6 @@
 .p-datatable .p-datatable-thead>tr>th {
   background: #f3f4f6 !important;
   font-weight: 600;
-  color: var(--theme-secondary-text) !important;
   border: none !important;
   padding: 14px 16px !important;
   text-align: left !important;
