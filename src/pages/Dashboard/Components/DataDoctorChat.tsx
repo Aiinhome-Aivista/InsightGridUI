@@ -379,8 +379,8 @@ export default function Chat({
       )}
 
       {/* Chat Header */}
-      <div className="pb-5 bg-[#D9D9D91A] rounded-xl">
-        <div className="px-5 pt-4">
+      <div className="pb-4 bg-[#D9D9D91A] rounded-xl">
+        <div className="px-4 pt-2 flex flex-col">
           <h1 className="text-lg font-semibold text-gray-800">
             Speak to Data Doctor
           </h1>
@@ -397,7 +397,7 @@ export default function Chat({
         {/* Input */}
         <form
           onSubmit={handleSendMessage}
-          className="mx-4 border rounded-xl flex justify-between items-center px-5 py-2 mt-20 text-gray-500"
+          className="mx-4 border rounded-xl flex justify-between items-center px-1 py-2 mt-20 text-gray-500"
         >
           {/* <input
             type="text"
