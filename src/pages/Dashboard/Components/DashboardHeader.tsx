@@ -115,11 +115,11 @@ export default function DashboardHeader({
       >
         <div className="px-3 sm:px-4 lg:px-3 ">
           {/* Responsive Flex Container */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
-            <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
+            <div className="flex items-center gap-2 w-full md:w-auto">
               <button
                 onClick={() => navigate(-1)}
-                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
+                className="p-0 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
               >
                 <ArrowBackRoundedIcon fontSize="small" />
               </button>
