@@ -75,7 +75,7 @@ export default function DataViewHeader({
 
               <div className="flex flex-col gap-1">
                 <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
-                  Query Designer
+                  Report Designer
                 </h1>
                 <p
                   className="text-sm mt-1"
@@ -104,7 +104,7 @@ export default function DataViewHeader({
             type="text"
             value={reportName}
             onChange={(e) => setReportName(e.target.value)}
-            placeholder="Write a report name..."
+            placeholder="Write a report name(required)"
             className=" px-4 w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10"
           />
         </div>
@@ -133,9 +133,10 @@ export default function DataViewHeader({
           />
           <button
             onClick={onSaveReport}
-  disabled={!reportName}
-
-            className="bg-blue-400 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
+            disabled={!reportName}
+            className={`rounded-lg text-sm font-medium transition-all flex items-center justify-center ${
+              !reportName ? "bg-gray-300 cursor-not-allowed text-white" : "bg-blue-400 hover:bg-blue-700 text-white"
+            }`}
             style={{ width: "108px", height: "40px" }}
           >
             Save Report
