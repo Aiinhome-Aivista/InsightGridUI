@@ -18,9 +18,6 @@ export const POST_APIS = {
   // get_chat_history: `${BASE_URL}get_uploaded_table_with_tabledata`,
   get_table_data: `${BASE_URL}get_full_table_info`,
   get_saved_query_response: `${BASE_URL}get_saved_query_response`,
-<<<<<<< HEAD
   get_report_list:`${BASE_URL}report_list`,
-=======
   report_save: `${BASE_URL}report_save`,
->>>>>>> a45d2049ba4f802706ef613650138b4f0b296923
 };
