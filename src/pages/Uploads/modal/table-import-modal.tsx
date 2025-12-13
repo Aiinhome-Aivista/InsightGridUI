@@ -61,6 +61,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         if (isOpen && apiData) {
             setTableName(apiData.suggested_table_name || uploadedFileName.replace(/\.[^/.]+$/, ''));
         }
+        setStep("configure");
     }, [isOpen, apiData, uploadedFileName]);
 
     useEffect(() => {
@@ -167,8 +168,13 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         setIsEditingTableName(false);
     };
 
+    
+
 
     const handleNext = async () => {
+        console.log("step value is:", step);
+
+
 
         // STEP 1 → CONFIGURE SCREEN (Preview)
         if (step === "configure") {
@@ -178,6 +184,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 length: col.length,
                 primary: col.primary
             }));
+
 
             const previewPayload = {
                 action: "preview",
