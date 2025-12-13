@@ -11,6 +11,7 @@ export default function TableView() {
   const [selectedTables, setSelectedTables] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [reportName, setReportName] = useState("");
 
   useEffect(() => {
     getSavedQueryResponse();
@@ -94,7 +95,6 @@ export default function TableView() {
     }
   }, [selectedTables]);
 
-
   const handleRunScript = async (sqlQuery: string) => {
     try {
       const payload = { sql_query: sqlQuery };
@@ -107,17 +107,36 @@ export default function TableView() {
           title: "SQL Result",
           rows: api.rows,
           columns: api.columns.map((col) => ({ column_name: col })),
-          procedure_sql: sqlQuery
-        }
+          procedure_sql: sqlQuery,
+        },
       };
 
       setAllData(formatted);
-
     } catch (error) {
       console.error("Execute SQL API Error:", error);
     }
   };
-  
+
+  const handleSaveReport = async () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem("ig_user"));
+
+      const payload = {
+        session_id: userData?.session_id,
+        created_by: userData?.user_id,
+        report_id: `report_${Date.now()}`,
+        query_history_id: 1,
+        report_name: reportName,
+      };
+
+      const response = await ApiServices.report_save(payload);
+
+      console.log("Report saved:", response.data);
+    } catch (error) {
+      console.error("Save report error:", error);
+    }
+  };
+
   return (
     <div className="h-[90%] bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
       <DataViewHeader
@@ -128,7 +147,10 @@ export default function TableView() {
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
-        onRunScript={handleRunScript} // 👉 ADD THIS
+        onRunScript={handleRunScript}
+        reportName={reportName}
+        setReportName={setReportName}
+        onSaveReport={handleSaveReport}
       />
       {!loading && (!tableOptions || tableOptions.length === 0) ? (
         <div className="flex items-center justify-center h-96">

@@ -72,6 +72,9 @@ class ApiServices {
     return axios.post(POST_APIS.get_report_list, body);
   }
 
+  report_save(body) {
+    return axios.post(POST_APIS.report_save,body);
+  }
 
 }
 
