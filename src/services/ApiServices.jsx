@@ -68,6 +68,9 @@ class ApiServices {
   getTableData(body) {
     return axios.post(POST_APIS.get_table_data, body);
   }
+  getReportList(body) {
+    return axios.post(POST_APIS.get_report_list, body);
+  }
 
 
 }
