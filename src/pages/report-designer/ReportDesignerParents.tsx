@@ -4,6 +4,11 @@ import DataViewTable from "./components/ReportDesignerTable";
 import { useTheme } from "../../theme";
 import ApiServices from "../../services/ApiServices";
 import { useLocation } from "react-router-dom";
+import { MdOutlineDescription } from "react-icons/md";
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+
+
+
 export default function TableView() {
   const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -54,6 +59,8 @@ export default function TableView() {
       setTableOptions(dropdown || []);
       setSelectedTables([]); // ✅ placeholder visible
       setAllData({});        // ✅ clear previous table
+      setTableOptions(dropdown);
+
     } catch (err) {
       console.error("API error:", err);
     } finally {
@@ -83,7 +90,6 @@ export default function TableView() {
   const handleRunScript = async (sqlQuery: string) => {
     try {
       const payload = { sql_query: sqlQuery };
-
       const response = await ApiServices.executeSql(payload);
       const api = response.data.data;
 
@@ -99,6 +105,8 @@ export default function TableView() {
       setAllData(formatted);
     } catch (error) {
       console.error("Execute SQL API Error:", error);
+    } finally {
+      setIsRefreshing(false);
     }
   };
   const handleSaveReport = async () => {
@@ -133,7 +141,7 @@ export default function TableView() {
 
 
   return (
-    <div className="h-[90%] bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
+    <div className="flex flex-col  bg-[#D9D9D91A] rounded-xl m-4 max-w-screen overflow-hidden">
       <DataViewHeader
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
@@ -147,6 +155,7 @@ export default function TableView() {
         setReportName={setReportName}
         onSaveReport={handleSaveReport}
         editReport={editReport}
+        setIsRefreshing={setIsRefreshing}
       />
       {selectedTables.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400">
@@ -154,6 +163,19 @@ export default function TableView() {
           <p className="text-sm font-medium">
             Please select a view to create report
           </p>
+        </div>
+      ) : selectedTables.length === 0 ? (
+        <div className="flex flex-col items-center justify-center w-full h-96">
+          <MdOutlineDescription size={50} className="text-gray-400" />
+          <p className="text-gray-500 text-lg mt-3">Please select a script to create report</p>
+        </div>
+      ) : isRefreshing ? (
+        <div className="flex flex-col items-center justify-center w-full h-96">
+                        <AutorenewRoundedIcon 
+                          className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""}`} 
+                          fontSize="small"
+                        />
+          <p className="text-gray-500 text-lg mt-4">Loading Data...</p>
         </div>
       ) : (
         <DataViewTable

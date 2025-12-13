@@ -90,7 +90,7 @@ export default function DashboardTable({
         const showCharts = showChartView[tableKey] ?? false;
 
         return (
-          <div key={tableKey} className="p-6 px-4">
+          <div key={tableKey} className="px-4 pb-6">
             <div className="rounded-xl shadow-xs p-4 bg-white">
               {/* ------------------------------------------------ HEADER ------------------------------------------------ */}
               <div className="flex items-start justify-between mb-4">

@@ -23,7 +23,8 @@ export default function DataViewHeader({
   reportName,
   setReportName,
   onSaveReport,
-  editReport
+  editReport,
+  setIsRefreshing,
 
 }) {
   const navigate = useNavigate();
@@ -31,20 +32,14 @@ export default function DataViewHeader({
     useAuth();
   const dropdownRef = useRef<Dropdown>(null);
   const { theme } = useTheme();
-  const trimToWords = (text, count = 3) => {
-    const words = text.split(" ");
-    return words.length > count
-      ? words.slice(0, count).join(" ") + "..."
-      : text;
-  };
 
   const itemTemplate = (option) => {
     if (!option) return null;
 
     return (
       <Tippy content={option.label} theme="gray" placement="top-start">
-        <div className="truncate max-w-[250px]">
-          {trimToWords(option.label, 3)}
+        <div>
+          {option.label}
         </div>
       </Tippy>
     );
@@ -120,36 +115,30 @@ const isEditMode = !!editReport;
   };
 
   return (
-    <header className="p-4">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
-        <div className="px-3 sm:px-4 lg:px-3 ">
+    <header className="px-4">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between h-auto md:h-20">
+        <div>
           {/* Responsive Flex Container */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
-            <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between h-auto md:h-20">
+            <div className="flex items-center gap-2 w-full md:w-auto">
               <button
                 onClick={() => navigate(-1)}
-                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
+                className=" hover:bg-gray-100 rounded-full transition-colors text-gray-700"
               >
                 <ArrowBackRoundedIcon fontSize="small" />
               </button>
 
-              <div className="flex flex-col gap-1">
-                <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
+              <div className="flex flex-col ">
+                <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight whitespace-nowrap">
                   Report Designer
                 </h1>
-                <p
-                  className="text-sm mt-1"
-                  style={{ color: theme.secondaryText }}
-                >
-                  {" "}
-                  Start by uploading a data file to create your first view.
-                </p>{" "}
+
               </div>
             </div>
           </div>
         </div>
         {/* SEARCH */}
-        <div className="relative w-full md:w-1/3 my-3 md:my-0 text-gray-500">
+        <div className="relative w-full md:w-80 my-3 md:my-0 text-gray-500">
           <SearchRoundedIcon className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <InputText
             value={globalFilter}
@@ -167,30 +156,66 @@ const isEditMode = !!editReport;
             className=" px-4 w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10"
           />
         </div>
-        <div className="flex items-start md:items-center justify-center gap-3 md:gap-4">
-          <Dropdown
-            value={
-              Array.isArray(selectedTables) && selectedTables.length > 0
-                ? selectedTables[0]
-                : null
-            }
-            options={tableOptions}
-            placeholder="Select a View"
-            optionLabel="label"
-            optionValue="value"
-            onShow={handleDropdownShow}
-            onHide={handleDropdownHide}
-            ref={dropdownRef}
-            itemTemplate={itemTemplate}
-            onChange={(e) => {
-              const val = e.value;
-              setSelectedTables(val ? [val] : []);
-              if (val) onRunScript(val); // 👈 UI load here
-            }}
-            className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm bg-white shadow-sm"
-            panelClassName="bg-white rounded-xl shadow-xl border border-gray-100"
-          />
+        <div className="flex items-start md:items-center justify-center gap-2">
+<Dropdown
+  // --- FUNCTIONAL PROPS ---
+  ref={dropdownRef}
+  value={
+    Array.isArray(selectedTables) && selectedTables.length > 0
+      ? selectedTables[0]
+      : null
+  }
+  options={tableOptions}
+  onChange={(e) => {
+    const val = e.value;
+    // Prevent re-running if the same item is selected
+    if (val !== (selectedTables[0] || null)) {
+      setIsRefreshing(true); // Show loader immediately
+      setSelectedTables(val ? [val] : []); // This will trigger the data fetch in the parent component
+    }
+  }}
+  optionLabel="label"
+  optionValue="value"
+  placeholder="Select Views"
+  itemTemplate={itemTemplate}
+  onShow={handleDropdownShow}
+  onHide={handleDropdownHide}
 
+  // --- DESIGN & STYLING ---
+  className="
+    w-96 min-h-[44px] h-auto
+    border border-gray-200 
+    rounded-lg 
+    flex items-center justify-between
+    transition-all duration-200
+    bg-white
+  "
+  
+  // Panel (List) Styling - Added max-w to ensure it doesn't grow too wide
+  panelClassName="
+    bg-white rounded-xl border border-gray-100 overflow-hidden text-sm max-w-96
+  "
+  
+  // --- DEEP STYLING FIXES ---
+  pt={{
+    root: { className: 'cursor-pointer' },
+    input: { 
+      className: 'text-sm font-medium text-gray-700 px-3 py-2 whitespace-normal break-words h-full flex items-center leading-tight' 
+    },
+    trigger: { className: 'w-8 flex items-center justify-center text-gray-400 shrink-0' },
+    list: { className: 'p-1' },
+    
+    // *** FIX IS HERE: Added 'whitespace-normal' and 'break-words' to item ***
+    item: ({ context }: any) => ({
+      className: `px-3 py-2 rounded-md text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${
+        context.selected
+          ? 'bg-gray-100 font-semibold'
+          : 'hover:bg-gray-50'
+      }`
+    }),
+    itemLabel: { className: 'font-medium' }
+  }}
+/>
           <button
             onClick={handleSaveClick}
             disabled={!reportName}
