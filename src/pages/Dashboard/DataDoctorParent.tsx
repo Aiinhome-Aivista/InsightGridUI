@@ -77,7 +77,7 @@ export default function Dashboard_page() {
 
       const responseData = response.data.data || {};
       const tables = responseData.tables_dropdown || [];
-      setTableOptions(tables);
+      setTableOptions([...tables].reverse());
     } catch (error) {
       console.error(" API Error:", error);
     } finally {
