@@ -481,7 +481,7 @@ export default function Chat({
                   passedData?.query_title ? "" : "Please enter query name.."
                 }
                 disabled={!isScriptRunSuccess}
-                className="focus:outline-none focus:ring-0" />
+                className="focus:outline-none focus:ring-0 w-[84%]" />
               <button
                 onClick={() => setIsConfirmSaveModalOpen(true)}
                 disabled={!isScriptRunSuccess || !viewName.trim()}

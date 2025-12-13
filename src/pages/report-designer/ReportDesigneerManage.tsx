@@ -172,11 +172,11 @@ const ReportDesignManage = () => {
         </div>
       </div>
 
-      {/* <DownloadView data={downloadData} /> */}
+      <DownloadView data={downloadData} />
       {/* Table Section */}
       {loading ? (
         <div className="flex justify-center py-24 text-gray-500">
-          Loading reports...
+          <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
         </div>
       ) : filteredReports.length > 0 ? (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -223,7 +223,7 @@ const ReportDesignManage = () => {
                           Download
                         </button>
 
-                        <button
+                        {/* <button
                           className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"
                           onClick={() =>
                             navigate("/layout/report-designer-view", {
@@ -232,7 +232,20 @@ const ReportDesignManage = () => {
                           }
                         >
                           Edit
+                        </button> */}
+                        <button
+                          className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"
+                          onClick={() => {
+                            console.log(" Edit Report Data:", item);
+
+                            navigate("/layout/report-designer-view", {
+                              state: { report: item }, 
+                            });
+                          }}
+                        >
+                          Edit
                         </button>
+
                       </div>
                     </td>
                   </tr>
