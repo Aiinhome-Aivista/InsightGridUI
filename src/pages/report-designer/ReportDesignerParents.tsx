@@ -1,17 +1,33 @@
 import { useEffect, useState } from "react";
-import DataViewHeader from "./ReportDesignerHeader";
-import DataViewTable from "./ReportDesignerTable";
-import { useTheme } from "../../../theme";
-import ApiServices from "../../../services/ApiServices";
+import DataViewHeader from "./components/ReportDesignerHeader";
+import DataViewTable from "./components/ReportDesignerTable";
+import { useTheme } from "../../theme";
+import ApiServices from "../../services/ApiServices";
+import { useLocation } from "react-router-dom";
 export default function TableView() {
   const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
   const [allData, setAllData] = useState<any>({});
   const [tableOptions, setTableOptions] = useState<any[]>([]);
-  const [selectedTables, setSelectedTables] = useState<string[]>([]);
+  const [selectedTables, setSelectedTables] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [reportName, setReportName] = useState("");
+  const [editReport, setEditReport] = useState<any>(null);
+
+
+  const location = useLocation();
+  const report = location.state?.report;
+
+  useEffect(() => {
+    if (report) {
+      console.log(" Edit report received:", report);
+
+      setEditReport(report);
+      setReportName(report.report_name || "");
+    }
+  }, [report]);
+
 
   useEffect(() => {
     getSavedQueryResponse();
@@ -21,55 +37,23 @@ export default function TableView() {
     try {
       setLoading(true);
 
-      // Get user from localStorage
       const userData = JSON.parse(localStorage.getItem("ig_user"));
-
-      // Extract user_id for created_by
-      const createdBy = userData?.user_id;
-      const sessionId = userData?.session_id;
-
-      if (!createdBy) {
-        console.error("No user_id found in localStorage ig_user.");
-        setLoading(false);
-        return;
-      }
-
-      // Build payload dynamically
       const payload = {
-        created_by: createdBy,
-        session_id: sessionId,
+        created_by: userData?.user_id,
+        session_id: userData?.session_id,
       };
 
-      //  Call API
       const response = await ApiServices.getSavedQueryResponse(payload);
-
-      // const data = response.data;
-
       const apiData = response.data.data;
-      console.log("dataview response", apiData);
 
-      // setAllData(apiData.tables_data);
-      // setTableOptions(apiData.dropdown_options);
-
-      // if (apiData.dropdown_options?.length > 0) {
-      //   setSelectedTables([apiData.dropdown_options[0].value]);
-      // }
-      //       const apiData = response.data.data;
-
-      // console.log("dataview response", apiData);
-
-      // Build dropdown from query_title + ai_response
       const dropdown = apiData.queries?.map((q) => ({
         label: q.query_title,
-        value: q.ai_response,
+        value: q, // full query object
       }));
 
-      setTableOptions(dropdown);
-
-      // Default select first item
-      if (dropdown?.length > 0) {
-        setSelectedTables([dropdown[0].value]);
-      }
+      setTableOptions(dropdown || []);
+      setSelectedTables([]); // ✅ placeholder visible
+      setAllData({});        // ✅ clear previous table
     } catch (err) {
       console.error("API error:", err);
     } finally {
@@ -77,11 +61,12 @@ export default function TableView() {
     }
   };
 
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
       if (selectedTables.length > 0) {
-        await handleRunScript(selectedTables[0]);
+        await handleRunScript(selectedTables[0].ai_response);
       } else {
         await getSavedQueryResponse();
       }
@@ -91,7 +76,7 @@ export default function TableView() {
   };
   useEffect(() => {
     if (selectedTables.length > 0) {
-      handleRunScript(selectedTables[0]); // 👉 run default SQL
+      handleRunScript(selectedTables[0].ai_response);
     }
   }, [selectedTables]);
 
@@ -104,7 +89,7 @@ export default function TableView() {
 
       const formatted = {
         [sqlQuery]: {
-          title: "SQL Result",
+          title: "Report Result",
           rows: api.rows,
           columns: api.columns.map((col) => ({ column_name: col })),
           procedure_sql: sqlQuery,
@@ -116,16 +101,25 @@ export default function TableView() {
       console.error("Execute SQL API Error:", error);
     }
   };
-
   const handleSaveReport = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("ig_user"));
 
+      if (!selectedTables.length) {
+        console.error("No query selected");
+        return;
+      }
+
+      const selectedQuery = selectedTables[0]; //  full query object
+
       const payload = {
         session_id: userData?.session_id,
         created_by: userData?.user_id,
-        report_id: `report_${Date.now()}`,
-        query_history_id: 1,
+        // report_id: `report_${Date.now()}`,
+        report_id: editReport?.report_id
+          ? editReport.report_id          // EDIT MODE
+          : `report_${Date.now()}`,
+        query_history_id: selectedQuery.id, //  DYNAMIC ID
         report_name: reportName,
       };
 
@@ -137,6 +131,7 @@ export default function TableView() {
     }
   };
 
+
   return (
     <div className="h-[90%] bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
       <DataViewHeader
@@ -147,22 +142,27 @@ export default function TableView() {
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
-        onRunScript={handleRunScript}
+        onRunScript={() => { }}
         reportName={reportName}
         setReportName={setReportName}
         onSaveReport={handleSaveReport}
+        editReport={editReport}
       />
-      {!loading && (!tableOptions || tableOptions.length === 0) ? (
-        <div className="flex items-center justify-center h-96">
-          <p className="text-gray-500 text-lg">No data found</p>
+      {selectedTables.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400">
+          <div className="mb-3 text-4xl">🗑️</div>
+          <p className="text-sm font-medium">
+            Please select a view to create report
+          </p>
         </div>
       ) : (
         <DataViewTable
           allData={allData}
-          selectedTables={selectedTables}
+          selectedTables={selectedTables.map((t) => t.ai_response)}
           globalFilter={globalFilter}
         />
       )}
+
     </div>
   );
 }

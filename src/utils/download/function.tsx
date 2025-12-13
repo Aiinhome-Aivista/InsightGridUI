@@ -1,25 +1,84 @@
+// import jsPDF from "jspdf";
+// import autoTable from "jspdf-autotable";
+
+// export const generatePDF = async (data) => {
+//   try {
+//     if (!data || !data.rows || data.rows.length === 0) {
+//       console.warn("No data available for PDF");
+//       return;
+//     }
+
+//     const rows = data.rows;
+//     const columns = data.columns.map((c) => c.column_name);
+
+//     const doc = new jsPDF("p", "pt", "a4");
+
+//     // Header
+//     doc.setFontSize(14);
+//     doc.text("Student List Report", 40, 30);
+
+//     autoTable(doc, {
+//       head: [columns],
+//       body: rows.map((r) => columns.map((col) => r[col] ?? "N/A")),
+//       startY: 50,
+//       margin: { top: 40, bottom: 30 },
+//       styles: {
+//         fontSize: 9,
+//         cellPadding: 4,
+//       },
+//       headStyles: {
+//         fillColor: [79, 70, 229],
+//         textColor: [255, 255, 255],
+//       },
+//       alternateRowStyles: { fillColor: [245, 245, 245] },
+
+//       didDrawPage: (dataArg) => {
+//         // Use doc.getNumberOfPages() instead
+//         const pageCount = doc.getNumberOfPages();
+//         doc.setFontSize(10);
+//         doc.text(`Page ${pageCount}`, 40, 20);
+//       },
+//     });
+
+//     doc.save("students.pdf");
+//   } catch (err) {
+//     console.error("PDF generation failed:", err);
+//   }
+// };
+
+
+
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-export const generatePDF = (data) => {
-  if (!data?.rows?.length) {
+export const generatePDF = (data, mode = "download") => {
+  if (!data || !data.rows || data.rows.length === 0) {
     console.warn("No data available for PDF");
     return;
   }
 
+  
   const doc = new jsPDF("p", "pt", "a4");
 
+  
   const pageWidth = doc.internal.pageSize.getWidth();
 
+  const rows = data.rows;
   const columns = data.columns.map((c) => c.column_name);
-  const rows = data.rows.map((row) =>
-    columns.map((col) => row[col] ?? "N/A")
-  );
+
+
+
+
+
+
+ 
+
+
 
   // ===== HEADER =====
   doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
-  doc.text("Sales Report", 40, 40);
+  doc.text("All City Report", 40, 40);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
@@ -43,7 +102,7 @@ export const generatePDF = (data) => {
   autoTable(doc, {
     startY: 140,
     head: [columns],
-    body: rows,
+    body: rows.map((r) => columns.map((col) => r[col] ?? "N/A")),
 
     styles: {
       fontSize: 9,
@@ -73,5 +132,13 @@ export const generatePDF = (data) => {
     },
   });
 
-  doc.save("sales-report.pdf");
+
+   // PREVIEW vs DOWNLOAD
+  if (mode === "preview") {
+    const pdfUrl = doc.output("bloburl");
+    window.open(pdfUrl); //  browser preview
+  } else {
+    doc.save("sales-report.pdf"); //  direct download
+  }
+  
 };

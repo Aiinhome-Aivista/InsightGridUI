@@ -98,6 +98,29 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         }
     }, [createNewTable, selectedTable, apiData]);
 
+    useEffect(() => {
+        // CASE 1: Existing table selected
+        if (createNewTable === "no") {
+            if (selectedTable) {
+                setTableName(selectedTable);
+            } else {
+                // No table selected → clean
+                setTableName("");
+            }
+        }
+
+        // CASE 2: Switch back to NEW table
+        if (createNewTable === "yes") {
+            setSelectedTable("");          // reset dropdown
+            setTableName(
+                apiData?.suggested_table_name ||
+                uploadedFileName.replace(/\.[^/.]+$/, '')
+            );
+            setIsEditingTableName(false);  // reset edit mode
+        }
+    }, [createNewTable, selectedTable]);
+
+
     const handleEditClick = (id: string) => {
         setColumns(columns.map(col =>
             col.id === id ? { ...col, isEditing: !col.isEditing } : col
@@ -367,7 +390,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         Uploaded File  -  {uploadedFileName}
                                     </h4>
                                     <div className="flex items-center justify-between text-xs font-semibold text-gray-900 ">
-                                        Table Name  -
+                                        {/* Table Name  -
                                         {createNewTable === 'yes' && (
                                             <div className="flex items-center">
                                                 {isEditingTableName ? (
@@ -400,7 +423,51 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     </>
                                                 )}
                                             </div>
-                                        )}
+                                        )} */}
+
+                                        Table Name  -
+                                        <div className="flex items-center gap-1">
+
+                                            {/* EDIT MODE */}
+                                            {createNewTable === "yes" && isEditingTableName ? (
+                                                <>
+                                                    <input
+                                                        type="text"
+                                                        value={tempTableName}
+                                                        onChange={(e) => setTempTableName(e.target.value)}
+                                                        className="text-xs text-gray-700 border border-gray-300 rounded px-2 py-1"
+                                                        autoFocus
+                                                    />
+                                                    <button
+                                                        onClick={handleSaveTableName}
+                                                        className="p-1 hover:bg-gray-100 rounded"
+                                                        title="Save table name"
+                                                    >
+                                                        <Save className="w-4 h-4 text-green-600" />
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {/* VIEW MODE */}
+                                                    <p className="text-xs text-gray-700 font-medium">
+                                                        {tableName}
+                                                    </p>
+
+                                                    {/* Edit icon ONLY for new table */}
+                                                    {createNewTable === "yes" && (
+                                                        <button
+                                                            onClick={handleEditTableName}
+                                                            className="p-1 hover:bg-gray-100 rounded"
+                                                            title="Edit table name"
+                                                        >
+                                                            <Pencil className="w-4 h-4 text-gray-600" />
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+
+
                                     </div>
                                 </div>
 
@@ -435,7 +502,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 </span>
                                             </div>
                                             {createNewTable === 'yes' && (
-                                                <div className="col-span-3 px-3 py-2 flex items-center gap-1">
+                                                <div className="col-span-3 px-3 py-2 flex items-center gap-3">
                                                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                         Action
                                                     </span>
@@ -617,33 +684,72 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
                                 {/*  CASE 1: SCHEMA MISMATCH (SHOW ONLY MESSAGE) */}
                                 {isSchemaMismatch ? (
-                                    <div className="p-4 bg-red-50 border border-red-300 rounded-lg">
+                                    // <div className="p-4 bg-red-50 border border-red-300 rounded-lg">
 
-                                        <h4 className="text-sm font-semibold text-red-700 mb-2">
-                                            {schemaMismatchData?.message || "Schema mismatch detected"}
+                                    //     <h4 className="text-sm font-semibold text-red-700 mb-2">
+                                    //         {schemaMismatchData?.message || "Schema mismatch detected"}
+                                    //     </h4>
+
+                                    //     {/* EXTRA COLUMNS IN CSV */}
+                                    //     <div className="mt-3">
+                                    //         <p className="text-xs font-semibold text-red-600 mb-1">Extra Columns in CSV:</p>
+                                    //         <ul className="list-disc list-inside text-xs text-gray-700">
+                                    //             {schemaMismatchData?.extra_in_csv?.map((item, index) => (
+                                    //                 <li key={index}>{item}</li>
+                                    //             ))}
+                                    //         </ul>
+                                    //     </div>
+
+                                    //     {/* MISSING COLUMNS IN CSV */}
+                                    //     <div className="mt-4">
+                                    //         <p className="text-xs font-semibold text-red-600 mb-1">Missing Columns in CSV:</p>
+                                    //         <ul className="list-disc list-inside text-xs text-gray-700">
+                                    //             {schemaMismatchData?.missing_in_csv?.map((item, index) => (
+                                    //                 <li key={index}>{item}</li>
+                                    //             ))}
+                                    //         </ul>
+                                    //     </div>
+
+                                    // </div>
+                                    <div className="p-6 bg-red-50 border border-red-300 rounded-xl">
+
+                                        {/* TITLE */}
+                                        <h4 className="text-base font-semibold text-red-700 text-center mb-6">
+                                            ⚠️ Schema Mismatch Detected
                                         </h4>
 
-                                        {/* EXTRA COLUMNS IN CSV */}
-                                        <div className="mt-3">
-                                            <p className="text-xs font-semibold text-red-600 mb-1">Extra Columns in CSV:</p>
-                                            <ul className="list-disc list-inside text-xs text-gray-700">
-                                                {schemaMismatchData?.extra_in_csv?.map((item, index) => (
-                                                    <li key={index}>{item}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                                        {/* CONTENT */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                                        {/* MISSING COLUMNS IN CSV */}
-                                        <div className="mt-4">
-                                            <p className="text-xs font-semibold text-red-600 mb-1">Missing Columns in CSV:</p>
-                                            <ul className="list-disc list-inside text-xs text-gray-700">
-                                                {schemaMismatchData?.missing_in_csv?.map((item, index) => (
-                                                    <li key={index}>{item}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                                            {/* EXTRA COLUMNS */}
+                                            <div className="bg-white border border-red-200 rounded-lg p-4">
+                                                <p className="text-sm font-semibold text-red-600 mb-3">
+                                                    Extra Columns in CSV
+                                                </p>
 
+                                                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 max-h-56 overflow-y-auto">
+                                                    {schemaMismatchData?.extra_in_csv?.map((item, index) => (
+                                                        <li key={index}>{item}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+
+                                            {/* MISSING COLUMNS */}
+                                            <div className="bg-white border border-red-200 rounded-lg p-4">
+                                                <p className="text-sm font-semibold text-red-600 mb-3">
+                                                    Missing Columns in CSV
+                                                </p>
+
+                                                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 max-h-56 overflow-y-auto">
+                                                    {schemaMismatchData?.missing_in_csv?.map((item, index) => (
+                                                        <li key={index}>{item}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+
+                                        </div>
                                     </div>
+
                                 ) : (
                                     <>
                                         {/*  CASE 2: NORMAL PREVIEW TABLE */}

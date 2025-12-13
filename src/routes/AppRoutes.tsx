@@ -10,7 +10,7 @@ import QueryDesigner from "../pages/Dashboard/DataDoctorParent";
 import ShowQuery from "../pages/Dashboard/ShowQuery";
 import ReportDesignerManage from "../pages/report-designer/ReportDesigneerManage";
 import Dashboard from "../pages/Dashboard/Components/Dashboard";
-import ReportDesignerParents from "../pages/report-designer/components/ReportDesignerParents";
+import ReportDesignerParents from "../pages/report-designer/ReportDesignerParents";
 function AppRoutes() {
   return (
     <AuthProvider>

@@ -13,7 +13,7 @@ interface Props {
   onRefresh?: () => void | Promise<void>;
 }
 
-const STEPS = ["Table Extraction", "Column Extraction", "Data Insights"];
+const STEPS = ["Table Extraction", "Column Extraction", "Data Insert Status"];
 const TOTAL_STEPS = STEPS.length;
 
 export default function DataProcessing({ files, onRefresh }: Props) {
@@ -27,10 +27,9 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     const [hour, minute, second] = timeStr.split(":");
     let h = parseInt(hour);
     const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12; // converts '00' → 12 AM
+    h = h % 12 || 12;
     return `${h}:${minute} ${ampm}`;
   };
-
 
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
@@ -45,7 +44,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       if (file.column_extraction_status?.toLowerCase() === 'done') {
         progress = 2;
       }
-      if (file.data_insights_status?.toLowerCase() === 'done' || file.relationship_mapping_status?.toLowerCase() === 'done') {
+      if (file.data_insert_status?.toLowerCase() === 'done') {
         progress = 3;
       }
 
@@ -62,7 +61,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         await onRefresh();
       }
     } finally {
-      // Keep spinning for at least 500ms for smooth animation
       setTimeout(() => {
         setIsRefreshing(false);
       }, 500);
@@ -79,7 +77,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           sessionId: file.session_id,
           sessionName: file.session_name,
           fileName: fileName
-
         }
       });
     }
@@ -87,7 +84,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between mb-4 px-2">
+      <div className="flex items-center justify-between mb-2 px-2">
         <label
           className="block text-sm font-medium"
           style={{ color: theme.primaryText }}
@@ -97,10 +94,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         <Tippy content="Refresh" theme="gray">
           <div
             onClick={handleRefresh}
-            className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
+            className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
+              isRefreshing
                 ? "cursor-not-allowed"
                 : "cursor-pointer hover:bg-gray-500/10"
-              }`}
+            }`}
             style={{ borderColor: theme.border }}
           >
             {isRefreshing ? (
@@ -121,109 +119,154 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         </Tippy>
       </div>
 
+      {/* Global Column Headers */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between gap-4 px-4 py-2 rounded-lg" style={{ backgroundColor: theme.border + '20' }}>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              File Name
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              Table Name
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              Rows Affected
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Table Extraction
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Column Extraction
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Data Insert Status
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              File Size
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Uploaded At
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-h-[30vh] overflow-y-auto pr-2">
         {files.map((file, index) => {
-        const fileName = file.name || file.file_name;
-        const currentProgress = processingProgress[fileName] || 0;
-        const isFullyProcessed = currentProgress >= TOTAL_STEPS;
+          const fileName = file.name || file.file_name;
+          const currentProgress = processingProgress[fileName] || 0;
+          const isFullyProcessed = currentProgress >= TOTAL_STEPS;
 
-        const extractionFailed =
-          file.table_extraction_status?.toLowerCase() === "failed" ||
-          file.table_extraction_status?.toLowerCase() === "pending";
-        return (
-          <div
-            key={index}
-            className="flex items-center rounded-lg p-3 w-full min-w-[80px] mb-3 bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
-          >
-            <div className="relative group w-[20%] min-w-[150px]">
+          const extractionFailed =
+            file.table_extraction_status?.toLowerCase() === "failed" ||
+            file.table_extraction_status?.toLowerCase() === "pending";
 
-              <div
-                className="text-sm font-medium truncate"
-                style={{ color: theme.primaryText }}
-              >
-                {fileName}
-              </div>
-
-              {/* Tooltip */}
-              <div className="
-                  absolute left-1/2 -translate-x-1/2 mt-1
-                  hidden group-hover:block
-                  whitespace-nowrap
-                  bg-[#888585] text-white text-xs px-2 py-1 rounded
-                  shadow-lg z-10
-                "
-              >
-                {fileName}
-              </div>
-            </div>
-
-            <div className="flex items-center min-w-[380px] w-[50%] px-4">
-              {extractionFailed ? (
-                <p className="text-red-500 text-sm font-medium">
-                  File Extraction Failed
-                </p>
-              ) : (
-                STEPS.map((stepName, stepIndex) => {
-                  const isCompleted = stepIndex < currentProgress;
-                  const iconColor = isCompleted ? theme.accent : theme.secondaryText;
-
-                  return (
+          return (
+            <div
+              key={index}
+              className="rounded-lg p-4 w-full mb-3 bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+            >
+              <div className="flex items-center justify-between gap-4">
+                {/* File Name */}
+                <div className="flex-1 min-w-0">
+                  <div className="relative group">
                     <div
-                      key={stepIndex}
-                      className="flex flex-col items-center flex-1"
-                      style={{ color: iconColor }}
+                      className="text-sm font-medium truncate"
+                      style={{ color: theme.primaryText }}
                     >
-                      {isCompleted ? (
-                        <CheckCircleIcon sx={{ fontSize: 20, color: iconColor }} />
-                      ) : (
-                        <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: iconColor }} />
-                      )}
-                      <span className="text-[10px] mt-1">{stepName}</span>
+                      {fileName}
                     </div>
-                  );
-                })
-              )}
-            </div>
+                    <div className="absolute left-0 mt-1 hidden group-hover:block whitespace-nowrap bg-[#888585] text-white text-xs px-2 py-1 rounded shadow-lg z-10">
+                      {fileName}
+                    </div>
+                  </div>
+                </div>
 
+                {/* Table Name */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium truncate"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.table_name || 'N/A'}
+                  </div>
+                </div>
 
-            {/* Wrapper to group size and time, and push them to the right */}
-            <div className="flex items-center justify-end flex-grow ml-auto">
-              <div
-                className="text-xs text-center min-w-[80px] px-2"
-                style={{ color: theme.secondaryText }}
-              >
-                {file.file_size_mb ? `${file.file_size_mb}` : (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+                {/* Rows Affected */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.rows_effected || 0}
+                  </div>
+                </div>
+
+                {/* Table Extraction Status */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-center">
+                    {extractionFailed ? (
+                      <span className="text-red-500 text-xs font-medium">Failed</span>
+                    ) : file.table_extraction_status?.toLowerCase() === 'done' ? (
+                      <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
+                    ) : (
+                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: theme.secondaryText }} />
+                    )}
+                  </div>
+                </div>
+
+                {/* Column Extraction Status */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-center">
+                    {file.column_extraction_status?.toLowerCase() === 'done' ? (
+                      <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
+                    ) : (
+                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: theme.secondaryText }} />
+                    )}
+                  </div>
+                </div>
+
+                {/* Data Insert Status */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-center">
+                    {file.data_insert_status?.toLowerCase() === 'done' ? (
+                      <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
+                    ) : (
+                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: theme.secondaryText }} />
+                    )}
+                  </div>
+                </div>
+
+                {/* File Size */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-center" style={{ color: theme.primaryText }}>
+                    {file.file_size_mb || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+                  </div>
+                </div>
+
+                {/* Uploaded At */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-center" style={{ color: theme.primaryText }}>
+                    {formatTo12Hour(file.created_at) || new Date().toLocaleDateString()}
+                  </div>
+                </div>
               </div>
-              <div
-                className="text-xs text-right min-w-[180px] px-2"
-                style={{ color: theme.secondaryText }}
-              >
-                {formatTo12Hour(file.created_at) || new Date().toLocaleDateString()}
-              </div>
             </div>
-
-            {/* <div className="flex items-center min-w-[60px] justify-end w-[5%]"> */}
-
-              {/* <button
-                onClick={() => handleNavigateToDashboard(file)}
-                disabled={!isFullyProcessed}
-                title={isFullyProcessed ? "View in Dashboard" : "Processing incomplete"}
-              >
-                <ArrowForwardIcon
-                  className="w-5 h-5"
-                  sx={{
-                    color: isFullyProcessed ? theme.accent : theme.border,
-                    cursor: isFullyProcessed ? 'pointer' : 'not-allowed',
-                    transition: "color 0.2s",
-                    "&:hover": {
-                      color: isFullyProcessed ? theme.primaryText : theme.border
-                    },
-                  }}
-                />
-              </button> */}
-            {/* </div> */}
-          </div>
-        );
+          );
         })}
       </div>
     </div>
