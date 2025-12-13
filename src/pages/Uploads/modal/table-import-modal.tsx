@@ -617,33 +617,72 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
                                 {/*  CASE 1: SCHEMA MISMATCH (SHOW ONLY MESSAGE) */}
                                 {isSchemaMismatch ? (
-                                    <div className="p-4 bg-red-50 border border-red-300 rounded-lg">
+                                    // <div className="p-4 bg-red-50 border border-red-300 rounded-lg">
 
-                                        <h4 className="text-sm font-semibold text-red-700 mb-2">
-                                            {schemaMismatchData?.message || "Schema mismatch detected"}
+                                    //     <h4 className="text-sm font-semibold text-red-700 mb-2">
+                                    //         {schemaMismatchData?.message || "Schema mismatch detected"}
+                                    //     </h4>
+
+                                    //     {/* EXTRA COLUMNS IN CSV */}
+                                    //     <div className="mt-3">
+                                    //         <p className="text-xs font-semibold text-red-600 mb-1">Extra Columns in CSV:</p>
+                                    //         <ul className="list-disc list-inside text-xs text-gray-700">
+                                    //             {schemaMismatchData?.extra_in_csv?.map((item, index) => (
+                                    //                 <li key={index}>{item}</li>
+                                    //             ))}
+                                    //         </ul>
+                                    //     </div>
+
+                                    //     {/* MISSING COLUMNS IN CSV */}
+                                    //     <div className="mt-4">
+                                    //         <p className="text-xs font-semibold text-red-600 mb-1">Missing Columns in CSV:</p>
+                                    //         <ul className="list-disc list-inside text-xs text-gray-700">
+                                    //             {schemaMismatchData?.missing_in_csv?.map((item, index) => (
+                                    //                 <li key={index}>{item}</li>
+                                    //             ))}
+                                    //         </ul>
+                                    //     </div>
+
+                                    // </div>
+                                    <div className="p-6 bg-red-50 border border-red-300 rounded-xl">
+
+                                        {/* TITLE */}
+                                        <h4 className="text-base font-semibold text-red-700 text-center mb-6">
+                                            ⚠️ Schema Mismatch Detected
                                         </h4>
 
-                                        {/* EXTRA COLUMNS IN CSV */}
-                                        <div className="mt-3">
-                                            <p className="text-xs font-semibold text-red-600 mb-1">Extra Columns in CSV:</p>
-                                            <ul className="list-disc list-inside text-xs text-gray-700">
-                                                {schemaMismatchData?.extra_in_csv?.map((item, index) => (
-                                                    <li key={index}>{item}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                                        {/* CONTENT */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                                        {/* MISSING COLUMNS IN CSV */}
-                                        <div className="mt-4">
-                                            <p className="text-xs font-semibold text-red-600 mb-1">Missing Columns in CSV:</p>
-                                            <ul className="list-disc list-inside text-xs text-gray-700">
-                                                {schemaMismatchData?.missing_in_csv?.map((item, index) => (
-                                                    <li key={index}>{item}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                                            {/* EXTRA COLUMNS */}
+                                            <div className="bg-white border border-red-200 rounded-lg p-4">
+                                                <p className="text-sm font-semibold text-red-600 mb-3">
+                                                    Extra Columns in CSV
+                                                </p>
 
+                                                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 max-h-56 overflow-y-auto">
+                                                    {schemaMismatchData?.extra_in_csv?.map((item, index) => (
+                                                        <li key={index}>{item}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+
+                                            {/* MISSING COLUMNS */}
+                                            <div className="bg-white border border-red-200 rounded-lg p-4">
+                                                <p className="text-sm font-semibold text-red-600 mb-3">
+                                                    Missing Columns in CSV
+                                                </p>
+
+                                                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 max-h-56 overflow-y-auto">
+                                                    {schemaMismatchData?.missing_in_csv?.map((item, index) => (
+                                                        <li key={index}>{item}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+
+                                        </div>
                                     </div>
+
                                 ) : (
                                     <>
                                         {/*  CASE 2: NORMAL PREVIEW TABLE */}
