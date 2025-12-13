@@ -89,7 +89,7 @@ const getSavedQueryResponse = async () => {
 
       const formatted = {
         [sqlQuery]: {
-          title: "Custom Report Result",
+          title: "Report Result",
           rows: api.rows,
           columns: api.columns.map((col) => ({ column_name: col })),
           procedure_sql: sqlQuery,

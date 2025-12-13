@@ -40,7 +40,6 @@ export default function DataViewHeader({
 
   const itemTemplate = (option) => {
     if (!option) return null;
-
     return (
       <Tippy content={option.label} theme="gray" placement="top-start">
         <div className="truncate max-w-[250px]">
@@ -56,23 +55,42 @@ export default function DataViewHeader({
     }
   }, [editReport]);
 
+  // useEffect(() => {
+  //   if (editReport && tableOptions.length > 0) {
+  //     const queryName = editReport.query?.query_name;
+
+  //     const matchedOption = tableOptions.find(
+  //       (opt) => opt.label === queryName
+  //     );
+
+  //     if (matchedOption) {
+  //       setSelectedTables([matchedOption]);
+
+  //       // Optional: auto run script
+  //       onRunScript?.(matchedOption.value);
+  //     }
+  //   }
+  // }, [editReport, tableOptions]);
+  const isEditMode = !!editReport;
+
   useEffect(() => {
-    if (editReport && tableOptions.length > 0) {
-      const queryName = editReport.query?.query_name;
+    if (!isEditMode || tableOptions.length === 0) return;
 
-      const matchedOption = tableOptions.find(
-        (opt) => opt.label === queryName
-      );
+    const queryName = editReport?.query?.query_name;
+    if (!queryName) return;
 
-      if (matchedOption) {
-        setSelectedTables([matchedOption]);
+    const matchedOption = tableOptions.find(
+      (opt) => opt.label === queryName
+    );
 
-        // Optional: auto run script
-        onRunScript?.(matchedOption.value);
-      }
+    if (matchedOption) {
+      // VERY IMPORTANT
+      setSelectedTables([matchedOption.value]);
+
+      // auto load table
+      onRunScript?.(matchedOption.value);
     }
-  }, [editReport, tableOptions]);
-
+  }, [isEditMode, editReport, tableOptions]);
 
 
   const handleDropdownShow = () => {
