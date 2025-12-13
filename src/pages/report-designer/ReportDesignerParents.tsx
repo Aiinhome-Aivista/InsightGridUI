@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import DataViewHeader from "./ReportDesignerHeader";
-import DataViewTable from "./ReportDesignerTable";
-import { useTheme } from "../../../theme";
-import ApiServices from "../../../services/ApiServices";
+import DataViewHeader from "./components/ReportDesignerHeader";
+import DataViewTable from "./components/ReportDesignerTable";
+import { useTheme } from "../../theme";
+import ApiServices from "../../services/ApiServices";
 export default function TableView() {
   const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
