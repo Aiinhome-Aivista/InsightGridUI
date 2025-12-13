@@ -23,10 +23,10 @@ export default function DataViewHeader({
   reportName,
   setReportName,
   onSaveReport,
-
 }) {
   const navigate = useNavigate();
-  const { setIsConfirmSaveModalOpen, setViewName, setConfirmSaveAction } = useAuth();
+  const { setIsConfirmSaveModalOpen, setViewName, setConfirmSaveAction } =
+    useAuth();
   const dropdownRef = useRef<Dropdown>(null);
   const { theme } = useTheme();
   const trimToWords = (text, count = 3) => {
@@ -104,7 +104,6 @@ export default function DataViewHeader({
           <InputText
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            
             className="pl-10 w-full h-10 rounded-xl border focus:outline-none focus:ring-0"
             placeholder="Global Search"
           />
@@ -126,26 +125,29 @@ export default function DataViewHeader({
                 : null
             }
             options={tableOptions}
+            placeholder="Select a View"
+            optionLabel="label"
+            optionValue="value"
             onShow={handleDropdownShow}
             onHide={handleDropdownHide}
             ref={dropdownRef}
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Select Views"
             itemTemplate={itemTemplate}
             onChange={(e) => {
               const val = e.value;
               setSelectedTables(val ? [val] : []);
-              if (val) onRunScript(val);
+              if (val) onRunScript(val); // 👈 UI load here
             }}
-            className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0"
-            panelClassName="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden mt-1"
+            className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm bg-white shadow-sm"
+            panelClassName="bg-white rounded-xl shadow-xl border border-gray-100"
           />
+
           <button
             onClick={handleSaveClick}
             disabled={!reportName}
             className={`rounded-lg text-sm font-medium transition-all flex items-center justify-center ${
-              !reportName ? "bg-gray-300 cursor-not-allowed text-white" : "bg-blue-400 hover:bg-blue-700 text-white"
+              !reportName
+                ? "bg-gray-300 cursor-not-allowed text-white"
+                : "bg-blue-400 hover:bg-blue-700 text-white"
             }`}
             style={{ width: "108px", height: "40px" }}
           >
