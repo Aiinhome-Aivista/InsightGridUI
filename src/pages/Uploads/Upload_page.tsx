@@ -229,6 +229,7 @@ export default function UploadPage() {
       <TableImportModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onFinish={trackFiles}
         uploadedFileName={uploadedFileName}
         apiData={uploadResponseData}
       />

@@ -2,12 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'lucide-react';
 import ApiService from '../../../services/ApiServices';
 
-// AddCardRoundedIcon replacement
-const AddCardIcon = ({ className }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2zm-9 6h2v2h2v-2h2v-2h-2v-2h-2v2H9v2z" />
-    </svg>
-);
 
 interface Column {
     id: string;
@@ -30,11 +24,12 @@ interface ApiData {
 interface TableImportModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onFinish?: () => void;
     uploadedFileName: string;
     apiData?: ApiData;
 }
 
-const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableImportModalProps) => {
+const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData }: TableImportModalProps) => {
 
     console.log("🔍 TableImportModal received apiData:", apiData);
     const [createNewTable, setCreateNewTable] = useState<'yes' | 'no'>('yes');
@@ -48,6 +43,12 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
     const [previewRows, setPreviewRows] = useState<any[]>([]);
     //for session_id and created_by
     const [insertResponse, setInsertResponse] = useState<any>(null);
+    const [insertData, setInsertData] = useState<"yes" | "no" | "">("");
+    const [totalRows, settotalRows] = useState("");
+    const [isSchemaMismatch, setIsSchemaMismatch] = useState(false);
+    const [schemaMismatchData, setSchemaMismatchData] = useState(null);
+
+
 
 
 
@@ -59,19 +60,43 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
     useEffect(() => {
         if (isOpen && apiData) {
             setTableName(apiData.suggested_table_name || uploadedFileName.replace(/\.[^/.]+$/, ''));
-            if (apiData.new_table_schema) {
-                const mappedColumns = apiData.new_table_schema.map((col, index) => ({
-                    id: String(index),
-                    name: col.column,
-                    dataType: col.datatype,
-                    length: col.length ?? '',
-                    primary: col.primary || false,
-                    isEditing: false
-                }));
-                setColumns(mappedColumns);
-            }
         }
     }, [isOpen, apiData, uploadedFileName]);
+
+    useEffect(() => {
+        if (!apiData) return;
+
+        if (createNewTable === 'yes') {
+            const mappedColumns = (apiData.new_table_schema || []).map((col, index) => ({
+                id: String(index),
+                name: col.column,
+                dataType: col.datatype,
+                length: col.length ?? '',
+                primary: col.primary || false,
+                isEditing: false
+            }));
+            setColumns(mappedColumns);
+        } else { // 'no'
+            if (selectedTable) {
+                const tableData = apiData.existing_tables.find(t => t.table_name === selectedTable);
+                if (tableData && tableData.schema) {
+                    const mappedColumns = tableData.schema.map((col: any, index: number) => ({
+                        id: `${col.column}-${index}`,
+                        name: col.column,
+                        dataType: col.datatype,
+                        length: col.length ?? '',
+                        primary: col.primary || false,
+                        isEditing: false,
+                    }));
+                    setColumns(mappedColumns);
+                } else {
+                    setColumns([]);
+                }
+            } else {
+                setColumns([]);
+            }
+        }
+    }, [createNewTable, selectedTable, apiData]);
 
     const handleEditClick = (id: string) => {
         setColumns(columns.map(col =>
@@ -103,6 +128,10 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
         ));
     };
 
+    const handleDeleteColumn = (id: string) => {
+        setColumns(columns.filter(col => col.id !== id));
+    };
+
     const handleEditTableName = () => {
         setTempTableName(tableName);
         setIsEditingTableName(true);
@@ -115,90 +144,11 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
         setIsEditingTableName(false);
     };
 
-    // const handleNext = async () => {
-
-    //     // STEP 1 → CONFIGURE SCREEN: CALL PREVIEW API
-    //     if (step === "configure") {
-
-    //         // Build updated schema (JSON)
-    //         const schema = columns.map(col => ({
-    //             column: col.name,
-    //             datatype: col.dataType,
-    //             length: col.length,
-    //             primary: col.primary
-    //         }));
-
-    //         // Build JSON payload
-    //         const payload = {
-    //             action: "preview",
-    //             session_id: sessionId,      // from localStorage
-    //             created_by: createdBy,      // from localStorage
-    //             table_name: tableName,
-    //             file_name: apiData?.file_name,
-    //             schema: schema,             // FULL JSON ARRAY
-    //             is_existing: createNewTable === "no"
-    //         };
-
-    //         console.log("Sending preview JSON payload:", payload);
-
-    //         // try {
-    //         //     // CALL JSON API (NOT form-data API)
-    //         //     const response = await ApiService.preview(payload);
-    //         //     console.log(" Preview Response:", response.data);
-
-    //         //     // Example: If backend returns preview sample rows
-    //         //     // setPreviewData(response.data.data);
-
-    //         // } catch (err) {
-    //         //     console.error(" Preview API Error:", err);
-    //         // }
-
-    //         try {
-    //             const response = await ApiService.preview(payload);
-    //             console.log("📥 Preview Response:", response.data);
-
-    //             // 🔥 STORE PREVIEW ROWS FROM BACKEND
-    //             const rows = response?.data?.data?.preview_rows || [];
-    //             setPreviewRows(rows);
-
-    //         } catch (err) {
-    //             console.error("❌ Preview API Error:", err);
-    //         }
-
-
-    //         // Move to Preview UI
-    //         setSlideDirection("left");
-    //         setTimeout(() => {
-    //             setStep("preview");
-    //             setSlideDirection("right");
-    //             setTimeout(() => setSlideDirection("none"), 50);
-    //         }, 300);
-
-    //         return;
-    //     }
-
-    //     // STEP 2 → PREVIEW SCREEN → loading → success
-    //     if (step === "preview") {
-    //         setSlideDirection("left");
-
-    //         setTimeout(() => {
-    //             setStep("loading");
-    //             setSlideDirection("none");
-
-    //             setTimeout(() => {
-    //                 setStep("success");
-    //             }, 1000);
-    //         }, 300);
-
-    //         return;
-    //     }
-    // };
 
     const handleNext = async () => {
 
         // STEP 1 → CONFIGURE SCREEN (Preview)
         if (step === "configure") {
-
             const schema = columns.map(col => ({
                 column: col.name,
                 datatype: col.dataType,
@@ -210,22 +160,51 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                 action: "preview",
                 session_id: sessionId,
                 created_by: createdBy,
-                table_name: tableName,
+                table_name: createNewTable === 'no' ? selectedTable : tableName,
                 file_name: apiData?.file_name,
                 schema: schema,
                 is_existing: createNewTable === "no"
             };
-
-            console.log("📤 Sending preview payload:", previewPayload);
-
             try {
                 const response = await ApiService.preview(previewPayload);
-                console.log("📥 Preview Response:", response.data);
+                const res = response.data;
 
-                setPreviewRows(response?.data?.data?.preview_rows || []);
+                // SUCCESS CASE → no mismatch
+                setIsSchemaMismatch(false);
+                setSchemaMismatchData(null);
+                setPreviewRows(res?.data?.preview_rows || []);
+                settotalRows(res?.data?.total_rows || []);
 
             } catch (err) {
-                console.error("❌ Preview API Error:", err);
+                console.log("Preview API Error:", err);
+
+                const apiRes = err?.response?.data;
+
+                // CHECK IF 400 ERROR CONTAINS SCHEMA MISMATCH
+                if (
+                    err?.response?.status === 400 &&
+                    apiRes?.message?.toLowerCase().includes("schema mismatch")
+                ) {
+                    setIsSchemaMismatch(true);
+
+                    setSchemaMismatchData({
+                        message: apiRes.message,
+                        extra_in_csv: apiRes?.data?.extra_in_csv || [],
+                        missing_in_csv: apiRes?.data?.missing_in_csv || []
+                    });
+
+                    setPreviewRows([]);
+                    settotalRows("");
+
+                } else {
+                    // Unknown error
+                    setIsSchemaMismatch(true);
+                    setSchemaMismatchData({
+                        message: "Unexpected error",
+                        extra_in_csv: [],
+                        missing_in_csv: []
+                    });
+                }
             }
 
             setSlideDirection("left");
@@ -237,6 +216,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
 
             return;
         }
+
 
         // STEP 2 → PREVIEW SCREEN (Insert Data)
         if (step === "preview") {
@@ -255,20 +235,20 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                 session_id: sessionId,
                 created_by: createdBy,
                 file_name: apiData?.file_name,
-                table_name: tableName,
+                table_name: createNewTable === 'no' ? selectedTable : tableName,
                 is_existing: createNewTable === "no",
                 schema: schema
             };
 
-            console.log("📤 Sending insert_data payload:", insertPayload);
+            console.log(" Sending insert_data payload:", insertPayload);
 
             try {
                 const response = await ApiService.preview(insertPayload);
-                console.log("📥 Insert Response:", response.data);
+                console.log(" Insert Response:", response.data);
 
                 setInsertResponse(response?.data?.data);
             } catch (err) {
-                console.error("❌ Insert API Error:", err);
+                console.error(" Insert API Error:", err);
             }
 
             setTimeout(() => {
@@ -316,17 +296,20 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                 }}
             >
                 {/* Modal Content */}
-                <div className="p-12 overflow-y-auto flex-1">
-                    <div className={`transition-all duration-300 ${slideDirection === 'left' ? '-translate-x-full opacity-0' :
-                        slideDirection === 'right' ? 'translate-x-full opacity-0' :
-                            'translate-x-0 opacity-100'
+                <div className="p-12 overflow-y-auto flex-1 relative">
+                    <div className={`transition-all duration-300 ${(step === 'loading' || step === 'success')
+                        ? 'absolute inset-0 flex items-center justify-center'
+                        : ''
+                        } ${slideDirection === 'left' ? '-translate-x-full opacity-0' :
+                            slideDirection === 'right' ? 'translate-x-full opacity-0' :
+                                'translate-x-0 opacity-100'
                         }`}>
                         {step === 'configure' ? (
                             <>
                                 {/* Create New Table Section */}
                                 <div className="mb-4">
                                     <h4 className="text-xs font-semibold text-gray-900 mb-2">
-                                        Do you want to create new table?
+                                        Do you want to create a new table?
                                     </h4>
                                     <div className="flex gap-4">
                                         <label className="flex items-center cursor-pointer">
@@ -366,10 +349,10 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                 onChange={(e) => setSelectedTable(e.target.value)}
                                                 className="w-full px-3 py-2 bg-white border border-gray-300 border-opacity-30 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs text-gray-700"
                                             >
-                                                <option value="">Select Table</option>
-                                                {apiData?.table_dropdown?.map((table: any, index: number) => (
-                                                    <option key={index} value={table.value || table}>
-                                                        {table.label || table}
+                                                <option value="">Select a Table</option>
+                                                {apiData?.existing_tables?.map((table: any, index: number) => (
+                                                    <option key={index} value={table.table_name}>
+                                                        {table.table_name}
                                                     </option>
                                                 ))}
                                             </select>
@@ -379,11 +362,12 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                 )}
 
                                 {/* Uploaded File Section */}
-                                <div className="mb-4">
-                                    <h4 className="text-xs font-semibold text-gray-900 mb-2">
-                                        Uploaded File - {uploadedFileName}
+                                <div className="mb-1 flex flex-row text-center items-center gap-5">
+                                    <h4 className="text-xs font-semibold text-gray-900">
+                                        Uploaded File  -  {uploadedFileName}
                                     </h4>
-                                    <div className="flex items-center justify-between mt-2">
+                                    <div className="flex items-center justify-between text-xs font-semibold text-gray-900 ">
+                                        Table Name  -
                                         {createNewTable === 'yes' && (
                                             <div className="flex items-center">
                                                 {isEditingTableName ? (
@@ -424,23 +408,23 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
                                         <h4 className="text-xs font-semibold text-gray-900">
-                                            Extracted Column
+                                            Extracted Columns
                                         </h4>
                                     </div>
                                     <div className="rounded-lg overflow-hidden">
                                         {/* Table Header */}
                                         <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200">
-                                            <div className="col-span-3 px-3 py-2">
+                                            <div className={`${createNewTable === 'yes' ? 'col-span-3' : 'col-span-4'} px-3 py-2`}>
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Column Name
                                                 </span>
                                             </div>
-                                            <div className="col-span-2 px-3 py-2">
+                                            <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2`}>
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Data Type
                                                 </span>
                                             </div>
-                                            <div className="col-span-2 px-3 py-2">
+                                            <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2`}>
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Length
                                                 </span>
@@ -450,18 +434,22 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                     Primary Key
                                                 </span>
                                             </div>
-                                            <div className="col-span-3 px-3 py-2 flex items-center gap-1">
-                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                    Action
-                                                </span>
-                                                <button
-                                                    onClick={handleAddColumn}
-                                                    className="text-gray-400 hover:text-blue-600 transition-colors"
-                                                    title="Add Row"
-                                                >
-                                                    <AddCardIcon className="w-3.5 h-3.5 text-[#3D5B81]" />
-                                                </button>
-                                            </div>
+                                            {createNewTable === 'yes' && (
+                                                <div className="col-span-3 px-3 py-2 flex items-center gap-1">
+                                                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                        Action
+                                                    </span>
+
+                                                    <button
+                                                        onClick={handleAddColumn}
+                                                        className="p-1.5 bg-[#3D5B811A] rounded-full text-gray-700 hover:text-blue-600 transition"
+                                                        title="Add Row"
+                                                    >
+                                                        <Plus className="w-3.5 h-3.5" />
+                                                    </button>
+
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Table Rows */}
@@ -470,7 +458,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                 key={column.id}
                                                 className="grid grid-cols-12 border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
                                             >
-                                                <div className="col-span-3 px-3 py-2.5">
+                                                <div className={`${createNewTable === 'yes' ? 'col-span-3' : 'col-span-4'} px-3 py-2.5`}>
                                                     {column.isEditing ? (
                                                         <input
                                                             type="text"
@@ -483,7 +471,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                         <span className="text-xs text-gray-700">{column.name}</span>
                                                     )}
                                                 </div>
-                                                <div className="col-span-2 px-3 py-2.5">
+                                                <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2.5`}>
                                                     {column.isEditing ? (
                                                         <select
                                                             value={column.dataType}
@@ -502,7 +490,7 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                         <span className="text-xs text-gray-500">{column.dataType}</span>
                                                     )}
                                                 </div>
-                                                <div className="col-span-2 px-3 py-2.5">
+                                                <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2.5`}>
                                                     {column.isEditing ? (
                                                         <input
                                                             type="number"
@@ -532,34 +520,53 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                         />
                                                     )}
                                                 </div>
-                                                <div className="col-span-3 px-3 py-2.5 flex items-center gap-2">
-                                                    {column.isEditing ? (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleSave(column.id)}
-                                                                className="text-gray-400 hover:text-green-600 transition-colors"
-                                                                title="Save"
-                                                            >
-                                                                <Save className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleEditClick(column.id)}
-                                                                className="text-gray-400 hover:text-blue-600 transition-colors"
-                                                                title="Edit"
-                                                            >
-                                                                <Edit2 className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </div>
+                                                {createNewTable === 'yes' && (
+                                                    <div className="col-span-3 px-3 py-2.5 flex items-center gap-2">
+                                                        {column.isEditing ? (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => handleSave(column.id)}
+                                                                    className="text-gray-400 hover:text-green-600 transition-colors"
+                                                                    title="Save"
+                                                                >
+                                                                    <Save className="w-3.5 h-3.5" />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteColumn(column.id)}
+                                                                    className="text-gray-400 hover:text-red-600 transition-colors"
+                                                                    title="Delete"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </>
+
+                                                        ) : (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => handleEditClick(column.id)}
+                                                                    className="text-gray-400 hover:text-blue-600 transition-colors"
+                                                                    title="Edit"
+                                                                >
+                                                                    <Edit2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteColumn(column.id)}
+                                                                    className="text-gray-400 hover:text-red-600 transition-colors"
+                                                                    title="Delete"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </>
+
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
                                 </div>
-                                {/* <div className="mt-8">
+
+                                <div className="mt-8">
                                     <h4 className="text-xs font-semibold text-gray-900 mb-2">
                                         Insert Data
                                     </h4>
@@ -569,6 +576,8 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                 type="radio"
                                                 name="insertData"
                                                 value="yes"
+                                                checked={insertData === "yes"}
+                                                onChange={() => setInsertData("yes")}
                                                 className="w-3 h-3 text-blue-600 border-gray-300 focus:ring-blue-500"
                                             />
                                             <span className="ml-1.5 text-xs text-gray-700">Yes</span>
@@ -578,16 +587,19 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                                 type="radio"
                                                 name="insertData"
                                                 value="no"
+                                                checked={insertData === "no"}
+                                                onChange={() => setInsertData("no")}
                                                 className="w-3 h-3 text-blue-600 border-gray-300 focus:ring-blue-500"
                                             />
                                             <span className="ml-1.5 text-xs text-gray-700">No</span>
                                         </label>
                                     </div>
-                                </div> */}
+                                </div>
+
                             </>
                         ) : step === 'preview' ? (
                             <>
-                                {/* Uploaded File Section - Same as before */}
+                                {/* Uploaded File Section */}
                                 <div className="mb-4">
                                     <h4 className="text-xs font-semibold text-gray-900 mb-2">
                                         Uploaded File - {uploadedFileName}
@@ -595,98 +607,128 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                                     <div className="flex items-center justify-between mt-2">
                                         {createNewTable === 'yes' && (
                                             <div className="flex items-center">
-                                                <p className="text-xs text-gray-700 font-medium flex-1">{tableName}</p>
+                                                <p className="text-xs text-gray-700 font-medium flex-1">
+                                                    {tableName}
+                                                </p>
                                             </div>
                                         )}
                                     </div>
                                 </div>
 
-                                {/* Column Preview Table */}
-                                <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-xs font-semibold text-gray-900">
-                                            Column Preview (Showing 5 out of 10,000)
+                                {/*  CASE 1: SCHEMA MISMATCH (SHOW ONLY MESSAGE) */}
+                                {isSchemaMismatch ? (
+                                    <div className="p-4 bg-red-50 border border-red-300 rounded-lg">
+
+                                        <h4 className="text-sm font-semibold text-red-700 mb-2">
+                                            {schemaMismatchData?.message || "Schema mismatch detected"}
                                         </h4>
-                                    </div>
-                                    <div className="rounded-lg overflow-hidden">
-                                        {/* Table Header */}
-                                        <div className="grid bg-gray-50 border-b border-gray-200 border-opacity-30" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))` }}>
-                                            {columns.map((column) => (
-                                                <div key={column.id} className="px-3 py-2 border-r border-gray-200 border-opacity-30 last:border-r-0">
-                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
-                                                        {column.name}
-                                                    </span>
-                                                </div>
-                                            ))}
+
+                                        {/* EXTRA COLUMNS IN CSV */}
+                                        <div className="mt-3">
+                                            <p className="text-xs font-semibold text-red-600 mb-1">Extra Columns in CSV:</p>
+                                            <ul className="list-disc list-inside text-xs text-gray-700">
+                                                {schemaMismatchData?.extra_in_csv?.map((item, index) => (
+                                                    <li key={index}>{item}</li>
+                                                ))}
+                                            </ul>
                                         </div>
-                                        {/* REAL PREVIEW DATA FROM BACKEND */}
-                                        {previewRows.length > 0 ? (
-                                            previewRows.map((row, rowIndex) => (
+
+                                        {/* MISSING COLUMNS IN CSV */}
+                                        <div className="mt-4">
+                                            <p className="text-xs font-semibold text-red-600 mb-1">Missing Columns in CSV:</p>
+                                            <ul className="list-disc list-inside text-xs text-gray-700">
+                                                {schemaMismatchData?.missing_in_csv?.map((item, index) => (
+                                                    <li key={index}>{item}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/*  CASE 2: NORMAL PREVIEW TABLE */}
+                                        <div>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-xs font-semibold text-gray-900">
+                                                    Column Preview (Showing 5 out of {totalRows} rows)
+                                                </h4>
+                                            </div>
+
+                                            <div className="rounded-lg overflow-hidden">
+
+                                                {/* Table Header */}
                                                 <div
-                                                    key={rowIndex}
-                                                    className="grid border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
-                                                    style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))` }}
+                                                    className="grid bg-gray-50 border-b border-gray-200 border-opacity-30"
+                                                    style={{
+                                                        gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))`
+                                                    }}
                                                 >
                                                     {columns.map((column) => (
                                                         <div
                                                             key={column.id}
-                                                            className="px-3 py-2.5 border-r border-gray-200 border-opacity-30 last:border-r-0"
+                                                            className="px-3 py-2 border-r border-gray-200 border-opacity-30 last:border-r-0"
                                                         >
-                                                            <span className="text-xs text-[#3D5B81]">
-                                                                {String(row[column.name]) ?? ""}
+                                                            <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
+                                                                {column.name}
                                                             </span>
                                                         </div>
                                                     ))}
                                                 </div>
-                                            ))
-                                        ) : (
-                                            <p className="text-xs text-gray-500 p-4">
-                                                No preview data available.
-                                            </p>
-                                        )}
 
-                                    </div>
-                                </div>
+                                                {/* Preview Rows */}
+                                                {previewRows.length > 0 ? (
+                                                    previewRows.map((row, rowIndex) => (
+                                                        <div
+                                                            key={rowIndex}
+                                                            className="grid border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
+                                                            style={{
+                                                                gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))`
+                                                            }}
+                                                        >
+                                                            {columns.map((column) => (
+                                                                <div
+                                                                    key={column.id}
+                                                                    className="px-3 py-2.5 border-r border-gray-200 border-opacity-30 last:border-r-0"
+                                                                >
+                                                                    <span className="text-xs text-[#3D5B81]">
+                                                                        {String(row[column.name]) ?? ""}
+                                                                    </span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p className="text-xs text-gray-500 p-4">
+                                                        No preview data available.
+                                                    </p>
+                                                )}
+
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </>
+
                         ) : step === 'loading' ? (
-                            <div className="flex flex-col items-center justify-center h-full">
+                            <div className="flex flex-col items-center justify-center">
                                 <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
                                 <p className="text-sm text-gray-600">Creating table...</p>
                             </div>
                         ) : (
                             <>
                                 {/* Success State */}
-                                <div className="flex flex-col h-full">
-                                    {/* <div className="mb-6">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            </div>
 
-                                            <h4 className="text-sm font-semibold text-gray-900">
-                                                {insertResponse?.summary_message
-                                                    ? insertResponse.summary_message
-                                                    : `Table "${tableName}" created successfully`}
-                                            </h4>
-
-                                        </div>
-                                    </div> */}
-
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        </div>
-                                        <h4 className="text-sm font-semibold text-gray-900">
-                                            {insertResponse?.summary_message
-                                                ? insertResponse.summary_message
-                                                : `Table "${tableName}" created successfully`}
-                                        </h4>
-
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
                                     </div>
+                                    <h4 className="text-sm font-semibold text-gray-900">
+                                        {insertResponse?.summary_message
+                                            ? insertResponse.summary_message
+                                            : `Table "${tableName}" created successfully`}
+                                    </h4>
                                 </div>
                             </>
                         )}
@@ -705,10 +747,13 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                     )}
                     {step === 'success' ? (
                         <button
-                            onClick={onClose}
+                            onClick={() => {
+                                if (onFinish) onFinish();
+                                onClose();
+                            }}
                             className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs"
                         >
-                            Done
+                            Finish
                         </button>
                     ) : step !== 'loading' && (
                         <>
@@ -718,12 +763,25 @@ const TableImportModal = ({ isOpen, onClose, uploadedFileName, apiData }: TableI
                             >
                                 Cancel
                             </button>
-                            <button
+                            {/* <button
                                 onClick={handleNext}
                                 className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs"
                             >
                                 Next
+                            </button> */}
+                            <button
+                                onClick={handleNext}
+                                disabled={insertData !== "yes" || isSchemaMismatch}
+                                className={`px-4 py-1.5 rounded-lg font-medium text-xs transition-colors
+        ${insertData === "yes" && !isSchemaMismatch
+                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    }`}
+                            >
+                                Next
                             </button>
+
+
                         </>
                     )}
                 </div>
