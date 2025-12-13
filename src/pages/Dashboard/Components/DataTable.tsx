@@ -4,10 +4,16 @@ import { FilterMatchMode } from "primereact/api";
 import { useState, useEffect } from "react";
 import "../../../styles/primereact-table.css";
 
+interface ColumnConfig {
+  column_name: string;
+  header?: string; // Optional custom header label
+  sortable?: boolean; // Optional - whether column is sortable (default: true)
+}
+
 interface ProductDataTableProps {
   data: any[];
   globalFilter: string;
-  columns: { column_name: string }[];
+  columns: (ColumnConfig | { column_name: string })[];
 }
 
 export default function ProductDataTable({ 
@@ -39,7 +45,7 @@ export default function ProductDataTable({
     setPageWindowStart(1);
   }, [globalFilter]);
 
-  // Helper function to format header text
+  // Helper function to format header text (default formatting)
   const formatHeader = (headerText: string) => {
     if (!headerText) return '';
     return headerText
@@ -106,24 +112,31 @@ export default function ProductDataTable({
         stripedRows
         rowClassName={() => "border-b border-gray-200"}
       >
-        {columns.map((col) => (
-          <Column
-            style={{ whiteSpace: "nowrap", width: "auto" }}
-            key={col.column_name}
-            field={col.column_name}
-            header={formatHeader(col.column_name)}
-            sortable
-            headerStyle={{
-              fontSize: '15px',
-              fontWeight: 600,
-              color: '#3D5B81'
-            }}
-            bodyStyle={{
-              fontSize: '14px',
-              fontWeight: 400
-            }}
-          />
-        ))}
+        {columns.map((col) => {
+          // Check if custom header is provided, otherwise use default formatting
+          const headerLabel = 'header' in col && col.header ? col.header : formatHeader(col.column_name);
+          // Check if sortable is explicitly set, otherwise default to true
+          const isSortable = 'sortable' in col ? col.sortable : true;
+          
+          return (
+            <Column
+              style={{ whiteSpace: "nowrap", width: "auto" }}
+              key={col.column_name}
+              field={col.column_name}
+              header={headerLabel}
+              sortable={isSortable}
+              headerStyle={{
+                fontSize: '15px',
+                fontWeight: 600,
+                color: '#3D5B81'
+              }}
+              bodyStyle={{
+                fontSize: '14px',
+                fontWeight: 400
+              }}
+            />
+          );
+        })}
       </DataTable>
 
       {/* Custom Pagination */}

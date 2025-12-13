@@ -7,6 +7,7 @@ import { useAuth } from "../Auth/AuthContext";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { useTheme } from "../../theme";
+import ProductDataTable from "./Components/DataTable";
 
 const ShowQuery = () => {
   const navigate = useNavigate();
@@ -66,7 +67,6 @@ const ShowQuery = () => {
     }
   };
 
-
   const fetchSavedQueries = async () => {
     setIsLoading(true);
     setError(null);
@@ -83,7 +83,6 @@ const ShowQuery = () => {
       console.error(err);
     } finally {
       setIsLoading(false);
-      // Ensure isRefreshing is set to false after the fetch completes
       setIsRefreshing(false);
     }
   };
@@ -96,36 +95,67 @@ const ShowQuery = () => {
       setError("User session not found. Please log in again.");
     }
   }, [user]);
-  // handleEditClick and the placeholder fetchSavedQueries function are removed
+
   const handleRefresh = async () => {
     if (isRefreshing) return;
-
     setIsRefreshing(true);
     setGlobalFilter("");
     await fetchSavedQueries();
-    // isRefreshing is set to false in fetchSavedQueries' finally block
   };
 
-
-  // Outside component
   const handleDetailsClick = (rowData) => {
-    // console.log("row data workflow", rowData);
     navigate("/layout/query-designer", { state: { ...location.state, data: rowData, type: 'workflow' } });
   };
 
-  const filteredQueries = queries.filter((query) => {
-    return Object.values(query).some(value =>
-      String(value).toLowerCase().includes(globalFilter.toLowerCase())
-    );
-  });
+  // Transform queries data to include time_ago and action button
+  const transformedQueries = queries.map((query) => ({
+    ...query,
+    time_ago: timeAgo(query.created_date, query.created_at),
+    action: (
+      <div className="text-right">
+        <button 
+          className="text-[#46BA2F] bg-[rgba(53,255,2,0.1)] px-4 py-1 rounded-full text-xs font-medium hover:bg-green-200"
+          onClick={() => handleDetailsClick(query)}
+        >
+          Edit
+        </button>
+      </div>
+    )
+  }));
+
+  // Define columns with custom headers for the ProductDataTable
+  const queryColumns = [
+    { 
+      column_name: 'query_title', 
+      header: 'Query',
+      sortable: false
+    },
+    { 
+      column_name: 'created_date', 
+      header: 'Query Saving Date',
+      sortable: false
+    },
+    { 
+      column_name: 'time_ago', 
+      header: 'Query Saving Time',
+      sortable: false
+    },
+    { 
+      column_name: 'rows_effected', 
+      header: 'Row Effected',
+      sortable: false
+    },
+    { 
+      column_name: 'action', 
+      header: 'Action',
+      sortable: false 
+    }
+  ];
 
   return (
-    <div className=" mx-auto px-6 py-8">
-
-      {/* Header */}
-{/* Header Container */}
+    <div className="mx-auto px-6 py-8">
+      {/* Header Container */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        
         {/* Left Side: Title text AND Action Button grouped together */}
         <div className="flex items-center gap-8">
           <div>
@@ -142,8 +172,6 @@ const ShowQuery = () => {
               width: '108px',
               height: '45px',
               backgroundColor: theme.accent,
-              // You might need to define a hover color based on your theme structure, e.g., theme.accentHover
-              // or use a utility to darken theme.accent for the hover state if not provided by theme.
             }}
           >
             Create Query
@@ -152,8 +180,7 @@ const ShowQuery = () => {
 
         {/* Right Side: Search & Refresh */}
         <div className="flex items-center gap-3">
-          
-          {/* Query Designer */}
+          {/* Search Input */}
           <div className="relative group">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg 
@@ -195,51 +222,25 @@ const ShowQuery = () => {
         </div>
       </div>
 
-
+      {/* Content */}
       {isLoading ? (
         <div className="flex justify-center items-center py-10">
           <AutorenewRoundedIcon className="w-8 h-8 animate-spin text-gray-500" />
         </div>
       ) : error ? (
         <div className="text-center py-10 text-red-500">{error}</div>
-      ) : filteredQueries.length > 0 ? (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100" style={{ fontSize: '15px', color: '#3D5B81' }}>
-              <tr>
-                <th className="text-left px-5 py-5 font-semibold">Query</th>
-                <th className="text-left px-5 py-5 font-semibold">Query Saving Date</th>
-                <th className="text-left px-5 py-5 font-semibold">Query Saving Time</th>
-                <th className="text-left px-5 py-5 font-semibold">Row Effected</th>
-                <th className="text-right px-5 py-5 font-semibold">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredQueries.map((query) => (
-                <tr key={query.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-5 font-normal text-[#3D5B81]" style={{ fontSize: '18px' }}>{query.query_title}</td>
-                  <td className="px-6 py-5 font-normal text-[#9b9fa8]" style={{ fontSize: '15px' }}>{query.created_date}</td>
-                  <td className="px-6 py-5 font-normal text-[#9b9fa8]" style={{ fontSize: '15px' }}>{timeAgo(query.created_date, query.created_at)}</td>
-                  <td className="px-6 py-5 font-normal text-[#9b9fa8]" style={{ fontSize: '15px' }}>{query.rows_effected}</td>
-                  <td className="px-6 py-5 text-right">
-                    <button className="text-[#46BA2F] bg-[rgba(53,255,2,0.1)] px-4 py-1 rounded-full text-xs font-medium hover:bg-green-200"
-                      onClick={() => handleDetailsClick(query)} >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
+      ) : queries.length > 0 ? (
+        <ProductDataTable 
+          data={transformedQueries} 
+          globalFilter={globalFilter} 
+          columns={queryColumns} 
+        />
       ) : (
         <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-20rem)]">
           <MdOutlineHourglassEmpty size={50} className="text-gray-400" />
           <p className="text-gray-500 text-lg mt-3">Empty Query list</p>
         </div>
       )}
-
     </div>
   );
 };
