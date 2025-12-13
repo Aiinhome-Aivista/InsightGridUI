@@ -102,7 +102,7 @@ export default function DataViewHeader({
             type="text"
             value={reportName}
             onChange={(e) => setReportName(e.target.value)}
-            placeholder="Write a report name(required)"
+            placeholder="Write a report name (required)"
             className=" px-4 w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10"
           />
         </div>
