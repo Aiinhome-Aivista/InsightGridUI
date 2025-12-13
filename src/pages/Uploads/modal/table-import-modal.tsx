@@ -502,7 +502,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 </span>
                                             </div>
                                             {createNewTable === 'yes' && (
-                                                <div className="col-span-3 px-3 py-2 flex items-center gap-1">
+                                                <div className="col-span-3 px-3 py-2 flex items-center gap-3">
                                                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                         Action
                                                     </span>
