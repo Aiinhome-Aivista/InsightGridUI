@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import ApiService from "../../../services/ApiServices";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
@@ -34,6 +34,8 @@ export default function Chat({
   passedData?: { user_query: string; query_title: string; ai_response: string };
 }) {
 
+   const { setDownloadData } = useAuth();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const getStoredUser = () => {
     try {
@@ -272,6 +274,7 @@ export default function Chat({
             : [];
 
         setTableData({ rows, columns });
+        setDownloadData({ rows, columns });
         setDisplayedLogs([response.data.message || "Execution successful."]);
         // capture execution metadata if provided by backend
         setExecutionMeta({
@@ -364,6 +367,7 @@ export default function Chat({
     } finally {
       setIsConfirmSaveModalOpen(false);
       setViewName(""); // Clear input after saving
+      navigate("/layout/query-list");
     }
   };
 

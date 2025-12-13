@@ -2,33 +2,40 @@ import { useEffect, useState, useRef } from "react";
 import { useTheme } from "../../theme";
 import FileDropZone from "./components/FileDropZone";
 import DataProcessing from "./components/DataProcessing";
-// import FileNameInput from "./components/FileNameInput";
 import ApiService from "../../services/ApiServices";
 import { useAuth } from "../Auth/AuthContext";
+import TableImportModal from "./modal/table-import-modal";
 
 export default function UploadPage() {
   const { theme } = useTheme();
   const { user } = useAuth();
   const [processedFiles, setProcessedFiles] = useState<any[]>([]);
-  // const [sessionName, setSessionName] = useState("");
-  // const [sessionNameError, setSessionNameError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingFileName, setProcessingFileName] = useState("");
   const isInitialMount = useRef(true);
   const uploadInProgress = useRef(false);
-  const currentSessionRef = useRef<{ id: string, name: string } | null>(null);
   const createdBy = user?.user_id || "";
   const [noFileMessage, setNoFileMessage] = useState("");
   const sessionId = user?.session_id || "";
+
+  // ADD THESE TWO LINES
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState("");
+  const [uploadResponseData, setUploadResponseData] = useState<any>(null);
+
+
+  
 
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       trackFiles();
     }
-  }, [createdBy,sessionId]);
-  
+  }, [createdBy, sessionId]);
+
+
+
   async function trackFiles() {
     const payload = { created_by: createdBy, session_id: sessionId };
     try {
@@ -55,16 +62,61 @@ export default function UploadPage() {
   }
 
 
+  // async function uploadFiles(files: File[]) {
+  //   if (!files || files.length === 0) return;
+
+  //   if (uploadInProgress.current) return;
+
+  //   uploadInProgress.current = true;
+  //   setIsUploading(true);
+  //   setIsProcessing(false);
+
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append('session_id', sessionId);
+  //     formData.append('created_by', createdBy);
+  //     files.forEach(file => {
+  //       formData.append('files', file);
+  //     });
+
+  //     setProcessingFileName(files.length > 1 ? `${files.length} files` : files[0].name);
+
+  //     const uploadResponse = await ApiService.fileUpload(formData);
+  //     const responseData = uploadResponse.data;
+
+  //     if (!responseData.isSuccess) {
+  //       throw new Error(responseData.message || 'Upload failed');
+  //     }
+
+  //     const uploadedFile = responseData.data && responseData.data.length > 0
+  //       ? responseData.data[0]
+  //       : null;
+
+  //     if (!uploadedFile) {
+  //       throw new Error('No file data returned from upload');
+  //     }
+
+  //     const actualSessionId = uploadedFile.session_id || sessionId;
+  //     setIsUploading(false);
+  //     setIsProcessing(false);
+
+  //     await trackFiles();
+
+  //     // ADD THESE TWO LINES TO OPEN MODAL AFTER UPLOAD
+  //     setUploadedFileName(files.length > 1 ? `${files.length} files` : files[0].name);
+  //     setIsModalOpen(true);
+
+  //   } catch (error: any) {
+  //     console.error('Error uploading files:', error);
+  //     alert(`Error uploading files: ${error.message || 'Please try again.'}`);
+  //     setIsUploading(false);
+  //     setIsProcessing(false);
+  //     uploadInProgress.current = false;
+  //   }
+  // }
+
   async function uploadFiles(files: File[]) {
     if (!files || files.length === 0) return;
-
-    // if (!sessionName || sessionName.trim() === "") {
-    //   setSessionNameError("Session name is required before uploading files");
-    //   return;
-    // }
-
-    // setSessionNameError("");
-
     if (uploadInProgress.current) return;
 
     uploadInProgress.current = true;
@@ -72,149 +124,55 @@ export default function UploadPage() {
     setIsProcessing(false);
 
     try {
-      
-      // const sessionNameTrimmed = sessionName.trim();
-
-      // currentSessionRef.current = { id: sessionId, name: sessionNameTrimmed };
-
       const formData = new FormData();
-      formData.append('session_id', sessionId);
-      // formData.append('session_name', sessionNameTrimmed);
-      formData.append('created_by', createdBy);
-      files.forEach(file => {
-        formData.append('files', file);
+      formData.append("action", "upload");
+      formData.append("session_id", sessionId);
+      formData.append("created_by", createdBy);
+
+      files.forEach((file) => {
+        formData.append("files", file);
       });
 
-      setProcessingFileName(files.length > 1 ? `${files.length} files` : files[0].name);
-
-      const uploadResponse = await ApiService.fileUpload(formData);
-      const responseData = uploadResponse.data;
-
-      if (!responseData.isSuccess) {
-        throw new Error(responseData.message || 'Upload failed');
-      }
-
-      const uploadedFile = responseData.data && responseData.data.length > 0
-        ? responseData.data[0]
-        : null;
-
-      if (!uploadedFile) {
-        throw new Error('No file data returned from upload');
-      }
-
-      const actualSessionId = uploadedFile.session_id || sessionId;
-      // const actualSessionName = uploadedFile.session_name || sessionNameTrimmed;
-      setIsUploading(false);
-      setIsProcessing(false);
-
-      // currentSessionRef.current = {
-      //   id: actualSessionId,
-      //   name: actualSessionName
-      // };
-      await trackFiles();
-
-      // const waitTime = files.reduce((total, file) => total + file.size, 0) > 5000000 ? 10000 : 7000;
-
-      // setIsUploading(false);
-      // setIsProcessing(true);
-
-      // await new Promise(resolve => setTimeout(resolve, waitTime));
-
-      // const verifySuccess = await verifyDataExists(actualSessionId, actualSessionName);
-
-      // if (!verifySuccess) {
-      //   throw new Error('Data verification failed. Please try processing again manually.');
-      // }
-
-      // await processSessionData(actualSessionId, actualSessionName, );
-
-    } catch (error: any) {
-      console.error('Error uploading files:', error);
-      alert(`Error uploading files: ${error.message || 'Please try again.'}`);
-      setIsUploading(false);
-      setIsProcessing(false);
-      uploadInProgress.current = false;
-    }
-  }
-
-  async function verifyDataExists(sessionId: string, sessionName: string): Promise<boolean> {
-    try {
-      // const response = await ApiService.tracker(createdBy);
-      const response = await ApiService.tracker({ created_by: createdBy });
-      const filesList = response.data?.data || [];
-
-      const fileExists = filesList.some(
-        (file: any) =>
-          file.session_id === sessionId &&
-          file.session_name === sessionName
+      setProcessingFileName(
+        files.length > 1 ? `${files.length} files` : files[0].name
       );
 
-      if (!fileExists) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
+      const uploadResponse = await ApiService.fileUpload(formData);
+      console.log("Upload Response:", uploadResponse?.data);
 
-        // const retryResponse = await ApiService.tracker();
-        const retryResponse = await ApiService.tracker({ created_by: createdBy });
-        const retryFilesList = retryResponse.data?.data || [];
-        const retryExists = retryFilesList.some(
-          (file: any) =>
-            file.session_id === sessionId &&
-            file.session_name === sessionName
-        );
+      const responseData = uploadResponse?.data;
 
-        return retryExists;
+      if (!responseData?.isSuccess) {
+        console.error("Upload failed:", responseData?.message);
+        return;
       }
 
-      return true;
-    } catch (error) {
-      console.error('Error verifying data:', error);
-      return false;
+      //  FIX: Response "data" is an object, not an array
+      const fileInfo = responseData.data;
+      if (!fileInfo) {
+        console.error("File info missing.");
+        return;
+      }
+
+      // SUCCESS — OPEN MODAL
+      setUploadedFileName(fileInfo.file_name || files[0].name);
+      setUploadResponseData(fileInfo);
+      setIsModalOpen(true);
+
+      setIsUploading(false);
+      setIsProcessing(false);
+
+      await trackFiles();
+    } catch (error: any) {
+      console.error("Upload error:", error?.message || error);
+    } finally {
+      uploadInProgress.current = false;
+      setIsUploading(false);
+      setIsProcessing(false);
     }
   }
 
-  // async function processSessionData(sessionId: string, sessionNameTrimmed: string) {
-  //   try {
-  //     const requestBody = {
-  //       session_id: sessionId,
-  //       session_name: sessionNameTrimmed,
-  //       created_by: createdBy
-  //     };
 
-  //     const processResponse = await ApiService.processSessionData(requestBody);
-
-  //     const globalOps = processResponse.data?.global_operations;
-  //     if (globalOps) {
-  //       const hasLLMError = Object.values(globalOps).some(
-  //         (ops: any) => Array.isArray(ops) && ops.includes("LLM Error")
-  //       );
-
-  //       if (hasLLMError) {
-  //         alert('Processing completed but some AI features failed. You can retry processing from the dashboard.');
-  //       }
-  //     }
-
-  //     // await trackFiles(createdBy);
-  //     await trackFiles({ created_by: createdBy });
-
-
-  //     setIsProcessing(false);
-  //     setProcessingFileName("");
-  //     uploadInProgress.current = false;
-
-  //   } catch (processError: any) {
-  //     console.error('Process session data error:', processError);
-
-  //     setIsProcessing(false);
-  //     setProcessingFileName("");
-  //     uploadInProgress.current = false;
-
-  //     alert(
-  //       `Processing failed: ${processError.message}\n\n` +
-  //       `Session ID: ${sessionId}\n` +
-  //       `Session Name: ${sessionNameTrimmed}\n\n` +
-  //       `Please try again using the retry button.`
-  //     );
-  //   }
-  // }
 
 
   return (
@@ -233,24 +191,12 @@ export default function UploadPage() {
         Start by uploading a data file to create your first view.
       </p>
 
-      {/* <FileNameInput
-        theme={theme}
-        value={sessionName}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          setSessionName(e.target.value);
-          if (sessionNameError) {
-            setSessionNameError("");
-          }
-        }}
-        error={sessionNameError}
-        disabled={isUploading || isProcessing}
-      /> */}
       <FileDropZone
         onUploadComplete={uploadFiles}
-       
         theme={theme}
         disabled={isUploading || isProcessing}
       />
+
       {isProcessing && (
         <div className="flex flex-col items-center justify-center gap-3 mt-4">
           <div className="flex items-center gap-3">
@@ -265,22 +211,28 @@ export default function UploadPage() {
           </div>
         </div>
       )}
-      {/* onRefresh={() => { trackFiles(createdBy) }}  */}
+
       {processedFiles.length > 0 ? (
-        <DataProcessing files={processedFiles} onRefresh={trackFiles}
-/>
-      ) :
-        (
-          <div className="flex justify-center mt-40">
-            <p
-              className="text-center text-sm"
-              style={{ color: theme.secondaryText }}
-            >
-              {noFileMessage}
-            </p>
-          </div>
-        )
-      }
+        <DataProcessing files={processedFiles} onRefresh={trackFiles} />
+      ) : (
+        <div className="flex justify-center mt-40">
+          <p
+            className="text-center text-sm"
+            style={{ color: theme.secondaryText }}
+          >
+            {noFileMessage}
+          </p>
+        </div>
+      )}
+
+      {/* ADD THIS MODAL COMPONENT AT THE END */}
+      <TableImportModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onFinish={trackFiles}
+        uploadedFileName={uploadedFileName}
+        apiData={uploadResponseData}
+      />
     </div>
   );
 }
