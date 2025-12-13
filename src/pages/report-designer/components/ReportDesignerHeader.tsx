@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dropdown } from "primereact/dropdown";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
@@ -21,6 +21,7 @@ export default function DataViewHeader({
   reportName,
   setReportName,
   onSaveReport,
+  editReport
 
 }) {
   const navigate = useNavigate();
@@ -44,6 +45,31 @@ export default function DataViewHeader({
       </Tippy>
     );
   };
+
+  useEffect(() => {
+    if (editReport) {
+      console.log(" Edit report in header:", editReport);
+    }
+  }, [editReport]);
+
+  useEffect(() => {
+    if (editReport && tableOptions.length > 0) {
+      const queryName = editReport.query?.query_name;
+
+      const matchedOption = tableOptions.find(
+        (opt) => opt.label === queryName
+      );
+
+      if (matchedOption) {
+        setSelectedTables([matchedOption]);
+
+        // Optional: auto run script
+        onRunScript?.(matchedOption.value);
+      }
+    }
+  }, [editReport, tableOptions]);
+
+
 
   const handleDropdownShow = () => {
     window.addEventListener("scroll", handleScroll, true);
@@ -92,7 +118,7 @@ export default function DataViewHeader({
           <InputText
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            
+
             className="pl-10 w-full h-10 rounded-xl border focus:outline-none focus:ring-0"
             placeholder="Global Search"
           />
@@ -132,9 +158,8 @@ export default function DataViewHeader({
           <button
             onClick={onSaveReport}
             disabled={!reportName}
-            className={`rounded-lg text-sm font-medium transition-all flex items-center justify-center ${
-              !reportName ? "bg-gray-300 cursor-not-allowed text-white" : "bg-blue-400 hover:bg-blue-700 text-white"
-            }`}
+            className={`rounded-lg text-sm font-medium transition-all flex items-center justify-center ${!reportName ? "bg-gray-300 cursor-not-allowed text-white" : "bg-blue-400 hover:bg-blue-700 text-white"
+              }`}
             style={{ width: "108px", height: "40px" }}
           >
             Save Report

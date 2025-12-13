@@ -3,6 +3,7 @@ import DataViewHeader from "./components/ReportDesignerHeader";
 import DataViewTable from "./components/ReportDesignerTable";
 import { useTheme } from "../../theme";
 import ApiServices from "../../services/ApiServices";
+import { useLocation } from "react-router-dom";
 export default function TableView() {
   const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -12,6 +13,21 @@ export default function TableView() {
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [reportName, setReportName] = useState("");
+  const [editReport, setEditReport] = useState<any>(null);
+
+
+  const location = useLocation();
+  const report = location.state?.report;
+
+  useEffect(() => {
+    if (report) {
+      console.log(" Edit report received:", report);
+
+      setEditReport(report);
+      setReportName(report.report_name || "");
+    }
+  }, [report]);
+
 
   useEffect(() => {
     getSavedQueryResponse();
@@ -151,6 +167,7 @@ export default function TableView() {
         reportName={reportName}
         setReportName={setReportName}
         onSaveReport={handleSaveReport}
+        editReport={editReport}
       />
       {!loading && (!tableOptions || tableOptions.length === 0) ? (
         <div className="flex items-center justify-center h-96">
