@@ -56,24 +56,45 @@ export default function DataViewHeader({
     }
   }, [editReport]);
 
+const isEditMode = !!editReport;
+
   useEffect(() => {
-    if (editReport && tableOptions.length > 0) {
-      // Try matching by ID first (query_history_id)
-      let matchedOption = tableOptions.find(
-        (opt) => opt.value.id === editReport.query_history_id
-      );
+    if (!isEditMode || tableOptions.length === 0) return;
 
-      // Fallback: Try matching by name
-      if (!matchedOption) {
-        const queryName = editReport.query_name || editReport.query?.query_name || editReport.query_title;
-        matchedOption = tableOptions.find((opt) => opt.label === queryName);
-      }
+    const queryName = editReport?.query?.query_name;
+    if (!queryName) return;
 
-      if (matchedOption) {
-        setSelectedTables([matchedOption]);
-      }
+    const matchedOption = tableOptions.find(
+      (opt) => opt.label === queryName
+    );
+
+    if (matchedOption) {
+      //  VERY IMPORTANT
+      setSelectedTables([matchedOption.value]);
+
+      // auto load table
+      onRunScript?.(matchedOption.value);
     }
-  }, [editReport, tableOptions]);
+  }, [isEditMode, editReport, tableOptions]);
+
+  // useEffect(() => {
+  //   if (editReport && tableOptions.length > 0) {
+  //     // Try matching by ID first (query_history_id)
+  //     let matchedOption = tableOptions.find(
+  //       (opt) => opt.value.id === editReport.query_history_id
+  //     );
+
+  //     // Fallback: Try matching by name
+  //     if (!matchedOption) {
+  //       const queryName = editReport.query_name || editReport.query?.query_name || editReport.query_title;
+  //       matchedOption = tableOptions.find((opt) => opt.label === queryName);
+  //     }
+
+  //     if (matchedOption) {
+  //       setSelectedTables([matchedOption]);
+  //     }
+  //   }
+  // }, [editReport, tableOptions]);
 
 
 

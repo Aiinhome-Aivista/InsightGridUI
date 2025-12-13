@@ -5,13 +5,14 @@ import { MdOutlineHourglassEmpty } from "react-icons/md";
 import DownloadView from "../../utils/download/downloadView";
 import { AuthProvider, useAuth } from "../Auth/AuthContext";
 import ApiServices from "../../services/ApiServices";
+import { generatePDF } from "../../utils/download/function";
 
 const ReportDesignManage = () => {
   const navigate = useNavigate();
   const [globalFilter, setGlobalFilter] = useState("");
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const { downloadData } = useAuth();
+  const { downloadData, setDownloadData } = useAuth();
 
 
   // const queries = [
@@ -103,6 +104,63 @@ const ReportDesignManage = () => {
     )
   );
 
+  const handlePreview = async (report: any) => {
+    try {
+      const aiResponse = report?.query?.ai_responce;
+      if (!aiResponse) return;
+
+      const execRes = await ApiServices.executeSql({
+        sql_query: aiResponse,
+      });
+
+      const api = execRes.data.data;
+
+      generatePDF(
+        {
+          rows: api.rows,
+          columns: api.columns.map((c: string) => ({ column_name: c })),
+        },
+        "preview" // 👈 IMPORTANT
+      );
+    } catch (err) {
+      console.error("Preview failed", err);
+    }
+  };
+
+
+
+  const handleDownload = async (report: any) => {
+    try {
+      const aiResponse = report?.query?.ai_responce;
+
+      if (!aiResponse) {
+        console.error("SQL not found in report");
+        return;
+      }
+
+      const execRes = await ApiServices.executeSql({
+        sql_query: aiResponse,
+      });
+
+      const api = execRes.data.data;
+
+      const pdfData = {
+        rows: api.rows || [],
+        columns: (api.columns || []).map((c: string) => ({
+          column_name: c,
+        })),
+      };
+
+      // ✅ THIS LINE WAS MISSING
+      generatePDF(pdfData);
+
+    } catch (err) {
+      console.error("Download failed", err);
+    }
+  };
+
+
+
 
   return (
     <div className="mx-auto px-6 py-8">
@@ -172,7 +230,7 @@ const ReportDesignManage = () => {
         </div>
       </div>
 
-      <DownloadView data={downloadData} />
+      {/* <DownloadView data={downloadData} /> */}
       {/* Table Section */}
       {loading ? (
         <div className="flex justify-center py-24 text-gray-500">
@@ -215,11 +273,11 @@ const ReportDesignManage = () => {
 
                     <td className="px-6 py-3">
                       <div className="flex justify-end gap-2">
-                        <button className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs">
+                        <button className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs" onClick={() => handlePreview(item)}>
                           Preview
                         </button>
 
-                        <button className="text-purple-600 bg-purple-100 px-3 py-1 rounded-full text-xs">
+                        <button className="text-purple-600 bg-purple-100 px-3 py-1 rounded-full text-xs" onClick={() => handleDownload(item)}>
                           Download
                         </button>
 
@@ -239,7 +297,7 @@ const ReportDesignManage = () => {
                             console.log(" Edit Report Data:", item);
 
                             navigate("/layout/report-designer-view", {
-                              state: { report: item }, 
+                              state: { report: item },
                             });
                           }}
                         >
