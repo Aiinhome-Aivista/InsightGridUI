@@ -69,6 +69,9 @@ class ApiServices {
     return axios.post(POST_APIS.get_table_data, body);
   }
 
+  report_save(body) {
+    return axios.post(POST_APIS.report_save,body);
+  }
 
 }
 
