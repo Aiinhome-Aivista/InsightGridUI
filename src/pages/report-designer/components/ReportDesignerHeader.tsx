@@ -5,8 +5,6 @@ import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import ForumIcon from "@mui/icons-material/Forum";
 import { InputText } from "primereact/inputtext";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
