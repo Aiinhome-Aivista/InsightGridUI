@@ -33,33 +33,33 @@ export default function TableView() {
     getSavedQueryResponse();
   }, []);
 
-const getSavedQueryResponse = async () => {
-  try {
-    setLoading(true);
+  const getSavedQueryResponse = async () => {
+    try {
+      setLoading(true);
 
-    const userData = JSON.parse(localStorage.getItem("ig_user"));
-    const payload = {
-      created_by: userData?.user_id,
-      session_id: userData?.session_id,
-    };
+      const userData = JSON.parse(localStorage.getItem("ig_user"));
+      const payload = {
+        created_by: userData?.user_id,
+        session_id: userData?.session_id,
+      };
 
-    const response = await ApiServices.getSavedQueryResponse(payload);
-    const apiData = response.data.data;
+      const response = await ApiServices.getSavedQueryResponse(payload);
+      const apiData = response.data.data;
 
-    const dropdown = apiData.queries?.map((q) => ({
-      label: q.query_title,
-      value: q, // full query object
-    }));
+      const dropdown = apiData.queries?.map((q) => ({
+        label: q.query_title,
+        value: q, // full query object
+      }));
 
-    setTableOptions(dropdown || []);
-    setSelectedTables([]); // ✅ placeholder visible
-    setAllData({});        // ✅ clear previous table
-  } catch (err) {
-    console.error("API error:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+      setTableOptions(dropdown || []);
+      setSelectedTables([]); // ✅ placeholder visible
+      setAllData({});        // ✅ clear previous table
+    } catch (err) {
+      console.error("API error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   const handleRefresh = async () => {
@@ -74,11 +74,11 @@ const getSavedQueryResponse = async () => {
       setIsRefreshing(false);
     }
   };
- useEffect(() => {
-  if (selectedTables.length > 0) {
-    handleRunScript(selectedTables[0].ai_response);
-  }
-}, [selectedTables]);
+  useEffect(() => {
+    if (selectedTables.length > 0) {
+      handleRunScript(selectedTables[0].ai_response);
+    }
+  }, [selectedTables]);
 
   const handleRunScript = async (sqlQuery: string) => {
     try {
@@ -101,32 +101,35 @@ const getSavedQueryResponse = async () => {
       console.error("Execute SQL API Error:", error);
     }
   };
-const handleSaveReport = async () => {
-  try {
-    const userData = JSON.parse(localStorage.getItem("ig_user"));
+  const handleSaveReport = async () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem("ig_user"));
 
-    if (!selectedTables.length) {
-      console.error("No query selected");
-      return;
+      if (!selectedTables.length) {
+        console.error("No query selected");
+        return;
+      }
+
+      const selectedQuery = selectedTables[0]; //  full query object
+
+      const payload = {
+        session_id: userData?.session_id,
+        created_by: userData?.user_id,
+        // report_id: `report_${Date.now()}`,
+        report_id: editReport?.report_id
+          ? editReport.report_id          // EDIT MODE
+          : `report_${Date.now()}`,
+        query_history_id: selectedQuery.id, //  DYNAMIC ID
+        report_name: reportName,
+      };
+
+      const response = await ApiServices.report_save(payload);
+
+      console.log("Report saved:", response.data);
+    } catch (error) {
+      console.error("Save report error:", error);
     }
-
-    const selectedQuery = selectedTables[0]; // 🔥 full query object
-
-    const payload = {
-      session_id: userData?.session_id,
-      created_by: userData?.user_id,
-      report_id: `report_${Date.now()}`,
-      query_history_id: selectedQuery.id, // 🔥 DYNAMIC ID
-      report_name: reportName,
-    };
-
-    const response = await ApiServices.report_save(payload);
-
-    console.log("Report saved:", response.data);
-  } catch (error) {
-    console.error("Save report error:", error);
-  }
-};
+  };
 
 
   return (
@@ -139,26 +142,26 @@ const handleSaveReport = async () => {
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
-        onRunScript={() => {}}
+        onRunScript={() => { }}
         reportName={reportName}
         setReportName={setReportName}
         onSaveReport={handleSaveReport}
         editReport={editReport}
       />
-     {selectedTables.length === 0 ? (
-  <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400">
-    <div className="mb-3 text-4xl">🗑️</div>
-    <p className="text-sm font-medium">
-      Please select a view to create report
-    </p>
-  </div>
-) : (
-  <DataViewTable
-    allData={allData}
-    selectedTables={selectedTables.map((t) => t.ai_response)}
-    globalFilter={globalFilter}
-  />
-)}
+      {selectedTables.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400">
+          <div className="mb-3 text-4xl">🗑️</div>
+          <p className="text-sm font-medium">
+            Please select a view to create report
+          </p>
+        </div>
+      ) : (
+        <DataViewTable
+          allData={allData}
+          selectedTables={selectedTables.map((t) => t.ai_response)}
+          globalFilter={globalFilter}
+        />
+      )}
 
     </div>
   );
