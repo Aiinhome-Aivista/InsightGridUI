@@ -8,6 +8,8 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { InputText } from "primereact/inputtext";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
+import { useAuth } from "../../Auth/AuthContext";
+import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
 
 export default function DataViewHeader({
   globalFilter,
@@ -24,6 +26,7 @@ export default function DataViewHeader({
 
 }) {
   const navigate = useNavigate();
+  const { setIsConfirmSaveModalOpen, setViewName, setConfirmSaveAction } = useAuth();
   const dropdownRef = useRef<Dropdown>(null);
   const { theme } = useTheme();
   const trimToWords = (text, count = 3) => {
@@ -55,6 +58,15 @@ export default function DataViewHeader({
 
   const handleScroll = () => {
     dropdownRef.current?.hide();
+  };
+
+  const handleSaveClick = () => {
+    setViewName(reportName);
+    setConfirmSaveAction(() => async () => {
+      await onSaveReport();
+      navigate("/layout/report-designer");
+    });
+    setIsConfirmSaveModalOpen(true);
   };
 
   return (
@@ -130,7 +142,7 @@ export default function DataViewHeader({
             panelClassName="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden mt-1"
           />
           <button
-            onClick={onSaveReport}
+            onClick={handleSaveClick}
             disabled={!reportName}
             className={`rounded-lg text-sm font-medium transition-all flex items-center justify-center ${
               !reportName ? "bg-gray-300 cursor-not-allowed text-white" : "bg-blue-400 hover:bg-blue-700 text-white"
@@ -141,6 +153,7 @@ export default function DataViewHeader({
           </button>
         </div>
       </div>
+      <ConfirmSaveView type="Report" />
     </header>
   );
 }
