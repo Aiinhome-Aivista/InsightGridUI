@@ -26,12 +26,6 @@ export default function DataViewHeader({
   const navigate = useNavigate();
   const dropdownRef = useRef<Dropdown>(null);
   const { theme } = useTheme();
-  const trimToWords = (text, count = 3) => {
-    const words = text.split(" ");
-    return words.length > count
-      ? words.slice(0, count).join(" ") + "..."
-      : text;
-  };
 
   const itemTemplate = (option) => {
     if (!option) return null;
@@ -39,7 +33,7 @@ export default function DataViewHeader({
     return (
       <Tippy content={option.label} theme="gray" placement="top-start">
         <div className="truncate max-w-[250px]">
-          {trimToWords(option.label, 3)}
+          {option.label}
         </div>
       </Tippy>
     );
@@ -58,12 +52,12 @@ export default function DataViewHeader({
   };
 
   return (
-    <header className="p-4">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
+    <header className="px-4">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between h-auto md:h-20">
         <div>
           {/* Responsive Flex Container */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
-            <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between h-auto md:h-20">
+            <div className="flex items-center gap-2 w-full md:w-auto">
               <button
                 onClick={() => navigate(-1)}
                 className=" hover:bg-gray-100 rounded-full transition-colors text-gray-700"
@@ -81,7 +75,7 @@ export default function DataViewHeader({
           </div>
         </div>
         {/* SEARCH */}
-        <div className="relative w-full md:w-1/3 my-3 md:my-0 text-gray-500">
+        <div className="relative w-full md:w-80 my-3 md:my-0 text-gray-500">
           <SearchRoundedIcon className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <InputText
             value={globalFilter}
@@ -100,7 +94,7 @@ export default function DataViewHeader({
             className=" px-4 w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10"
           />
         </div>
-        <div className="flex items-start md:items-center justify-center gap-3 md:gap-4">
+        <div className="flex items-start md:items-center justify-center gap-2">
 <Dropdown
   // --- FUNCTIONAL PROPS (From your second block) ---
   ref={dropdownRef}
@@ -124,7 +118,7 @@ export default function DataViewHeader({
 
   // --- DESIGN & STYLING (From your first block) ---
   className="
-    w-72 h-11
+    w-96 h-11
     border border-gray-200 
     rounded-lg 
     flex items-center justify-between
