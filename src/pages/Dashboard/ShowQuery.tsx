@@ -129,16 +129,22 @@ const ShowQuery = () => {
         {/* Left Side: Title text AND Action Button grouped together */}
         <div className="flex items-center gap-8">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900 leading-tight">Query Designer</h1>
-            <p className="text-sm text-gray-500 mt-1 whitespace-nowrap">
+            <h1 className="text-xl font-semibold text-[#1C1B1F] leading-tight">Query Designer</h1>
+            <p className="text-[12px] text-[#888585] mt-1 whitespace-nowrap">
               Start by uploading a data file to create your first view.
             </p>
           </div>
 
           <button
             onClick={() => navigate("/layout/query-designer")}
-            className="bg-blue-400 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
-            style={{ width: '108px', height: '45px' }}
+            className="text-white rounded-xl text-[12px] font-medium transition-all flex items-center justify-center"
+            style={{
+              width: '108px',
+              height: '45px',
+              backgroundColor: theme.accent,
+              // You might need to define a hover color based on your theme structure, e.g., theme.accentHover
+              // or use a utility to darken theme.accent for the hover state if not provided by theme.
+            }}
           >
             Create Query
           </button>
@@ -164,7 +170,7 @@ const ShowQuery = () => {
               placeholder="Global Search"
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#5433FF] focus:border-transparent outline-none transition-all"
+              className="pl-10 pr-4 py-2 border border-[#D9D9D9] rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#5433FF] focus:border-transparent outline-none transition-all"
               style={{ width: '568px', height: '45px' }}
             />
           </div>
@@ -175,8 +181,8 @@ const ShowQuery = () => {
               onClick={handleRefresh}
               disabled={isRefreshing}
               className={`
-                w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 
-                bg-gray-50 hover:bg-gray-100 transition-all
+                w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] 
+                bg-[#D9D9D9] hover:bg-[#D9D9D9] transition-all
                 ${isRefreshing ? "opacity-70 cursor-wait" : "cursor-pointer"}
               `}
             >
@@ -199,27 +205,24 @@ const ShowQuery = () => {
       ) : filteredQueries.length > 0 ? (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-500 text-sm uppercase">
+            <thead className="bg-gray-100" style={{ fontSize: '15px', color: '#3D5B81' }}>
               <tr>
-                <th className="text-left px-5 py-1 font-semibold">Query</th>
-                <th className="text-left px-5 py-1 font-semibold">Query Saving Date</th>
-                <th className="text-left px-5 py-1 font-semibold">Query Saving Time</th>
-                {/* <th className="text-left px-5 py-1 font-semibold">Executing Time</th> */}
-                <th className="text-left px-5 py-1 font-semibold">Row Effected</th>
-                <th className="text-right px-5 py-1 font-semibold">Action</th>
+                <th className="text-left px-5 py-5 font-semibold">Query</th>
+                <th className="text-left px-5 py-5 font-semibold">Query Saving Date</th>
+                <th className="text-left px-5 py-5 font-semibold">Query Saving Time</th>
+                <th className="text-left px-5 py-5 font-semibold">Row Effected</th>
+                <th className="text-right px-5 py-5 font-semibold">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filteredQueries.map((query) => (
                 <tr key={query.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-1 text-xs font-normal">{query.query_title}</td>
-                  <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.created_date}</td>
-                  <td className="px-6 py-1 text-gray-600 text-xs font-normal">{timeAgo(query.created_date, query.created_at)}</td>
-                  {/* <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.query_time}</td> */}
-
-                  <td className="px-6 py-1 text-gray-600 text-xs font-normal">{query.rows_effected}</td>
-                  <td className="px-6 py-1 text-right">
-                    <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200"
+                  <td className="px-6 py-5 font-normal text-[#3D5B81]" style={{ fontSize: '18px' }}>{query.query_title}</td>
+                  <td className="px-6 py-5 font-normal text-[#9b9fa8]" style={{ fontSize: '15px' }}>{query.created_date}</td>
+                  <td className="px-6 py-5 font-normal text-[#9b9fa8]" style={{ fontSize: '15px' }}>{timeAgo(query.created_date, query.created_at)}</td>
+                  <td className="px-6 py-5 font-normal text-[#9b9fa8]" style={{ fontSize: '15px' }}>{query.rows_effected}</td>
+                  <td className="px-6 py-5 text-right">
+                    <button className="text-[#46BA2F] bg-[rgba(53,255,2,0.1)] px-4 py-1 rounded-full text-xs font-medium hover:bg-green-200"
                       onClick={() => handleDetailsClick(query)} >
                       Edit
                     </button>
@@ -229,6 +232,7 @@ const ShowQuery = () => {
             </tbody>
           </table>
         </div>
+        
       ) : (
         <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-20rem)]">
           <MdOutlineHourglassEmpty size={50} className="text-gray-400" />

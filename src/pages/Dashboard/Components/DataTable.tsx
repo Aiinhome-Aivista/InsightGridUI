@@ -20,38 +20,39 @@ export default function ProductDataTable({ data, globalFilter, columns = [] }: P
   };
 
   return (
-    <div style={{ maxWidth: "100%", overflow: "auto" }}>
-      <DataTable
-        value={data}
-        globalFilter={globalFilter}
-        sortMode="multiple"
-        emptyMessage="No data available for this table."
-        scrollable
-        scrollHeight="200px"
-        style={{ maxWidth: "1340px",minWidth:"1345px" }}
-        filters={{
-          global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
-        }}
-        className="custom-table mb-5"
-        stripedRows
-
-        rowClassName={() => "border-b border-gray-200"}
-      >
-
-
-        {columns.map((col) => (
-          <Column
-            style={{ whiteSpace: "nowrap", width: "auto" }}
-            key={col.column_name}
-            field={col.column_name}
-            header={formatHeader(col.column_name)}
-            sortable
-            pt={{
-              headerCell: { className: 'bg-gray-200' }
-            }}
-          />
-        ))}
-      </DataTable>
-    </div>
+    <DataTable
+      value={data}
+      globalFilter={globalFilter}
+      sortMode="multiple"
+      emptyMessage="No data available for this table."
+      scrollable
+      scrollHeight="200px"
+      style={{ width: "100%" }}
+      filters={{
+        global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
+      }}
+      className="custom-table"
+      stripedRows
+      rowClassName={() => "border-b border-gray-200"}
+    >
+      {columns.map((col) => (
+        <Column
+          style={{ whiteSpace: "nowrap", width: "auto" }}
+          key={col.column_name}
+          field={col.column_name}
+          header={formatHeader(col.column_name)}
+          sortable
+          headerStyle={{
+            fontSize: '15px',
+            fontWeight: 600,
+            color: '#3D5B81'
+          }}
+          bodyStyle={{
+            fontSize: '14px',
+            fontWeight: 400
+          }}
+        />
+      ))}
+    </DataTable>
   );
 }

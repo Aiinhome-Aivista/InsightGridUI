@@ -1,45 +1,108 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
 import DownloadView from "../../utils/download/downloadView";
 import { AuthProvider, useAuth } from "../Auth/AuthContext";
+import ApiServices from "../../services/ApiServices";
 
 const ReportDesignManage = () => {
   const navigate = useNavigate();
   const [globalFilter, setGlobalFilter] = useState("");
-  const {downloadData} = useAuth();
+  const [reports, setReports] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { downloadData } = useAuth();
 
 
-  const queries = [
-    {
-      id: 1,
-      query_title: "Customer Master View",
-      created_date: "11-12-2025",
-      created_at: "10:35:22",
-      rows_effected: 1200,
-    },
-    {
-      id: 2,
-      query_title: "Sales Region Summary",
-      created_date: "10-12-2025",
-      created_at: "16:15:52",
-      rows_effected: 842,
-    },
-    {
-      id: 3,
-      query_title: "Employee Active List",
-      created_date: "09-12-2025",
-      created_at: "09:12:18",
-      rows_effected: 450,
-    },
-  ];
+  // const queries = [
+  //   {
+  //     id: 1,
+  //     query_title: "Customer Master View",
+  //     created_date: "11-12-2025",
+  //     created_at: "10:35:22",
+  //     rows_effected: 1200,
+  //   },
+  //   {
+  //     id: 2,
+  //     query_title: "Sales Region Summary",
+  //     created_date: "10-12-2025",
+  //     created_at: "16:15:52",
+  //     rows_effected: 842,
+  //   },
+  //   {
+  //     id: 3,
+  //     query_title: "Employee Active List",
+  //     created_date: "09-12-2025",
+  //     created_at: "09:12:18",
+  //     rows_effected: 450,
+  //   },
+  // ];
 
-  const filteredQueries = queries.filter((q) =>
-    Object.values(q).some((v) =>
+
+  const getStoredUser = () => {
+    try {
+      const raw = localStorage.getItem("ig_user");
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const getDateTime = (value: string) => {
+    const d = new Date(value);
+    return {
+      date: d.toLocaleDateString(),
+      time: d.toLocaleTimeString(),
+    };
+  };
+
+  useEffect(() => {
+    fetchReportList();
+  }, []);
+
+  const fetchReportList = async () => {
+    try {
+      setLoading(true);
+
+      const user = getStoredUser();
+
+      if (!user?.session_id || !user?.user_id) {
+        console.error("Session or User ID missing");
+        return;
+      }
+
+      const payload = {
+        session_id: user.session_id,
+        created_by: user.user_id,
+      };
+
+      const response = await ApiServices.getReportList(payload);
+
+      console.log("📥 Full API Response:", response);
+      console.log("📥 Response Data:", response?.data);
+
+      setReports(response?.data?.data?.["Report list"] || []);
+    } catch (error) {
+      console.error("Report list error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
+  // const filteredQueries = queries.filter((q) =>
+  //   Object.values(q).some((v) =>
+  //     String(v).toLowerCase().includes(globalFilter.toLowerCase())
+  //   )
+  // );
+
+  const filteredReports = reports.filter((r) =>
+    Object.values(r).some((v) =>
       String(v).toLowerCase().includes(globalFilter.toLowerCase())
     )
   );
+
 
   return (
     <div className="mx-auto px-6 py-8">
@@ -108,81 +171,80 @@ const ReportDesignManage = () => {
           </button>
         </div>
       </div>
-      
-     <DownloadView data={downloadData} />;
+
+      {/* <DownloadView data={downloadData} /> */}
       {/* Table Section */}
-      {filteredQueries.length > 0 ? (
+      {loading ? (
+        <div className="flex justify-center py-24 text-gray-500">
+          Loading reports...
+        </div>
+      ) : filteredReports.length > 0 ? (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <table className="w-full text-sm">
-            {/* Table Header */}
-            <thead className="bg-gray-100 text-gray-500 text-sm uppercase">
+            <thead className="bg-gray-100 text-gray-500 uppercase text-xs">
               <tr>
-                <th className="px-5 py-3 font-semibold text-left align-middle">
-                  Report Name
-                </th>
-                <th className="px-5 py-3 font-semibold text-left align-middle">
-                  Saving Date
-                </th>
-                <th className="px-5 py-3 font-semibold text-left align-middle">
-                  Saving Time
-                </th>
-                <th className="px-5 py-3 font-semibold text-left align-middle">
-                  Rows
-                </th>
-                <th className="px-5 py-3 font-semibold text-right align-middle">
-                  ACTION
-                </th>
+                <th className="px-5 py-3 text-left">Report Name</th>
+                <th className="px-5 py-3 text-left">Saving Date</th>
+                <th className="px-5 py-3 text-left">Saving Time</th>
+                <th className="px-5 py-3 text-left">Rows</th>
+                <th className="px-5 py-3 text-right">Action</th>
               </tr>
             </thead>
 
-            {/* Table Body */}
             <tbody className="divide-y divide-gray-100">
-              {filteredQueries.map((query) => (
-                <tr
-                  key={query.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-3 text-xs font-normal align-middle">
-                    {query.query_title}
-                  </td>
+              {filteredReports.map((item) => {
+                const { date, time } = getDateTime(item.created_at);
 
-                  <td className="px-6 py-3 text-gray-600 text-xs font-normal align-middle">
-                    {query.created_date}
-                  </td>
+                return (
+                  <tr key={item.report_id} className="hover:bg-gray-50">
+                    <td className="px-6 py-3 text-xs">
+                      {item.report_name}
+                    </td>
 
-                  <td className="px-6 py-3 text-gray-600 text-xs font-normal align-middle">
-                    {query.created_at}
-                  </td>
+                    <td className="px-6 py-3 text-xs text-gray-600">
+                      {date}
+                    </td>
 
-                  <td className="px-6 py-3 text-gray-600 text-xs font-normal align-middle">
-                    {query.rows_effected}
-                  </td>
+                    <td className="px-6 py-3 text-xs text-gray-600">
+                      {time}
+                    </td>
 
-                  {/* Action Column */}
-                  <td className="px-6 py-3 align-middle">
-                    <div className="flex items-center justify-end space-x-2">
-                      <button className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-blue-200">
-                        Preview
-                      </button>
+                    <td className="px-6 py-3 text-xs text-gray-600">
+                      {item.row_affected}
+                    </td>
 
-                      <button className="text-purple-600 bg-purple-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-purple-200">
-                        Download
-                      </button>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-end gap-2">
+                        <button className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs">
+                          Preview
+                        </button>
 
-                      <button className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200">
-                        Edit
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        <button className="text-purple-600 bg-purple-100 px-3 py-1 rounded-full text-xs">
+                          Download
+                        </button>
+
+                        <button
+                          className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"
+                          onClick={() =>
+                            navigate("/layout/report-designer-view", {
+                              state: { report_id: item.report_id },
+                            })
+                          }
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-20rem)]">
-          <MdOutlineHourglassEmpty size={50} className="text-gray-400" />
-          <p className="text-gray-500 text-lg mt-3">Empty Report List</p>
+        <div className="flex flex-col items-center justify-center h-[300px]">
+          <MdOutlineHourglassEmpty size={40} className="text-gray-400" />
+          <p className="text-gray-500 mt-2">Empty Report List</p>
         </div>
       )}
     </div>
