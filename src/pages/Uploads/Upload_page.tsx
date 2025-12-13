@@ -200,7 +200,7 @@ export default function UploadPage() {
         disabled={isUploading || isProcessing}
       />
 
-      {isProcessing && (
+      {(isProcessing || isUploading) && (
         <div className="flex flex-col items-center justify-center gap-3 mt-4">
           <div className="flex items-center gap-3">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2" style={{
