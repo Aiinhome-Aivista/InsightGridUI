@@ -23,6 +23,7 @@ export default function UploadPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [uploadResponseData, setUploadResponseData] = useState<any>(null);
+  const [resetKey, setResetKey] = useState(0);
 
 
   
@@ -158,6 +159,7 @@ export default function UploadPage() {
       setUploadedFileName(fileInfo.file_name || files[0].name);
       setUploadResponseData(fileInfo);
       setIsModalOpen(true);
+      setResetKey((prev) => prev + 1);
 
       setIsUploading(false);
       setIsProcessing(false);
@@ -192,6 +194,7 @@ export default function UploadPage() {
       </p>
 
       <FileDropZone
+        key={resetKey}
         onUploadComplete={uploadFiles}
         theme={theme}
         disabled={isUploading || isProcessing}
@@ -225,7 +228,6 @@ export default function UploadPage() {
         </div>
       )}
 
-      {/* ADD THIS MODAL COMPONENT AT THE END */}
       <TableImportModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
