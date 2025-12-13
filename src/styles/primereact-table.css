@@ -3,7 +3,7 @@
   background: #f3f4f6 !important;
   font-weight: 600;
   border: none !important;
-  padding: 14px 16px !important;
+  padding: 10px 16px !important;
   text-align: left !important;
 }
 
@@ -28,7 +28,7 @@
 
 /* Rows */
 .p-datatable .p-datatable-tbody>tr>td {
-  padding: 14px 16px !important;
+  padding: 8px 16px !important;
   border: none !important;
   color: var(--theme-primary-text) !important;
 }
@@ -42,6 +42,11 @@
 .p-datatable-wrapper {
   border-radius: 0.75rem;
   overflow: hidden;
+}
+
+/* Hide default paginator */
+.p-datatable .p-paginator {
+  display: none !important;
 }
 
 /* Paginator Styling */

@@ -45,7 +45,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
 
   return (
     <div className="px-4">
-      <div className="rounded-xl shadow-xs" >
+      <div className="rounded-xl shadow-xs pb-4" >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           {/* <div>

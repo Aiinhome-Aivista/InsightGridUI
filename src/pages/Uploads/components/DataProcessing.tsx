@@ -27,10 +27,9 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     const [hour, minute, second] = timeStr.split(":");
     let h = parseInt(hour);
     const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12; // converts '00' → 12 AM
+    h = h % 12 || 12;
     return `${h}:${minute} ${ampm}`;
   };
-
 
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
@@ -62,7 +61,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         await onRefresh();
       }
     } finally {
-      // Keep spinning for at least 500ms for smooth animation
       setTimeout(() => {
         setIsRefreshing(false);
       }, 500);
@@ -79,7 +77,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           sessionId: file.session_id,
           sessionName: file.session_name,
           fileName: fileName
-
         }
       });
     }
@@ -87,7 +84,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between mb-4 px-2">
+      <div className="flex items-center justify-between mb-2 px-2">
         <label
           className="block text-sm font-medium"
           style={{ color: theme.primaryText }}
@@ -97,10 +94,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         <Tippy content="Refresh" theme="gray">
           <div
             onClick={handleRefresh}
-            className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
-              ? "cursor-not-allowed"
-              : "cursor-pointer hover:bg-gray-500/10"
-              }`}
+            className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
+              isRefreshing
+                ? "cursor-not-allowed"
+                : "cursor-pointer hover:bg-gray-500/10"
+            }`}
             style={{ borderColor: theme.border }}
           >
             {isRefreshing ? (
@@ -121,6 +119,52 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         </Tippy>
       </div>
 
+      {/* Global Column Headers */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between gap-4 px-4 py-2 rounded-lg" style={{ backgroundColor: theme.border + '20' }}>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              File Name
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              Table Name
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              Rows Affected
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Table Extraction
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Column Extraction
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Data Insert Status
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              File Size
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Uploaded At
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-h-[30vh] overflow-y-auto pr-2">
         {files.map((file, index) => {
           const fileName = file.name || file.file_name;
@@ -136,14 +180,9 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               key={index}
               className="rounded-lg p-4 w-full mb-3 bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
             >
-              {/* Single Row with All Fields - Equal Spacing */}
               <div className="flex items-center justify-between gap-4">
-
                 {/* File Name */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-medium mb-1" style={{ color: theme.secondaryText }}>
-                    File Name
-                  </div>
                   <div className="relative group">
                     <div
                       className="text-sm font-medium truncate"
@@ -151,14 +190,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     >
                       {fileName}
                     </div>
-                    {/* Tooltip */}
-                    <div className="
-              absolute left-0 mt-1
-              hidden group-hover:block
-              whitespace-nowrap
-              bg-[#888585] text-white text-xs px-2 py-1 rounded
-              shadow-lg z-10
-            ">
+                    <div className="absolute left-0 mt-1 hidden group-hover:block whitespace-nowrap bg-[#888585] text-white text-xs px-2 py-1 rounded shadow-lg z-10">
                       {fileName}
                     </div>
                   </div>
@@ -166,9 +198,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
                 {/* Table Name */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-medium mb-1" style={{ color: theme.secondaryText }}>
-                    Table Name
-                  </div>
                   <div
                     className="text-sm font-medium truncate"
                     style={{ color: theme.primaryText }}
@@ -179,9 +208,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
                 {/* Rows Affected */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-medium mb-1" style={{ color: theme.secondaryText }}>
-                    Rows Affected
-                  </div>
                   <div
                     className="text-sm font-medium"
                     style={{ color: theme.primaryText }}
@@ -192,9 +218,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
                 {/* Table Extraction Status */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-medium mb-1 text-center" style={{ color: theme.secondaryText }}>
-                    Table Extraction
-                  </div>
                   <div className="flex justify-center">
                     {extractionFailed ? (
                       <span className="text-red-500 text-xs font-medium">Failed</span>
@@ -208,9 +231,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
                 {/* Column Extraction Status */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-medium mb-1 text-center" style={{ color: theme.secondaryText }}>
-                    Column Extraction
-                  </div>
                   <div className="flex justify-center">
                     {file.column_extraction_status?.toLowerCase() === 'done' ? (
                       <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
@@ -222,9 +242,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
                 {/* Data Insert Status */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-medium mb-1 text-center" style={{ color: theme.secondaryText }}>
-                    Data Insert Status
-                  </div>
                   <div className="flex justify-center">
                     {file.data_insert_status?.toLowerCase() === 'done' ? (
                       <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
@@ -236,9 +253,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
                 {/* File Size */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-medium mb-1 text-center" style={{ color: theme.secondaryText }}>
-                    File Size
-                  </div>
                   <div className="text-sm font-medium text-center" style={{ color: theme.primaryText }}>
                     {file.file_size_mb || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
                   </div>
@@ -246,14 +260,10 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
                 {/* Uploaded At */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-medium mb-1 text-center" style={{ color: theme.secondaryText }}>
-                    Uploaded At
-                  </div>
                   <div className="text-sm font-medium text-center" style={{ color: theme.primaryText }}>
                     {formatTo12Hour(file.created_at) || new Date().toLocaleDateString()}
                   </div>
                 </div>
-
               </div>
             </div>
           );
