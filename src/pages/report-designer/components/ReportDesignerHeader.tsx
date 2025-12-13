@@ -40,6 +40,7 @@ export default function DataViewHeader({
 
   const itemTemplate = (option) => {
     if (!option) return null;
+
     return (
       <Tippy content={option.label} theme="gray" placement="top-start">
         <div className="truncate max-w-[250px]">
@@ -55,42 +56,25 @@ export default function DataViewHeader({
     }
   }, [editReport]);
 
-  // useEffect(() => {
-  //   if (editReport && tableOptions.length > 0) {
-  //     const queryName = editReport.query?.query_name;
-
-  //     const matchedOption = tableOptions.find(
-  //       (opt) => opt.label === queryName
-  //     );
-
-  //     if (matchedOption) {
-  //       setSelectedTables([matchedOption]);
-
-  //       // Optional: auto run script
-  //       onRunScript?.(matchedOption.value);
-  //     }
-  //   }
-  // }, [editReport, tableOptions]);
-  const isEditMode = !!editReport;
-
   useEffect(() => {
-    if (!isEditMode || tableOptions.length === 0) return;
+    if (editReport && tableOptions.length > 0) {
+      // Try matching by ID first (query_history_id)
+      let matchedOption = tableOptions.find(
+        (opt) => opt.value.id === editReport.query_history_id
+      );
 
-    const queryName = editReport?.query?.query_name;
-    if (!queryName) return;
+      // Fallback: Try matching by name
+      if (!matchedOption) {
+        const queryName = editReport.query_name || editReport.query?.query_name || editReport.query_title;
+        matchedOption = tableOptions.find((opt) => opt.label === queryName);
+      }
 
-    const matchedOption = tableOptions.find(
-      (opt) => opt.label === queryName
-    );
-
-    if (matchedOption) {
-      // VERY IMPORTANT
-      setSelectedTables([matchedOption.value]);
-
-      // auto load table
-      onRunScript?.(matchedOption.value);
+      if (matchedOption) {
+        setSelectedTables([matchedOption]);
+      }
     }
-  }, [isEditMode, editReport, tableOptions]);
+  }, [editReport, tableOptions]);
+
 
 
   const handleDropdownShow = () => {

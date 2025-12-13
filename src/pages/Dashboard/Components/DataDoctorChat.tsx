@@ -8,6 +8,9 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useAuth } from "../../Auth/AuthContext";
 import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import "../../../styles/tippy-theme.css";
 
 interface ChatSession {
   id: number;
@@ -473,15 +476,18 @@ export default function Chat({
                 disabled={!isScriptRunSuccess}
               /> */}
 
-              <input
-                type="text"
-                value={viewName}
-                onChange={(e) => setViewName(e.target.value)}
-                placeholder={
-                  passedData?.query_title ? "" : "Please enter query name.."
-                }
-                disabled={!isScriptRunSuccess}
-                className="focus:outline-none focus:ring-0 w-[84%]" />
+              <Tippy content={viewName} theme="gray" placement="top">
+                <input
+                  type="text"
+                  value={viewName}
+                  onChange={(e) => setViewName(e.target.value)}
+                  placeholder={
+                    passedData?.query_title ? "" : "Please enter query name"
+                  }
+                  disabled={!isScriptRunSuccess}
+                  className="focus:outline-none focus:ring-0 w-[84%] truncate"
+                />
+              </Tippy>
               <button
                 onClick={() => setIsConfirmSaveModalOpen(true)}
                 disabled={!isScriptRunSuccess || !viewName.trim()}
