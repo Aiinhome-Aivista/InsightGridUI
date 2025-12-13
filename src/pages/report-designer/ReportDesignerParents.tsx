@@ -3,6 +3,7 @@ import DataViewHeader from "./components/ReportDesignerHeader";
 import DataViewTable from "./components/ReportDesignerTable";
 import { useTheme } from "../../theme";
 import ApiServices from "../../services/ApiServices";
+import { MdOutlineDescription } from "react-icons/md";
 export default function TableView() {
   const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -66,10 +67,6 @@ export default function TableView() {
 
       setTableOptions(dropdown);
 
-      // Default select first item
-      if (dropdown?.length > 0) {
-        setSelectedTables([dropdown[0].value]);
-      }
     } catch (err) {
       console.error("API error:", err);
     } finally {
@@ -155,6 +152,11 @@ export default function TableView() {
       {!loading && (!tableOptions || tableOptions.length === 0) ? (
         <div className="flex items-center justify-center h-96">
           <p className="text-gray-500 text-lg">No data found</p>
+        </div>
+      ) : selectedTables.length === 0 ? (
+        <div className="flex flex-col items-center justify-center w-full h-96">
+          <MdOutlineDescription size={50} className="text-gray-400" />
+          <p className="text-gray-500 text-lg mt-3">Please select a view</p>
         </div>
       ) : (
         <DataViewTable

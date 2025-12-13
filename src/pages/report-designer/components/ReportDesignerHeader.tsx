@@ -107,28 +107,58 @@ export default function DataViewHeader({
           />
         </div>
         <div className="flex items-start md:items-center justify-center gap-3 md:gap-4">
-          <Dropdown
-            value={
-              Array.isArray(selectedTables) && selectedTables.length > 0
-                ? selectedTables[0]
-                : null
-            }
-            options={tableOptions}
-            onShow={handleDropdownShow}
-            onHide={handleDropdownHide}
-            ref={dropdownRef}
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Select Views"
-            itemTemplate={itemTemplate}
-            onChange={(e) => {
-              const val = e.value;
-              setSelectedTables(val ? [val] : []);
-              if (val) onRunScript(val);
-            }}
-            className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0"
-            panelClassName="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden mt-1"
-          />
+<Dropdown
+  // --- FUNCTIONAL PROPS (From your second block) ---
+  ref={dropdownRef}
+  value={
+    Array.isArray(selectedTables) && selectedTables.length > 0
+      ? selectedTables[0]
+      : null
+  }
+  options={tableOptions}
+  onChange={(e) => {
+    const val = e.value;
+    setSelectedTables(val ? [val] : []);
+    if (val) onRunScript(val);
+  }}
+  optionLabel="label"
+  optionValue="value"
+  placeholder="Select Views"
+  itemTemplate={itemTemplate}
+  onShow={handleDropdownShow}
+  onHide={handleDropdownHide}
+
+  // --- DESIGN & STYLING (From your first block) ---
+  className="
+    w-72 h-11
+    border border-gray-200 
+    rounded-lg 
+    flex items-center justify-between
+    transition-all duration-200
+    bg-white
+  "
+  
+  // Panel (List) Styling
+  panelClassName="
+    bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
+  "
+  
+  // PassThrough (PT) props for deep styling
+  pt={{
+    root: { className: 'cursor-pointer' },
+    input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
+    trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
+    list: { className: 'p-1' },
+    item: ({ context }: any) => ({
+      className: `px-3 py-2 rounded-md text-gray-700 cursor-pointer transition-colors mb-0.5 ${
+        context.selected
+          ? 'bg-gray-100 hover:bg-gray-200 font-semibold'
+          : 'hover:bg-gray-50'
+      }`
+    }),
+    itemLabel: { className: 'font-medium' }
+  }}
+/>
           <button
             onClick={onSaveReport}
             disabled={!reportName}
