@@ -9,7 +9,7 @@ export default function TableView() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [allData, setAllData] = useState<any>({});
   const [tableOptions, setTableOptions] = useState<any[]>([]);
-  const [selectedTables, setSelectedTables] = useState<string[]>([]);
+  const [selectedTables, setSelectedTables] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [reportName, setReportName] = useState("");
@@ -33,71 +33,40 @@ export default function TableView() {
     getSavedQueryResponse();
   }, []);
 
-  const getSavedQueryResponse = async () => {
-    try {
-      setLoading(true);
+const getSavedQueryResponse = async () => {
+  try {
+    setLoading(true);
 
-      // Get user from localStorage
-      const userData = JSON.parse(localStorage.getItem("ig_user"));
+    const userData = JSON.parse(localStorage.getItem("ig_user"));
+    const payload = {
+      created_by: userData?.user_id,
+      session_id: userData?.session_id,
+    };
 
-      // Extract user_id for created_by
-      const createdBy = userData?.user_id;
-      const sessionId = userData?.session_id;
+    const response = await ApiServices.getSavedQueryResponse(payload);
+    const apiData = response.data.data;
 
-      if (!createdBy) {
-        console.error("No user_id found in localStorage ig_user.");
-        setLoading(false);
-        return;
-      }
+    const dropdown = apiData.queries?.map((q) => ({
+      label: q.query_title,
+      value: q, // full query object
+    }));
 
-      // Build payload dynamically
-      const payload = {
-        created_by: createdBy,
-        session_id: sessionId,
-      };
+    setTableOptions(dropdown || []);
+    setSelectedTables([]); // ✅ placeholder visible
+    setAllData({});        // ✅ clear previous table
+  } catch (err) {
+    console.error("API error:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      //  Call API
-      const response = await ApiServices.getSavedQueryResponse(payload);
-
-      // const data = response.data;
-
-      const apiData = response.data.data;
-      console.log("dataview response", apiData);
-
-      // setAllData(apiData.tables_data);
-      // setTableOptions(apiData.dropdown_options);
-
-      // if (apiData.dropdown_options?.length > 0) {
-      //   setSelectedTables([apiData.dropdown_options[0].value]);
-      // }
-      //       const apiData = response.data.data;
-
-      // console.log("dataview response", apiData);
-
-      // Build dropdown from query_title + ai_response
-      const dropdown = apiData.queries?.map((q) => ({
-        label: q.query_title,
-        value: q.ai_response,
-      }));
-
-      setTableOptions(dropdown);
-
-      // Default select first item
-      if (dropdown?.length > 0) {
-        setSelectedTables([dropdown[0].value]);
-      }
-    } catch (err) {
-      console.error("API error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
       if (selectedTables.length > 0) {
-        await handleRunScript(selectedTables[0]);
+        await handleRunScript(selectedTables[0].ai_response);
       } else {
         await getSavedQueryResponse();
       }
@@ -105,11 +74,11 @@ export default function TableView() {
       setIsRefreshing(false);
     }
   };
-  useEffect(() => {
-    if (selectedTables.length > 0) {
-      handleRunScript(selectedTables[0]); // 👉 run default SQL
-    }
-  }, [selectedTables]);
+ useEffect(() => {
+  if (selectedTables.length > 0) {
+    handleRunScript(selectedTables[0].ai_response);
+  }
+}, [selectedTables]);
 
   const handleRunScript = async (sqlQuery: string) => {
     try {
@@ -120,7 +89,7 @@ export default function TableView() {
 
       const formatted = {
         [sqlQuery]: {
-          title: "SQL Result",
+          title: "Custom Report Result",
           rows: api.rows,
           columns: api.columns.map((col) => ({ column_name: col })),
           procedure_sql: sqlQuery,
@@ -132,26 +101,33 @@ export default function TableView() {
       console.error("Execute SQL API Error:", error);
     }
   };
+const handleSaveReport = async () => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("ig_user"));
 
-  const handleSaveReport = async () => {
-    try {
-      const userData = JSON.parse(localStorage.getItem("ig_user"));
-
-      const payload = {
-        session_id: userData?.session_id,
-        created_by: userData?.user_id,
-        report_id: `report_${Date.now()}`,
-        query_history_id: 1,
-        report_name: reportName,
-      };
-
-      const response = await ApiServices.report_save(payload);
-
-      console.log("Report saved:", response.data);
-    } catch (error) {
-      console.error("Save report error:", error);
+    if (!selectedTables.length) {
+      console.error("No query selected");
+      return;
     }
-  };
+
+    const selectedQuery = selectedTables[0]; // 🔥 full query object
+
+    const payload = {
+      session_id: userData?.session_id,
+      created_by: userData?.user_id,
+      report_id: `report_${Date.now()}`,
+      query_history_id: selectedQuery.id, // 🔥 DYNAMIC ID
+      report_name: reportName,
+    };
+
+    const response = await ApiServices.report_save(payload);
+
+    console.log("Report saved:", response.data);
+  } catch (error) {
+    console.error("Save report error:", error);
+  }
+};
+
 
   return (
     <div className="h-[90%] bg-[#D9D9D91A] rounded-xl m-4 max-w-screen">
@@ -163,23 +139,27 @@ export default function TableView() {
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
-        onRunScript={handleRunScript}
+        onRunScript={() => {}}
         reportName={reportName}
         setReportName={setReportName}
         onSaveReport={handleSaveReport}
         editReport={editReport}
       />
-      {!loading && (!tableOptions || tableOptions.length === 0) ? (
-        <div className="flex items-center justify-center h-96">
-          <p className="text-gray-500 text-lg">No data found</p>
-        </div>
-      ) : (
-        <DataViewTable
-          allData={allData}
-          selectedTables={selectedTables}
-          globalFilter={globalFilter}
-        />
-      )}
+     {selectedTables.length === 0 ? (
+  <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400">
+    <div className="mb-3 text-4xl">🗑️</div>
+    <p className="text-sm font-medium">
+      Please select a view to create report
+    </p>
+  </div>
+) : (
+  <DataViewTable
+    allData={allData}
+    selectedTables={selectedTables.map((t) => t.ai_response)}
+    globalFilter={globalFilter}
+  />
+)}
+
     </div>
   );
 }

@@ -1,27 +1,28 @@
 
 import React from "react";
 import { useAuth } from "../pages/Auth/AuthContext";
-import { useNavigate } from "react-router-dom";
 
-export default function ConfirmSaveView() {
+interface ConfirmSaveViewProps {
+  type?: string;
+}
+
+export default function ConfirmSaveView({ type = "Query" }: ConfirmSaveViewProps) {
   const { isConfirmSaveModalOpen, setIsConfirmSaveModalOpen, viewName, confirmSave } = useAuth();
-  const navigate = useNavigate();
   const onCancel = () => setIsConfirmSaveModalOpen(false);
   const onConfirm = () => {
     confirmSave();
-    navigate("/layout/query-list");
   };
   if (!isConfirmSaveModalOpen) return null;
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="w-[550px] bg-[#D9D9D9] rounded-2xl shadow-lg border-[11px] border-white flex flex-col justify-center items-center gap-6 p-8">
         <div className="text-center">
-          <p className="text-gray-600 text-lg">Query Name</p>
+          <p className="text-gray-600 text-lg">{type} Name</p>
           <h2 className="text-2xl font-semibold text-gray-700">{viewName}</h2>
         </div>
 
         <p className="text-gray-600 text-xl">
-          Do you want to save the query?
+          Do you want to save the {type.toLowerCase()}?
         </p>
 
         <div className="flex gap-4">

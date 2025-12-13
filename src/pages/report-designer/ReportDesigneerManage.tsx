@@ -176,7 +176,7 @@ const ReportDesignManage = () => {
       {/* Table Section */}
       {loading ? (
         <div className="flex justify-center py-24 text-gray-500">
-          Loading reports...
+          <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
         </div>
       ) : filteredReports.length > 0 ? (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
