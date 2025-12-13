@@ -98,6 +98,29 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         }
     }, [createNewTable, selectedTable, apiData]);
 
+    useEffect(() => {
+        // CASE 1: Existing table selected
+        if (createNewTable === "no") {
+            if (selectedTable) {
+                setTableName(selectedTable);
+            } else {
+                // No table selected → clean
+                setTableName("");
+            }
+        }
+
+        // CASE 2: Switch back to NEW table
+        if (createNewTable === "yes") {
+            setSelectedTable("");          // reset dropdown
+            setTableName(
+                apiData?.suggested_table_name ||
+                uploadedFileName.replace(/\.[^/.]+$/, '')
+            );
+            setIsEditingTableName(false);  // reset edit mode
+        }
+    }, [createNewTable, selectedTable]);
+
+
     const handleEditClick = (id: string) => {
         setColumns(columns.map(col =>
             col.id === id ? { ...col, isEditing: !col.isEditing } : col
@@ -367,7 +390,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         Uploaded File  -  {uploadedFileName}
                                     </h4>
                                     <div className="flex items-center justify-between text-xs font-semibold text-gray-900 ">
-                                        Table Name  -
+                                        {/* Table Name  -
                                         {createNewTable === 'yes' && (
                                             <div className="flex items-center">
                                                 {isEditingTableName ? (
@@ -400,7 +423,51 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     </>
                                                 )}
                                             </div>
-                                        )}
+                                        )} */}
+
+                                        Table Name  -
+                                        <div className="flex items-center gap-1">
+
+                                            {/* EDIT MODE */}
+                                            {createNewTable === "yes" && isEditingTableName ? (
+                                                <>
+                                                    <input
+                                                        type="text"
+                                                        value={tempTableName}
+                                                        onChange={(e) => setTempTableName(e.target.value)}
+                                                        className="text-xs text-gray-700 border border-gray-300 rounded px-2 py-1"
+                                                        autoFocus
+                                                    />
+                                                    <button
+                                                        onClick={handleSaveTableName}
+                                                        className="p-1 hover:bg-gray-100 rounded"
+                                                        title="Save table name"
+                                                    >
+                                                        <Save className="w-4 h-4 text-green-600" />
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {/* VIEW MODE */}
+                                                    <p className="text-xs text-gray-700 font-medium">
+                                                        {tableName}
+                                                    </p>
+
+                                                    {/* Edit icon ONLY for new table */}
+                                                    {createNewTable === "yes" && (
+                                                        <button
+                                                            onClick={handleEditTableName}
+                                                            className="p-1 hover:bg-gray-100 rounded"
+                                                            title="Edit table name"
+                                                        >
+                                                            <Pencil className="w-4 h-4 text-gray-600" />
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+
+
                                     </div>
                                 </div>
 
