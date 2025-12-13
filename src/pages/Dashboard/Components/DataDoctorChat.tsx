@@ -472,27 +472,20 @@ export default function Chat({
                   }`}
                 disabled={!isScriptRunSuccess}
               /> */}
-           
-         <input
-  type="text"
-  value={viewName}
-  onChange={(e) => setViewName(e.target.value)}
-  placeholder={
-    passedData?.query_title ? "" : "Please enter query name.."
-  }
-  disabled={!isScriptRunSuccess}
-  className="
-    focus:outline-none focus:ring-0
-   
-  "
-/>
 
-
-
+              <input
+                type="text"
+                value={viewName}
+                onChange={(e) => setViewName(e.target.value)}
+                placeholder={
+                  passedData?.query_title ? "" : "Please enter query name.."
+                }
+                disabled={!isScriptRunSuccess}
+                className="focus:outline-none focus:ring-0" />
               <button
                 onClick={() => setIsConfirmSaveModalOpen(true)}
                 disabled={!isScriptRunSuccess || !viewName.trim()}
-                className={`px-5 py-1 rounded-md bg-gray-200 text-gray-600 text-sm transition ${!isScriptRunSuccess || !viewName.trim()
+                className={`px-3 py-2 rounded-md bg-gray-200 text-gray-600 text-sm transition ${!isScriptRunSuccess || !viewName.trim()
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:bg-gray-300"
                   }`}
@@ -503,38 +496,37 @@ export default function Chat({
           </div>
         </div>
 
-        <div className="mx-4 p-6 bg-white shadow-sm mb-10 rounded-xl relative">
-          <button
-            onClick={handleRunScript}
-            disabled={isSessionDataMissing || isExecuting} // Disabled when session is missing or executing
-            className={`absolute right-6 top-6 px-5 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${isSessionDataMissing || isExecuting
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-gray-300"
-              }`}
-          >
-            {isExecuting ? "Running..." : "Run"}
-          </button>
-
-          <div
-            id="script-container"
-            className="mt-10 text-sm font-mono relative min-h-[150px] max-h-[350px] overflow-y-auto max-w-[1300px]"
-          >
-            {/* This SyntaxHighlighter displays the progressively typed and highlighted query. */}
-            <SyntaxHighlighter
-              language="sql"
-              style={oneLight}
-              customStyle={{
-                backgroundColor: "transparent",
-                padding: 0,
-                margin: 0,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-              }}
+        <div className="mx-4 p-6 bg-white shadow-sm mb-10 rounded-xl">
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div
+              id="script-container"
+              className="text-sm font-mono relative min-h-[150px] max-h-[350px] overflow-y-auto max-w-[1300px]"
             >
-              {typedQuery + (typedQuery === (chat?.query || "") ? "" : " ")}
-            </SyntaxHighlighter>
+              <SyntaxHighlighter
+                language="sql"
+                style={oneLight}
+                customStyle={{
+                  backgroundColor: "transparent",
+                  padding: 0,
+                  margin: 0,
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}
+              >
+                {typedQuery + (typedQuery === (chat?.query || "") ? "" : " ")}
+              </SyntaxHighlighter>
+            </div>
+            <button
+              onClick={handleRunScript}
+              disabled={isSessionDataMissing || isExecuting}
+              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${isSessionDataMissing || isExecuting
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-gray-300"
+                }`}
+            >
+              {isExecuting ? "Running..." : "Run"}
+            </button>
           </div>
-
           {displayedLogs.length > 0 && (
             <div className="mt-6 pt-6 border-t border-gray-200 space-y-2 text-sm -mx-6 px-5">
               {displayedLogs.map((log, i) => (
@@ -550,21 +542,22 @@ export default function Chat({
             </div>
           )}
         </div>
+        <div className="m-5">
+          {" "}
+          {tableData && tableData.rows.length > 0 && (
+            <div className=" bg-white rounded-xl shadow-md">
+              {" "}
+
+              <ProductDataTable
+                data={tableData.rows}
+                columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}
+                globalFilter={""}
+              />{" "}
+            </div>
+          )}{" "}
+        </div>
       </div>
-      <div className="mb-10 px-5">
-        {" "}
-        {tableData && tableData.rows.length > 0 && (
-          <div className="p-2 bg-white rounded-xl shadow-md">
-            {" "}
-           
-            <ProductDataTable
-              data={tableData.rows}
-              columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}
-              globalFilter={""}
-            />{" "}
-          </div>
-        )}{" "}
-      </div>
+
       <ConfirmSaveView />
     </div>
   );

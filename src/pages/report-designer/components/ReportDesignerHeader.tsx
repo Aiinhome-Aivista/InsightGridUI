@@ -1,13 +1,10 @@
-
-import { useState,useRef } from "react";
-import { Dropdown, } from "primereact/dropdown";
+import { useState, useRef } from "react";
+import { Dropdown } from "primereact/dropdown";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import ForumIcon from "@mui/icons-material/Forum";
 import { InputText } from "primereact/inputtext";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../theme";
@@ -21,9 +18,13 @@ export default function DataViewHeader({
   onRefresh,
   onRunScript,
   isRefreshing,
+  reportName,
+  setReportName,
+  onSaveReport,
+
 }) {
   const navigate = useNavigate();
-   const dropdownRef = useRef<Dropdown>(null);
+  const dropdownRef = useRef<Dropdown>(null);
   const { theme } = useTheme();
   const trimToWords = (text, count = 3) => {
     const words = text.split(" ");
@@ -55,7 +56,6 @@ export default function DataViewHeader({
   const handleScroll = () => {
     dropdownRef.current?.hide();
   };
-  // (We keep selectedTables as array for backward compatibility with parent)
 
   return (
     <header className="p-4">
@@ -73,9 +73,12 @@ export default function DataViewHeader({
 
               <div className="flex flex-col gap-1">
                 <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
-                  Query Designer
+                  Report Designer
                 </h1>
-                <p className="text-sm mt-1" style={{ color: theme.secondaryText }}>
+                <p
+                  className="text-sm mt-1"
+                  style={{ color: theme.secondaryText }}
+                >
                   {" "}
                   Start by uploading a data file to create your first view.
                 </p>{" "}
@@ -89,6 +92,7 @@ export default function DataViewHeader({
           <InputText
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
+            
             className="pl-10 w-full h-10 rounded-xl border focus:outline-none focus:ring-0"
             placeholder="Global Search"
           />
@@ -96,17 +100,23 @@ export default function DataViewHeader({
         <div>
           <input
             type="text"
-            placeholder="Write a report name..."
+            value={reportName}
+            onChange={(e) => setReportName(e.target.value)}
+            placeholder="Write a report name(required)"
             className=" px-4 w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10"
           />
         </div>
         <div className="flex items-start md:items-center justify-center gap-3 md:gap-4">
           <Dropdown
-            value={Array.isArray(selectedTables) && selectedTables.length > 0 ? selectedTables[0] : null}
+            value={
+              Array.isArray(selectedTables) && selectedTables.length > 0
+                ? selectedTables[0]
+                : null
+            }
             options={tableOptions}
-                onShow={handleDropdownShow}
-                onHide={handleDropdownHide}
-  ref={dropdownRef}
+            onShow={handleDropdownShow}
+            onHide={handleDropdownHide}
+            ref={dropdownRef}
             optionLabel="label"
             optionValue="value"
             placeholder="Select Views"
@@ -119,24 +129,12 @@ export default function DataViewHeader({
             className="w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0"
             panelClassName="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden mt-1"
           />
-
-          {/* Chat */}
-          {/* <div
-            className="border rounded-xl p-2 cursor-pointer"
-            onClick={() => navigate("/layout/chatScreen")}
-          >
-            <ForumIcon />
-          </div> */}
-
-          {/* Refresh */}
-          {/* <div
-            className="border rounded-xl p-2 cursor-pointer"
-            onClick={onRefresh}
-          >
-            <AutorenewRoundedIcon className={isRefreshing ? "animate-spin" : ""} />
-          </div> */}
           <button
-            className="bg-blue-400 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
+            onClick={onSaveReport}
+            disabled={!reportName}
+            className={`rounded-lg text-sm font-medium transition-all flex items-center justify-center ${
+              !reportName ? "bg-gray-300 cursor-not-allowed text-white" : "bg-blue-400 hover:bg-blue-700 text-white"
+            }`}
             style={{ width: "108px", height: "40px" }}
           >
             Save Report
