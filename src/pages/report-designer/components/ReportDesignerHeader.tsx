@@ -60,28 +60,22 @@ export default function DataViewHeader({
   return (
     <header className="p-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-4 md:py-0">
-        <div className="px-3 sm:px-4 lg:px-3 ">
+        <div>
           {/* Responsive Flex Container */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
             <div className="flex items-center gap-3 w-full md:w-auto">
               <button
                 onClick={() => navigate(-1)}
-                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
+                className=" hover:bg-gray-100 rounded-full transition-colors text-gray-700"
               >
                 <ArrowBackRoundedIcon fontSize="small" />
               </button>
 
-              <div className="flex flex-col gap-1">
-                <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
+              <div className="flex flex-col ">
+                <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight whitespace-nowrap">
                   Report Designer
                 </h1>
-                <p
-                  className="text-sm mt-1"
-                  style={{ color: theme.secondaryText }}
-                >
-                  {" "}
-                  Start by uploading a data file to create your first view.
-                </p>{" "}
+
               </div>
             </div>
           </div>
