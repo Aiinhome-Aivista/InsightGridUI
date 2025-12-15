@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'lucide-react';
 import ApiService from '../../../services/ApiServices';
+import ProductDataTable from '../../Dashboard/Components/DataTable';
 
 
 interface Column {
@@ -477,9 +478,60 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         <h4 className="text-xs font-semibold text-gray-900">
                                             Extracted Columns
                                         </h4>
+                                        {createNewTable === 'yes' && (
+                                            <button
+                                                onClick={handleAddColumn}
+                                                className="px-3 py-1.5 bg-[#3D5B811A] rounded-lg text-gray-700 hover:text-blue-600 transition flex items-center gap-2"
+                                                title="Add Column"
+                                            >
+                                                <Plus className="w-3.5 h-3.5" />
+                                                <span className="text-xs font-medium">Add Column</span>
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <ProductDataTable
+                                        data={columns}
+                                        globalFilter=""
+                                        showPagination={false}
+                                        columns={[
+                                            {
+                                                column_name: 'name',
+                                                header: 'Column Name',
+                                                sortable: true
+                                            },
+                                            {
+                                                column_name: 'dataType',
+                                                header: 'Data Type',
+                                                sortable: true
+                                            },
+                                            {
+                                                column_name: 'length',
+                                                header: 'Length',
+                                                sortable: true
+                                            },
+                                            {
+                                                column_name: 'primary',
+                                                header: 'Primary Key',
+                                                sortable: false
+                                            },
+                                            ...(createNewTable === 'yes' ? [{
+                                                column_name: 'actions',
+                                                header: 'Actions',
+                                                sortable: false
+                                            }] : [])
+                                        ]}
+                                    />
+                                </div>
+
+                                {/* Extracted Column Section */}
+                                {/* <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h4 className="text-xs font-semibold text-gray-900">
+                                            Extracted Columns
+                                        </h4>
                                     </div>
                                     <div className="rounded-lg overflow-hidden">
-                                        {/* Table Header */}
                                         <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200">
                                             <div className={`${createNewTable === 'yes' ? 'col-span-3' : 'col-span-4'} px-3 py-2`}>
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -519,7 +571,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             )}
                                         </div>
 
-                                        {/* Table Rows */}
                                         {columns.map((column) => (
                                             <div
                                                 key={column.id}
@@ -631,7 +682,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             </div>
                                         ))}
                                     </div>
-                                </div>
+                                </div> */}
                             </>
                         ) : step === 'preview' ? (
                             <>
@@ -715,9 +766,19 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 </h4>
                                             </div>
 
-                                            <div className="rounded-lg overflow-hidden">
+                                            <ProductDataTable
+                                                data={previewRows}
+                                                globalFilter=""
+                                                showPagination={false}
+                                                columns={columns.map(col => ({
+                                                    column_name: col.name,
+                                                    header: col.name,
+                                                    sortable: true
+                                                }))}
+                                            />
 
-                                                {/* Table Header */}
+                                            {/* <div className="rounded-lg overflow-hidden">
+
                                                 <div
                                                     className="grid bg-gray-50 border-b border-gray-200 border-opacity-30"
                                                     style={{
@@ -736,7 +797,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     ))}
                                                 </div>
 
-                                                {/* Preview Rows */}
                                                 {previewRows.length > 0 ? (
                                                     previewRows.map((row, rowIndex) => (
                                                         <div
@@ -764,7 +824,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     </p>
                                                 )}
 
-                                            </div>
+                                            </div> */}
                                         </div>
 
                                         <div className="mt-8">
