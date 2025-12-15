@@ -105,7 +105,7 @@ export default function ProductDataTable({
         dataKey={columns[0]?.column_name || 'id'}
         filters={filters}
         globalFilterFields={columns.map(col => col.column_name)}
-        emptyMessage="No data available for this table."
+        emptyMessage="No data available"
         sortMode="multiple"
         style={{ maxWidth: "89vw" }}
         className="custom-table"

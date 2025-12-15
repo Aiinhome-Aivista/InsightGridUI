@@ -51,16 +51,17 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-export const generatePDF = (data, mode = "download") => {
+export const generatePDF = (data, mode = "download", fileName = "report"
+) => {
   if (!data || !data.rows || data.rows.length === 0) {
     console.warn("No data available for PDF");
     return;
   }
 
-  
+
   const doc = new jsPDF("p", "pt", "a4");
 
-  
+
   const pageWidth = doc.internal.pageSize.getWidth();
 
   const rows = data.rows;
@@ -71,18 +72,20 @@ export const generatePDF = (data, mode = "download") => {
 
 
 
- 
+
 
 
 
   // ===== HEADER =====
   doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
-  doc.text("All City Report", 40, 40);
+  // doc.text("All City Report", 40, 40);
+  doc.text(fileName, 40, 40);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text("Reporter Name", 40, 58);
+  // doc.text("Reporter Name", 40, 58);
+  doc.text("Report Name", 40, 58);
 
   doc.setFont("helvetica", "bold");
   doc.text("13/12/2025", 40, 90);
@@ -133,12 +136,14 @@ export const generatePDF = (data, mode = "download") => {
   });
 
 
-   // PREVIEW vs DOWNLOAD
+  // PREVIEW vs DOWNLOAD
   if (mode === "preview") {
     const pdfUrl = doc.output("bloburl");
     window.open(pdfUrl); //  browser preview
   } else {
-    doc.save("sales-report.pdf"); //  direct download
+    // doc.save("sales-report.pdf"); //  direct download
+    doc.save(`${fileName}.pdf`);
+
   }
-  
+
 };

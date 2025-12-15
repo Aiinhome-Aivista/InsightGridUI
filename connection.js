@@ -20,4 +20,5 @@ export const POST_APIS = {
   get_saved_query_response: `${BASE_URL}get_saved_query_response`,
   get_report_list:`${BASE_URL}report_list`,
   report_save: `${BASE_URL}report_save`,
+  delete_uploaded_file: `${BASE_URL}delete_uploaded_file`,
 };

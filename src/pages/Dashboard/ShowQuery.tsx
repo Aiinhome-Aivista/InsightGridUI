@@ -113,7 +113,7 @@ const ShowQuery = () => {
     time_ago: timeAgo(query.created_date, query.created_at),
     action: (
       <div className="text-right">
-        <button 
+        <button
           className="text-[#46BA2F] bg-[rgba(53,255,2,0.1)] px-4 py-1 rounded-full text-xs font-medium hover:bg-green-200"
           onClick={() => handleDetailsClick(query)}
         >
@@ -125,30 +125,35 @@ const ShowQuery = () => {
 
   // Define columns with custom headers for the ProductDataTable
   const queryColumns = [
-    { 
-      column_name: 'query_title', 
+    {
+      column_name: 'query_title',
       header: 'Query',
       sortable: false
     },
-    { 
-      column_name: 'created_date', 
+    {
+      column_name: 'created_date',
       header: 'Query Saving Date',
       sortable: false
     },
-    { 
-      column_name: 'time_ago', 
+    {
+      column_name: 'time_ago',
       header: 'Query Saving Time',
       sortable: false
     },
-    { 
-      column_name: 'rows_effected', 
+    {
+      column_name: 'query_time',
+      header: 'Query Execution Time',
+      sortable: false
+    },
+    {
+      column_name: 'rows_effected',
       header: 'Row Effected',
       sortable: false
     },
-    { 
-      column_name: 'action', 
+    {
+      column_name: 'action',
       header: 'Action',
-      sortable: false 
+      sortable: false
     }
   ];
 
@@ -161,7 +166,8 @@ const ShowQuery = () => {
           <div>
             <h1 className="text-xl font-semibold text-[#1C1B1F] leading-tight">Query Designer</h1>
             <p className="text-[12px] text-[#888585] mt-1 whitespace-nowrap">
-              Start by uploading a data file to create your first view.
+              Start by creating your first query using Query Designer.
+
             </p>
           </div>
 
@@ -183,10 +189,10 @@ const ShowQuery = () => {
           {/* Search Input */}
           <div className="relative group">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg 
-                className="h-4 w-4 text-gray-400 group-focus-within:text-[#5433FF] transition-colors" 
-                fill="none" 
-                viewBox="0 0 24 24" 
+              <svg
+                className="h-4 w-4 text-gray-400 group-focus-within:text-[#5433FF] transition-colors"
+                fill="none"
+                viewBox="0 0 24 24"
                 stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -213,8 +219,8 @@ const ShowQuery = () => {
                 ${isRefreshing ? "opacity-70 cursor-wait" : "cursor-pointer"}
               `}
             >
-              <AutorenewRoundedIcon 
-                className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""}`} 
+              <AutorenewRoundedIcon
+                className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""}`}
                 fontSize="small"
               />
             </button>
@@ -230,10 +236,10 @@ const ShowQuery = () => {
       ) : error ? (
         <div className="text-center py-10 text-red-500">{error}</div>
       ) : queries.length > 0 ? (
-        <ProductDataTable 
-          data={transformedQueries} 
-          globalFilter={globalFilter} 
-          columns={queryColumns} 
+        <ProductDataTable
+          data={transformedQueries}
+          globalFilter={globalFilter}
+          columns={queryColumns}
         />
       ) : (
         <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-20rem)]">
