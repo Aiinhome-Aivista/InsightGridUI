@@ -155,14 +155,14 @@ export default function Login() {
           <div className="w-full">
             <input
               type="text"
-              placeholder="User Name"
+              placeholder="User Email"
               value={user_email}
               onChange={(e) => {
                 const val = e.target.value;
                 setUserEmail(val);
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (val && !emailRegex.test(val)) {
-                  setEmailError("Enter a valid User Name");
+                  setEmailError("Enter a valid User Email");
                 } else {
                   setEmailError("");
                 }
