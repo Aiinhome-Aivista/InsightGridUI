@@ -7,6 +7,9 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { useTheme } from "../../../theme";
+import DeleteIcon from '@mui/icons-material/Delete';
+import ApiServices from "../../../services/ApiServices";
+import { useAuth } from "../../Auth/AuthContext";
 
 interface Props {
   files: any[];
@@ -17,6 +20,8 @@ const STEPS = ["Table Extraction", "Column Extraction", "Data Insert Status"];
 const TOTAL_STEPS = STEPS.length;
 
 export default function DataProcessing({ files, onRefresh }: Props) {
+  const { user } = useAuth();
+
   const { theme } = useTheme();
   const navigate = useNavigate();
   const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
@@ -82,6 +87,46 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     }
   };
 
+  const handleDeleteFile = async (file: any) => {
+    try {
+      const payload = {
+        session_id: user?.session_id,
+        created_by: user?.user_id,
+        file_name: file.name || file.file_name,
+      };
+
+      const res = await ApiServices.deleteUploadedFile(payload);
+
+      // ✅ SUCCESS
+      if (res?.success) {
+        if (onRefresh) {
+          await onRefresh();
+        }
+        return;
+      }
+
+      // ⚠️ DEPENDENCY CASE (409)
+      if (res?.data?.dependencies?.length) {
+        const tables = res.data.dependencies
+          .map((d: any) => d.table_name)
+          .join(", ");
+
+        alert(
+          `Cannot delete this file.\n\nIt is used by tables:\n${tables}`
+        );
+        return;
+      }
+
+      // ❌ GENERIC FAILURE
+      alert(res?.message || "Unable to delete file");
+
+    } catch (error: any) {
+      console.error("Delete failed", error);
+      alert("Something went wrong while deleting file");
+    }
+  };
+
+
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between mb-2 px-2">
@@ -94,11 +139,10 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         <Tippy content="Refresh" theme="gray">
           <div
             onClick={handleRefresh}
-            className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
-              isRefreshing
-                ? "cursor-not-allowed"
-                : "cursor-pointer hover:bg-gray-500/10"
-            }`}
+            className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
+              ? "cursor-not-allowed"
+              : "cursor-pointer hover:bg-gray-500/10"
+              }`}
             style={{ borderColor: theme.border }}
           >
             {isRefreshing ? (
@@ -162,6 +206,12 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               Uploaded At
             </div>
           </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Action
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -264,6 +314,24 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     {formatTo12Hour(file.created_at) || new Date().toLocaleDateString()}
                   </div>
                 </div>
+
+                {/* Delete Icon */}
+                <div className="flex-1 min-w-0 flex justify-center">
+                  <Tippy content="Delete file" theme="gray">
+                    <DeleteIcon
+                      onClick={() => handleDeleteFile(file)}
+                      sx={{
+                        fontSize: 20,
+                        color: "#9ca3af", // grey
+                        cursor: "pointer",
+                        "&:hover": {
+                          color: "#ef4444", // red on hover
+                        },
+                      }}
+                    />
+                  </Tippy>
+                </div>
+
               </div>
             </div>
           );

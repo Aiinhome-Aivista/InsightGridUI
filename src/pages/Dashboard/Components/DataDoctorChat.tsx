@@ -556,7 +556,10 @@ export default function Chat({
 
               <ProductDataTable
                 data={tableData.rows}
-                columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}
+                columns={tableData.columns
+                  .filter((col, index, self) => index === self.findIndex((t) => t.column_name === col.column_name))
+                  .filter(col => col.column_name !== 'row_hash')
+                }
                 globalFilter={""}
               />{" "}
             </div>

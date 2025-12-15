@@ -6,6 +6,7 @@ import DownloadView from "../../utils/download/downloadView";
 import { AuthProvider, useAuth } from "../Auth/AuthContext";
 import ApiServices from "../../services/ApiServices";
 import { generatePDF } from "../../utils/download/function";
+import Tippy from "@tippyjs/react";
 
 const ReportDesignManage = () => {
   const navigate = useNavigate();
@@ -13,7 +14,54 @@ const ReportDesignManage = () => {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { downloadData, setDownloadData } = useAuth();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const timeAgo = (dateStr: string, timeStr: string) => {
+    if (!dateStr || !timeStr) return "";
+
+    try {
+      // Convert DD-MM-YYYY → YYYY-MM-DD
+      const [d, m, y] = dateStr.split("-");
+      const isoDate = `${y}-${m}-${d}`;
+
+      // Convert 12hr → 24hr with JS
+      const cleanTime = new Date(`1970-01-01 ${timeStr}`).toLocaleTimeString("en-GB", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+
+      const fullTimestamp = `${isoDate} ${cleanTime}`;
+
+      const created = new Date(fullTimestamp);
+      const now = new Date();
+
+      let diffMs = now.getTime() - created.getTime();
+      if (diffMs < 0) return "Just now";
+
+      const seconds = Math.floor(diffMs / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      const months = Math.floor(days / 30);
+      const years = Math.floor(days / 365);
+
+      if (seconds < 5) return "Just now";
+      if (seconds < 60) return `${seconds} sec ago`;
+      if (minutes < 60) return `${minutes} min ago`;
+      if (hours < 24) return `${hours} hr ago`;
+      if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
+      if (days < 30) return `${Math.floor(days / 7)} week${days >= 14 ? "s" : ""} ago`;
+      if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`;
+
+      return `${years} year${years > 1 ? "s" : ""} ago`;
+
+    } catch (e) {
+      console.error("timeAgo parse error:", e);
+      return "";
+    }
+  };
 
   // const queries = [
   //   {
@@ -49,13 +97,13 @@ const ReportDesignManage = () => {
     }
   };
 
-  const getDateTime = (value: string) => {
-    const d = new Date(value);
-    return {
-      date: d.toLocaleDateString(),
-      time: d.toLocaleTimeString(),
-    };
-  };
+  // const getDateTime = (value: string) => {
+  //   const d = new Date(value);
+  //   return {
+  //     date: d.toLocaleDateString(),
+  //     time: d.toLocaleTimeString(),
+  //   };
+  // };
 
   useEffect(() => {
     fetchReportList();
@@ -87,6 +135,7 @@ const ReportDesignManage = () => {
       console.error("Report list error:", error);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -115,12 +164,18 @@ const ReportDesignManage = () => {
 
       const api = execRes.data.data;
 
+      // ✅ only last word "report" remove
+      const cleanFileName = report.report_name
+        .replace(/\s*report$/i, "")
+        .trim();
+
       generatePDF(
         {
           rows: api.rows,
           columns: api.columns.map((c: string) => ({ column_name: c })),
         },
-        "preview" // 👈 IMPORTANT
+        "preview", // 👈 IMPORTANT
+        cleanFileName   // ✅ এখানেই যাবে
       );
     } catch (err) {
       console.error("Preview failed", err);
@@ -129,14 +184,41 @@ const ReportDesignManage = () => {
 
 
 
+  // const handleDownload = async (report: any) => {
+  //   try {
+  //     const aiResponse = report?.query?.ai_responce;
+
+  //     if (!aiResponse) {
+  //       console.error("SQL not found in report");
+  //       return;
+  //     }
+
+  //     const execRes = await ApiServices.executeSql({
+  //       sql_query: aiResponse,
+  //     });
+
+  //     const api = execRes.data.data;
+
+  //     const pdfData = {
+  //       rows: api.rows || [],
+  //       columns: (api.columns || []).map((c: string) => ({
+  //         column_name: c,
+  //       })),
+  //     };
+
+  //     // ✅ THIS LINE WAS MISSING
+  //     generatePDF(pdfData);
+
+  //   } catch (err) {
+  //     console.error("Download failed", err);
+  //   }
+  // };
+
+
   const handleDownload = async (report: any) => {
     try {
       const aiResponse = report?.query?.ai_responce;
-
-      if (!aiResponse) {
-        console.error("SQL not found in report");
-        return;
-      }
+      if (!aiResponse) return;
 
       const execRes = await ApiServices.executeSql({
         sql_query: aiResponse,
@@ -144,24 +226,33 @@ const ReportDesignManage = () => {
 
       const api = execRes.data.data;
 
-      const pdfData = {
-        rows: api.rows || [],
-        columns: (api.columns || []).map((c: string) => ({
-          column_name: c,
-        })),
-      };
+      // ✅ only last word "report" remove
+      const cleanFileName = report.report_name
+        .replace(/\s*report$/i, "")
+        .trim();
 
-      // ✅ THIS LINE WAS MISSING
-      generatePDF(pdfData);
+      generatePDF(
+        {
+          rows: api.rows || [],
+          columns: (api.columns || []).map((c: string) => ({
+            column_name: c,
+          })),
+        },
+        "download",
+        cleanFileName   // ✅ এখানেই যাবে
+      );
 
     } catch (err) {
       console.error("Download failed", err);
     }
   };
 
-
-
-
+  const handleRefresh = async () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    setGlobalFilter("");
+    await fetchReportList();
+  };
   return (
     <div className="mx-auto px-6 py-8">
       {/* Header */}
@@ -173,7 +264,7 @@ const ReportDesignManage = () => {
               Report Designer
             </h1>
             <p className="text-sm text-gray-500 mt-1 whitespace-nowrap">
-              Start by uploading a data file to create your first view.
+              Create reports from saved queries and visualise your data.
             </p>
           </div>
 
@@ -218,7 +309,7 @@ const ReportDesignManage = () => {
           </div>
 
           {/* Refresh Button */}
-          <button
+          {/* <button
             className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 
                              bg-gray-50 hover:bg-gray-100 transition-all"
           >
@@ -226,7 +317,23 @@ const ReportDesignManage = () => {
               className="w-5 h-5 text-gray-500"
               fontSize="small"
             />
-          </button>
+          </button> */}
+          <Tippy content="Refresh" theme="gray">
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className={`
+                          w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] 
+                          bg-[#D9D9D9] hover:bg-[#D9D9D9] transition-all
+                          ${isRefreshing ? "opacity-70 cursor-wait" : "cursor-pointer"}
+                        `}
+            >
+              <AutorenewRoundedIcon
+                className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""}`}
+                fontSize="small"
+              />
+            </button>
+          </Tippy>
         </div>
       </div>
 
@@ -251,7 +358,7 @@ const ReportDesignManage = () => {
 
             <tbody className="divide-y divide-gray-100">
               {filteredReports.map((item) => {
-                const { date, time } = getDateTime(item.created_at);
+                // const { date, time } = getDateTime(item.created_at);
 
                 return (
                   <tr key={item.report_id} className="hover:bg-gray-50">
@@ -260,11 +367,11 @@ const ReportDesignManage = () => {
                     </td>
 
                     <td className="px-6 py-3 text-xs text-gray-600">
-                      {date}
+                      {item.actual_created_date}
                     </td>
 
                     <td className="px-6 py-3 text-xs text-gray-600">
-                      {time}
+                      {timeAgo(item.actual_created_date, item.actual_created_at)}
                     </td>
 
                     <td className="px-6 py-3 text-xs text-gray-600">

@@ -41,12 +41,12 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     const [slideDirection, setSlideDirection] = useState<'none' | 'left' | 'right'>('none');
     const [columns, setColumns] = useState<Column[]>([]);
     const [previewRows, setPreviewRows] = useState<any[]>([]);
-    //for session_id and created_by
-    const [insertResponse, setInsertResponse] = useState<any>(null);
     const [insertData, setInsertData] = useState<"yes" | "no" | "">("");
     const [totalRows, settotalRows] = useState("");
     const [isSchemaMismatch, setIsSchemaMismatch] = useState(false);
     const [schemaMismatchData, setSchemaMismatchData] = useState(null);
+    const [createTableResponse, setCreateTableResponse] = useState<any>(null);
+    const [insertResponse, setInsertResponse] = useState<any>(null);
 
 
 
@@ -61,6 +61,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         if (isOpen && apiData) {
             setTableName(apiData.suggested_table_name || uploadedFileName.replace(/\.[^/.]+$/, ''));
         }
+        setStep("configure");
     }, [isOpen, apiData, uploadedFileName]);
 
     useEffect(() => {
@@ -167,20 +168,23 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         setIsEditingTableName(false);
     };
 
+    
+
 
     const handleNext = async () => {
+        const schema = columns.map(col => ({
+            column: col.name,
+            datatype: col.dataType,
+            length: col.length,
+            primary: col.primary
+        }));
 
-        // STEP 1 → CONFIGURE SCREEN (Preview)
+        // STEP 1: CONFIGURE -> Create Table & Get Preview
         if (step === "configure") {
-            const schema = columns.map(col => ({
-                column: col.name,
-                datatype: col.dataType,
-                length: col.length,
-                primary: col.primary
-            }));
+            setStep("loading");
 
-            const previewPayload = {
-                action: "preview",
+            const payload = {
+                action: createNewTable === 'yes' ? "create_table" : "preview",
                 session_id: sessionId,
                 created_by: createdBy,
                 table_name: createNewTable === 'no' ? selectedTable : tableName,
@@ -188,70 +192,64 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 schema: schema,
                 is_existing: createNewTable === "no"
             };
-            try {
-                const response = await ApiService.preview(previewPayload);
-                const res = response.data;
 
-                // SUCCESS CASE → no mismatch
+            console.log(" Sending configure step payload:", payload);
+
+            try {
+                const response = await ApiService.preview(payload);
+                const resData = response.data.data;
+
+                console.log("Configure Step Response:", resData);
+
+                setCreateTableResponse(resData);
+                setPreviewRows(resData?.preview_rows || []);
+                settotalRows(resData?.total_rows || 0);
                 setIsSchemaMismatch(false);
                 setSchemaMismatchData(null);
-                setPreviewRows(res?.data?.preview_rows || []);
-                settotalRows(res?.data?.total_rows || []);
 
-            } catch (err) {
-                console.log("Preview API Error:", err);
+                setSlideDirection("left");
+                setTimeout(() => {
+                    setStep("preview");
+                    setSlideDirection("right");
+                    setTimeout(() => setSlideDirection("none"), 50);
+                }, 300);
 
+            } catch (err: any) {
+                console.error("Configure Step API Error:", err);
                 const apiRes = err?.response?.data;
 
-                // CHECK IF 400 ERROR CONTAINS SCHEMA MISMATCH
-                if (
-                    err?.response?.status === 400 &&
-                    apiRes?.message?.toLowerCase().includes("schema mismatch")
-                ) {
+                if (err?.response?.status === 400 && apiRes?.message?.toLowerCase().includes("schema mismatch")) {
                     setIsSchemaMismatch(true);
-
                     setSchemaMismatchData({
                         message: apiRes.message,
                         extra_in_csv: apiRes?.data?.extra_in_csv || [],
                         missing_in_csv: apiRes?.data?.missing_in_csv || []
                     });
-
-                    setPreviewRows([]);
-                    settotalRows("");
-
                 } else {
-                    // Unknown error
                     setIsSchemaMismatch(true);
                     setSchemaMismatchData({
-                        message: "Unexpected error",
+                        message: apiRes?.message || "An unexpected error occurred during table creation.",
                         extra_in_csv: [],
                         missing_in_csv: []
                     });
                 }
+
+                // Go to preview screen even on error to show the mismatch message
+                setSlideDirection("left");
+                setTimeout(() => {
+                    setStep("preview");
+                    setSlideDirection("right");
+                    setTimeout(() => setSlideDirection("none"), 50);
+                }, 300);
             }
-
-            setSlideDirection("left");
-            setTimeout(() => {
-                setStep("preview");
-                setSlideDirection("right");
-                setTimeout(() => setSlideDirection("none"), 50);
-            }, 300);
-
             return;
         }
 
 
-        // STEP 2 → PREVIEW SCREEN (Insert Data)
+        // STEP 2: PREVIEW -> Insert Data
         if (step === "preview") {
-
+            if (insertData !== 'yes') return;
             setStep("loading");
-
-            const schema = columns.map(col => ({
-                column: col.name,
-                datatype: col.dataType,
-                length: col.length,
-                primary: col.primary
-            }));
 
             const insertPayload = {
                 action: "insert_data",
@@ -260,7 +258,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 file_name: apiData?.file_name,
                 table_name: createNewTable === 'no' ? selectedTable : tableName,
                 is_existing: createNewTable === "no",
-                schema: schema
+                schema: schema // Schema is still needed for validation on the backend
             };
 
             console.log(" Sending insert_data payload:", insertPayload);
@@ -268,14 +266,14 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             try {
                 const response = await ApiService.preview(insertPayload);
                 console.log(" Insert Response:", response.data);
-
                 setInsertResponse(response?.data?.data);
             } catch (err) {
                 console.error(" Insert API Error:", err);
+                setInsertResponse({ summary_message: "Failed to insert data." });
             }
 
             setTimeout(() => {
-                setStep("success");
+                setStep("success"); // Go to final success/fail screen
             }, 800);
 
             return;
@@ -286,6 +284,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
     const handleBack = () => {
         if (step === 'success') {
+            setInsertData(""); // Reset choice
             setSlideDirection('right');
             setTimeout(() => {
                 setStep('preview');
@@ -295,6 +294,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 }, 50);
             }, 300);
         } else if (step === 'preview') {
+            setIsSchemaMismatch(false); // Reset error state
             setSlideDirection('right');
             setTimeout(() => {
                 setStep('configure');
@@ -632,37 +632,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         ))}
                                     </div>
                                 </div>
-
-                                <div className="mt-8">
-                                    <h4 className="text-xs font-semibold text-gray-900 mb-2">
-                                        Insert Data
-                                    </h4>
-                                    <div className="flex gap-4">
-                                        <label className="flex items-center cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="insertData"
-                                                value="yes"
-                                                checked={insertData === "yes"}
-                                                onChange={() => setInsertData("yes")}
-                                                className="w-3 h-3 text-blue-600 border-gray-300 focus:ring-blue-500"
-                                            />
-                                            <span className="ml-1.5 text-xs text-gray-700">Yes</span>
-                                        </label>
-                                        <label className="flex items-center cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="insertData"
-                                                value="no"
-                                                checked={insertData === "no"}
-                                                onChange={() => setInsertData("no")}
-                                                className="w-3 h-3 text-blue-600 border-gray-300 focus:ring-blue-500"
-                                            />
-                                            <span className="ml-1.5 text-xs text-gray-700">No</span>
-                                        </label>
-                                    </div>
-                                </div>
-
                             </>
                         ) : step === 'preview' ? (
                             <>
@@ -682,40 +651,15 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     </div>
                                 </div>
 
-                                {/*  CASE 1: SCHEMA MISMATCH (SHOW ONLY MESSAGE) */}
+                                {/*  CASE 1: SCHEMA MISMATCH (SHOW ERROR) */}
                                 {isSchemaMismatch ? (
-                                    // <div className="p-4 bg-red-50 border border-red-300 rounded-lg">
-
-                                    //     <h4 className="text-sm font-semibold text-red-700 mb-2">
-                                    //         {schemaMismatchData?.message || "Schema mismatch detected"}
-                                    //     </h4>
-
-                                    //     {/* EXTRA COLUMNS IN CSV */}
-                                    //     <div className="mt-3">
-                                    //         <p className="text-xs font-semibold text-red-600 mb-1">Extra Columns in CSV:</p>
-                                    //         <ul className="list-disc list-inside text-xs text-gray-700">
-                                    //             {schemaMismatchData?.extra_in_csv?.map((item, index) => (
-                                    //                 <li key={index}>{item}</li>
-                                    //             ))}
-                                    //         </ul>
-                                    //     </div>
-
-                                    //     {/* MISSING COLUMNS IN CSV */}
-                                    //     <div className="mt-4">
-                                    //         <p className="text-xs font-semibold text-red-600 mb-1">Missing Columns in CSV:</p>
-                                    //         <ul className="list-disc list-inside text-xs text-gray-700">
-                                    //             {schemaMismatchData?.missing_in_csv?.map((item, index) => (
-                                    //                 <li key={index}>{item}</li>
-                                    //             ))}
-                                    //         </ul>
-                                    //     </div>
-
-                                    // </div>
                                     <div className="p-6 bg-red-50 border border-red-300 rounded-xl">
 
                                         {/* TITLE */}
                                         <h4 className="text-base font-semibold text-red-700 text-center mb-6">
-                                            ⚠️ Schema Mismatch Detected
+                                            ⚠️ {schemaMismatchData?.message?.toLowerCase().includes("schema mismatch")
+                                                ? "Schema Mismatch Detected"
+                                                : "Error Creating Table"}
                                         </h4>
 
                                         {/* CONTENT */}
@@ -748,12 +692,23 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             </div>
 
                                         </div>
+                                        <div className="text-center mt-4 text-xs text-red-700">
+                                            Please go back and correct the schema or upload a valid file.
+                                            <br />
+                                            <span className="font-bold">{schemaMismatchData?.message}</span>
+                                        </div>
                                     </div>
 
                                 ) : (
                                     <>
                                         {/*  CASE 2: NORMAL PREVIEW TABLE */}
                                         <div>
+                                            <div className="flex items-center justify-center gap-2 mb-4">
+                                                <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
+                                                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                                </div>
+                                                <h4 className="text-xs font-semibold text-gray-900">{createTableResponse?.summary_message || `Table "${tableName}" created successfully.`}</h4>
+                                            </div>
                                             <div className="flex items-center justify-between mb-2">
                                                 <h4 className="text-xs font-semibold text-gray-900">
                                                     Column Preview (Showing 5 out of {totalRows} rows)
@@ -811,6 +766,36 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
                                             </div>
                                         </div>
+
+                                        <div className="mt-8">
+                                            <h4 className="text-xs font-semibold text-gray-900 mb-2">
+                                                Do you want to insert the data?
+                                            </h4>
+                                            <div className="flex gap-4">
+                                                <label className="flex items-center cursor-pointer">
+                                                    <input
+                                                        type="radio"
+                                                        name="insertData"
+                                                        value="yes"
+                                                        checked={insertData === "yes"}
+                                                        onChange={() => setInsertData("yes")}
+                                                        className="w-3 h-3 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                    />
+                                                    <span className="ml-1.5 text-xs text-gray-700">Yes</span>
+                                                </label>
+                                                <label className="flex items-center cursor-pointer">
+                                                    <input
+                                                        type="radio"
+                                                        name="insertData"
+                                                        value="no"
+                                                        checked={insertData === "no"}
+                                                        onChange={() => setInsertData("no")}
+                                                        className="w-3 h-3 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                    />
+                                                    <span className="ml-1.5 text-xs text-gray-700">No</span>
+                                                </label>
+                                            </div>
+                                        </div>
                                     </>
                                 )}
                             </>
@@ -818,7 +803,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                         ) : step === 'loading' ? (
                             <div className="flex flex-col items-center justify-center">
                                 <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-                                <p className="text-sm text-gray-600">Creating table...</p>
+                                <p className="text-sm text-gray-600">Processing...</p>
                             </div>
                         ) : (
                             <>
@@ -833,7 +818,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     <h4 className="text-sm font-semibold text-gray-900">
                                         {insertResponse?.summary_message
                                             ? insertResponse.summary_message
-                                            : `Table "${tableName}" created successfully`}
+                                            : `Data inserted into "${tableName}" successfully.`}
                                     </h4>
                                 </div>
                             </>
@@ -869,22 +854,23 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             >
                                 Cancel
                             </button>
-                            {/* <button
-                                onClick={handleNext}
-                                className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs"
-                            >
-                                Next
-                            </button> */}
                             <button
                                 onClick={handleNext}
-                                disabled={insertData !== "yes" || isSchemaMismatch}
+                                disabled={
+                                    (step === 'preview' && (insertData !== "yes" || isSchemaMismatch)) ||
+                                    (step === 'configure' && (createNewTable === 'no' && !selectedTable))
+                                }
                                 className={`px-4 py-1.5 rounded-lg font-medium text-xs transition-colors
-        ${insertData === "yes" && !isSchemaMismatch
-                                        ? "bg-blue-600 text-white hover:bg-blue-700"
-                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                    }`}
+                                    ${(step === 'preview' && (insertData !== "yes" || isSchemaMismatch)) ||
+                                    (step === 'configure' && (createNewTable === 'no' && !selectedTable))
+                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                        : "bg-blue-600 text-white hover:bg-blue-700"
+                                    }
+                                `}
                             >
-                                Next
+                                {step === 'configure'
+                                    ? (createNewTable === 'yes' ? 'Create Table & Preview' : 'Preview')
+                                    : 'Next'}
                             </button>
 
 
