@@ -58,6 +58,13 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     const createdBy = storedUser?.user_id || "";
 
     useEffect(() => {
+        if (step === "preview") {
+            setInsertData("");
+        }
+    }, [step]);
+
+
+    useEffect(() => {
         if (isOpen && apiData) {
             setTableName(apiData.suggested_table_name || uploadedFileName.replace(/\.[^/.]+$/, ''));
         }
@@ -168,7 +175,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         setIsEditingTableName(false);
     };
 
-    
+
 
 
     const handleNext = async () => {
@@ -247,37 +254,87 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
 
         // STEP 2: PREVIEW -> Insert Data
+        // if (step === "preview") {
+        //     if (insertData !== 'yes') return;
+        //     setStep("loading");
+
+        //     const insertPayload = {
+        //         action: "insert_data",
+        //         session_id: sessionId,
+        //         created_by: createdBy,
+        //         file_name: apiData?.file_name,
+        //         table_name: createNewTable === 'no' ? selectedTable : tableName,
+        //         is_existing: createNewTable === "no",
+        //         schema: schema // Schema is still needed for validation on the backend
+        //     };
+
+        //     console.log(" Sending insert_data payload:", insertPayload);
+
+        //     try {
+        //         const response = await ApiService.preview(insertPayload);
+        //         console.log(" Insert Response:", response.data);
+        //         setInsertResponse(response?.data?.data);
+        //     } catch (err) {
+        //         console.error(" Insert API Error:", err);
+        //         setInsertResponse({ summary_message: "Failed to insert data." });
+        //     }
+
+        //     setTimeout(() => {
+        //         setStep("success"); // Go to final success/fail screen
+        //     }, 800);
+
+        //     return;
+        // }
+
+
+        // STEP 2: PREVIEW
         if (step === "preview") {
-            if (insertData !== 'yes') return;
-            setStep("loading");
 
-            const insertPayload = {
-                action: "insert_data",
-                session_id: sessionId,
-                created_by: createdBy,
-                file_name: apiData?.file_name,
-                table_name: createNewTable === 'no' ? selectedTable : tableName,
-                is_existing: createNewTable === "no",
-                schema: schema // Schema is still needed for validation on the backend
-            };
+            // CASE 1 → User chose NOT to insert data
+            if (insertData === "no") {
+                setInsertResponse({
+                    summary_message: `Table "${tableName}" created successfully. Data was not inserted.`
+                });
 
-            console.log(" Sending insert_data payload:", insertPayload);
+                setTimeout(() => {
+                    setStep("success");
+                }, 300);
 
-            try {
-                const response = await ApiService.preview(insertPayload);
-                console.log(" Insert Response:", response.data);
-                setInsertResponse(response?.data?.data);
-            } catch (err) {
-                console.error(" Insert API Error:", err);
-                setInsertResponse({ summary_message: "Failed to insert data." });
+                return;
             }
 
-            setTimeout(() => {
-                setStep("success"); // Go to final success/fail screen
-            }, 800);
+            // CASE 2 → Insert data = YES
+            if (insertData === "yes") {
+                setStep("loading");
+
+                const insertPayload = {
+                    action: "insert_data",
+                    session_id: sessionId,
+                    created_by: createdBy,
+                    file_name: apiData?.file_name,
+                    table_name: createNewTable === 'no' ? selectedTable : tableName,
+                    is_existing: createNewTable === "no",
+                    schema: schema
+                };
+
+                console.log("Sending insert_data payload:", insertPayload);
+
+                try {
+                    const response = await ApiService.preview(insertPayload);
+                    setInsertResponse(response?.data?.data);
+                } catch (err) {
+                    console.error("Insert API Error:", err);
+                    setInsertResponse({ summary_message: "Failed to insert data." });
+                }
+
+                setTimeout(() => {
+                    setStep("success");
+                }, 800);
+            }
 
             return;
         }
+
     };
 
 
@@ -854,7 +911,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             >
                                 Cancel
                             </button>
-                            <button
+                            {/* <button
                                 onClick={handleNext}
                                 disabled={
                                     (step === 'preview' && (insertData !== "yes" || isSchemaMismatch)) ||
@@ -871,6 +928,25 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 {step === 'configure'
                                     ? (createNewTable === 'yes' ? 'Create Table & Preview' : 'Preview')
                                     : 'Next'}
+                            </button> */}
+
+                            <button
+                                onClick={handleNext}
+                                disabled={
+                                    step === 'preview' && insertData === ""
+                                }
+                                className={`px-4 py-1.5 rounded-lg font-medium text-xs transition-colors
+        ${step === 'preview' && insertData === ""
+                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                        : "bg-blue-600 text-white hover:bg-blue-700"
+                                    }
+    `}
+                            >
+                                {step === 'configure'
+                                    ? (createNewTable === 'yes' ? 'Create Table & Preview' : 'Preview')
+                                    : insertData === 'yes'
+                                        ? 'Insert & Finish'
+                                        : 'Finish'}
                             </button>
 
 
