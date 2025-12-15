@@ -48,10 +48,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     const [schemaMismatchData, setSchemaMismatchData] = useState(null);
     const [createTableResponse, setCreateTableResponse] = useState<any>(null);
     const [insertResponse, setInsertResponse] = useState<any>(null);
-
-
-
-
+    const [treatFirstRowAsHeader, setTreatFirstRowAsHeader] = useState(true);
 
     const storedUser = JSON.parse(localStorage.getItem("ig_user") || "{}");
 
@@ -63,6 +60,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             setTableName(apiData.suggested_table_name || uploadedFileName.replace(/\.[^/.]+$/, ''));
         }
         setStep("configure");
+        setTreatFirstRowAsHeader(true); // Reset to default when modal opens
     }, [isOpen, apiData, uploadedFileName]);
 
     useEffect(() => {
@@ -169,9 +167,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         setIsEditingTableName(false);
     };
 
-    
-
-
     const handleNext = async () => {
         const schema = columns.map(col => ({
             column: col.name,
@@ -191,7 +186,8 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 table_name: createNewTable === 'no' ? selectedTable : tableName,
                 file_name: apiData?.file_name,
                 schema: schema,
-                is_existing: createNewTable === "no"
+                is_existing: createNewTable === "no",
+                treat_first_row_as_header: treatFirstRowAsHeader
             };
 
             console.log(" Sending configure step payload:", payload);
@@ -259,7 +255,8 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 file_name: apiData?.file_name,
                 table_name: createNewTable === 'no' ? selectedTable : tableName,
                 is_existing: createNewTable === "no",
-                schema: schema // Schema is still needed for validation on the backend
+                schema: schema,
+                treat_first_row_as_header: treatFirstRowAsHeader
             };
 
             console.log(" Sending insert_data payload:", insertPayload);
@@ -280,8 +277,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             return;
         }
     };
-
-
 
     const handleBack = () => {
         if (step === 'success') {
@@ -385,7 +380,21 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     </div>
                                 )}
 
-                                {/* Uploaded File Section */}
+                                {/* First Row as Header Checkbox */}
+
+                                    <label className="flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={treatFirstRowAsHeader}
+                                            onChange={(e) => setTreatFirstRowAsHeader(e.target.checked)}
+                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        />
+                                        <span className="ml-2 text-xs text-gray-700 font-medium">
+                                            Treat first row as header
+                                        </span>
+                                    </label>
+                                   
+
                                 <div className="mb-1 flex flex-row text-center items-center gap-5">
                                     <h4 className="text-xs font-semibold text-gray-900">
                                         Uploaded File  -  {uploadedFileName}
@@ -467,8 +476,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 </>
                                             )}
                                         </div>
-
-
                                     </div>
                                 </div>
 
@@ -681,7 +688,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             </div>
                                         ))}
                                     </div>
-                                </div> 
+                                </div>
                             </>
                         ) : step === 'preview' ? (
                             <>
@@ -858,7 +865,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     </>
                                 )}
                             </>
-
                         ) : step === 'loading' ? (
                             <div className="flex flex-col items-center justify-center">
                                 <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
@@ -931,8 +937,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     ? (createNewTable === 'yes' ? 'Create Table & Preview' : 'Preview')
                                     : 'Next'}
                             </button>
-
-
                         </>
                     )}
                 </div>
