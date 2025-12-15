@@ -472,8 +472,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     </div>
                                 </div>
 
-                                {/* Extracted Column Section */}
-                                <div>
+                                {/* <div>
                                     <div className="flex items-center justify-between mb-2">
                                         <h4 className="text-xs font-semibold text-gray-900">
                                             Extracted Columns
@@ -522,10 +521,10 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             }] : [])
                                         ]}
                                     />
-                                </div>
+                                </div> */}
 
                                 {/* Extracted Column Section */}
-                                {/* <div>
+                                 <div>
                                     <div className="flex items-center justify-between mb-2">
                                         <h4 className="text-xs font-semibold text-gray-900">
                                             Extracted Columns
@@ -682,7 +681,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             </div>
                                         ))}
                                     </div>
-                                </div> */}
+                                </div> 
                             </>
                         ) : step === 'preview' ? (
                             <>
@@ -766,7 +765,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 </h4>
                                             </div>
 
-                                            <ProductDataTable
+                                            {/* <ProductDataTable
                                                 data={previewRows}
                                                 globalFilter=""
                                                 showPagination={false}
@@ -775,9 +774,9 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     header: col.name,
                                                     sortable: true
                                                 }))}
-                                            />
+                                            /> */}
 
-                                            {/* <div className="rounded-lg overflow-hidden">
+                                            <div className="rounded-lg overflow-hidden">
 
                                                 <div
                                                     className="grid bg-gray-50 border-b border-gray-200 border-opacity-30"
@@ -824,7 +823,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     </p>
                                                 )}
 
-                                            </div> */}
+                                            </div>
                                         </div>
 
                                         <div className="mt-8">
