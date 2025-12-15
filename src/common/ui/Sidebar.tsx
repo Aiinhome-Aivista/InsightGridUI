@@ -16,11 +16,13 @@ import "../../styles/tippy-theme.css";
 import { useAuth } from "../../pages/Auth/AuthContext";
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
+import HourglassTopTwoToneIcon from '@mui/icons-material/HourglassTopTwoTone';
 const menuItems = [
     { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard" },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list" },
   { name: "Report Designer", icon: SummarizeOutlinedIcon , path: "report-designer" },
+  // { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" },
   { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
 ];
 
