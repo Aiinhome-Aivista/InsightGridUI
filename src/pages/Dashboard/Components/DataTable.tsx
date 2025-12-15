@@ -23,6 +23,11 @@ export default function ProductDataTable({
   showPagination = true,
   columns = []
 }: ProductDataTableProps) {
+  // Ensure columns are unique to prevent rendering errors
+  const uniqueColumns = columns.filter((col, index, self) => 
+    index === self.findIndex((t) => t.column_name === col.column_name)
+  );
+
   const [filters, setFilters] = useState({
     global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
   });
@@ -104,9 +109,9 @@ export default function ProductDataTable({
         rows={showPagination ? rows : data.length}
         first={first}
         onPage={(e) => setFirst(e.first)}
-        dataKey={columns[0]?.column_name || 'id'}
+        dataKey={data.length > 0 && 'row_hash' in data[0] ? 'row_hash' : undefined}
         filters={filters}
-        globalFilterFields={columns.map(col => col.column_name)}
+        globalFilterFields={uniqueColumns.map(col => col.column_name)}
         emptyMessage="No data available"
         sortMode="multiple"
 
@@ -114,7 +119,7 @@ export default function ProductDataTable({
         stripedRows
         rowClassName={() => "border-b border-gray-200"}
       >
-        {columns.map((col) => {
+        {uniqueColumns.map((col, index) => {
           // Check if custom header is provided, otherwise use default formatting
           const headerLabel = 'header' in col && col.header ? col.header : formatHeader(col.column_name);
           // Check if sortable is explicitly set, otherwise default to true
@@ -123,7 +128,7 @@ export default function ProductDataTable({
           return (
             <Column
               style={{ whiteSpace: "nowrap", width: "auto" }}
-              key={col.column_name}
+              key={`${col.column_name}_${index}`}
               field={col.column_name}
               header={headerLabel}
               sortable={isSortable}

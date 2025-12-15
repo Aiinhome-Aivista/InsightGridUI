@@ -371,7 +371,7 @@ export default function Chat({
       const errorMessage =
         error.response?.data?.message ||
         "An error occurred while running the script.";
-      setDisplayedLogs([`ERROR: ${errorMessage}`]);
+      // setDisplayedLogs([ERROR: ${errorMessage}]);
       setTableData(null);
       setExecutionMeta(null);
       setIsScriptRunSuccess(false);
