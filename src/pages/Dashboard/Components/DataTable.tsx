@@ -107,7 +107,7 @@ export default function ProductDataTable({
         globalFilterFields={columns.map(col => col.column_name)}
         emptyMessage="No data available for this table."
         sortMode="multiple"
-        style={{ width: "92vw" }}
+        style={{ maxWidth: "89vw" }}
         className="custom-table"
         stripedRows
         rowClassName={() => "border-b border-gray-200"}
