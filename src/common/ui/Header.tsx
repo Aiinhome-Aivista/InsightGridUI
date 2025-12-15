@@ -9,7 +9,14 @@ export default function Header() {
   const [formattedDate, setFormattedDate] = useState('');
   const [formattedTime, setFormattedTime] = useState('');
   const { setIsLogoutModalOpen } = useAuth();
-
+  const formatTo12Hour = (timeStr) => {
+    if (!timeStr) return "";
+    const [hour, minute, second] = timeStr.split(":");
+    let h = parseInt(hour);
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    return `${h}:${minute} ${ampm}`;
+  };
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
@@ -23,7 +30,7 @@ export default function Header() {
         hour12: false,
       });
       setFormattedDate(dateString);
-      setFormattedTime(timeString);
+      setFormattedTime(formatTo12Hour(timeString));
     };
 
     const getOrdinalSuffix = (day: number) => {
@@ -74,7 +81,7 @@ export default function Header() {
               </span>
             </p>
           </div>
- 
+
           {/* Right Date & Time Section */}
           <div className="flex items-center gap-3 text-sm" style={{ color: theme.secondaryText }}>
             <p>
