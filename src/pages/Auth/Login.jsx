@@ -13,6 +13,7 @@ export default function Login() {
   const [user_email, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const [notification, setNotification] = useState({
@@ -90,7 +91,8 @@ export default function Login() {
     user_email.trim() !== "" &&
     password.trim() !== "" &&
     captchaInput.trim() !== "" &&
-    !loading;
+    !loading &&
+    !emailError;
 
   const handleCloseNotification = () =>
     setNotification((prev) => ({ ...prev, open: false }));
@@ -115,26 +117,18 @@ export default function Login() {
           {notification.message}
         </Alert>
       </Snackbar>
-
-      {/* FLOATING COLOR CONTAINER 1 - TEAL */}
       <div
         className="absolute top-10 left-10 w-96 h-96 rounded-full 
           blur-3xl opacity-40 mix-blend-screen bg-[#048951ff]"
       ></div>
-
-      {/* FLOATING COLOR CONTAINER 2 - BLUE */}
       <div
         className="absolute top-20 -right-20 w-96 h-96 rounded-full 
          blur-3xl mix-blend-screen bg-[#04418fff]"
       ></div>
-
-      {/* FLOATING COLOR CONTAINER 3 - PURPLE */}
       <div
         className="absolute -bottom-20 left-1/3 w-96 h-96 rounded-full 
          blur-3xl mix-blend-screen bg-[#322858ff]"
       ></div>
-
-      {/* BOTTOM RIGHT CORNER IMAGE */}
       <img
         src={Union}
         alt="cross-pattern"
@@ -158,13 +152,29 @@ export default function Login() {
           onSubmit={handleLogin}
           className="mt-16 w-80 flex flex-col space-y-4"
         >
-          <input
-            type="text"
-            placeholder="User Name"
-            value={user_email}
-            onChange={(e) => setUserEmail(e.target.value)}
-            className="w-full px-4 py-2 rounded-md bg-transparent border border-white/40 text-white outline-none placeholder-white/60"
-          />
+          <div className="w-full">
+            <input
+              type="text"
+              placeholder="User Email"
+              value={user_email}
+              onChange={(e) => {
+                const val = e.target.value;
+                setUserEmail(val);
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (val && !emailRegex.test(val)) {
+                  setEmailError("Enter a valid User Email");
+                } else {
+                  setEmailError("");
+                }
+              }}
+              className={`w-full px-4 py-2 rounded-md bg-transparent border ${
+                emailError ? "border-red-400" : "border-white/40"
+              } text-white outline-none placeholder-white/60`}
+            />
+            {emailError && (
+              <p className="text-red-400 text-xs mt-1 ml-1">{emailError}</p>
+            )}
+          </div>
 
           <div className="relative">
             <input
