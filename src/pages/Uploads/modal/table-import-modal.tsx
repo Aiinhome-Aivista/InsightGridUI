@@ -783,7 +783,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 }))}
                                             /> */}
 
-                                            <div className="rounded-lg overflow-hidden">
+                                            <div className="rounded-lg overflow-auto">
 
                                                 <div
                                                     className="grid bg-gray-50 border-b border-gray-200 border-opacity-30"
