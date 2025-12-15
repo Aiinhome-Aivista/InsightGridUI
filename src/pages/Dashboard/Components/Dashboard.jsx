@@ -40,8 +40,8 @@ export default function Dashboard() {
     <div className="h-[100%] bg-gray-50 p-4 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="mb-3 flex-shrink-0 pl-4">
-        <h1 className="text-xl font-semibold text-gray-800">Insight</h1>
-        <p className="text-xs text-gray-500">{dashboardData?.latest_file?.session_name || 'File Details'}</p>
+        <h1 className="text-xl font-semibold text-gray-800">Insights Dashboard</h1>
+        <p className="text-xs text-gray-500">{dashboardData?.latest_file?.session_name || 'File & Report Summary'}</p>
       </div>
 
       {/* Main Content Area */}
