@@ -11,6 +11,7 @@ import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 interface ChatSession {
   id: number;
@@ -37,7 +38,7 @@ export default function Chat({
   passedData?: { user_query: string; query_title: string; ai_response: string };
 }) {
 
-   const { setDownloadData } = useAuth();
+  const { setDownloadData } = useAuth();
   const navigate = useNavigate();
   const { user } = useAuth();
   const getStoredUser = () => {
@@ -77,6 +78,13 @@ export default function Chat({
   const [isScriptRunSuccess, setIsScriptRunSuccess] = useState(false);
   const [executionMeta, setExecutionMeta] = useState<{ rows_effected?: number | string; query_time?: string } | null>(null);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
+  const [inputError, setInputError] = useState<string | null>(null);
+  const [isScriptGenerated, setIsScriptGenerated] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const isDefaultQuestion =
+    chat?.question === "How can I assist you right now?" ||
+    chat?.question?.startsWith("FATAL ERROR");
+
   const {
     setIsConfirmSaveModalOpen,
     viewName,
@@ -120,6 +128,7 @@ export default function Chat({
       // IMPORTANT: trigger typewriter effect immediately
       setTypedQuery(passedData.ai_response);
       setTypewriterKey((prev) => prev + 1);
+
     }
   }, [passedData]);
 
@@ -161,66 +170,130 @@ export default function Chat({
   //     );
   // }, [defaultSession.session_id, isSessionDataMissing]);
 
+  // const handleSendMessage = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!inputValue.trim() || !chat) return;
+  //   if (!chat.session_id || !chat.session_name) {
+  //     const missingFields = [];
+  //     if (!chat.session_id) missingFields.push("session_id");
+  //     if (!chat.session_name) missingFields.push("session_name");
+
+  //     console.error(
+  //       `Cannot send message: Active chat session data is incomplete. Missing: ${missingFields.join(
+  //         ", "
+  //       )}`
+  //     );
+  //     setChat((prevChat) => ({
+  //       ...prevChat,
+  //       logs: [
+  //         `ERROR: Session data incomplete. Missing fields: ${missingFields.join(
+  //           ", "
+  //         )}`,
+  //       ],
+  //     }));
+  //     return;
+  //   }
+
+  //   setIsSending(true);
+  //   try {
+  //     const payload = {
+  //       session_id: chat.session_id,
+  //       created_by: userData?.user_id || "unknown",
+  //       user_query: inputValue,
+  //     };
+  //     console.log("Sending Chat Payload:", payload);
+
+  //     const response = await ApiService.chat(payload);
+  //     const result = response.data?.data || {};
+
+  //     setChat((prevChat) => ({
+  //       ...prevChat,
+  //       question: result.user_query || inputValue,
+  //       query: result.ai_response || "",
+  //       ai_response: result.ai_response || "",
+  //       logs: result.logs || ["Execution log not available."],
+  //     }));
+  //     setDisplayedLogs([]);
+  //     setTypewriterKey((prev) => prev + 1);
+  //     setInputValue("");
+  //     setTableData(null); // Clear the local table on new query
+  //     setIsScriptRunSuccess(false);
+  //   } catch (error) {
+  //     console.error("Chat API Error:", error);
+
+  //     // setChat((prevChat) => ({
+  //     //   ...prevChat,
+  //     //   logs: ["ERROR: Something went wrong while calling API."],
+  //     // }));
+  //     // setIsScriptRunSuccess(false);
+  //     const errorMessage =
+  //       error?.response?.data?.message ||
+  //       "Something went wrong";
+
+  //     setInputError(errorMessage); // ✅ BIND ERROR HERE
+
+  //     setIsScriptRunSuccess(false);
+  //   } finally {
+  //     setIsSending(false);
+  //   }
+  // };
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !chat) return;
-    if (!chat.session_id || !chat.session_name) {
-      const missingFields = [];
-      if (!chat.session_id) missingFields.push("session_id");
-      if (!chat.session_name) missingFields.push("session_name");
 
-      console.error(
-        `Cannot send message: Active chat session data is incomplete. Missing: ${missingFields.join(
-          ", "
-        )}`
-      );
-      setChat((prevChat) => ({
-        ...prevChat,
-        logs: [
-          `ERROR: Session data incomplete. Missing fields: ${missingFields.join(
-            ", "
-          )}`,
-        ],
-      }));
+    // reset before sending new query
+    setIsScriptGenerated(false);
+    setInputError(null);
+
+    if (!chat.session_id || !chat.session_name) {
       return;
     }
 
     setIsSending(true);
+
     try {
       const payload = {
         session_id: chat.session_id,
         created_by: userData?.user_id || "unknown",
         user_query: inputValue,
       };
-      console.log("Sending Chat Payload:", payload);
 
       const response = await ApiService.chat(payload);
       const result = response.data?.data || {};
 
-      setChat((prevChat) => ({
-        ...prevChat,
+      setChat((prev) => ({
+        ...prev,
         question: result.user_query || inputValue,
         query: result.ai_response || "",
         ai_response: result.ai_response || "",
-        logs: result.logs || ["Execution log not available."],
+        logs: result.logs || [],
       }));
+
       setDisplayedLogs([]);
       setTypewriterKey((prev) => prev + 1);
       setInputValue("");
-      setTableData(null); // Clear the local table on new query
+      setTableData(null);
       setIsScriptRunSuccess(false);
-    } catch (error) {
-      console.error("Chat API Error:", error);
 
-      setChat((prevChat) => ({
-        ...prevChat,
-        logs: ["ERROR: Something went wrong while calling API."],
-      }));
+      // ✅ MAIN LINE — script generated successfully
+      if (result.ai_response && result.ai_response.trim()) {
+      }
+
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message || "Something went wrong";
+
+      setInputError(errorMessage);
+
+      // ❌ script not generated
+      setIsScriptGenerated(false);
       setIsScriptRunSuccess(false);
+
     } finally {
       setIsSending(false);
     }
   };
+
   const extractSqlQuery = (rawQuery: string): string => {
     if (!rawQuery) {
       return "";
@@ -298,7 +371,7 @@ export default function Chat({
       const errorMessage =
         error.response?.data?.message ||
         "An error occurred while running the script.";
-      setDisplayedLogs([`ERROR: ${errorMessage}`]);
+      // setDisplayedLogs([ERROR: ${errorMessage}]);
       setTableData(null);
       setExecutionMeta(null);
       setIsScriptRunSuccess(false);
@@ -310,6 +383,7 @@ export default function Chat({
   useEffect(() => {
     const query = chat?.query || "";
     setTypedQuery(""); // Clear previous query
+    // setIsScriptGenerated(false);
     const scriptContainerRef = document.getElementById("script-container");
 
     if (!query) return; // No query, nothing to type
@@ -327,6 +401,7 @@ export default function Chat({
         i++;
       } else {
         clearInterval(typingInterval);
+        setIsScriptGenerated(true); // ✅ ENABLE RUN ONLY AFTER FINISH
       }
       if (scriptContainerRef) {
         scriptContainerRef.scrollTop = scriptContainerRef.scrollHeight;
@@ -341,6 +416,7 @@ export default function Chat({
   useEffect(() => {
     setConfirmSaveAction(() => handleConfirmSave);
   }, [chat, viewName, isScriptRunSuccess, tableData]);
+
 
 
   const handleConfirmSave = async () => {
@@ -399,6 +475,20 @@ export default function Chat({
         {/* Chat Box */}
         <div className="px-5 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2 ">
           <span>{chat?.question}</span>
+          {!isDefaultQuestion && chat?.question && (
+            <button
+              onClick={async () => {
+                await navigator.clipboard.writeText(chat.question);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+              className="flex items-center gap-1 text-gray-500 hover:text-gray-800 text-xs mt-1"
+              title="Copy"
+            >
+              <ContentCopyIcon fontSize="small" />
+              {copied && <span className="text-gray-500 hover:text-gray-800">Copied</span>}
+            </button>
+          )}
         </div>
 
         {/* Input */}
@@ -422,7 +512,12 @@ export default function Chat({
           <input
             type="text"
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            // onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              if (inputError) setInputError(null);
+            }}
+
             placeholder={
               passedData
                 ? "" // If editing → no placeholder
@@ -449,6 +544,12 @@ export default function Chat({
             )}
           </button>
         </form>
+        {inputError && (
+          <p className="mt-2 text-sm text-red-600 mx-4">
+            {inputError}
+          </p>
+        )}
+
       </div>
 
       {/* Script Section */}
@@ -524,8 +625,13 @@ export default function Chat({
             </div>
             <button
               onClick={handleRunScript}
-              disabled={isSessionDataMissing || isExecuting}
-              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${isSessionDataMissing || isExecuting
+              // disabled={isSessionDataMissing || isExecuting}
+              disabled={
+                isSessionDataMissing ||
+                isExecuting ||
+                !isScriptGenerated
+              }
+              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${isSessionDataMissing || isExecuting || !isScriptGenerated
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-gray-300"
                 }`}
@@ -556,10 +662,7 @@ export default function Chat({
 
               <ProductDataTable
                 data={tableData.rows}
-                columns={tableData.columns
-                  .filter((col, index, self) => index === self.findIndex((t) => t.column_name === col.column_name))
-                  .filter(col => col.column_name !== 'row_hash')
-                }
+                columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}
                 globalFilter={""}
               />{" "}
             </div>
