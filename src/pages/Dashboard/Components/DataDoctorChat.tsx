@@ -13,6 +13,7 @@ import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
+
 interface ChatSession {
   id: number;
   session_id: string;
@@ -28,6 +29,13 @@ interface TableData {
   rows: any[];
   columns: any[];
 }
+interface ChatHistoryItem {
+  query_id: number;
+  session_id: string;
+  message: string;
+  created_at: string;
+}
+
 interface TableOption {
   label: string;
   value: string;
@@ -80,7 +88,10 @@ export default function Chat({
   const userData = JSON.parse(localStorage.getItem("ig_user"));
   const [inputError, setInputError] = useState<string | null>(null);
   const [isScriptGenerated, setIsScriptGenerated] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+ const [messageHistory, setMessageHistory] = useState<ChatHistoryItem[]>([]);
+ const chatContainerRef = useRef<HTMLDivElement | null>(null);
+
   const isDefaultQuestion =
     chat?.question === "How can I assist you right now?" ||
     chat?.question?.startsWith("FATAL ERROR");
@@ -106,6 +117,17 @@ export default function Chat({
   // }, [passedData]);
 
   useEffect(() => {
+    const savedHistory = localStorage.getItem("chat_history");
+    if (savedHistory) {
+      try {
+        setMessageHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error("Error parsing chat history", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     console.log("Chat received passedData:", passedData);
 
     if (!passedData) return;
@@ -119,6 +141,7 @@ export default function Chat({
     }
 
     if (passedData.ai_response) {
+      setIsScriptGenerated(false); 
       setChat((prevChat) => ({
         ...prevChat,
         query: passedData.ai_response,
@@ -248,6 +271,22 @@ export default function Chat({
     if (!chat.session_id || !chat.session_name) {
       return;
     }
+
+    // Save to history
+    // const newHistory = [...messageHistory, inputValue];
+    // setMessageHistory(newHistory);
+    // localStorage.setItem("chat_history", JSON.stringify(newHistory));
+const newMessage: ChatHistoryItem = {
+  query_id: Date.now(), // temporary unique id
+  session_id: chat.session_id,
+  message: inputValue,
+  created_at: new Date().toISOString(),
+};
+
+const newHistory = [...messageHistory, newMessage];
+
+setMessageHistory(newHistory);
+localStorage.setItem("chat_history", JSON.stringify(newHistory));
 
     setIsSending(true);
 
@@ -379,6 +418,15 @@ export default function Chat({
       setIsExecuting(false); // Stop loading
     }
   };
+const handleDeleteMessage = (queryId: number) => {
+  const updatedHistory = messageHistory.filter(
+    (item) => item.query_id !== queryId
+  );
+
+  setMessageHistory(updatedHistory);
+  localStorage.setItem("chat_history", JSON.stringify(updatedHistory));
+};
+
 
   useEffect(() => {
     const query = chat?.query || "";
@@ -417,6 +465,12 @@ export default function Chat({
     setConfirmSaveAction(() => handleConfirmSave);
   }, [chat, viewName, isScriptRunSuccess, tableData]);
 
+useEffect(() => {
+  if (chatContainerRef.current) {
+    chatContainerRef.current.scrollTop =
+      chatContainerRef.current.scrollHeight;
+  }
+}, [messageHistory]);
 
 
   const handleConfirmSave = async () => {
@@ -473,28 +527,54 @@ export default function Chat({
         </div>
 
         {/* Chat Box */}
-        <div className="px-5 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2 ">
-          <span>{chat?.question}</span>
-          {!isDefaultQuestion && chat?.question && (
-            <button
-              onClick={async () => {
-                await navigator.clipboard.writeText(chat.question);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
-              }}
-              className="flex items-center gap-1 text-gray-500 hover:text-gray-800 text-xs mt-1"
-              title="Copy"
-            >
-              <ContentCopyIcon fontSize="small" />
-              {copied && <span className="text-gray-500 hover:text-gray-800">Copied</span>}
-            </button>
-          )}
+    <div
+  ref={chatContainerRef}
+  className="px-5 py-6 text-gray-700 whitespace-pre-line flex flex-col gap-4 max-h-[300px] overflow-y-auto"
+>
+
+          <div className="self-start bg-gray-100 p-3 rounded-xl rounded-tl-none text-gray-800 max-w-[80%]  ">
+            How can I assist you right now?
+          </div>
+  {messageHistory.map((item, index) => (
+  <div
+    key={item.query_id}
+    className="self-end bg-[#D9D9D9] p-3 rounded-xl 
+               rounded-tr-none text-gray-800 max-w-[80%] 
+               flex items-center gap-2"
+  >
+    <span className="flex-1">{item.message}</span>
+
+    {/* Copy button */}
+    <button
+      onClick={async () => {
+        await navigator.clipboard.writeText(item.message);
+        setCopiedIndex(index);
+        setTimeout(() => setCopiedIndex(null), 2000);
+      }}
+      className="text-gray-500 hover:text-gray-800 text-xs flex items-center gap-1"
+      title="Copy"
+    >
+      <ContentCopyIcon fontSize="small" />
+      {copiedIndex === index && <span>Copied</span>}
+    </button>
+
+    {/* Delete button */}
+    <button
+      onClick={() => handleDeleteMessage(item.query_id)}
+      className="text-red-500 hover:text-red-700 text-xs"
+      title="Delete"
+    >
+      ✕
+    </button>
+  </div>
+))}
+
         </div>
 
         {/* Input */}
         <form
           onSubmit={handleSendMessage}
-          className="mx-4 border rounded-xl flex justify-between items-center px-5 py-2 mt-20 text-gray-500"
+          className="mx-4 border rounded-xl flex justify-between items-center bg-[#FBFBFB] px-5 py-2  text-gray-500"
         >
           {/* <input
             type="text"
@@ -521,10 +601,10 @@ export default function Chat({
             placeholder={
               passedData
                 ? "" // If editing → no placeholder
-                : "Ask a question to generate a script..."
+                : "Ask a question to generate a script"
             }
             disabled={isSessionDataMissing || isSending}
-            className="w-full h-full bg-transparent outline-none text-sm text-gray-800"
+            className="w-full h-full bg-transparent  outline-none text-sm text-gray-800"
           />
 
 
