@@ -182,6 +182,16 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             </div>
           </div>
           <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              Connected Queries
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              Connected Reports
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
             <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
               Table Extraction
             </div>
@@ -203,7 +213,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
-              Create Date
+              Created Date
             </div>
           </div>
           <div className="flex-1 min-w-0">
@@ -270,6 +280,24 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     {file.rows_effected || 0}
                   </div>
                 </div>
+                {/* Connected Queries */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.rows_effected || 0}
+                  </div>
+                </div>
+                {/* Connected Report */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.rows_effected || 0}
+                  </div>
+                </div>
 
                 {/* Table Extraction Status */}
                 <div className="flex-1 min-w-0">
@@ -312,7 +340,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     {file.file_size_mb || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
                   </div>
                 </div>
-                {/* Create Date */}
+
                 {/* Create Date */}
                 <div className="flex-1 min-w-0">
                   <div
