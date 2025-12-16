@@ -348,7 +348,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 table_name: createNewTable === 'no' ? selectedTable : tableName,
                 is_existing: createNewTable === "no",
                 schema: schema,
-                treat_first_row_as_header: treatFirstRowAsHeader
+                // treat_first_row_as_header: treatFirstRowAsHeader
             };
             // CASE 1 → User chose NOT to insert data
             if (insertData === "no") {
@@ -500,12 +500,24 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
                                 {/* First Row as Header Checkbox */}
 
-                                    <label className="flex items-center cursor-pointer">
+                                {/* <label className="flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={treatFirstRowAsHeader}
+                                            onChange={(e) => setTreatFirstRowAsHeader(e.target.checked)}
+                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        />
+                                        <span className="ml-2 text-xs text-gray-700 font-medium">
+                                            Treat first row as header
+                                        </span>
+                                    </label> */}
+                                <label className="flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
-                                        checked={treatFirstRowAsHeader}
+                                        checked={createNewTable === 'yes' ? true : treatFirstRowAsHeader}
+                                        disabled={createNewTable === 'yes'}
                                         onChange={(e) => setTreatFirstRowAsHeader(e.target.checked)}
-                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
                                     />
                                     <span className="ml-2 text-xs text-gray-700 font-medium">
                                         Treat first row as header
