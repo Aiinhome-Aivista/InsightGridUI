@@ -433,7 +433,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 }}
             >
                 {/* Modal Content */}
-                <div className="p-12 overflow-y-auto flex-1 relative">
+                <div className="p-6 overflow-y-auto flex-1 relative">
                     <div className={`transition-all duration-300 ${(step === 'loading' || step === 'success')
                         ? 'absolute inset-0 flex items-center justify-center'
                         : ''
@@ -668,30 +668,30 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     </div>
 
                                     {/* Table */}
-                                    <div className="rounded-lg overflow-hidden">
-                                        <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200">
-                                            <div className={`${createNewTable === 'yes' ? 'col-span-3' : 'col-span-4'} px-3 py-2`}>
+                                    <div className="rounded-lg overflow-hidden w-[100%]">
+                                        <div className="bg-gray-50 border-b border-gray-200 w-[100%] flex justify-between">
+                                            <div className="px-3 py-2 flex-1">
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Column Name
                                                 </span>
                                             </div>
-                                            <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2`}>
+                                            <div className="px-3 py-2 flex-1">
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Data Type
                                                 </span>
                                             </div>
-                                            <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2`}>
+                                            <div className="px-3 py-2 flex-1">
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Length
                                                 </span>
                                             </div>
-                                            <div className="col-span-2 px-3 py-2">
+                                            <div className="px-3 py-2 flex-1">
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Primary Key
                                                 </span>
                                             </div>
                                             {createNewTable === 'yes' && (
-                                                <div className="col-span-3 px-3 py-2 flex items-center gap-3">
+                                                <div className="px-3 py-2 flex items-center gap-3 text-right w-[110px]">
                                                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                         Action
                                                     </span>
@@ -709,9 +709,9 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         {paginatedColumns.map((column) => (
                                             <div
                                                 key={column.id}
-                                                className="grid grid-cols-12 border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
+                                                className="flex border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
                                             >
-                                                <div className={`${createNewTable === 'yes' ? 'col-span-3' : 'col-span-4'} px-3 py-2.5`}>
+                                                <div className="flex-1 px-3 py-2.5">
                                                     {column.isEditing ? (
                                                         <input
                                                             type="text"
@@ -724,7 +724,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                         <span className="text-xs text-gray-700">{column.name}</span>
                                                     )}
                                                 </div>
-                                                <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2.5`}>
+                                                <div className="flex-1 px-3 py-2.5">
                                                     {column.isEditing ? (
                                                         <select
                                                             value={column.dataType}
@@ -743,7 +743,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                         <span className="text-xs text-gray-500">{column.dataType}</span>
                                                     )}
                                                 </div>
-                                                <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2.5`}>
+                                                <div className="flex-1 px-3 py-2.5">
                                                     {column.isEditing ? (
                                                         <input
                                                             type="number"
@@ -756,7 +756,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                         <span className="text-xs text-gray-500">{column.length}</span>
                                                     )}
                                                 </div>
-                                                <div className="col-span-2 px-3 py-2.5 flex items-center justify-center">
+                                                <div className="flex-1 px-3 py-2.5 flex">
                                                     {column.isEditing ? (
                                                         <input
                                                             type="checkbox"
@@ -774,7 +774,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     )}
                                                 </div>
                                                 {createNewTable === 'yes' && (
-                                                    <div className="col-span-3 px-3 py-2.5 flex items-center gap-2">
+                                                    <div className=" px-3 py-2.5 flex items-center gap-2 w-[110px]">
                                                         {column.isEditing ? (
                                                             <>
                                                                 <button
