@@ -448,7 +448,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
                                 {/* First Row as Header Checkbox */}
 
-                                    <label className="flex items-center cursor-pointer">
+                                {/* <label className="flex items-center cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={treatFirstRowAsHeader}
@@ -458,8 +458,20 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         <span className="ml-2 text-xs text-gray-700 font-medium">
                                             Treat first row as header
                                         </span>
-                                    </label>
-                                   
+                                    </label> */}
+                                <label className="flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={createNewTable === 'yes' ? true : treatFirstRowAsHeader}
+                                        disabled={createNewTable === 'yes'}
+                                        onChange={(e) => setTreatFirstRowAsHeader(e.target.checked)}
+                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                                    />
+                                    <span className="ml-2 text-xs text-gray-700 font-medium">
+                                        Treat first row as header
+                                    </span>
+                                </label>
+
 
                                 <div className="mb-1 flex flex-row text-center items-center gap-5">
                                     <h4 className="text-xs font-semibold text-gray-900">
@@ -597,7 +609,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 </div> */}
 
                                 {/* Extracted Column Section */}
-                                 <div>
+                                <div>
                                     <div className="flex items-center justify-between mb-2">
                                         <h4 className="text-xs font-semibold text-gray-900">
                                             Extracted Columns
