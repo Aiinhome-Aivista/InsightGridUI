@@ -203,6 +203,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Create Date
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
               Uploaded At
             </div>
           </div>
@@ -305,6 +310,16 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-center" style={{ color: theme.primaryText }}>
                     {file.file_size_mb || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+                  </div>
+                </div>
+                {/* Create Date */}
+                {/* Create Date */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium text-center"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.created_date || "N/A"}
                   </div>
                 </div>
 

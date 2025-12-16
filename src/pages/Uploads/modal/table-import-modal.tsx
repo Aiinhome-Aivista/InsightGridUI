@@ -295,7 +295,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 table_name: createNewTable === 'no' ? selectedTable : tableName,
                 is_existing: createNewTable === "no",
                 schema: schema,
-                treat_first_row_as_header: treatFirstRowAsHeader
+                // treat_first_row_as_header: treatFirstRowAsHeader
             };
             // CASE 1 → User chose NOT to insert data
             if (insertData === "no") {
