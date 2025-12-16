@@ -27,6 +27,10 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedRowDetails, setSelectedRowDetails] = useState<any>(null);
+
+
   const ITEMS_PER_PAGE = 5;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,6 +43,29 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
+
+
+  const handleRowClick = (file: any) => {
+    try {
+      const parsedData = {
+        ...file,
+        query_titles:
+          typeof file.query_titles === "string"
+            ? JSON.parse(file.query_titles)
+            : file.query_titles || [],
+        report_names:
+          typeof file.report_names === "string"
+            ? JSON.parse(file.report_names)
+            : file.report_names || [],
+      };
+
+      setSelectedRowDetails(parsedData);
+      setIsDetailsModalOpen(true);
+    } catch (err) {
+      console.error("Failed to parse row details", err);
+    }
+  };
+
 
 
 
@@ -263,7 +290,8 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           return (
             <div
               key={index}
-              className="rounded-lg p-4 w-full mb-3 bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+              onClick={() => handleRowClick(file)}
+              className="rounded-lg p-4 w-full mb-3 bg-gray-200 hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
             >
               <div className="flex items-center justify-between gap-4">
                 {/* File Name */}
@@ -303,19 +331,20 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 {/* Connected Queries */}
                 <div className="flex-1 min-w-0">
                   <div
-                    className="text-sm font-medium"
+                    className="text-sm font-medium text-center"
                     style={{ color: theme.primaryText }}
                   >
-                    {file.rows_effected || 0}
+                    {file.connected_queries ?? 0}
                   </div>
                 </div>
-                {/* Connected Report */}
+
+                {/* Connected Reports */}
                 <div className="flex-1 min-w-0">
                   <div
-                    className="text-sm font-medium"
+                    className="text-sm font-medium text-center"
                     style={{ color: theme.primaryText }}
                   >
-                    {file.rows_effected || 0}
+                    {file.connected_reports ?? 0}
                   </div>
                 </div>
 
@@ -385,10 +414,10 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                       onClick={() => handleDeleteFile(file)}
                       sx={{
                         fontSize: 20,
-                        color: "#9ca3af", // grey
+                        color: "#9ca3af",
                         cursor: "pointer",
                         "&:hover": {
-                          color: "#ef4444", // red on hover
+                          color: "#ef4444",
                         },
                       }}
                     />
@@ -401,7 +430,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         })}
       </div>
 
-
+      {/* pegination controls   */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4 px-4">
           <span className="text-xs" style={{ color: theme.secondaryText }}>
@@ -435,6 +464,133 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             >
               Next
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* modal for row details */}
+      {isDetailsModalOpen && selectedRowDetails && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-[560px] max-h-[80vh] rounded-xl shadow-2xl bg-white flex flex-col">
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-3 border-b">
+              <div>
+                <h3
+                  className="text-sm font-semibold"
+                  style={{ color: theme.primaryText }}
+                >
+                  Connected Details
+                </h3>
+                <p className="text-xs text-gray-500">
+                  File & dependency information
+                </p>
+              </div>
+
+              <button
+                onClick={() => setIsDetailsModalOpen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full
+                     hover:bg-gray-200 text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 overflow-y-auto">
+
+              {/* File Info */}
+              <div className="mb-5 grid grid-cols-2 gap-4 text-xs">
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="text-gray-500 mb-1">File Name</div>
+                  <div className="font-medium text-gray-800">
+                    {selectedRowDetails.file_name}
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="text-gray-500 mb-1">Table Name</div>
+                  <div className="font-medium text-gray-800">
+                    {selectedRowDetails.table_name}
+                  </div>
+                </div>
+              </div>
+
+              {/* Queries Section */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-semibold text-gray-700">
+                    Connected Queries
+                  </h4>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                    {selectedRowDetails.query_titles.length}
+                  </span>
+                </div>
+
+                {selectedRowDetails.query_titles.length ? (
+                  <div className="space-y-2">
+                    {selectedRowDetails.query_titles.map((q: string, i: number) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-2 p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+                      >
+                        <span className="mt-0.5 text-xs text-blue-600 font-semibold">
+                          Q{i + 1}
+                        </span>
+                        <span className="text-xs text-gray-800">{q}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-xs text-gray-400 italic">
+                    No connected queries
+                  </div>
+                )}
+              </div>
+
+              {/* Reports Section */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-semibold text-gray-700">
+                    Connected Reports
+                  </h4>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                    {selectedRowDetails.report_names.length}
+                  </span>
+                </div>
+
+                {selectedRowDetails.report_names.length ? (
+                  <div className="space-y-2">
+                    {selectedRowDetails.report_names.map((r: string, i: number) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-2 p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+                      >
+                        <span className="mt-0.5 text-xs text-green-600 font-semibold">
+                          R{i + 1}
+                        </span>
+                        <span className="text-xs text-gray-800">{r}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-xs text-gray-400 italic">
+                    No connected reports
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-3 border-t flex justify-end">
+              <button
+                onClick={() => setIsDetailsModalOpen(false)}
+                className="px-4 py-1.5 text-xs font-medium rounded-md
+                     bg-gray-200 hover:bg-gray-300 text-gray-700"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
