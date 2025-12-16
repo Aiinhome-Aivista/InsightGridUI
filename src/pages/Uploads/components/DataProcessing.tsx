@@ -411,7 +411,10 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 <div className="flex-1 min-w-0 flex justify-center">
                   <Tippy content="Delete file" theme="gray">
                     <DeleteIcon
-                      onClick={() => handleDeleteFile(file)}
+                      onClick={(e) => {
+                        e.stopPropagation(); 
+                        handleDeleteFile(file);
+                      }}
                       sx={{
                         fontSize: 20,
                         color: "#9ca3af",
