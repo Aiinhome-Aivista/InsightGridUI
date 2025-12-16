@@ -13,6 +13,7 @@ import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
+
 interface ChatSession {
   id: number;
   session_id: string;
@@ -89,6 +90,8 @@ export default function Chat({
   const [isScriptGenerated, setIsScriptGenerated] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
  const [messageHistory, setMessageHistory] = useState<ChatHistoryItem[]>([]);
+ const chatContainerRef = useRef<HTMLDivElement | null>(null);
+
   const isDefaultQuestion =
     chat?.question === "How can I assist you right now?" ||
     chat?.question?.startsWith("FATAL ERROR");
@@ -462,6 +465,12 @@ const handleDeleteMessage = (queryId: number) => {
     setConfirmSaveAction(() => handleConfirmSave);
   }, [chat, viewName, isScriptRunSuccess, tableData]);
 
+useEffect(() => {
+  if (chatContainerRef.current) {
+    chatContainerRef.current.scrollTop =
+      chatContainerRef.current.scrollHeight;
+  }
+}, [messageHistory]);
 
 
   const handleConfirmSave = async () => {
@@ -518,7 +527,11 @@ const handleDeleteMessage = (queryId: number) => {
         </div>
 
         {/* Chat Box */}
-        <div className="px-5 py-6 text-gray-700 whitespace-pre-line flex flex-col gap-4 max-h-[300px] overflow-y-auto">
+    <div
+  ref={chatContainerRef}
+  className="px-5 py-6 text-gray-700 whitespace-pre-line flex flex-col gap-4 max-h-[300px] overflow-y-auto"
+>
+
           <div className="self-start bg-gray-100 p-3 rounded-xl rounded-tl-none text-gray-800 max-w-[80%]  ">
             How can I assist you right now?
           </div>
