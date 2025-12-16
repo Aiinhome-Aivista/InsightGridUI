@@ -124,15 +124,17 @@ export default function DashboardHeader({
                 <ArrowBackRoundedIcon fontSize="small" />
               </button>
 
-              <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
-                Query Designer
-              </h1>
+             <div className="flex flex-col gap-1">
+                <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
+                  Query Designer
+                </h1>
 
-              {passedData?.query_title && (
-                <span className="text-sm text-gray-500 -mt-1">
-                  {passedData.query_title}
-                </span>
-              )}
+                {passedData?.query_title && (
+                  <span className="text-sm text-gray-500 -mt-1">
+                    {passedData.query_title}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex items-center justify-center gap-3 md:gap-4">
               <Dropdown
