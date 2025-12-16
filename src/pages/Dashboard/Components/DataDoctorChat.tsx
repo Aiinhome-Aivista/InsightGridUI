@@ -600,8 +600,8 @@ useEffect(() => {
 
             placeholder={
               passedData
-                ? "" // If editing → no placeholder
-                : "Ask a question to generate a script"
+                ? "Ask a query to generate a script" // If editing → no placeholder
+                : "Ask a query to generate a script"
             }
             disabled={isSessionDataMissing || isSending}
             className="w-full h-full bg-transparent  outline-none text-sm text-gray-800"
