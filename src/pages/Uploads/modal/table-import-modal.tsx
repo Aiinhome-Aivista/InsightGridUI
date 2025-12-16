@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'lucide-react';
 import ApiService from '../../../services/ApiServices';
-import ProductDataTable from '../../Dashboard/Components/DataTable';
-
 
 interface Column {
     id: string;
@@ -50,10 +48,67 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     const [insertResponse, setInsertResponse] = useState<any>(null);
     const [treatFirstRowAsHeader, setTreatFirstRowAsHeader] = useState(true);
 
-    const storedUser = JSON.parse(localStorage.getItem("ig_user") || "{}");
+    // Pagination state for Extracted Columns table
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageWindowStart, setPageWindowStart] = useState(1);
+    const rowsPerPage = 5;
+    const maxVisiblePages = 5;
 
+    const storedUser = JSON.parse(localStorage.getItem("ig_user") || "{}");
     const sessionId = storedUser?.session_id || "";
     const createdBy = storedUser?.user_id || "";
+
+    // Calculate pagination values
+    const totalRecords = columns.length;
+    const totalPages = Math.ceil(totalRecords / rowsPerPage);
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = Math.min(startIndex + rowsPerPage, totalRecords);
+    const paginatedColumns = columns.slice(startIndex, endIndex);
+
+    // Reset pagination when columns change
+    useEffect(() => {
+        setCurrentPage(1);
+        setPageWindowStart(1);
+    }, [columns.length]);
+
+    // Handle page change
+    const onPageChange = (page: number) => {
+        setCurrentPage(page);
+
+        // Adjust sliding window
+        if (page > pageWindowStart + maxVisiblePages - 1) {
+            setPageWindowStart(page - maxVisiblePages + 1);
+        } else if (page < pageWindowStart) {
+            setPageWindowStart(page);
+        }
+    };
+
+    // Handle Previous button
+    const onPrevious = () => {
+        if (currentPage > 1) {
+            onPageChange(currentPage - 1);
+        }
+    };
+
+    // Handle Next button
+    const onNext = () => {
+        if (currentPage < totalPages) {
+            onPageChange(currentPage + 1);
+        }
+    };
+
+    // Generate visible page numbers
+    const getVisiblePages = () => {
+        const pages = [];
+        const endPage = Math.min(pageWindowStart + maxVisiblePages - 1, totalPages);
+
+        for (let i = pageWindowStart; i <= endPage; i++) {
+            pages.push(i);
+        }
+        return pages;
+    };
+
+    const visiblePages = getVisiblePages();
 
     useEffect(() => {
         if (step === "preview") {
@@ -61,13 +116,12 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         }
     }, [step]);
 
-
     useEffect(() => {
         if (isOpen && apiData) {
             setTableName(apiData.suggested_table_name || uploadedFileName.replace(/\.[^/.]+$/, ''));
         }
         setStep("configure");
-        setTreatFirstRowAsHeader(true); // Reset to default when modal opens
+        setTreatFirstRowAsHeader(true);
     }, [isOpen, apiData, uploadedFileName]);
 
     useEffect(() => {
@@ -83,7 +137,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 isEditing: false
             }));
             setColumns(mappedColumns);
-        } else { // 'no'
+        } else {
             if (selectedTable) {
                 const tableData = apiData.existing_tables.find(t => t.table_name === selectedTable);
                 if (tableData && tableData.schema) {
@@ -126,7 +180,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             setIsEditingTableName(false);  // reset edit mode
         }
     }, [createNewTable, selectedTable]);
-
 
     const handleEditClick = (id: string) => {
         setColumns(columns.map(col =>
@@ -341,7 +394,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
             return;
         }
-
     };
 
     const handleBack = () => {
@@ -381,7 +433,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 }}
             >
                 {/* Modal Content */}
-                <div className="p-12 overflow-y-auto flex-1 relative">
+                <div className="p-6 overflow-y-auto flex-1 relative">
                     <div className={`transition-all duration-300 ${(step === 'loading' || step === 'success')
                         ? 'absolute inset-0 flex items-center justify-center'
                         : ''
@@ -472,10 +524,9 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     </span>
                                 </label>
 
-
                                 <div className="mb-1 flex flex-row text-center items-center gap-5">
                                     <h4 className="text-xs font-semibold text-gray-900">
-                                        Uploaded File  -  {uploadedFileName}
+                                        Uploaded File - {uploadedFileName}
                                     </h4>
                                     <div className="flex items-center justify-between text-xs font-semibold text-gray-900 ">
                                         {/* Table Name  -
@@ -615,34 +666,35 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             Extracted Columns
                                         </h4>
                                     </div>
-                                    <div className="rounded-lg overflow-hidden">
-                                        <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200">
-                                            <div className={`${createNewTable === 'yes' ? 'col-span-3' : 'col-span-4'} px-3 py-2`}>
+
+                                    {/* Table */}
+                                    <div className="rounded-lg overflow-hidden w-[100%]">
+                                        <div className="bg-gray-50 border-b border-gray-200 w-[100%] flex justify-between">
+                                            <div className="px-3 py-2 flex-1">
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Column Name
                                                 </span>
                                             </div>
-                                            <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2`}>
+                                            <div className="px-3 py-2 flex-1">
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Data Type
                                                 </span>
                                             </div>
-                                            <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2`}>
+                                            <div className="px-3 py-2 flex-1">
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Length
                                                 </span>
                                             </div>
-                                            <div className="col-span-2 px-3 py-2">
+                                            <div className="px-3 py-2 flex-1">
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Primary Key
                                                 </span>
                                             </div>
                                             {createNewTable === 'yes' && (
-                                                <div className="col-span-3 px-3 py-2 flex items-center gap-3">
+                                                <div className="px-3 py-2 flex items-center gap-3 text-right w-[110px]">
                                                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                         Action
                                                     </span>
-
                                                     <button
                                                         onClick={handleAddColumn}
                                                         className="p-1.5 bg-[#3D5B811A] rounded-full text-gray-700 hover:text-blue-600 transition"
@@ -650,17 +702,16 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     >
                                                         <Plus className="w-3.5 h-3.5" />
                                                     </button>
-
                                                 </div>
                                             )}
                                         </div>
 
-                                        {columns.map((column) => (
+                                        {paginatedColumns.map((column) => (
                                             <div
                                                 key={column.id}
-                                                className="grid grid-cols-12 border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
+                                                className="flex border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
                                             >
-                                                <div className={`${createNewTable === 'yes' ? 'col-span-3' : 'col-span-4'} px-3 py-2.5`}>
+                                                <div className="flex-1 px-3 py-2.5">
                                                     {column.isEditing ? (
                                                         <input
                                                             type="text"
@@ -673,7 +724,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                         <span className="text-xs text-gray-700">{column.name}</span>
                                                     )}
                                                 </div>
-                                                <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2.5`}>
+                                                <div className="flex-1 px-3 py-2.5">
                                                     {column.isEditing ? (
                                                         <select
                                                             value={column.dataType}
@@ -692,7 +743,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                         <span className="text-xs text-gray-500">{column.dataType}</span>
                                                     )}
                                                 </div>
-                                                <div className={`${createNewTable === 'yes' ? 'col-span-2' : 'col-span-3'} px-3 py-2.5`}>
+                                                <div className="flex-1 px-3 py-2.5">
                                                     {column.isEditing ? (
                                                         <input
                                                             type="number"
@@ -705,7 +756,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                         <span className="text-xs text-gray-500">{column.length}</span>
                                                     )}
                                                 </div>
-                                                <div className="col-span-2 px-3 py-2.5 flex items-center justify-center">
+                                                <div className="flex-1 px-3 py-2.5 flex">
                                                     {column.isEditing ? (
                                                         <input
                                                             type="checkbox"
@@ -723,7 +774,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     )}
                                                 </div>
                                                 {createNewTable === 'yes' && (
-                                                    <div className="col-span-3 px-3 py-2.5 flex items-center gap-2">
+                                                    <div className=" px-3 py-2.5 flex items-center gap-2 w-[110px]">
                                                         {column.isEditing ? (
                                                             <>
                                                                 <button
@@ -741,7 +792,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                                     <Trash2 className="w-3.5 h-3.5" />
                                                                 </button>
                                                             </>
-
                                                         ) : (
                                                             <>
                                                                 <button
@@ -759,13 +809,61 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                                     <Trash2 className="w-3.5 h-3.5" />
                                                                 </button>
                                                             </>
-
                                                         )}
                                                     </div>
                                                 )}
                                             </div>
                                         ))}
                                     </div>
+
+                                    {/* Custom Pagination */}
+                                    {totalPages > 1 && (
+                                        <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-xl">
+                                            <div className="text-sm text-gray-600">
+                                                Showing {startIndex + 1} to {endIndex} of {totalRecords} columns
+                                            </div>
+
+                                            <div className="flex items-center gap-1">
+                                                {/* Previous Button */}
+                                                <button
+                                                    onClick={onPrevious}
+                                                    disabled={currentPage === 1}
+                                                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === 1
+                                                        ? 'text-gray-400 cursor-not-allowed'
+                                                        : 'text-gray-700 hover:bg-gray-100'
+                                                        }`}
+                                                >
+                                                    Previous
+                                                </button>
+
+                                                {/* Page Numbers */}
+                                                {visiblePages.map((page) => (
+                                                    <button
+                                                        key={page}
+                                                        onClick={() => onPageChange(page)}
+                                                        className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${currentPage === page
+                                                            ? 'bg-gray-200 text-gray-900'
+                                                            : 'text-gray-700 hover:bg-gray-50'
+                                                            }`}
+                                                    >
+                                                        {page}
+                                                    </button>
+                                                ))}
+
+                                                {/* Next Button */}
+                                                <button
+                                                    onClick={onNext}
+                                                    disabled={currentPage === totalPages}
+                                                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === totalPages
+                                                        ? 'text-gray-400 cursor-not-allowed'
+                                                        : 'text-gray-700 hover:bg-gray-100'
+                                                        }`}
+                                                >
+                                                    Next
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </>
                         ) : step === 'preview' ? (
@@ -805,7 +903,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 <p className="text-sm font-semibold text-red-600 mb-3">
                                                     Extra Columns in CSV
                                                 </p>
-
                                                 <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 max-h-56 overflow-y-auto">
                                                     {schemaMismatchData?.extra_in_csv?.map((item, index) => (
                                                         <li key={index}>{item}</li>
@@ -818,14 +915,12 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 <p className="text-sm font-semibold text-red-600 mb-3">
                                                     Missing Columns in CSV
                                                 </p>
-
                                                 <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 max-h-56 overflow-y-auto">
                                                     {schemaMismatchData?.missing_in_csv?.map((item, index) => (
                                                         <li key={index}>{item}</li>
                                                     ))}
                                                 </ul>
                                             </div>
-
                                         </div>
                                         <div className="text-center mt-4 text-xs text-red-700">
                                             Please go back and correct the schema or upload a valid file.
@@ -833,7 +928,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             <span className="font-bold">{schemaMismatchData?.message}</span>
                                         </div>
                                     </div>
-
                                 ) : (
                                     <>
                                         {/*  CASE 2: NORMAL PREVIEW TABLE */}
@@ -850,19 +944,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 </h4>
                                             </div>
 
-                                            {/* <ProductDataTable
-                                                data={previewRows}
-                                                globalFilter=""
-                                                showPagination={false}
-                                                columns={columns.map(col => ({
-                                                    column_name: col.name,
-                                                    header: col.name,
-                                                    sortable: true
-                                                }))}
-                                            /> */}
-
                                             <div className="rounded-lg overflow-auto">
-
                                                 <div
                                                     className="grid bg-gray-50 border-b border-gray-200 border-opacity-30"
                                                     style={{
@@ -907,7 +989,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                         No preview data available.
                                                     </p>
                                                 )}
-
                                             </div>
                                         </div>
 
@@ -950,8 +1031,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             </div>
                         ) : (
                             <>
-                                {/* Success State */}
-
                                 <div className="flex items-center justify-center gap-2">
                                     <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                                         <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -969,7 +1048,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                     </div>
                 </div>
 
-                {/* Modal Footer */}
                 <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-end gap-2">
                     {(step === 'preview' || step === 'success') && (
                         <button
@@ -1018,15 +1096,11 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
                             <button
                                 onClick={handleNext}
-                                disabled={
-                                    step === 'preview' && insertData === ""
-                                }
-                                className={`px-4 py-1.5 rounded-lg font-medium text-xs transition-colors
-        ${step === 'preview' && insertData === ""
-                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                        : "bg-blue-600 text-white hover:bg-blue-700"
-                                    }
-    `}
+                                disabled={step === 'preview' && insertData === ""}
+                                className={`px-4 py-1.5 rounded-lg font-medium text-xs transition-colors ${step === 'preview' && insertData === ""
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-blue-600 text-white hover:bg-blue-700"
+                                    }`}
                             >
                                 {step === 'configure'
                                     ? (createNewTable === 'yes' ? 'Create Table & Preview' : 'Preview')
