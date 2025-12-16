@@ -27,6 +27,21 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const ITEMS_PER_PAGE = 5;
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+
+
+  const totalPages = Math.ceil(files.length / ITEMS_PER_PAGE);
+
+  const paginatedFiles = files.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+
+
   const formatTo12Hour = (timeStr) => {
     if (!timeStr) return "";
     const [hour, minute, second] = timeStr.split(":");
@@ -35,6 +50,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     h = h % 12 || 12;
     return `${h}:${minute} ${ampm}`;
   };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [files]);
+
 
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
@@ -164,7 +184,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       </div>
 
       {/* Global Column Headers */}
-      <div className="mb-3">
+      <div className="mb-3 overflow-x-auto">
         <div className="flex items-center justify-between gap-4 px-4 py-2 rounded-lg" style={{ backgroundColor: theme.border + '20' }}>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
@@ -230,8 +250,8 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         </div>
       </div>
 
-      <div className="max-h-[30vh] overflow-y-auto pr-2">
-        {files.map((file, index) => {
+      <div className="max-h-[30vh] overflow-y-auto overflow-x-auto pr-2">
+        {paginatedFiles.map((file, index) => {
           const fileName = file.name || file.file_name;
           const currentProgress = processingProgress[fileName] || 0;
           const isFullyProcessed = currentProgress >= TOTAL_STEPS;
@@ -380,6 +400,45 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           );
         })}
       </div>
+
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4 px-4">
+          <span className="text-xs" style={{ color: theme.secondaryText }}>
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <div className="flex gap-2">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => p - 1)}
+              className="px-3 py-1 text-xs border rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 text-xs border rounded
+            ${currentPage === i + 1 ? "bg-blue-600 text-white" : ""}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => p + 1)}
+              className="px-3 py-1 text-xs border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
