@@ -138,6 +138,7 @@ export default function Chat({
     }
 
     if (passedData.ai_response) {
+      setIsScriptGenerated(false); 
       setChat((prevChat) => ({
         ...prevChat,
         query: passedData.ai_response,
