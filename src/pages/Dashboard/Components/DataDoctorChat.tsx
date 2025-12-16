@@ -673,7 +673,7 @@ const handleDeleteMessage = (queryId: number) => {
           <div className="flex items-start justify-between gap-4 mb-4">
             <div
               id="script-container"
-              className="text-sm font-mono relative min-h-[150px] max-h-[350px] overflow-y-auto max-w-[1300px]"
+              className=" w-[100%] text-sm font-mono relative min-h-[150px] max-h-[350px] overflow-y-auto max-w-[1300px]"
             >
               <SyntaxHighlighter
                 language="sql"

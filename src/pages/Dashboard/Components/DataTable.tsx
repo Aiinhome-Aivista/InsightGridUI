@@ -13,13 +13,15 @@ interface ColumnConfig {
 interface ProductDataTableProps {
   data: any[];
   globalFilter: string;
+  showPagination?: boolean;
   columns: (ColumnConfig | { column_name: string })[];
 }
 
-export default function ProductDataTable({ 
-  data, 
-  globalFilter, 
-  columns = [] 
+export default function ProductDataTable({
+  data,
+  globalFilter,
+  showPagination = true,
+  columns = []
 }: ProductDataTableProps) {
   // Ensure columns are unique to prevent rendering errors
   const uniqueColumns = columns.filter((col, index, self) => 
@@ -29,14 +31,14 @@ export default function ProductDataTable({
   const [filters, setFilters] = useState({
     global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
   });
-  
+
   const [first, setFirst] = useState(0);
   const rows = 5;
-  
+
   const totalRecords = data.length;
   const totalPages = Math.ceil(totalRecords / rows);
   const currentPage = Math.floor(first / rows) + 1;
-  
+
   // Sliding window for page numbers
   const [pageWindowStart, setPageWindowStart] = useState(1);
   const maxVisiblePages = 5;
@@ -63,7 +65,7 @@ export default function ProductDataTable({
   const onPageChange = (page: number) => {
     const newFirst = (page - 1) * rows;
     setFirst(newFirst);
-    
+
     // Adjust sliding window
     if (page > pageWindowStart + maxVisiblePages - 1) {
       setPageWindowStart(page - maxVisiblePages + 1);
@@ -90,7 +92,7 @@ export default function ProductDataTable({
   const getVisiblePages = () => {
     const pages = [];
     const endPage = Math.min(pageWindowStart + maxVisiblePages - 1, totalPages);
-    
+
     for (let i = pageWindowStart; i <= endPage; i++) {
       pages.push(i);
     }
@@ -100,11 +102,11 @@ export default function ProductDataTable({
   const visiblePages = getVisiblePages();
 
   return (
-    <div className="w-full">
+    <div style={{ maxWidth: "89vw" }}>
       <DataTable
         value={data}
         paginator
-        rows={rows}
+        rows={showPagination ? rows : data.length}
         first={first}
         onPage={(e) => setFirst(e.first)}
         dataKey={data.length > 0 && 'row_hash' in data[0] ? 'row_hash' : undefined}
@@ -112,7 +114,7 @@ export default function ProductDataTable({
         globalFilterFields={uniqueColumns.map(col => col.column_name)}
         emptyMessage="No data available"
         sortMode="multiple"
-        style={{ maxWidth: "89vw" }}
+
         className="custom-table"
         stripedRows
         rowClassName={() => "border-b border-gray-200"}
@@ -122,7 +124,7 @@ export default function ProductDataTable({
           const headerLabel = 'header' in col && col.header ? col.header : formatHeader(col.column_name);
           // Check if sortable is explicitly set, otherwise default to true
           const isSortable = 'sortable' in col ? col.sortable : true;
-          
+
           return (
             <Column
               style={{ whiteSpace: "nowrap", width: "auto" }}
@@ -144,55 +146,54 @@ export default function ProductDataTable({
         })}
       </DataTable>
 
+
       {/* Custom Pagination */}
-      <div className="flex items-center justify-between px-4 py-1 bg-white border-t border-gray-200 rounded-b-xl">
-        <div className="text-sm text-gray-600">
-          Showing {first + 1} to {Math.min(first + rows, totalRecords)} of {totalRecords} results
-        </div>
-        
-        <div className="flex items-center gap-1">
-          {/* Previous Button */}
-          <button
-            onClick={onPrevious}
-            disabled={currentPage === 1}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-              currentPage === 1
+      {showPagination && (
+        <div className="flex items-center justify-between px-4 py-1 bg-white border-t border-gray-200 rounded-b-xl">
+          <div className="text-sm text-gray-600">
+            Showing {first + 1} to {Math.min(first + rows, totalRecords)} of {totalRecords} results
+          </div>
+
+          <div className="flex items-center gap-1">
+            {/* Previous Button */}
+            <button
+              onClick={onPrevious}
+              disabled={currentPage === 1}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === 1
                 ? 'text-gray-400 cursor-not-allowed'
                 : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Previous
-          </button>
+                }`}
+            >
+              Previous
+            </button>
 
-          {/* Page Numbers */}
-          {visiblePages.map((page) => (
-            <button
-              key={page}
-              onClick={() => onPageChange(page)}
-              className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${
-                currentPage === page
+            {/* Page Numbers */}
+            {visiblePages.map((page) => (
+              <button
+                key={page}
+                onClick={() => onPageChange(page)}
+                className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${currentPage === page
                   ? 'bg-gray-200 text-gray-900'
                   : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
+                  }`}
+              >
+                {page}
+              </button>
+            ))}
 
-          {/* Next Button */}
-          <button
-            onClick={onNext}
-            disabled={currentPage === totalPages}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-              currentPage === totalPages
+            {/* Next Button */}
+            <button
+              onClick={onNext}
+              disabled={currentPage === totalPages}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === totalPages
                 ? 'text-gray-400 cursor-not-allowed'
                 : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+                }`}
+            >
+              Next
+            </button>
+          </div>
+        </div>)}
     </div>
   );
 }

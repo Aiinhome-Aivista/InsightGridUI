@@ -38,7 +38,7 @@ export default function UploadIdle({ onFileSelect, disabled = false }: Props) {
             borderColor: theme.border,
           }}
         >
-          Or Select Files
+          Or Select File
         </span>
       </label>
     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'lucide-react';
 import ApiService from '../../../services/ApiServices';
+import ProductDataTable from '../../Dashboard/Components/DataTable';
 
 
 interface Column {
@@ -47,10 +48,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     const [schemaMismatchData, setSchemaMismatchData] = useState(null);
     const [createTableResponse, setCreateTableResponse] = useState<any>(null);
     const [insertResponse, setInsertResponse] = useState<any>(null);
-
-
-
-
+    const [treatFirstRowAsHeader, setTreatFirstRowAsHeader] = useState(true);
 
     const storedUser = JSON.parse(localStorage.getItem("ig_user") || "{}");
 
@@ -69,6 +67,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             setTableName(apiData.suggested_table_name || uploadedFileName.replace(/\.[^/.]+$/, ''));
         }
         setStep("configure");
+        setTreatFirstRowAsHeader(true); // Reset to default when modal opens
     }, [isOpen, apiData, uploadedFileName]);
 
     useEffect(() => {
@@ -175,9 +174,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         setIsEditingTableName(false);
     };
 
-
-
-
     const handleNext = async () => {
         const schema = columns.map(col => ({
             column: col.name,
@@ -197,7 +193,8 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 table_name: createNewTable === 'no' ? selectedTable : tableName,
                 file_name: apiData?.file_name,
                 schema: schema,
-                is_existing: createNewTable === "no"
+                is_existing: createNewTable === "no",
+                treat_first_row_as_header: treatFirstRowAsHeader
             };
 
             console.log(" Sending configure step payload:", payload);
@@ -290,6 +287,16 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         // STEP 2: PREVIEW
         if (step === "preview") {
 
+            const insertPayload = {
+                action: "insert_data",
+                session_id: sessionId,
+                created_by: createdBy,
+                file_name: apiData?.file_name,
+                table_name: createNewTable === 'no' ? selectedTable : tableName,
+                is_existing: createNewTable === "no",
+                schema: schema,
+                // treat_first_row_as_header: treatFirstRowAsHeader
+            };
             // CASE 1 → User chose NOT to insert data
             if (insertData === "no") {
                 setInsertResponse({
@@ -336,8 +343,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         }
 
     };
-
-
 
     const handleBack = () => {
         if (step === 'success') {
@@ -441,7 +446,33 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     </div>
                                 )}
 
-                                {/* Uploaded File Section */}
+                                {/* First Row as Header Checkbox */}
+
+                                {/* <label className="flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={treatFirstRowAsHeader}
+                                            onChange={(e) => setTreatFirstRowAsHeader(e.target.checked)}
+                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        />
+                                        <span className="ml-2 text-xs text-gray-700 font-medium">
+                                            Treat first row as header
+                                        </span>
+                                    </label> */}
+                                <label className="flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={createNewTable === 'yes' ? true : treatFirstRowAsHeader}
+                                        disabled={createNewTable === 'yes'}
+                                        onChange={(e) => setTreatFirstRowAsHeader(e.target.checked)}
+                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                                    />
+                                    <span className="ml-2 text-xs text-gray-700 font-medium">
+                                        Treat first row as header
+                                    </span>
+                                </label>
+
+
                                 <div className="mb-1 flex flex-row text-center items-center gap-5">
                                     <h4 className="text-xs font-semibold text-gray-900">
                                         Uploaded File  -  {uploadedFileName}
@@ -523,10 +554,59 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 </>
                                             )}
                                         </div>
-
-
                                     </div>
                                 </div>
+
+                                {/* <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h4 className="text-xs font-semibold text-gray-900">
+                                            Extracted Columns
+                                        </h4>
+                                        {createNewTable === 'yes' && (
+                                            <button
+                                                onClick={handleAddColumn}
+                                                className="px-3 py-1.5 bg-[#3D5B811A] rounded-lg text-gray-700 hover:text-blue-600 transition flex items-center gap-2"
+                                                title="Add Column"
+                                            >
+                                                <Plus className="w-3.5 h-3.5" />
+                                                <span className="text-xs font-medium">Add Column</span>
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <ProductDataTable
+                                        data={columns}
+                                        globalFilter=""
+                                        showPagination={false}
+                                        columns={[
+                                            {
+                                                column_name: 'name',
+                                                header: 'Column Name',
+                                                sortable: true
+                                            },
+                                            {
+                                                column_name: 'dataType',
+                                                header: 'Data Type',
+                                                sortable: true
+                                            },
+                                            {
+                                                column_name: 'length',
+                                                header: 'Length',
+                                                sortable: true
+                                            },
+                                            {
+                                                column_name: 'primary',
+                                                header: 'Primary Key',
+                                                sortable: false
+                                            },
+                                            ...(createNewTable === 'yes' ? [{
+                                                column_name: 'actions',
+                                                header: 'Actions',
+                                                sortable: false
+                                            }] : [])
+                                        ]}
+                                    />
+                                </div> */}
 
                                 {/* Extracted Column Section */}
                                 <div>
@@ -536,7 +616,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         </h4>
                                     </div>
                                     <div className="rounded-lg overflow-hidden">
-                                        {/* Table Header */}
                                         <div className="grid grid-cols-12 bg-gray-50 border-b border-gray-200">
                                             <div className={`${createNewTable === 'yes' ? 'col-span-3' : 'col-span-4'} px-3 py-2`}>
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -576,7 +655,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             )}
                                         </div>
 
-                                        {/* Table Rows */}
                                         {columns.map((column) => (
                                             <div
                                                 key={column.id}
@@ -772,9 +850,19 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 </h4>
                                             </div>
 
-                                            <div className="rounded-lg overflow-hidden">
+                                            {/* <ProductDataTable
+                                                data={previewRows}
+                                                globalFilter=""
+                                                showPagination={false}
+                                                columns={columns.map(col => ({
+                                                    column_name: col.name,
+                                                    header: col.name,
+                                                    sortable: true
+                                                }))}
+                                            /> */}
 
-                                                {/* Table Header */}
+                                            <div className="rounded-lg overflow-auto">
+
                                                 <div
                                                     className="grid bg-gray-50 border-b border-gray-200 border-opacity-30"
                                                     style={{
@@ -793,7 +881,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     ))}
                                                 </div>
 
-                                                {/* Preview Rows */}
                                                 {previewRows.length > 0 ? (
                                                     previewRows.map((row, rowIndex) => (
                                                         <div
@@ -856,7 +943,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     </>
                                 )}
                             </>
-
                         ) : step === 'loading' ? (
                             <div className="flex flex-col items-center justify-center">
                                 <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
@@ -948,8 +1034,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         ? 'Insert & Finish'
                                         : 'Finish'}
                             </button>
-
-
                         </>
                     )}
                 </div>
