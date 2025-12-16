@@ -12,6 +12,7 @@ import ReportDesignerManage from "../pages/report-designer/ReportDesigneerManage
 import Dashboard from "../pages/Dashboard/Components/Dashboard";
 import ReportDesignerParents from "../pages/report-designer/ReportDesignerParents";
 import ReportSchedulerManage from "../pages/report-scheduler/ReportSchedulerManage";
+import Settings from "../pages/Setting";
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -27,7 +28,8 @@ function AppRoutes() {
             <Route path="report-scheduler" element={<ReportSchedulerManage />} />
             <Route path="report-designer-view" element={<ReportDesignerParents />} />
             <Route path="query-designer" element={<QueryDesigner />} />
-            <Route path="customize" element={<Customize_page />} />
+              <Route path="Customize" element={<Settings />} />
+            {/* <Route path="customize" element={<Customize_page />} /> */}
             <Route path="dashboard" element={<Dashboard />} />
           </Route>
         </Route>
