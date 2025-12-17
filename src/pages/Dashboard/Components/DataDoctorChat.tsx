@@ -14,10 +14,30 @@ import "../../../styles/tippy-theme.css";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 
+
+//for new chat session
+interface StoredMessage {
+  query_id: number;
+  query: string;
+  created_at: string;
+  ai_response: string;
+  is_execute: boolean;
+  row_count: number;
+  query_time: number;
+  is_success: boolean;
+}
+
+interface StoredChatData {
+  created_by: string;
+  session_id: string;
+  messages: StoredMessage[];
+}
+
+
 interface ChatSession {
   id: number;
   session_id: string;
-  session_name: string; // Re-enabled session_name
+  session_name: string;
   file_name: string;
   question: string;
   query: string;
@@ -29,17 +49,56 @@ interface TableData {
   rows: any[];
   columns: any[];
 }
-interface ChatHistoryItem {
-  query_id: number;
-  session_id: string;
-  message: string;
-  created_at: string;
-}
+// interface ChatHistoryItem {
+//   query_id: number;
+//   session_id: string;
+//   message: string;
+//   created_at: string;
+// }
 
-interface TableOption {
-  label: string;
-  value: string;
-}
+// interface TableOption {
+//   label: string;
+//   value: string;
+// }
+
+// const CHAT_INIT_KEY = "chat_initialized_session";
+//for new chat session
+// =======================
+// Local Storage Helpers
+// =======================
+
+const CHAT_STORE_KEY = "data_doctor_chat_store";
+
+const getChatStore = (
+  createdBy: string,
+  sessionId: string
+): StoredChatData => {
+  try {
+    const raw = localStorage.getItem(CHAT_STORE_KEY);
+
+    if (!raw) {
+      return {
+        created_by: createdBy,
+        session_id: sessionId,
+        messages: [],
+      };
+    }
+
+    return JSON.parse(raw);
+  } catch {
+    return {
+      created_by: createdBy,
+      session_id: sessionId,
+      messages: [],
+    };
+  }
+};
+
+const saveChatStore = (data: StoredChatData) => {
+  localStorage.setItem(CHAT_STORE_KEY, JSON.stringify(data));
+};
+
+
 export default function Chat({
   passedData,
 }: {
@@ -89,8 +148,8 @@ export default function Chat({
   const [inputError, setInputError] = useState<string | null>(null);
   const [isScriptGenerated, setIsScriptGenerated] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
- const [messageHistory, setMessageHistory] = useState<ChatHistoryItem[]>([]);
- const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  // const [messageHistory, setMessageHistory] = useState<ChatHistoryItem[]>([]);
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
   const isDefaultQuestion =
     chat?.question === "How can I assist you right now?" ||
@@ -103,29 +162,56 @@ export default function Chat({
     setConfirmSaveAction,
   } = useAuth();
 
+
   // useEffect(() => {
-  //   console.log("Chat received passedData:", passedData);
+  //   const savedHistory = localStorage.getItem("chat_history");
+  //   if (savedHistory) {
+  //     try {
+  //       setMessageHistory(JSON.parse(savedHistory));
+  //     } catch (e) {
+  //       console.error("Error parsing chat history", e);
+  //     }
+  //   }
+  // }, []);
 
-  //   if (passedData?.user_query) {
-  //     setInputValue(passedData.user_query);
+  // useEffect(() => {
+  //   if (!chat.session_id) return;
+
+  //   const initializedSession = localStorage.getItem(CHAT_INIT_KEY);
+
+  //   // FIRST TIME entering chat for this session
+  //   if (initializedSession !== chat.session_id) {
+  //     localStorage.removeItem("chat_history"); // clear old messages
+  //     localStorage.setItem(CHAT_INIT_KEY, chat.session_id);
+  //     setMessageHistory([]);
+  //     return;
   //   }
 
-  //   if (passedData?.query_title) {
-  //     setViewName(passedData.query_title);
+  //   // NOT first time → load history
+  //   const savedHistory = localStorage.getItem("chat_history");
+  //   if (savedHistory) {
+  //     try {
+  //       setMessageHistory(JSON.parse(savedHistory));
+  //     } catch (e) {
+  //       console.error("Error parsing chat history", e);
+  //     }
   //   }
+  // }, [chat.session_id]);
 
-  // }, [passedData]);
+  const storedMessages =
+    getChatStore(
+      userData?.user_id || "unknown",
+      chat.session_id
+    ).messages;
 
   useEffect(() => {
-    const savedHistory = localStorage.getItem("chat_history");
-    if (savedHistory) {
-      try {
-        setMessageHistory(JSON.parse(savedHistory));
-      } catch (e) {
-        console.error("Error parsing chat history", e);
-      }
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
-  }, []);
+  }, [storedMessages.length]);
+
+
 
   useEffect(() => {
     console.log("Chat received passedData:", passedData);
@@ -141,7 +227,7 @@ export default function Chat({
     }
 
     if (passedData.ai_response) {
-      setIsScriptGenerated(false); 
+      setIsScriptGenerated(false);
       setChat((prevChat) => ({
         ...prevChat,
         query: passedData.ai_response,
@@ -157,109 +243,6 @@ export default function Chat({
 
 
 
-
-
-  // useEffect(() => {
-  //   if (isSessionDataMissing) {
-  //     console.error(
-  //       "API Call skipped: Cannot initialize chat due to missing session_id."
-  //     );
-  //     setChat((prevChat) => ({
-  //       ...prevChat,
-  //       logs: ["CRITICAL: Missing session_id. Cannot communicate with API."],
-  //     }));
-  //     return;
-  //   }
-
-  //   const payload = {
-  //     session_id: defaultSession.session_id,
-  //     session_name: defaultSession.session_name, // Re-enabled session_name
-  //     user_query: " Hello, how can I help you?",
-  //   };
-  //   ApiService.chat(payload)
-  //     .then((response) => {
-  //       if (response.data.isSuccess) {
-  //         const data = response.data.data;
-  //         setChat((prevChat) => ({
-  //           ...prevChat,
-  //           question: data.user_query || payload.user_query,
-  //           query: data.ai_response || "-- No initial query generated.",
-  //           logs: data.logs || [],
-  //         }));
-  //       }
-  //     })
-  //     .catch((error) =>
-  //       console.error("Error fetching initial UI data using chat API:", error)
-  //     );
-  // }, [defaultSession.session_id, isSessionDataMissing]);
-
-  // const handleSendMessage = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (!inputValue.trim() || !chat) return;
-  //   if (!chat.session_id || !chat.session_name) {
-  //     const missingFields = [];
-  //     if (!chat.session_id) missingFields.push("session_id");
-  //     if (!chat.session_name) missingFields.push("session_name");
-
-  //     console.error(
-  //       `Cannot send message: Active chat session data is incomplete. Missing: ${missingFields.join(
-  //         ", "
-  //       )}`
-  //     );
-  //     setChat((prevChat) => ({
-  //       ...prevChat,
-  //       logs: [
-  //         `ERROR: Session data incomplete. Missing fields: ${missingFields.join(
-  //           ", "
-  //         )}`,
-  //       ],
-  //     }));
-  //     return;
-  //   }
-
-  //   setIsSending(true);
-  //   try {
-  //     const payload = {
-  //       session_id: chat.session_id,
-  //       created_by: userData?.user_id || "unknown",
-  //       user_query: inputValue,
-  //     };
-  //     console.log("Sending Chat Payload:", payload);
-
-  //     const response = await ApiService.chat(payload);
-  //     const result = response.data?.data || {};
-
-  //     setChat((prevChat) => ({
-  //       ...prevChat,
-  //       question: result.user_query || inputValue,
-  //       query: result.ai_response || "",
-  //       ai_response: result.ai_response || "",
-  //       logs: result.logs || ["Execution log not available."],
-  //     }));
-  //     setDisplayedLogs([]);
-  //     setTypewriterKey((prev) => prev + 1);
-  //     setInputValue("");
-  //     setTableData(null); // Clear the local table on new query
-  //     setIsScriptRunSuccess(false);
-  //   } catch (error) {
-  //     console.error("Chat API Error:", error);
-
-  //     // setChat((prevChat) => ({
-  //     //   ...prevChat,
-  //     //   logs: ["ERROR: Something went wrong while calling API."],
-  //     // }));
-  //     // setIsScriptRunSuccess(false);
-  //     const errorMessage =
-  //       error?.response?.data?.message ||
-  //       "Something went wrong";
-
-  //     setInputError(errorMessage); // ✅ BIND ERROR HERE
-
-  //     setIsScriptRunSuccess(false);
-  //   } finally {
-  //     setIsSending(false);
-  //   }
-  // };
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !chat) return;
@@ -272,21 +255,40 @@ export default function Chat({
       return;
     }
 
-    // Save to history
-    // const newHistory = [...messageHistory, inputValue];
+
+    //for new session storage
+
+    const queryId = Date.now();
+
+    const chatStore = getChatStore(
+      userData?.user_id || "unknown",
+      chat.session_id
+    );
+
+    chatStore.messages.push({
+      query_id: queryId,
+      query: inputValue.trim(),
+      created_at: new Date().toISOString(),
+      ai_response: "",
+      is_execute: false,
+      row_count: 0,
+      query_time: 0,
+      is_success: false
+    });
+
+    saveChatStore(chatStore);
+
+    // const newMessage: ChatHistoryItem = {
+    //   query_id: Date.now(), // temporary unique id
+    //   session_id: chat.session_id,
+    //   message: inputValue,
+    //   created_at: new Date().toISOString(),
+    // };
+
+    // const newHistory = [...messageHistory, newMessage];
+
     // setMessageHistory(newHistory);
     // localStorage.setItem("chat_history", JSON.stringify(newHistory));
-const newMessage: ChatHistoryItem = {
-  query_id: Date.now(), // temporary unique id
-  session_id: chat.session_id,
-  message: inputValue,
-  created_at: new Date().toISOString(),
-};
-
-const newHistory = [...messageHistory, newMessage];
-
-setMessageHistory(newHistory);
-localStorage.setItem("chat_history", JSON.stringify(newHistory));
 
     setIsSending(true);
 
@@ -299,6 +301,25 @@ localStorage.setItem("chat_history", JSON.stringify(newHistory));
 
       const response = await ApiService.chat(payload);
       const result = response.data?.data || {};
+
+      // ================================
+      // POINT-4: Update AI response
+      // ================================
+      const updatedStore = getChatStore(
+        userData?.user_id || "unknown",
+        chat.session_id
+      );
+
+      const currentMsg = updatedStore.messages.find(
+        m => m.query_id === queryId
+      );
+
+      if (currentMsg) {
+        currentMsg.ai_response = result.ai_response || "";
+      }
+
+      saveChatStore(updatedStore);
+
 
       setChat((prev) => ({
         ...prev,
@@ -314,7 +335,7 @@ localStorage.setItem("chat_history", JSON.stringify(newHistory));
       setTableData(null);
       setIsScriptRunSuccess(false);
 
-      // ✅ MAIN LINE — script generated successfully
+      // MAIN LINE — script generated successfully
       if (result.ai_response && result.ai_response.trim()) {
       }
 
@@ -324,7 +345,7 @@ localStorage.setItem("chat_history", JSON.stringify(newHistory));
 
       setInputError(errorMessage);
 
-      // ❌ script not generated
+      //  script not generated
       setIsScriptGenerated(false);
       setIsScriptRunSuccess(false);
 
@@ -381,6 +402,13 @@ localStorage.setItem("chat_history", JSON.stringify(newHistory));
         response.data.data &&
         Array.isArray(response.data.data.rows)
       ) {
+
+        const rowCount =
+          response.data.data.total_rows ?? response.data.data.rows.length;
+
+        const executionTime =
+          response.data.data.execution_time ?? null;
+
         const rows = response.data.data.rows;
         // If there are rows, derive columns from the keys of the first row object
         const columns =
@@ -393,10 +421,36 @@ localStorage.setItem("chat_history", JSON.stringify(newHistory));
         setDisplayedLogs([response.data.message || "Execution successful."]);
         // capture execution metadata if provided by backend
         setExecutionMeta({
-          rows_effected: response.data.data.total_rows ?? rows.length,
-          query_time: response.data.data.execution_time ?? "",
+          rows_effected: rowCount,
+          query_time: executionTime,
         });
+
         setIsScriptRunSuccess(true);
+
+
+        // ======================================
+        // POINT-5: Update execution SUCCESS
+        // ======================================
+        const store = getChatStore(
+          userData?.user_id || "unknown",
+          chat.session_id
+        );
+
+        // Find latest non-executed message
+        const lastMsg = [...store.messages]
+          .reverse()
+          .find(m => m.is_execute === false);
+
+        if (lastMsg) {
+          lastMsg.is_execute = true;
+          lastMsg.is_success = true;
+          lastMsg.row_count = rowCount;
+          lastMsg.query_time = executionTime; // STRING like "0.005 sec"
+        }
+
+        saveChatStore(store);
+
+
       } else {
         setTableData(null);
         setDisplayedLogs([
@@ -407,25 +461,37 @@ localStorage.setItem("chat_history", JSON.stringify(newHistory));
       }
     } catch (error) {
       console.error("Execute SQL API Error:", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        "An error occurred while running the script.";
-      // setDisplayedLogs([ERROR: ${errorMessage}]);
-      setTableData(null);
-      setExecutionMeta(null);
-      setIsScriptRunSuccess(false);
+      // ======================================
+      // POINT-6: Update execution FAILURE
+      // ======================================
+      const store = getChatStore(
+        userData?.user_id || "unknown",
+        chat.session_id
+      );
+
+      const lastMsg = [...store.messages]
+        .reverse()
+        .find(m => m.ai_response === chat.query);
+
+      if (lastMsg) {
+        lastMsg.is_execute = true;
+        lastMsg.is_success = false;
+      }
+
+      saveChatStore(store);
+
     } finally {
       setIsExecuting(false); // Stop loading
     }
   };
-const handleDeleteMessage = (queryId: number) => {
-  const updatedHistory = messageHistory.filter(
-    (item) => item.query_id !== queryId
-  );
+  // const handleDeleteMessage = (queryId: number) => {
+  //   const updatedHistory = messageHistory.filter(
+  //     (item) => item.query_id !== queryId
+  //   );
 
-  setMessageHistory(updatedHistory);
-  localStorage.setItem("chat_history", JSON.stringify(updatedHistory));
-};
+  //   setMessageHistory(updatedHistory);
+  //   localStorage.setItem("chat_history", JSON.stringify(updatedHistory));
+  // };
 
 
   useEffect(() => {
@@ -449,7 +515,7 @@ const handleDeleteMessage = (queryId: number) => {
         i++;
       } else {
         clearInterval(typingInterval);
-        setIsScriptGenerated(true); // ✅ ENABLE RUN ONLY AFTER FINISH
+        setIsScriptGenerated(true); // ENABLE RUN ONLY AFTER FINISH
       }
       if (scriptContainerRef) {
         scriptContainerRef.scrollTop = scriptContainerRef.scrollHeight;
@@ -465,44 +531,93 @@ const handleDeleteMessage = (queryId: number) => {
     setConfirmSaveAction(() => handleConfirmSave);
   }, [chat, viewName, isScriptRunSuccess, tableData]);
 
-useEffect(() => {
-  if (chatContainerRef.current) {
-    chatContainerRef.current.scrollTop =
-      chatContainerRef.current.scrollHeight;
-  }
-}, [messageHistory]);
+  // useEffect(() => {
+  //   if (chatContainerRef.current) {
+  //     chatContainerRef.current.scrollTop =
+  //       chatContainerRef.current.scrollHeight;
+  //   }
+  // }, [messageHistory]);
+
+
+  // const handleConfirmSave = async () => {
+  //   if (!chat || !viewName.trim()) return;
+
+  //   const payload = {
+  //     user_query: chat.question,
+  //     is_execute: isScriptRunSuccess ? 1 : 0,
+  //     ai_response: chat.ai_response || "",
+  //     created_by: userData?.user_id || "unknown",
+  //     // row_data: tableData || null,
+  //     session_id: chat.session_id,
+  //     rows_effected: executionMeta?.rows_effected ?? "",
+  //     query_time: executionMeta?.query_time ?? "",
+  //     query_title: viewName || "",
+  //   };
+
+  //   try {
+  //     const response = await ApiService.saveChat(payload);
+  //     if (response.data.isSuccess) {
+  //       console.log("Chat saved successfully:", response.data.message);
+  //     } else {
+  //       console.error("Failed to save chat:", response.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving chat:", error);
+  //   } finally {
+  //     setIsConfirmSaveModalOpen(false);
+  //     setViewName(""); // Clear input after saving
+  //     navigate("/layout/query-list");
+  //   }
+  // };
 
 
   const handleConfirmSave = async () => {
     if (!chat || !viewName.trim()) return;
 
+    // 1 Read from localStorage (SOURCE OF TRUTH)
+    const store = getChatStore(
+      userData?.user_id || "unknown",
+      chat.session_id
+    );
+
+    // 2Build FULL payload
     const payload = {
-      user_query: chat.question,
-      is_execute: isScriptRunSuccess ? 1 : 0,
-      ai_response: chat.ai_response || "",
-      created_by: userData?.user_id || "unknown",
-      // row_data: tableData || null,
       session_id: chat.session_id,
-      rows_effected: executionMeta?.rows_effected ?? "",
-      query_time: executionMeta?.query_time ?? "",
-      query_title: viewName || "",
+      created_by: userData?.user_id || "unknown",
+      query_title: viewName,
+      messages: store.messages.map(msg => ({
+        query_id: msg.query_id,
+        query: msg.query,
+        ai_response: msg.ai_response,
+        is_execute: msg.is_execute ? 1 : 0,
+        is_success: msg.is_success ? 1 : 0,
+        row_count: msg.row_count ?? 0,
+        query_time: msg.query_time ?? null,
+        created_at: msg.created_at
+      }))
     };
+
+    console.log("Full session save payload:", payload);
 
     try {
       const response = await ApiService.saveChat(payload);
+
       if (response.data.isSuccess) {
-        console.log("Chat saved successfully:", response.data.message);
+        //  CLEAR localStorage AFTER successful save
+        localStorage.removeItem("data_doctor_chat_store");
       } else {
-        console.error("Failed to save chat:", response.data.message);
+        console.error("Save failed:", response.data.message);
       }
     } catch (error) {
-      console.error("Error saving chat:", error);
+      console.error("Save API error:", error);
     } finally {
       setIsConfirmSaveModalOpen(false);
-      setViewName(""); // Clear input after saving
+      setViewName("");
       navigate("/layout/query-list");
     }
   };
+
+
 
   return (
     <div className="w-full min-h-screen px-5 mt-5">
@@ -527,47 +642,38 @@ useEffect(() => {
         </div>
 
         {/* Chat Box */}
-    <div
-  ref={chatContainerRef}
-  className="px-5 py-6 text-gray-700 whitespace-pre-line flex flex-col gap-4 max-h-[300px] overflow-y-auto"
->
+        <div
+          ref={chatContainerRef}
+          className="px-5 py-6 text-gray-700 whitespace-pre-line flex flex-col gap-4 max-h-[300px] overflow-y-auto"
+        >
 
           <div className="self-start bg-gray-100 p-3 rounded-xl rounded-tl-none text-gray-800 max-w-[80%]  ">
             How can I assist you right now?
           </div>
-  {messageHistory.map((item, index) => (
-  <div
-    key={item.query_id}
-    className="self-end bg-[#D9D9D9] p-3 rounded-xl 
-               rounded-tr-none text-gray-800 max-w-[80%] 
-               flex items-center gap-2"
-  >
-    <span className="flex-1">{item.message}</span>
 
-    {/* Copy button */}
-    <button
-      onClick={async () => {
-        await navigator.clipboard.writeText(item.message);
-        setCopiedIndex(index);
-        setTimeout(() => setCopiedIndex(null), 2000);
-      }}
-      className="text-gray-500 hover:text-gray-800 text-xs flex items-center gap-1"
-      title="Copy"
-    >
-      <ContentCopyIcon fontSize="small" />
-      {copiedIndex === index && <span>Copied</span>}
-    </button>
+          {/* Replace this section */}
+          {storedMessages.map((item) => (
+            <div
+              key={item.query_id}
+              className="self-end bg-[#D9D9D9] p-3 rounded-xl 
+               rounded-tr-none text-gray-800 max-w-[80%]"
+            >
+              <div className="font-medium">{item.query}</div>
 
-    {/* Delete button */}
-    <button
-      onClick={() => handleDeleteMessage(item.query_id)}
-      className="text-red-500 hover:text-red-700 text-xs"
-      title="Delete"
-    >
-      ✕
-    </button>
-  </div>
-))}
+              {item.ai_response && (
+                <div className="mt-1 text-xs text-gray-600">
+                  AI generated
+                </div>
+              )}
+
+              {item.is_execute && (
+                <div className="mt-1 text-xs text-green-600">
+                  ✔ Executed ({item.row_count} rows)
+                </div>
+              )}
+            </div>
+          ))}
+
 
         </div>
 
@@ -576,19 +682,7 @@ useEffect(() => {
           onSubmit={handleSendMessage}
           className="mx-4 border rounded-xl flex justify-between items-center bg-[#FBFBFB] px-5 py-2  text-gray-500"
         >
-          {/* <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={
-              isSessionDataMissing
-                ? "Cannot send messages due to missing session ID."
-                : "Ask a question to generate a script..."
-            }
-            disabled={isSessionDataMissing || isSending} // Disabled when session is missing or sending
-            className={`w-full h-full bg-transparent outline-none text-sm text-gray-800 ${isSessionDataMissing || isSending ? "cursor-not-allowed" : ""
-              }`}
-          /> */}
+
           <input
             type="text"
             value={inputValue}
@@ -643,19 +737,6 @@ useEffect(() => {
           <div className="flex flex-row items-center justify-between px-5 pr-0">
             {/* Left empty space or other content can stay here */}
             <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-5 py-2 shadow-sm">
-              {/* <input
-                type="text"
-                value={viewName}
-                onChange={(e) => setViewName(e.target.value)}
-                placeholder={
-                  isScriptRunSuccess
-                    ? "Name and save your custom view"
-                    : "Run a script to enable saving"
-                }
-                className={`text-gray-600 text-sm bg-transparent outline-none w-full ${!isScriptRunSuccess ? "cursor-not-allowed" : ""
-                  }`}
-                disabled={!isScriptRunSuccess}
-              /> */}
 
               <Tippy content={viewName} theme="gray" placement="top">
                 <input
