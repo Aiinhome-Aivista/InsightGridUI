@@ -12,7 +12,7 @@ import ReportDesignerManage from "../pages/report-designer/ReportDesigneerManage
 import Dashboard from "../pages/Dashboard/Components/Dashboard";
 import ReportDesignerParents from "../pages/report-designer/ReportDesignerParents";
 import ReportSchedulerManage from "../pages/report-scheduler/ReportSchedulerManage";
-import Settings from "../pages/Setting";
+import Settings from "../pages/Setting/Setting";
 function AppRoutes() {
   return (
     <AuthProvider>

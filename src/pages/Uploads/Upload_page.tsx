@@ -124,12 +124,13 @@ export default function UploadPage() {
     setIsUploading(true);
     setIsProcessing(false);
 
+    
     try {
       const formData = new FormData();
       formData.append("action", "upload");
       formData.append("session_id", sessionId);
       formData.append("created_by", createdBy);
-
+      formData.append("has_header", "true");
       files.forEach((file) => {
         formData.append("files", file);
       });

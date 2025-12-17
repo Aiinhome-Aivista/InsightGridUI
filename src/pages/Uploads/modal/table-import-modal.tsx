@@ -247,7 +247,9 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 file_name: apiData?.file_name,
                 schema: schema,
                 is_existing: createNewTable === "no",
-                treat_first_row_as_header: treatFirstRowAsHeader
+              has_header: createNewTable === "yes"
+                    ? true                     //  New table → always header
+                    : treatFirstRowAsHeader
             };
 
             console.log(" Sending configure step payload:", payload);
@@ -348,6 +350,9 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 table_name: createNewTable === 'no' ? selectedTable : tableName,
                 is_existing: createNewTable === "no",
                 schema: schema,
+                has_header: createNewTable === "yes"
+                    ? true
+                    : treatFirstRowAsHeader
                 // treat_first_row_as_header: treatFirstRowAsHeader
             };
             // CASE 1 → User chose NOT to insert data
