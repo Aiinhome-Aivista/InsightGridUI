@@ -116,7 +116,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
               />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Upload New / Delete avatar</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Aiinhome Technologies Pvt. Ltd</h3>
               <div className="flex flex-wrap gap-3">
                 <label
                   htmlFor="avatar-upload"
