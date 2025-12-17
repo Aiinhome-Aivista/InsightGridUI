@@ -30,20 +30,15 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedRowDetails, setSelectedRowDetails] = useState<any>(null);
 
-
-  const ITEMS_PER_PAGE = 5;
+  const ITEMS_PER_PAGE = 10;
 
   const [currentPage, setCurrentPage] = useState(1);
 
+  const totalPages = Math.ceil(files.length / ITEMS_PER_PAGE) || 1; // At least 1 page
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, files.length);
 
-
-  const totalPages = Math.ceil(files.length / ITEMS_PER_PAGE);
-
-  const paginatedFiles = files.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
+  const paginatedFiles = files.slice(startIndex, endIndex);
 
   const handleRowClick = (file: any) => {
     try {
@@ -66,9 +61,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     }
   };
 
-
-
-
   const formatTo12Hour = (timeStr) => {
     if (!timeStr) return "";
     const [hour, minute, second] = timeStr.split(":");
@@ -81,7 +73,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   useEffect(() => {
     setCurrentPage(1);
   }, [files]);
-
 
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
@@ -172,7 +163,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       alert("Something went wrong while deleting file");
     }
   };
-
 
   return (
     <div className="mt-6">
@@ -273,11 +263,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               Action
             </div>
           </div>
-
         </div>
       </div>
 
-      <div className="max-h-[30vh] overflow-y-auto overflow-x-auto pr-2">
+      {/* Files List - No fixed height, no vertical scrolling */}
+      <div className="overflow-x-auto pr-2">
         {paginatedFiles.map((file, index) => {
           const fileName = file.name || file.file_name;
           const currentProgress = processingProgress[fileName] || 0;
@@ -426,50 +416,61 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     />
                   </Tippy>
                 </div>
-
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* pegination controls   */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 px-4">
-          <span className="text-xs" style={{ color: theme.secondaryText }}>
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <div className="flex gap-2">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(p => p - 1)}
-              className="px-3 py-1 text-xs border rounded disabled:opacity-50"
-            >
-              Prev
-            </button>
-
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`px-3 py-1 text-xs border rounded
-            ${currentPage === i + 1 ? "bg-blue-600 text-white" : ""}`}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(p => p + 1)}
-              className="px-3 py-1 text-xs border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+      {/* Pagination controls - Always visible */}
+      <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-xl mt-4">
+        <div className="text-sm text-gray-600">
+          Showing {Math.min(startIndex + 1, files.length)} to {Math.min(endIndex, files.length)} of {files.length} files
         </div>
-      )}
+
+        <div className="flex items-center gap-1">
+          {/* Previous Button */}
+          <button
+            onClick={() => setCurrentPage(p => p - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+              currentPage === 1
+                ? 'text-gray-400 cursor-not-allowed'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            Previous
+          </button>
+
+          {/* Page Numbers */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${
+                currentPage === page
+                  ? 'bg-gray-200 text-gray-900'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {/* Next Button */}
+          <button
+            onClick={() => setCurrentPage(p => p + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+              currentPage === totalPages
+                ? 'text-gray-400 cursor-not-allowed'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      </div>
 
       {/* modal for row details */}
       {isDetailsModalOpen && selectedRowDetails && (
