@@ -16,37 +16,47 @@ export default function FileDropZone({ onUploadComplete, theme, disabled = false
   const [progress, setProgress] = useState(0);
   const [uploadComplete, setUploadComplete] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-  const uploadCalledRef = useRef(false); // Prevent duplicate calls
+  const uploadCalledRef = useRef(false);
 
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; 
+  const ALLOWED_TYPES = ["text/csv"];
   const [error, setError] = useState<string>("");
 
-  const startUpload = (selectedFiles: File[]) => {
-    if (!selectedFiles || selectedFiles.length === 0 || disabled) {
-      return;
-    }
+ const startUpload = (selectedFiles: File[]) => {
+  if (!selectedFiles || selectedFiles.length === 0 || disabled) return;
 
-    setError("");
+  setError("");
+  const csvFiles = selectedFiles.filter(
+    (file) =>
+      file.type === "text/csv" ||
+      file.name.toLowerCase().endsWith(".csv")
+  );
 
-    // separate valid and invalid files by size
-    const validFiles = selectedFiles.filter((f) => f.size <= MAX_FILE_SIZE);
-    const invalidCount = selectedFiles.length - validFiles.length;
+  const invalidTypeCount = selectedFiles.length - csvFiles.length;
 
-    if (validFiles.length === 0) {
-      setError("Files larger than 10 MB are not allowed.");
-      return;
-    }
+  if (csvFiles.length === 0) {
+    setError("Only CSV files are allowed.");
+    return;
+  }
+  const validFiles = csvFiles.filter((f) => f.size <= MAX_FILE_SIZE);
+  const invalidSizeCount = csvFiles.length - validFiles.length;
 
-    if (invalidCount > 0) {
-      setError(`${invalidCount} files ignored — max size 10 MB.`);
-    }
+  if (validFiles.length === 0) {
+    setError("CSV files larger than 10 MB are not allowed.");
+    return;
+  }
+  if (invalidTypeCount > 0) {
+    setError("Some files were ignored — only CSV files are allowed.");
+  } else if (invalidSizeCount > 0) {
+    setError("Some CSV files were ignored — max size is 10 MB.");
+  }
 
-    setFiles(validFiles);
-    setUploading(true);
-    setProgress(0);
-    setUploadComplete(false);
-    uploadCalledRef.current = false; // Reset flag
-  };
+  setFiles(validFiles);
+  setUploading(true);
+  setProgress(0);
+  setUploadComplete(false);
+  uploadCalledRef.current = false;
+};
 
   const handleDelete = () => {
     setFiles([]);
