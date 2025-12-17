@@ -944,52 +944,60 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 </h4>
                                             </div>
 
-                                            <div className="rounded-lg overflow-auto">
-                                                <div
-                                                    className="grid bg-gray-50 border-b border-gray-200 border-opacity-30"
-                                                    style={{
-                                                        gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))`
-                                                    }}
-                                                >
-                                                    {columns.map((column) => (
-                                                        <div
-                                                            key={column.id}
-                                                            className="px-3 py-2 border-r border-gray-200 border-opacity-30 last:border-r-0"
-                                                        >
-                                                            <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
-                                                                {column.name}
-                                                            </span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-
-                                                {previewRows.length > 0 ? (
-                                                    previewRows.map((row, rowIndex) => (
-                                                        <div
-                                                            key={rowIndex}
-                                                            className="grid border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
-                                                            style={{
-                                                                gridTemplateColumns: `repeat(${columns.length}, minmax(120px, 1fr))`
-                                                            }}
-                                                        >
+                                            <div className="rounded-lg overflow-auto border border-gray-200 border-opacity-30">
+                                                <table className="min-w-full border-collapse">
+                                                    {/* Header */}
+                                                    <thead className="bg-gray-50">
+                                                        <tr>
                                                             {columns.map((column) => (
-                                                                <div
+                                                                <th
                                                                     key={column.id}
-                                                                    className="px-3 py-2.5 border-r border-gray-200 border-opacity-30 last:border-r-0"
+                                                                    className="px-3 py-2 text-left border-b border-r border-gray-200 border-opacity-30 last:border-r-0"
+                                                                    style={{ minWidth: 120 }}
                                                                 >
-                                                                    <span className="text-xs text-[#3D5B81]">
-                                                                        {String(row[column.name]) ?? ""}
+                                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
+                                                                        {column.name}
                                                                     </span>
-                                                                </div>
+                                                                </th>
                                                             ))}
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <p className="text-xs text-gray-500 p-4">
-                                                        No preview data available.
-                                                    </p>
-                                                )}
+                                                        </tr>
+                                                    </thead>
+
+                                                    {/* Body */}
+                                                    <tbody>
+                                                        {previewRows.length > 0 ? (
+                                                            previewRows.map((row, rowIndex) => (
+                                                                <tr
+                                                                    key={rowIndex}
+                                                                    className="border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
+                                                                >
+                                                                    {columns.map((column) => (
+                                                                        <td
+                                                                            key={column.id}
+                                                                            className="px-3 py-2.5 border-r border-gray-200 border-opacity-30 last:border-r-0 whitespace-nowrap"
+                                                                            style={{ minWidth: 120 }}
+                                                                        >
+                                                                            <span className="text-xs text-[#3D5B81]">
+                                                                                {row[column.name] != null ? String(row[column.name]) : ""}
+                                                                            </span>
+                                                                        </td>
+                                                                    ))}
+                                                                </tr>
+                                                            ))
+                                                        ) : (
+                                                            <tr>
+                                                                <td
+                                                                    colSpan={columns.length}
+                                                                    className="text-xs text-gray-500 p-4 text-center"
+                                                                >
+                                                                    No preview data available.
+                                                                </td>
+                                                            </tr>
+                                                        )}
+                                                    </tbody>
+                                                </table>
                                             </div>
+
                                         </div>
 
                                         <div className="mt-8">

@@ -10,6 +10,7 @@ import { useTheme } from "../../../theme";
 import DeleteIcon from '@mui/icons-material/Delete';
 import ApiServices from "../../../services/ApiServices";
 import { useAuth } from "../../Auth/AuthContext";
+import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
 
 interface Props {
   files: any[];
@@ -20,7 +21,7 @@ const STEPS = ["Table Extraction", "Column Extraction", "Data Insert Status"];
 const TOTAL_STEPS = STEPS.length;
 
 export default function DataProcessing({ files, onRefresh }: Props) {
-  const { user } = useAuth();
+  const { user, setIsConfirmSaveModalOpen, isConfirmSaveModalOpen } = useAuth();
 
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -29,6 +30,8 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedRowDetails, setSelectedRowDetails] = useState<any>(null);
+  const [deleteFile, setDeleteFile] = useState<any>(null);
+
 
   const ITEMS_PER_PAGE = 10;
 
@@ -61,6 +64,9 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     }
   };
 
+
+
+
   const formatTo12Hour = (timeStr) => {
     if (!timeStr) return "";
     const [hour, minute, second] = timeStr.split(":");
@@ -73,6 +79,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   useEffect(() => {
     setCurrentPage(1);
   }, [files]);
+
 
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
@@ -126,6 +133,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   };
 
   const handleDeleteFile = async (file: any) => {
+    setIsConfirmSaveModalOpen(false); setIsDetailsModalOpen(false);
     try {
       const payload = {
         session_id: user?.session_id,
@@ -162,7 +170,10 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       console.error("Delete failed", error);
       alert("Something went wrong while deleting file");
     }
+
+
   };
+
 
   return (
     <div className="mt-6">
@@ -263,6 +274,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
               Action
             </div>
           </div>
+
         </div>
       </div>
 
@@ -401,10 +413,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 <div className="flex-1 min-w-0 flex justify-center">
                   <Tippy content="Delete file" theme="gray">
                     <DeleteIcon
-                      onClick={(e) => {
-                        e.stopPropagation(); 
-                        handleDeleteFile(file);
-                      }}
+                      onClick={() => { setDeleteFile(file); setIsConfirmSaveModalOpen(true); }}
                       sx={{
                         fontSize: 20,
                         color: "#9ca3af",
@@ -416,6 +425,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     />
                   </Tippy>
                 </div>
+
               </div>
             </div>
           );
@@ -433,11 +443,10 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           <button
             onClick={() => setCurrentPage(p => p - 1)}
             disabled={currentPage === 1}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-              currentPage === 1
-                ? 'text-gray-400 cursor-not-allowed'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === 1
+              ? 'text-gray-400 cursor-not-allowed'
+              : 'text-gray-700 hover:bg-gray-100'
+              }`}
           >
             Previous
           </button>
@@ -447,11 +456,10 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${
-                currentPage === page
-                  ? 'bg-gray-200 text-gray-900'
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
+              className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${currentPage === page
+                ? 'bg-gray-200 text-gray-900'
+                : 'text-gray-700 hover:bg-gray-50'
+                }`}
             >
               {page}
             </button>
@@ -461,19 +469,19 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           <button
             onClick={() => setCurrentPage(p => p + 1)}
             disabled={currentPage === totalPages}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-              currentPage === totalPages
-                ? 'text-gray-400 cursor-not-allowed'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === totalPages
+              ? 'text-gray-400 cursor-not-allowed'
+              : 'text-gray-700 hover:bg-gray-100'
+              }`}
           >
             Next
           </button>
         </div>
       </div>
 
+
       {/* modal for row details */}
-      {isDetailsModalOpen && selectedRowDetails && (
+      {isDetailsModalOpen && selectedRowDetails && !isConfirmSaveModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="w-[560px] max-h-[80vh] rounded-xl shadow-2xl bg-white flex flex-col">
 
@@ -599,6 +607,34 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         </div>
       )}
 
+      {isConfirmSaveModalOpen && <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="w-[550px] bg-[#D9D9D9] rounded-2xl shadow-lg border-[11px] border-white flex flex-col justify-center items-center gap-6 p-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold text-gray-700">{deleteFile?.name || deleteFile?.file_name}</h2>
+            {/* <h2 className="text-2xl font-semibold text-gray-700">Delete File</h2> */}
+          </div>
+
+          <p className="text-gray-600 text-xl">
+            Are you sure you want to delete this file?
+          </p>
+
+          <div className="flex gap-4">
+            <button
+              className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 bg-white hover:bg-[#4B1AE7] hover:text-white transition"
+              onClick={() => { setIsConfirmSaveModalOpen(false); setIsDetailsModalOpen(false); }}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="px-6 py-2 rounded-lg bg-[#4B1AE7] text-white hover:opacity-90 transition"
+              onClick={() => handleDeleteFile(deleteFile)}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>}
     </div>
   );
 }
