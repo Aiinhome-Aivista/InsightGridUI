@@ -174,7 +174,7 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+    <div className="h-full bg-gradient-to-br from-gray-50 to-gray-100 overflow-y-auto">
       <div className="h-full max-w-8xl mx-auto flex flex-col px-5">
         {/* Header */}
         <div className="mb-3 pt-1 flex-shrink-0 px-4 flex items-center justify-between">
@@ -205,7 +205,7 @@ const Settings: React.FC = () => {
           </div>
         </div>
 
-        <form id="settings-form" onSubmit={handleSubmit} className="flex-1 overflow-hidden">
+        <form id="settings-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
           <div className="h-full flex flex-col lg:flex-row gap-3">
             {/* Left Column - Company Details */}
             <div className="lg:flex-[2] flex flex-col space-y-3 h-full">
@@ -379,7 +379,7 @@ const Settings: React.FC = () => {
                 
                 <div className="flex flex-col items-center">
                   <div className="relative mb-2">
-                    <div className="w-20 h-20 rounded-lg border border-dashed border-gray-300 overflow-hidden bg-gray-50 flex items-center justify-center">
+                    <div className="w-20 h-20 rounded-lg border border-dashed border-gray-300 overflow-y-auto bg-gray-50 flex items-center justify-center">
                       {logo ? (
                         <img 
                           src={logo} 
@@ -395,7 +395,7 @@ const Settings: React.FC = () => {
                     </div>
                   </div>
                   
-                  <div className="text-center w-full">
+ <div className="text-center w-full">
                     <button
                       type="button"
                       onClick={triggerFileInput}
@@ -423,6 +423,8 @@ const Settings: React.FC = () => {
                       </div>
                     )}
                   </div>
+
+
                 </div>
               </div>
               
@@ -496,7 +498,7 @@ const Settings: React.FC = () => {
                              passwordData.newPassword.length >= 6 ? 'Medium' : 'Weak'}
                           </span>
                         </div>
-                        <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
+                        <div className="h-1 w-full bg-gray-200 rounded-full overflow-y-auto">
                           <div 
                             className={`h-full ${
                               passwordData.newPassword.length >= 8 ? 'bg-green-500' : 
