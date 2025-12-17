@@ -567,9 +567,9 @@
 
 import React, { useState } from "react";
 import { User, Lock, Palette } from "lucide-react";
-import ProfileSettings from "./ProfileSettings";
-import PasswordSettings from "./PasswordSettings";
-import Theme from "./Theme";
+import ProfileSettings from "./components/ProfileSettings";
+import PasswordSettings from "./components/PasswordSettings";
+import Theme from "./components/Theme";
 
 type TabType = "profile" | "password" | "Theme";
 
