@@ -103,6 +103,7 @@ export default function Chat({
   passedData,
 }: {
   passedData?: {
+    id?: number;
     query_title?: string;
     messages?: any[];
   };
@@ -153,6 +154,7 @@ export default function Chat({
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   // const [messageHistory, setMessageHistory] = useState<ChatHistoryItem[]>([]);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const [parentQueryId, setParentQueryId] = useState<number | null>(null);
 
   const isDefaultQuestion =
     chat?.question === "How can I assist you right now?" ||
@@ -285,8 +287,11 @@ export default function Chat({
   useEffect(() => {
     if (!passedData?.messages?.length) return;
 
-    console.log("Edit mode: patching chat history");
-
+    console.log("Edit mode: patching chat history", passedData);
+    //  ADD THIS LINE (EXACT FIX)
+    if (passedData.id) {
+      setParentQueryId(passedData.id);   //  parent_query_id set
+    }
     // 1 Set query title
     if (passedData.query_title) {
       setViewName(passedData.query_title);
@@ -665,13 +670,17 @@ export default function Chat({
       userData?.user_id || "unknown",
       chat.session_id
     );
+    const messagesToSend = parentQueryId
+      ? store.messages.slice(1)   //  EDIT → root বাদ
+      : store.messages;           // NEW → সব যাবে
 
     // 2Build FULL payload
     const payload = {
       session_id: chat.session_id,
       created_by: userData?.user_id || "unknown",
       query_title: viewName,
-      messages: store.messages.map(msg => ({
+      parent_query_id: parentQueryId,
+      messages: messagesToSend.map(msg => ({
         query_id: msg.query_id,
         query: msg.query,
         ai_response: msg.ai_response,
