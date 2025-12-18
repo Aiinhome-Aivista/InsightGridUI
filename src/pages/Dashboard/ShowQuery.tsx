@@ -173,11 +173,9 @@ const ShowQuery = () => {
 
           <button
             onClick={() => navigate("/layout/query-designer")}
-            className="text-white rounded-xl text-[12px] font-medium transition-all flex items-center justify-center"
+            className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
             style={{
               width: '108px',
-              height: '45px',
-              backgroundColor: theme.accent,
             }}
           >
             Create Query
@@ -203,8 +201,8 @@ const ShowQuery = () => {
               placeholder="Global Search"
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-[#D9D9D9] rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#5433FF] focus:border-transparent outline-none transition-all"
-              style={{ width: '568px', height: '45px' }}
+              className="pl-10 pr-4 py-2 border border-[#D9D9D9] rounded-lg h-10 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#5433FF] focus:border-transparent outline-none transition-all"
+              style={{ width: '568px' }}
             />
           </div>
 
@@ -231,7 +229,8 @@ const ShowQuery = () => {
       {/* Content */}
       {isLoading ? (
         <div className="flex justify-center items-center py-10">
-          <AutorenewRoundedIcon className="w-8 h-8 animate-spin text-gray-500" />
+          <AutorenewRoundedIcon className="w-5 h-5 animate-spin text-gray-500"   fontSize="small"/>
+          
         </div>
       ) : error ? (
         <div className="text-center py-10 text-red-500">{error}</div>
@@ -243,7 +242,7 @@ const ShowQuery = () => {
         />
       ) : (
         <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-20rem)]">
-          <MdOutlineHourglassEmpty size={50} className="text-gray-400" />
+          <MdOutlineHourglassEmpty size={40} className="text-gray-400" />
           <p className="text-gray-500 text-lg mt-3">Empty Query list</p>
         </div>
       )}

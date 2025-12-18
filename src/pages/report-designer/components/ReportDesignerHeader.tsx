@@ -153,7 +153,7 @@ const isEditMode = !!editReport;
             value={reportName}
             onChange={(e) => setReportName(e.target.value)}
             placeholder="Write a report name(required)"
-            className=" px-4 w-full md:w-80 min-h-[42px] h-auto border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10"
+            className=" px-4 w-full md:w-80  h-10 border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10"
           />
         </div>
         <div className="flex items-start md:items-center justify-center gap-2">
@@ -183,9 +183,9 @@ const isEditMode = !!editReport;
 
   // --- DESIGN & STYLING ---
   className="
-    w-96 min-h-[44px] h-auto
+    w-96 h-10
     border border-gray-200 
-    rounded-lg 
+    rounded-xl
     flex items-center justify-between
     transition-all duration-200
     bg-white
@@ -219,7 +219,7 @@ const isEditMode = !!editReport;
           <button
             onClick={handleSaveClick}
             disabled={!reportName}
-            className={`rounded-lg text-sm font-medium transition-all flex items-center justify-center ${!reportName ? "bg-gray-300 cursor-not-allowed text-white" : "bg-blue-400 hover:bg-blue-700 text-white"
+            className={`rounded-xl text-sm font-medium transition-all flex items-center h-10 justify-center ${!reportName ? "bg-gray-300 cursor-not-allowed text-white" : "bg-blue-400 hover:bg-blue-700 text-white"
               }`}
             style={{ width: "108px", height: "40px" }}
           >

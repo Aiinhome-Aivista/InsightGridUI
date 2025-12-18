@@ -141,10 +141,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         file_name: file.name || file.file_name,
       };
 
-      const res = await ApiServices.deleteUploadedFile(payload);
+      const response = await ApiServices.deleteUploadedFile(payload);
+      const res = response.data;
 
       // ✅ SUCCESS
-      if (res?.success) {
+      if (res?.isSuccess) {
         if (onRefresh) {
           await onRefresh();
         }
@@ -163,7 +164,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         return;
       }
 
-      // ❌ GENERIC FAILURE
+      // ❌ GENERIC FAILURE or Table Does Not Exist
       alert(res?.message || "Unable to delete file");
 
     } catch (error: any) {
