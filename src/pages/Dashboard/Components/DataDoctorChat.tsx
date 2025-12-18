@@ -757,7 +757,7 @@ export default function Chat({
 
               {item.ai_response && (
                 <div className="mt-1 text-xs text-gray-600">
-                  AI generated
+                  Sp generated
                 </div>
               )}
 
