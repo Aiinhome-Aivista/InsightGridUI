@@ -269,8 +269,8 @@ const ReportDesignManage = () => {
           </div>
 
           <button
-            className="bg-blue-400 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
-            style={{ width: "108px", height: "45px" }}
+            className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
+            style={{ width: "108px", }}
             onClick={() => navigate("/layout/report-designer-view")}
           >
             Create Report
@@ -302,9 +302,9 @@ const ReportDesignManage = () => {
               placeholder="Global Search"
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 
+              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 h-10
                          focus:bg-white focus:ring-2 focus:ring-[#5433FF] outline-none transition-all"
-              style={{ width: "568px", height: "45px" }}
+              style={{ width: "568px" }}
             />
           </div>
 

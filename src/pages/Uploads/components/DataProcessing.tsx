@@ -10,6 +10,7 @@ import { useTheme } from "../../../theme";
 import DeleteIcon from '@mui/icons-material/Delete';
 import ApiServices from "../../../services/ApiServices";
 import { useAuth } from "../../Auth/AuthContext";
+import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
 
 interface Props {
   files: any[];
@@ -20,7 +21,7 @@ const STEPS = ["Table Extraction", "Column Extraction", "Data Insert Status"];
 const TOTAL_STEPS = STEPS.length;
 
 export default function DataProcessing({ files, onRefresh }: Props) {
-  const { user } = useAuth();
+  const { user, setIsConfirmSaveModalOpen, isConfirmSaveModalOpen } = useAuth();
 
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -29,21 +30,18 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedRowDetails, setSelectedRowDetails] = useState<any>(null);
+  const [deleteFile, setDeleteFile] = useState<any>(null);
 
 
-  const ITEMS_PER_PAGE = 5;
+  const ITEMS_PER_PAGE = 10;
 
   const [currentPage, setCurrentPage] = useState(1);
 
+  const totalPages = Math.ceil(files.length / ITEMS_PER_PAGE) || 1; // At least 1 page
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, files.length);
 
-
-  const totalPages = Math.ceil(files.length / ITEMS_PER_PAGE);
-
-  const paginatedFiles = files.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
+  const paginatedFiles = files.slice(startIndex, endIndex);
 
   const handleRowClick = (file: any) => {
     try {
@@ -135,6 +133,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   };
 
   const handleDeleteFile = async (file: any) => {
+    setIsConfirmSaveModalOpen(false); setIsDetailsModalOpen(false);
     try {
       const payload = {
         session_id: user?.session_id,
@@ -142,10 +141,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         file_name: file.name || file.file_name,
       };
 
-      const res = await ApiServices.deleteUploadedFile(payload);
+      const response = await ApiServices.deleteUploadedFile(payload);
+      const res = response.data;
 
       // ✅ SUCCESS
-      if (res?.success) {
+      if (res?.isSuccess) {
         if (onRefresh) {
           await onRefresh();
         }
@@ -164,13 +164,15 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         return;
       }
 
-      // ❌ GENERIC FAILURE
+      // ❌ GENERIC FAILURE or Table Does Not Exist
       alert(res?.message || "Unable to delete file");
 
     } catch (error: any) {
       console.error("Delete failed", error);
       alert("Something went wrong while deleting file");
     }
+
+
   };
 
 
@@ -277,7 +279,8 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         </div>
       </div>
 
-      <div className="max-h-[30vh] overflow-y-auto overflow-x-auto pr-2">
+      {/* Files List - No fixed height, no vertical scrolling */}
+      <div className="overflow-x-auto pr-2">
         {paginatedFiles.map((file, index) => {
           const fileName = file.name || file.file_name;
           const currentProgress = processingProgress[fileName] || 0;
@@ -411,10 +414,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 <div className="flex-1 min-w-0 flex justify-center">
                   <Tippy content="Delete file" theme="gray">
                     <DeleteIcon
-                      onClick={(e) => {
-                        e.stopPropagation(); 
-                        handleDeleteFile(file);
-                      }}
+                      onClick={() => { setDeleteFile(file); setIsConfirmSaveModalOpen(true); }}
                       sx={{
                         fontSize: 20,
                         color: "#9ca3af",
@@ -433,46 +433,56 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         })}
       </div>
 
-      {/* pegination controls   */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 px-4">
-          <span className="text-xs" style={{ color: theme.secondaryText }}>
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <div className="flex gap-2">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(p => p - 1)}
-              className="px-3 py-1 text-xs border rounded disabled:opacity-50"
-            >
-              Prev
-            </button>
-
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`px-3 py-1 text-xs border rounded
-            ${currentPage === i + 1 ? "bg-blue-600 text-white" : ""}`}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(p => p + 1)}
-              className="px-3 py-1 text-xs border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+      {/* Pagination controls - Always visible */}
+      <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-xl mt-4">
+        <div className="text-sm text-gray-600">
+          Showing {Math.min(startIndex + 1, files.length)} to {Math.min(endIndex, files.length)} of {files.length} files
         </div>
-      )}
+
+        <div className="flex items-center gap-1">
+          {/* Previous Button */}
+          <button
+            onClick={() => setCurrentPage(p => p - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === 1
+              ? 'text-gray-400 cursor-not-allowed'
+              : 'text-gray-700 hover:bg-gray-100'
+              }`}
+          >
+            Previous
+          </button>
+
+          {/* Page Numbers */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${currentPage === page
+                ? 'bg-gray-200 text-gray-900'
+                : 'text-gray-700 hover:bg-gray-50'
+                }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {/* Next Button */}
+          <button
+            onClick={() => setCurrentPage(p => p + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === totalPages
+              ? 'text-gray-400 cursor-not-allowed'
+              : 'text-gray-700 hover:bg-gray-100'
+              }`}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
 
       {/* modal for row details */}
-      {isDetailsModalOpen && selectedRowDetails && (
+      {isDetailsModalOpen && selectedRowDetails && !isConfirmSaveModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="w-[560px] max-h-[80vh] rounded-xl shadow-2xl bg-white flex flex-col">
 
@@ -598,6 +608,34 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         </div>
       )}
 
+      {isConfirmSaveModalOpen && <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="w-[550px] bg-[#D9D9D9] rounded-2xl shadow-lg border-[11px] border-white flex flex-col justify-center items-center gap-6 p-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold text-gray-700">{deleteFile?.name || deleteFile?.file_name}</h2>
+            {/* <h2 className="text-2xl font-semibold text-gray-700">Delete File</h2> */}
+          </div>
+
+          <p className="text-gray-600 text-xl">
+            Are you sure you want to delete this file?
+          </p>
+
+          <div className="flex gap-4">
+            <button
+              className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 bg-white hover:bg-[#4B1AE7] hover:text-white transition"
+              onClick={() => { setIsConfirmSaveModalOpen(false); setIsDetailsModalOpen(false); }}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="px-6 py-2 rounded-lg bg-[#4B1AE7] text-white hover:opacity-90 transition"
+              onClick={() => handleDeleteFile(deleteFile)}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>}
     </div>
   );
 }

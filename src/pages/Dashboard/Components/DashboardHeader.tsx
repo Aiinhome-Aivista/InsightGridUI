@@ -159,7 +159,7 @@ export default function DashboardHeader({
                 onHide={handleDropdownHide}
 
                 className="
-                  w-72 h-11
+                  w-72 h-10
                   border border-gray-200 
                   rounded-lg 
                   flex items-center justify-between
