@@ -18,7 +18,6 @@ const cssVarMap: Record<ThemeColorKey, string> = {
     secondaryText: "--theme-secondary-text",
     accent: "--theme-accent",
     border: "--theme-border",
-    button: "--theme-button",
 };
 
 const colorKeys: ThemeColorKey[] = [

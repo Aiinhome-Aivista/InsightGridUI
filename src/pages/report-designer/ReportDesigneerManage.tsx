@@ -5,6 +5,7 @@ import { MdOutlineHourglassEmpty } from "react-icons/md";
 import DownloadView from "../../utils/download/downloadView";
 import { AuthProvider, useAuth } from "../Auth/AuthContext";
 import ApiServices from "../../services/ApiServices";
+import { useTheme } from "../../theme";
 import { generatePDF } from "../../utils/download/function";
 import Tippy from "@tippyjs/react";
 
@@ -14,6 +15,7 @@ const ReportDesignManage = () => {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { downloadData, setDownloadData } = useAuth();
+    const { theme } = useTheme();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const timeAgo = (dateStr: string, timeStr: string) => {
@@ -270,7 +272,7 @@ const ReportDesignManage = () => {
 
           <button
             className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
-            style={{ width: "108px", }}
+            style={{ width: "108px",backgroundColor: theme.accent }}
             onClick={() => navigate("/layout/report-designer-view")}
           >
             Create Report

@@ -7,8 +7,7 @@ export type ThemeColorKey =
   | "primaryText"
   | "secondaryText"
   | "accent"
-  | "border"
-  | "button";
+  | "border";
 
 export type ThemeDefinition = {
   id: ThemeOption;

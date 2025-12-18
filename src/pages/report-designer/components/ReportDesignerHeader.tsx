@@ -222,7 +222,7 @@ const isEditMode = !!editReport;
             disabled={!reportName}
             className={`rounded-xl text-sm font-medium transition-all flex items-center h-10 justify-center ${!reportName ? "bg-gray-300 cursor-not-allowed text-white" : "bg-blue-400 hover:bg-blue-700 text-white"
               }`}
-            style={{ width: "108px", height: "40px" }}
+            style={{ width: "108px", height: "40px", }}
           >
             Save Report
           </button>
