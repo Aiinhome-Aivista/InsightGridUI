@@ -246,7 +246,7 @@ const ShowQuery = () => {
               placeholder="Global Search"
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-[#D9D9D9] rounded-lg h-10 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#5433FF] focus:border-transparent outline-none transition-all"
+              className="pl-10 pr-4 py-2 border border-[#D9D9D9] rounded-lg h-10 text-sm bg-gray-50 focus:bg-white focus:ring-1 focus:ring-[#5433FF] focus:border-transparent outline-none transition-all"
               style={{ width: '568px' }}
             />
           </div>

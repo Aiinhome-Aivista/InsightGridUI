@@ -582,14 +582,27 @@ const Settings: React.FC = () => {
     { id: "Theme", label: "Theme", icon: Palette },
   ];
 
+  const getHeaderTitle = () => {
+    switch (activeTab) {
+      case "profile":
+        return "Manage company profile";
+      case "password":
+        return "Password Settings";
+      case "Theme":
+        return "Theme Settings";
+      default:
+        return "Settings";
+    }
+  };
+
   return (
     <div className="h-full bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6">
+      <div className="bg-white px-6">
         <div className="flex items-center justify-between h-16">
           {/* Left Title */}
           <h1 className="text-2xl font-bold text-gray-800">
-            Account Settings
+            {getHeaderTitle()}
           </h1>
 
           {/* Right Tabs */}
@@ -618,7 +631,7 @@ const Settings: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="">
         {activeTab === "profile" && <ProfileSettings activeTab={activeTab} />}
         {activeTab === "password" && <PasswordSettings activeTab={activeTab} />}
         {activeTab === "Theme" && <Theme />}

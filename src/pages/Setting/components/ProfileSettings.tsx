@@ -77,10 +77,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
 
   return (
     <div className="max-w-8xl">
-      <div className="mb-5">
-        <h1 className="text-2xl font-bold text-gray-800">Manage company profile</h1>
-      </div>
-
       <form onSubmit={handleSubmit(onSubmit)} className="relative">
         <div className="absolute top-6 right-6">
           <button
@@ -93,9 +89,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
           </button>
         </div>
         {/* Profile Picture Section */}
-        <div className="bg-white rounded-xl shadow-sm px-5">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="relative">
+        <div className="bg-white rounded-xl shadow-sm px-4 ">
+          <div className="flex flex-col md:flex-row items-start md:items-center ">
+            <div className="relative p-4 ">
               <div className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden">
                 {avatar ? (
                   <img 
@@ -139,7 +135,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
         </div>
 
         {/* Personal Information */}
-        <div className="bg-white rounded-xl shadow-sm pt-3">
+        <div className="bg-white rounded-xl shadow-sm pt-3 px-6">
           <h3 className="text-lg font-semibold text-gray-800 pb-2"> Company Details </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
