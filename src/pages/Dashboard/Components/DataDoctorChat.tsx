@@ -102,7 +102,10 @@ const saveChatStore = (data: StoredChatData) => {
 export default function Chat({
   passedData,
 }: {
-  passedData?: { user_query: string; query_title: string; ai_response: string };
+  passedData?: {
+    query_title?: string;
+    messages?: any[];
+  };
 }) {
 
   const { setDownloadData } = useAuth();
@@ -198,6 +201,22 @@ export default function Chat({
   //   }
   // }, [chat.session_id]);
 
+  const mapMessagesToChatStore = (messages: any[]) =>
+    messages.map((m, index) => ({
+      query_id: m.id || index + 1,
+      query: m.query,
+      created_at: m.actual_created_at,
+      ai_response: m.ai_response,
+      is_execute: m.is_execute === 1,
+      row_count: m.row_count,
+      query_time: m.query_time,
+      is_success: m.is_execute === 1,
+    }));
+
+  const getLastMessage = (messages: any[] = []) =>
+    messages.length ? messages[messages.length - 1] : null;
+
+
   const storedMessages =
     getChatStore(
       userData?.user_id || "unknown",
@@ -213,32 +232,99 @@ export default function Chat({
 
 
 
+  // useEffect(() => {
+  //   console.log("Chat received passedData:", passedData);
+
+  //   if (!passedData) return;
+
+  //   if (passedData.user_query) {
+  //     setInputValue(passedData.user_query);
+  //   }
+
+  //   if (passedData.query_title) {
+  //     setViewName(passedData.query_title);
+  //   }
+
+  //   if (passedData.ai_response) {
+  //     setIsScriptGenerated(false);
+  //     setChat((prevChat) => ({
+  //       ...prevChat,
+  //       query: passedData.ai_response,
+  //       ai_response: passedData.ai_response,
+  //     }));
+
+  //     // IMPORTANT: trigger typewriter effect immediately
+  //     setTypedQuery(passedData.ai_response);
+  //     setTypewriterKey((prev) => prev + 1);
+
+  //   }
+  // }, [passedData]);
+
+  //clean messages for new query
   useEffect(() => {
-    console.log("Chat received passedData:", passedData);
+    // CREATE MODE → clear chat
+    if (!passedData) {
+      console.log("Create mode: clearing chat history");
 
-    if (!passedData) return;
+      localStorage.removeItem("data_doctor_chat_store");
 
-    if (passedData.user_query) {
-      setInputValue(passedData.user_query);
+      setChat(prev => ({
+        ...prev,
+        query: "",
+        ai_response: "",
+        logs: [],
+      }));
+
+      setTypedQuery("");
+      setIsScriptGenerated(false);
+      setDisplayedLogs([]);
     }
+  }, [passedData]);
 
+
+  useEffect(() => {
+    if (!passedData?.messages?.length) return;
+
+    console.log("Edit mode: patching chat history");
+
+    // 1 Set query title
     if (passedData.query_title) {
       setViewName(passedData.query_title);
     }
 
-    if (passedData.ai_response) {
-      setIsScriptGenerated(false);
-      setChat((prevChat) => ({
-        ...prevChat,
-        query: passedData.ai_response,
-        ai_response: passedData.ai_response,
-      }));
+    // 2 Patch ALL old queries into chat store
+    const patchedMessages = mapMessagesToChatStore(passedData.messages);
 
-      // IMPORTANT: trigger typewriter effect immediately
-      setTypedQuery(passedData.ai_response);
-      setTypewriterKey((prev) => prev + 1);
+    saveChatStore({
+      created_by: userData?.user_id || "unknown",
+      session_id: chat.session_id,
+      messages: patchedMessages,
+    });
 
-    }
+    // 3 Force UI update
+    setDisplayedLogs([]);
+  }, [passedData]);
+
+
+  //load only last procedure in editor
+  useEffect(() => {
+    if (!passedData?.messages?.length) return;
+
+    const lastMsg = getLastMessage(passedData.messages);
+    if (!lastMsg?.ai_response) return;
+
+    console.log("Edit mode: loading last procedure");
+
+    setIsScriptGenerated(false);
+
+    setChat(prev => ({
+      ...prev,
+      query: lastMsg.ai_response,
+      ai_response: lastMsg.ai_response,
+    }));
+
+    setTypedQuery(lastMsg.ai_response);
+    setTypewriterKey(prev => prev + 1);
   }, [passedData]);
 
 

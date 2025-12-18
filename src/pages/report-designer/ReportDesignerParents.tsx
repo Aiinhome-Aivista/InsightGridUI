@@ -51,10 +51,30 @@ export default function TableView() {
       const response = await ApiServices.getSavedQueryResponse(payload);
       const apiData = response.data.data;
 
-      const dropdown = apiData.queries?.map((q) => ({
-        label: q.query_title,
-        value: q, // full query object
-      }));
+      // const dropdown = apiData.queries?.map((q) => ({
+      //   label: q.query_title,
+      //   value: q, // full query object
+      // }));
+
+      //ad for new scenario
+      const dropdown = apiData.queries?.flatMap((q) => {
+        if (!q.messages || q.messages.length === 0) return [];
+
+        // Always take last message
+        const lastMessage = q.messages[q.messages.length - 1];
+
+        // safety check (optional but recommended)
+        if (!lastMessage.ai_response) return [];
+
+        return [{
+          label: q.query_title,
+          value: {
+            id: lastMessage.id,              // query_history_id
+            ai_response: lastMessage.ai_response,
+            query_title: q.query_title,
+          }
+        }];
+      });
 
       setTableOptions(dropdown || []);
       setSelectedTables([]); // ✅ placeholder visible

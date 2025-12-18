@@ -16,8 +16,10 @@ export default function Dashboard_page() {
   const [tableOptions, setTableOptions] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const location = useLocation();
-  const [passedData, setPassedData] = useState({ user_query: "", query_title: "", ai_response: "" });
-  
+  // const [passedData, setPassedData] = useState({ user_query: "", query_title: "", ai_response: "" });
+  const [passedData, setPassedData] = useState<any>(null);
+
+
 
   const handleTableDataSelect = (data: any) => {
     setTableData({
@@ -30,19 +32,31 @@ export default function Dashboard_page() {
     });
   };
 
+  //   useEffect(() => {
+  //   if (location.state && location.state.data) {
+  //     const rowData = location.state.data;
+
+  //     setPassedData({
+  //       user_query: rowData.user_query || "",
+  //       query_title: rowData.query_title || "",
+  //       ai_response: rowData.ai_response || "",
+  //     });
+
+  //     console.log("Received user_query & query_title:", rowData.user_query, rowData.query_title, rowData.ai_response);
+  //   }
+  // }, [location.state]);
+  
+
   useEffect(() => {
-  if (location.state && location.state.data) {
-    const rowData = location.state.data;
+    if (location.state?.data) {
+      const rowData = location.state.data;
 
-    setPassedData({
-      user_query: rowData.user_query || "",
-      query_title: rowData.query_title || "",
-      ai_response: rowData.ai_response || "",
-    });
+      setPassedData(rowData);
 
-    console.log("Received user_query & query_title:", rowData.user_query, rowData.query_title, rowData.ai_response);
-  }
-}, [location.state]);
+      console.log("Edit mode data received:", rowData);
+    }
+  }, [location.state]);
+
 
 
   const handleRefresh = () => {
@@ -106,9 +120,9 @@ export default function Dashboard_page() {
         <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} tableName={tableData.tableName} viewSelection={viewSelection} globalFilter={""} isLoading={isFetching} />
       </div>
       <div>
-        <Chat 
-         passedData={passedData}
-         />
+        <Chat
+          passedData={passedData}
+        />
       </div>
     </>
   );

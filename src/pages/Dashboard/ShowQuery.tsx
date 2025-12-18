@@ -107,21 +107,66 @@ const ShowQuery = () => {
     navigate("/layout/query-designer", { state: { ...location.state, data: rowData, type: 'workflow' } });
   };
 
+
+
+  const getLastMessageMeta = (messages = []) => {
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return {
+        query_time: "-",
+        rows_effected: "-"
+      };
+    }
+
+    const lastMessage = messages[messages.length - 1];
+
+    return {
+      query_time: lastMessage?.query_time || "-",
+      rows_effected: lastMessage?.row_count ?? "-"
+    };
+  };
+
   // Transform queries data to include time_ago and action button
-  const transformedQueries = queries.map((query) => ({
-    ...query,
-    time_ago: timeAgo(query.created_date, query.created_at),
-    action: (
-      <div className="text-right">
-        <button
-          className="text-[#46BA2F] bg-[rgba(53,255,2,0.1)] px-4 py-1 rounded-full text-xs font-medium hover:bg-green-200"
-          onClick={() => handleDetailsClick(query)}
-        >
-          Edit
-        </button>
-      </div>
-    )
-  }));
+  // const transformedQueries = queries.map((query) => ({
+  //   ...query,
+  //   time_ago: timeAgo(query.created_date, query.created_at),
+  //   action: (
+  //     <div className="text-right">
+  //       <button
+  //         className="text-[#46BA2F] bg-[rgba(53,255,2,0.1)] px-4 py-1 rounded-full text-xs font-medium hover:bg-green-200"
+  //         onClick={() => handleDetailsClick(query)}
+  //       >
+  //         Edit
+  //       </button>
+  //     </div>
+  //   )
+  // }));
+
+
+
+  const transformedQueries = queries.map((query) => {
+    const { query_time, rows_effected } = getLastMessageMeta(query.messages);
+
+    return {
+      ...query,
+      time_ago: timeAgo(query.created_date, query.created_at),
+      query_time,
+      rows_effected,
+      action: (
+        <div className="text-right">
+          <button
+            className="text-[#46BA2F] bg-[rgba(53,255,2,0.1)] px-4 py-1 rounded-full text-xs font-medium hover:bg-green-200"
+            onClick={() => handleDetailsClick(query)}
+          >
+            Edit
+          </button>
+        </div>
+      )
+    };
+  });
+
+
+
+
 
   // Define columns with custom headers for the ProductDataTable
   const queryColumns = [

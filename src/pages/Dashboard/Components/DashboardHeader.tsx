@@ -25,6 +25,7 @@ interface HeaderProps {
   };
 }
 
+
 export default function DashboardHeader({
   onRefresh,
   onTableSelect,
@@ -34,6 +35,7 @@ export default function DashboardHeader({
   onViewChange,
   passedData,
   onTableLoading,
+
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -50,6 +52,14 @@ export default function DashboardHeader({
   const defaultSelectionIndex = toggleOptions.findIndex(
     (opt) => opt.value === viewSelection
   );
+
+
+  useEffect(() => {
+    if (passedData) {
+      console.log("DashboardHeader received edit data:", passedData);
+    }
+  }, [passedData]);
+
 
   const handleViewChange = (e: { value: any }) => {
     const selectedTable = e.value;
@@ -124,7 +134,7 @@ export default function DashboardHeader({
                 <ArrowBackRoundedIcon fontSize="small" />
               </button>
 
-             <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1">
                 <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
                   Query Designer
                 </h1>
