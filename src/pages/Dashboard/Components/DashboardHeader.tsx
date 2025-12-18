@@ -25,6 +25,7 @@ interface HeaderProps {
   };
 }
 
+
 export default function DashboardHeader({
   onRefresh,
   onTableSelect,
@@ -34,6 +35,7 @@ export default function DashboardHeader({
   onViewChange,
   passedData,
   onTableLoading,
+
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -50,6 +52,14 @@ export default function DashboardHeader({
   const defaultSelectionIndex = toggleOptions.findIndex(
     (opt) => opt.value === viewSelection
   );
+
+
+  useEffect(() => {
+    if (passedData) {
+      console.log("DashboardHeader received edit data:", passedData);
+    }
+  }, [passedData]);
+
 
   const handleViewChange = (e: { value: any }) => {
     const selectedTable = e.value;
@@ -116,10 +126,10 @@ export default function DashboardHeader({
         <div className="px-3 sm:px-4 lg:px-3 ">
           {/* Responsive Flex Container */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
-            <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="flex items-center w-full md:w-auto">
               <button
                 onClick={() => navigate(-1)}
-                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
+                className="p-1 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
               >
                 <ArrowBackRoundedIcon fontSize="small" />
               </button>
@@ -149,20 +159,19 @@ export default function DashboardHeader({
                 onHide={handleDropdownHide}
 
                 className="
-                  w-72 h-11
-                  bg-gray-50 hover:bg-gray-100
+                  w-72 h-10
                   border border-gray-200 
                   rounded-lg 
                   flex items-center justify-between
                   transition-all duration-200
                 "
 
-              // Panel (List) Styling
+                // Panel (List) Styling
                 panelClassName="
                   bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
                 "
 
-              // PassThrough (PT) props for deep styling
+                // PassThrough (PT) props for deep styling
                 pt={{
                   root: { className: 'cursor-pointer' },
                   input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
@@ -189,9 +198,9 @@ export default function DashboardHeader({
               <Tippy content="Refresh" theme="gray">
                 <div
                   onClick={handleRefresh}
-                  className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
+                  className={`relative text-center bg-[#D9D9D9] border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
                     ? "cursor-not-allowed"
-                    : "cursor-pointer hover:bg-gray-500/10"
+                    : "cursor-pointer"
                     }`}
                   style={{ borderColor: theme.border }}
                 >

@@ -16,12 +16,17 @@ import "../../styles/tippy-theme.css";
 import { useAuth } from "../../pages/Auth/AuthContext";
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
+import HourglassTopTwoToneIcon from '@mui/icons-material/HourglassTopTwoTone';
+import ManageAccountsTwoToneIcon from '@mui/icons-material/ManageAccountsTwoTone';
 const menuItems = [
     { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard" },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list" },
   { name: "Report Designer", icon: SummarizeOutlinedIcon , path: "report-designer" },
-  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
+  // { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" },
+    { name: "Customize", icon: TuneOutlinedIcon, path: "Customize" },
+  //  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
+
 ];
 
 export default function Sidebar() {
@@ -100,7 +105,7 @@ export default function Sidebar() {
 
       {/* Menu Items */}
       <div className="mt-3 flex-1">
-        <nav className="flex flex-col gap-1 px-2">
+        <nav className={`flex flex-col gap-2 ${collapsed ? 'px-4' : 'px-2'}`}>
           {menuItems.map((item) => {
             const Icon = item.icon; 
             let isActive = item.path === activePath;
@@ -121,14 +126,24 @@ export default function Sidebar() {
                 <Link to={item.path} className="no-underline" onClick={() => handleTabClick(item)}>
                   <div
                     className={`flex items-center ${
-                      collapsed ? 'justify-center' : 'justify-start'
-                    } h-12 cursor-pointer rounded-lg transition-colors duration-200 px-3 ${
-                      isActive ? '' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                      collapsed ? 'justify-center w-12 h-12' : 'justify-start h-12 px-3'
+                    } cursor-pointer rounded-lg transition-colors duration-200 ${
+                      isActive ? '' : ''
                     } `}
                     style={{
                       backgroundColor: isActive ? theme.accent : undefined,
-                      color: isActive ? theme.background : theme.primaryText, // Keep color logic as it works
+                      color: isActive ? theme.background : theme.primaryText,
                       border: isActive ? `1px solid ${theme.accent}` : "1px solid transparent",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = `${theme.accent}33`; 
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }
                     }}
                   >
                     <Icon
@@ -151,7 +166,7 @@ export default function Sidebar() {
       </div>
 
       {/* Logout Button */}
-      <div className={`px-3 py-4`} style={{ borderColor: theme.border }}>
+      <div className={`py-4 ${collapsed ? 'px-4' : 'px-3'}`} style={{ borderColor: theme.border }}>
         <Tippy
           content="Logout"
           placement="right"
@@ -160,7 +175,13 @@ export default function Sidebar() {
         >
           <div
             onClick={handleLogout}
-            className={`flex items-center h-12 cursor-pointer rounded-lg transition-colors duration-200 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 ${collapsed ? 'justify-center' : 'justify-start'}`}
+            className={`flex items-center cursor-pointer rounded-lg transition-colors duration-200 ${collapsed ? 'justify-center w-12 h-12' : 'justify-start h-12 px-3'}`}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `${theme.accent}33`; 
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
           >
             <LogoutRoundedIcon
               sx={{

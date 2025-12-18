@@ -10,7 +10,9 @@ import QueryDesigner from "../pages/Dashboard/DataDoctorParent";
 import ShowQuery from "../pages/Dashboard/ShowQuery";
 import ReportDesignerManage from "../pages/report-designer/ReportDesigneerManage";
 import Dashboard from "../pages/Dashboard/Components/Dashboard";
-import ReportDesignerParents from "../pages/report-designer/components/ReportDesignerParents";
+import ReportDesignerParents from "../pages/report-designer/ReportDesignerParents";
+import ReportSchedulerManage from "../pages/report-scheduler/ReportSchedulerManage";
+import Settings from "../pages/Setting/Setting";
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -23,9 +25,11 @@ function AppRoutes() {
             <Route path="upload" element={<Upload_page />} />
             <Route path="query-list" element={<ShowQuery />} />
             <Route path="report-designer" element={<ReportDesignerManage />} />
+            <Route path="report-scheduler" element={<ReportSchedulerManage />} />
             <Route path="report-designer-view" element={<ReportDesignerParents />} />
             <Route path="query-designer" element={<QueryDesigner />} />
-            <Route path="customize" element={<Customize_page />} />
+              <Route path="Customize" element={<Settings />} />
+            {/* <Route path="customize" element={<Customize_page />} /> */}
             <Route path="dashboard" element={<Dashboard />} />
           </Route>
         </Route>

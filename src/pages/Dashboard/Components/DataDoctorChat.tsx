@@ -8,33 +8,99 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useAuth } from "../../Auth/AuthContext";
 import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import "../../../styles/tippy-theme.css";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+
+//for new chat session
+interface StoredMessage {
+  query_id: number;
+  query: string;
+  created_at: string;
+  ai_response: string;
+  is_execute: boolean;
+  row_count: number;
+  query_time: number;
+  is_success: boolean;
+}
+
+interface StoredChatData {
+  created_by: string;
+  session_id: string;
+  messages: StoredMessage[];
+}
 
 interface ChatSession {
   id: number;
   session_id: string;
-  session_name: string; // Re-enabled session_name
+  session_name: string;
   file_name: string;
   question: string;
   query: string;
   logs: string[];
   ai_response?: string;
-
 }
 interface TableData {
   rows: any[];
   columns: any[];
 }
-interface TableOption {
-  label: string;
-  value: string;
-}
+// interface ChatHistoryItem {
+//   query_id: number;
+//   session_id: string;
+//   message: string;
+//   created_at: string;
+// }
+
+// interface TableOption {
+//   label: string;
+//   value: string;
+// }
+
+// const CHAT_INIT_KEY = "chat_initialized_session";
+//for new chat session
+// =======================
+// Local Storage Helpers
+// =======================
+
+const CHAT_STORE_KEY = "data_doctor_chat_store";
+
+const getChatStore = (createdBy: string, sessionId: string): StoredChatData => {
+  try {
+    const raw = localStorage.getItem(CHAT_STORE_KEY);
+
+    if (!raw) {
+      return {
+        created_by: createdBy,
+        session_id: sessionId,
+        messages: [],
+      };
+    }
+
+    return JSON.parse(raw);
+  } catch {
+    return {
+      created_by: createdBy,
+      session_id: sessionId,
+      messages: [],
+    };
+  }
+};
+
+const saveChatStore = (data: StoredChatData) => {
+  localStorage.setItem(CHAT_STORE_KEY, JSON.stringify(data));
+};
+
 export default function Chat({
   passedData,
 }: {
-  passedData?: { user_query: string; query_title: string; ai_response: string };
+  passedData?: {
+    id?: number;
+    query_title?: string;
+    messages?: any[];
+  };
 }) {
-
-   const { setDownloadData } = useAuth();
+  const { setDownloadData } = useAuth();
   const navigate = useNavigate();
   const { user } = useAuth();
   const getStoredUser = () => {
@@ -72,8 +138,22 @@ export default function Chat({
   const [isExecuting, setIsExecuting] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isScriptRunSuccess, setIsScriptRunSuccess] = useState(false);
-  const [executionMeta, setExecutionMeta] = useState<{ rows_effected?: number | string; query_time?: string } | null>(null);
+  const [executionMeta, setExecutionMeta] = useState<{
+    rows_effected?: number | string;
+    query_time?: string;
+  } | null>(null);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
+  const [inputError, setInputError] = useState<string | null>(null);
+  const [isScriptGenerated, setIsScriptGenerated] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  // const [messageHistory, setMessageHistory] = useState<ChatHistoryItem[]>([]);
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const [parentQueryId, setParentQueryId] = useState<number | null>(null);
+
+  const isDefaultQuestion =
+    chat?.question === "How can I assist you right now?" ||
+    chat?.question?.startsWith("FATAL ERROR");
+
   const {
     setIsConfirmSaveModalOpen,
     viewName,
@@ -82,142 +162,270 @@ export default function Chat({
   } = useAuth();
 
   // useEffect(() => {
+  //   const savedHistory = localStorage.getItem("chat_history");
+  //   if (savedHistory) {
+  //     try {
+  //       setMessageHistory(JSON.parse(savedHistory));
+  //     } catch (e) {
+  //       console.error("Error parsing chat history", e);
+  //     }
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (!chat.session_id) return;
+
+  //   const initializedSession = localStorage.getItem(CHAT_INIT_KEY);
+
+  //   // FIRST TIME entering chat for this session
+  //   if (initializedSession !== chat.session_id) {
+  //     localStorage.removeItem("chat_history"); // clear old messages
+  //     localStorage.setItem(CHAT_INIT_KEY, chat.session_id);
+  //     setMessageHistory([]);
+  //     return;
+  //   }
+
+  //   // NOT first time → load history
+  //   const savedHistory = localStorage.getItem("chat_history");
+  //   if (savedHistory) {
+  //     try {
+  //       setMessageHistory(JSON.parse(savedHistory));
+  //     } catch (e) {
+  //       console.error("Error parsing chat history", e);
+  //     }
+  //   }
+  // }, [chat.session_id]);
+
+  const mapMessagesToChatStore = (messages: any[]) =>
+    messages.map((m, index) => ({
+      query_id: m.id || index + 1,
+      query: m.query,
+      created_at: m.actual_created_at,
+      ai_response: m.ai_response,
+      is_execute: m.is_execute === 1,
+      row_count: m.row_count,
+      query_time: m.query_time,
+      is_success: m.is_execute === 1,
+    }));
+
+  const getLastMessage = (messages: any[] = []) =>
+    messages.length ? messages[messages.length - 1] : null;
+
+  const storedMessages = getChatStore(
+    userData?.user_id || "unknown",
+    chat.session_id
+  ).messages;
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [storedMessages.length]);
+
+  // useEffect(() => {
   //   console.log("Chat received passedData:", passedData);
 
-  //   if (passedData?.user_query) {
+  //   if (!passedData) return;
+
+  //   if (passedData.user_query) {
   //     setInputValue(passedData.user_query);
   //   }
 
-  //   if (passedData?.query_title) {
+  //   if (passedData.query_title) {
   //     setViewName(passedData.query_title);
   //   }
 
+  //   if (passedData.ai_response) {
+  //     setIsScriptGenerated(false);
+  //     setChat((prevChat) => ({
+  //       ...prevChat,
+  //       query: passedData.ai_response,
+  //       ai_response: passedData.ai_response,
+  //     }));
+
+  //     // IMPORTANT: trigger typewriter effect immediately
+  //     setTypedQuery(passedData.ai_response);
+  //     setTypewriterKey((prev) => prev + 1);
+
+  //   }
   // }, [passedData]);
 
+  //clean messages for new query
   useEffect(() => {
-    console.log("Chat received passedData:", passedData);
+    // CREATE MODE → clear chat
+    if (!passedData) {
+      console.log("Create mode: clearing chat history");
 
-    if (!passedData) return;
+      localStorage.removeItem("data_doctor_chat_store");
 
-    if (passedData.user_query) {
-      setInputValue(passedData.user_query);
+      setChat((prev) => ({
+        ...prev,
+        query: "",
+        ai_response: "",
+        logs: [],
+      }));
+
+      setTypedQuery("");
+      setIsScriptGenerated(false);
+      setDisplayedLogs([]);
     }
+  }, [passedData]);
 
+  useEffect(() => {
+    if (!passedData?.messages?.length) return;
+
+    console.log("Edit mode: patching chat history", passedData);
+    //  ADD THIS LINE (EXACT FIX)
+    if (passedData.id) {
+      setParentQueryId(passedData.id);   //  parent_query_id set
+    }
+    // 1 Set query title
     if (passedData.query_title) {
       setViewName(passedData.query_title);
     }
 
-    if (passedData.ai_response) {
-      setChat((prevChat) => ({
-        ...prevChat,
-        query: passedData.ai_response,
-        ai_response: passedData.ai_response,
-      }));
+    // 2 Patch ALL old queries into chat store
+    const patchedMessages = mapMessagesToChatStore(passedData.messages);
 
-      // IMPORTANT: trigger typewriter effect immediately
-      setTypedQuery(passedData.ai_response);
-      setTypewriterKey((prev) => prev + 1);
-    }
+    saveChatStore({
+      created_by: userData?.user_id || "unknown",
+      session_id: chat.session_id,
+      messages: patchedMessages,
+    });
+
+    // 3 Force UI update
+    setDisplayedLogs([]);
   }, [passedData]);
 
+  //load only last procedure in editor
+  useEffect(() => {
+    if (!passedData?.messages?.length) return;
 
+    const lastMsg = getLastMessage(passedData.messages);
+    if (!lastMsg?.ai_response) return;
 
+    console.log("Edit mode: loading last procedure");
 
+    setIsScriptGenerated(false);
 
-  // useEffect(() => {
-  //   if (isSessionDataMissing) {
-  //     console.error(
-  //       "API Call skipped: Cannot initialize chat due to missing session_id."
-  //     );
-  //     setChat((prevChat) => ({
-  //       ...prevChat,
-  //       logs: ["CRITICAL: Missing session_id. Cannot communicate with API."],
-  //     }));
-  //     return;
-  //   }
+    setChat((prev) => ({
+      ...prev,
+      query: lastMsg.ai_response,
+      ai_response: lastMsg.ai_response,
+    }));
 
-  //   const payload = {
-  //     session_id: defaultSession.session_id,
-  //     session_name: defaultSession.session_name, // Re-enabled session_name
-  //     user_query: " Hello, how can I help you?",
-  //   };
-  //   ApiService.chat(payload)
-  //     .then((response) => {
-  //       if (response.data.isSuccess) {
-  //         const data = response.data.data;
-  //         setChat((prevChat) => ({
-  //           ...prevChat,
-  //           question: data.user_query || payload.user_query,
-  //           query: data.ai_response || "-- No initial query generated.",
-  //           logs: data.logs || [],
-  //         }));
-  //       }
-  //     })
-  //     .catch((error) =>
-  //       console.error("Error fetching initial UI data using chat API:", error)
-  //     );
-  // }, [defaultSession.session_id, isSessionDataMissing]);
+    setTypedQuery(lastMsg.ai_response);
+    setTypewriterKey((prev) => prev + 1);
+  }, [passedData]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !chat) return;
-    if (!chat.session_id || !chat.session_name) {
-      const missingFields = [];
-      if (!chat.session_id) missingFields.push("session_id");
-      if (!chat.session_name) missingFields.push("session_name");
 
-      console.error(
-        `Cannot send message: Active chat session data is incomplete. Missing: ${missingFields.join(
-          ", "
-        )}`
-      );
-      setChat((prevChat) => ({
-        ...prevChat,
-        logs: [
-          `ERROR: Session data incomplete. Missing fields: ${missingFields.join(
-            ", "
-          )}`,
-        ],
-      }));
+    // reset before sending new query
+    setIsScriptGenerated(false);
+    setInputError(null);
+
+    if (!chat.session_id || !chat.session_name) {
       return;
     }
 
+    //for new session storage
+
+    const queryId = Date.now();
+
+    const chatStore = getChatStore(
+      userData?.user_id || "unknown",
+      chat.session_id
+    );
+
+    chatStore.messages.push({
+      query_id: queryId,
+      query: inputValue.trim(),
+      created_at: new Date().toISOString(),
+      ai_response: "",
+      is_execute: false,
+      row_count: 0,
+      query_time: 0,
+      is_success: false,
+    });
+
+    saveChatStore(chatStore);
+
+    // const newMessage: ChatHistoryItem = {
+    //   query_id: Date.now(), // temporary unique id
+    //   session_id: chat.session_id,
+    //   message: inputValue,
+    //   created_at: new Date().toISOString(),
+    // };
+
+    // const newHistory = [...messageHistory, newMessage];
+
+    // setMessageHistory(newHistory);
+    // localStorage.setItem("chat_history", JSON.stringify(newHistory));
+
     setIsSending(true);
+
     try {
       const payload = {
         session_id: chat.session_id,
         created_by: userData?.user_id || "unknown",
         user_query: inputValue,
       };
-      console.log("Sending Chat Payload:", payload);
 
       const response = await ApiService.chat(payload);
       const result = response.data?.data || {};
 
-      setChat((prevChat) => ({
-        ...prevChat,
+      // ================================
+      // POINT-4: Update AI response
+      // ================================
+      const updatedStore = getChatStore(
+        userData?.user_id || "unknown",
+        chat.session_id
+      );
+
+      const currentMsg = updatedStore.messages.find(
+        (m) => m.query_id === queryId
+      );
+
+      if (currentMsg) {
+        currentMsg.ai_response = result.ai_response || "";
+      }
+
+      saveChatStore(updatedStore);
+
+      setChat((prev) => ({
+        ...prev,
         question: result.user_query || inputValue,
         query: result.ai_response || "",
         ai_response: result.ai_response || "",
-        logs: result.logs || ["Execution log not available."],
+        logs: result.logs || [],
       }));
+
       setDisplayedLogs([]);
       setTypewriterKey((prev) => prev + 1);
       setInputValue("");
-      setTableData(null); // Clear the local table on new query
+      setTableData(null);
       setIsScriptRunSuccess(false);
-    } catch (error) {
-      console.error("Chat API Error:", error);
 
-      setChat((prevChat) => ({
-        ...prevChat,
-        logs: ["ERROR: Something went wrong while calling API."],
-      }));
+      // MAIN LINE — script generated successfully
+      if (result.ai_response && result.ai_response.trim()) {
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message || "Something went wrong";
+
+      setInputError(errorMessage);
+
+      //  script not generated
+      setIsScriptGenerated(false);
       setIsScriptRunSuccess(false);
     } finally {
       setIsSending(false);
     }
   };
+
   const extractSqlQuery = (rawQuery: string): string => {
     if (!rawQuery) {
       return "";
@@ -266,6 +474,11 @@ export default function Chat({
         response.data.data &&
         Array.isArray(response.data.data.rows)
       ) {
+        const rowCount =
+          response.data.data.total_rows ?? response.data.data.rows.length;
+
+        const executionTime = response.data.data.execution_time ?? null;
+
         const rows = response.data.data.rows;
         // If there are rows, derive columns from the keys of the first row object
         const columns =
@@ -278,10 +491,33 @@ export default function Chat({
         setDisplayedLogs([response.data.message || "Execution successful."]);
         // capture execution metadata if provided by backend
         setExecutionMeta({
-          rows_effected: response.data.data.total_rows ?? rows.length,
-          query_time: response.data.data.execution_time ?? "",
+          rows_effected: rowCount,
+          query_time: executionTime,
         });
+
         setIsScriptRunSuccess(true);
+
+        // ======================================
+        // POINT-5: Update execution SUCCESS
+        // ======================================
+        const store = getChatStore(
+          userData?.user_id || "unknown",
+          chat.session_id
+        );
+
+        // Find latest non-executed message
+        const lastMsg = [...store.messages]
+          .reverse()
+          .find((m) => m.is_execute === false);
+
+        if (lastMsg) {
+          lastMsg.is_execute = true;
+          lastMsg.is_success = true;
+          lastMsg.row_count = rowCount;
+          lastMsg.query_time = executionTime; // STRING like "0.005 sec"
+        }
+
+        saveChatStore(store);
       } else {
         setTableData(null);
         setDisplayedLogs([
@@ -292,21 +528,41 @@ export default function Chat({
       }
     } catch (error) {
       console.error("Execute SQL API Error:", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        "An error occurred while running the script.";
-      setDisplayedLogs([`ERROR: ${errorMessage}`]);
-      setTableData(null);
-      setExecutionMeta(null);
-      setIsScriptRunSuccess(false);
+      // ======================================
+      // POINT-6: Update execution FAILURE
+      // ======================================
+      const store = getChatStore(
+        userData?.user_id || "unknown",
+        chat.session_id
+      );
+
+      const lastMsg = [...store.messages]
+        .reverse()
+        .find((m) => m.ai_response === chat.query);
+
+      if (lastMsg) {
+        lastMsg.is_execute = true;
+        lastMsg.is_success = false;
+      }
+
+      saveChatStore(store);
     } finally {
       setIsExecuting(false); // Stop loading
     }
   };
+  // const handleDeleteMessage = (queryId: number) => {
+  //   const updatedHistory = messageHistory.filter(
+  //     (item) => item.query_id !== queryId
+  //   );
+
+  //   setMessageHistory(updatedHistory);
+  //   localStorage.setItem("chat_history", JSON.stringify(updatedHistory));
+  // };
 
   useEffect(() => {
     const query = chat?.query || "";
     setTypedQuery(""); // Clear previous query
+    // setIsScriptGenerated(false);
     const scriptContainerRef = document.getElementById("script-container");
 
     if (!query) return; // No query, nothing to type
@@ -320,10 +576,11 @@ export default function Chat({
 
     const typingInterval = setInterval(() => {
       if (i < query.length) {
-        setTypedQuery(prev => prev + query.charAt(i));
+        setTypedQuery((prev) => prev + query.charAt(i));
         i++;
       } else {
         clearInterval(typingInterval);
+        setIsScriptGenerated(true); // ENABLE RUN ONLY AFTER FINISH
       }
       if (scriptContainerRef) {
         scriptContainerRef.scrollTop = scriptContainerRef.scrollHeight;
@@ -339,34 +596,90 @@ export default function Chat({
     setConfirmSaveAction(() => handleConfirmSave);
   }, [chat, viewName, isScriptRunSuccess, tableData]);
 
+  // useEffect(() => {
+  //   if (chatContainerRef.current) {
+  //     chatContainerRef.current.scrollTop =
+  //       chatContainerRef.current.scrollHeight;
+  //   }
+  // }, [messageHistory]);
+
+  // const handleConfirmSave = async () => {
+  //   if (!chat || !viewName.trim()) return;
+
+  //   const payload = {
+  //     user_query: chat.question,
+  //     is_execute: isScriptRunSuccess ? 1 : 0,
+  //     ai_response: chat.ai_response || "",
+  //     created_by: userData?.user_id || "unknown",
+  //     // row_data: tableData || null,
+  //     session_id: chat.session_id,
+  //     rows_effected: executionMeta?.rows_effected ?? "",
+  //     query_time: executionMeta?.query_time ?? "",
+  //     query_title: viewName || "",
+  //   };
+
+  //   try {
+  //     const response = await ApiService.saveChat(payload);
+  //     if (response.data.isSuccess) {
+  //       console.log("Chat saved successfully:", response.data.message);
+  //     } else {
+  //       console.error("Failed to save chat:", response.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving chat:", error);
+  //   } finally {
+  //     setIsConfirmSaveModalOpen(false);
+  //     setViewName(""); // Clear input after saving
+  //     navigate("/layout/query-list");
+  //   }
+  // };
 
   const handleConfirmSave = async () => {
     if (!chat || !viewName.trim()) return;
 
+    // 1 Read from localStorage (SOURCE OF TRUTH)
+    const store = getChatStore(
+      userData?.user_id || "unknown",
+      chat.session_id
+    );
+    const messagesToSend = parentQueryId
+      ? store.messages.slice(1)   //  EDIT → root বাদ
+      : store.messages;           // NEW → সব যাবে
+
+    // 2Build FULL payload
     const payload = {
-      user_query: chat.question,
-      is_execute: isScriptRunSuccess ? 1 : 0,
-      ai_response: chat.ai_response || "",
-      created_by: userData?.user_id || "unknown",
-      // row_data: tableData || null,
       session_id: chat.session_id,
-      rows_effected: executionMeta?.rows_effected ?? "",
-      query_time: executionMeta?.query_time ?? "",
-      query_title: viewName || "",
+      created_by: userData?.user_id || "unknown",
+      query_title: viewName,
+      parent_query_id: parentQueryId,
+      messages: messagesToSend.map(msg => ({
+        query_id: msg.query_id,
+        query: msg.query,
+        ai_response: msg.ai_response,
+        is_execute: msg.is_execute ? 1 : 0,
+        is_success: msg.is_success ? 1 : 0,
+        row_count: msg.row_count ?? 0,
+        query_time: msg.query_time ?? null,
+        created_at: msg.created_at,
+      })),
     };
+
+    console.log("Full session save payload:", payload);
 
     try {
       const response = await ApiService.saveChat(payload);
+
       if (response.data.isSuccess) {
-        console.log("Chat saved successfully:", response.data.message);
+        //  CLEAR localStorage AFTER successful save
+        localStorage.removeItem("data_doctor_chat_store");
       } else {
-        console.error("Failed to save chat:", response.data.message);
+        console.error("Save failed:", response.data.message);
       }
     } catch (error) {
-      console.error("Error saving chat:", error);
+      console.error("Save API error:", error);
     } finally {
       setIsConfirmSaveModalOpen(false);
-      setViewName(""); // Clear input after saving
+      setViewName("");
       navigate("/layout/query-list");
     }
   };
@@ -394,50 +707,70 @@ export default function Chat({
         </div>
 
         {/* Chat Box */}
-        <div className="px-5 py-6 text-gray-700 whitespace-pre-line flex items-start gap-2 ">
-          <span>{chat?.question}</span>
+        <div
+          ref={chatContainerRef}
+          className="px-5 py-6 text-gray-700 whitespace-pre-line flex flex-col gap-4 max-h-[300px] overflow-y-auto "
+        >
+          <div className="self-start bg-gray-100 p-3 rounded-xl rounded-tl-none text-gray-800 max-w-[80%]  ">
+            How can I assist you right now?
+          </div>
+
+          {/* Replace this section */}
+          {storedMessages.map((item) => (
+            <div
+              key={item.query_id}
+              className="self-end bg-[#D9D9D9] p-3 rounded-xl 
+               rounded-tr-none text-gray-800 max-w-[80%]"
+            >
+              <div className="font-medium">{item.query}</div>
+
+              {item.ai_response && (
+                <div className="mt-1 text-xs text-gray-600">
+                  Sp generated
+                </div>
+              )}
+
+              {item.is_execute && (
+                <div className="mt-1 text-xs text-green-600">
+                  ✔ Executed ({item.row_count} rows)
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
         {/* Input */}
         <form
           onSubmit={handleSendMessage}
-          className="mx-4 border rounded-xl flex justify-between items-center px-5 py-2 mt-20 text-gray-500"
+          className="mx-4 border rounded-xl flex justify-between items-center bg-[#FBFBFB] px-5 py-2 text-gray-500 outline-none focus-within:ring-1
+    focus-within:ring-[#5433FF]
+    "
         >
-          {/* <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={
-              isSessionDataMissing
-                ? "Cannot send messages due to missing session ID."
-                : "Ask a question to generate a script..."
-            }
-            disabled={isSessionDataMissing || isSending} // Disabled when session is missing or sending
-            className={`w-full h-full bg-transparent outline-none text-sm text-gray-800 ${isSessionDataMissing || isSending ? "cursor-not-allowed" : ""
-              }`}
-          /> */}
           <input
             type="text"
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            // onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              if (inputError) setInputError(null);
+            }}
             placeholder={
               passedData
-                ? "" // If editing → no placeholder
-                : "Ask a question to generate a script..."
+                ? "Ask a query to generate a script" // If editing → no placeholder
+                : "Ask a query to generate a script"
             }
             disabled={isSessionDataMissing || isSending}
-            className="w-full h-full bg-transparent outline-none text-sm text-gray-800"
+            className="w-full h-full bg-transparent  outline-none text-sm text-gray-800"
           />
-
-
 
           <button
             type="submit"
             disabled={isSessionDataMissing || isSending} // Disabled when session is missing or sending
-            className={`p-2 rounded-full hover:bg-gray-100 ${isSessionDataMissing || isSending
-              ? "opacity-50 cursor-not-allowed"
-              : ""
-              }`}
+            className={`p-2 rounded-full hover:bg-gray-100 ${
+              isSessionDataMissing || isSending
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
           >
             {isSending ? (
               <AutorenewRoundedIcon className="w-6 h-6 text-gray-600 animate-spin" />
@@ -446,6 +779,9 @@ export default function Chat({
             )}
           </button>
         </form>
+        {inputError && (
+          <p className="mt-2 text-sm text-red-600 mx-4">{inputError}</p>
+        )}
       </div>
 
       {/* Script Section */}
@@ -456,43 +792,25 @@ export default function Chat({
             <p className="text-sm text-gray-500 mb-4">Run available script</p>
           </h1>
 
-          <div className="flex flex-row items-center justify-between px-5 pr-0">
-            {/* Left empty space or other content can stay here */}
-            <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-5 py-2 shadow-sm">
-              {/* <input
-                type="text"
-                value={viewName}
-                onChange={(e) => setViewName(e.target.value)}
-                placeholder={
-                  isScriptRunSuccess
-                    ? "Name and save your custom view"
-                    : "Run a script to enable saving"
-                }
-                className={`text-gray-600 text-sm bg-transparent outline-none w-full ${!isScriptRunSuccess ? "cursor-not-allowed" : ""
-                  }`}
-                disabled={!isScriptRunSuccess}
-              /> */}
-           
-         <input
-  type="text"
-  value={viewName}
-  onChange={(e) => setViewName(e.target.value)}
-  placeholder={
-    passedData?.query_title ? "" : "Please enter query name.."
-  }
-  disabled={!isScriptRunSuccess}
-  className="
-    focus:outline-none focus:ring-0
-   
-  "
-/>
+          {/* <div className="flex flex-row items-center justify-between px-5 pr-0">
+            <div className={`w-[420px] flex items-center justify-between border rounded-xl px-5 py-2 shadow-sm ${isScriptRunSuccess ? "bg-[#FBFBFB] border-[#4319C2]" : "bg-white border-gray-200"}`}>
 
-
-
+              <Tippy content={viewName} theme="gray" placement="top">
+                <input
+                  type="text"
+                  value={viewName}
+                  onChange={(e) => setViewName(e.target.value)}
+                  placeholder={
+                    passedData?.query_title ? "" : "Please enter query name"
+                  }
+                  disabled={!isScriptRunSuccess}
+                  className="focus:outline-none focus:ring-0 w-[84%] truncate bg-transparent"
+                />
+              </Tippy>
               <button
                 onClick={() => setIsConfirmSaveModalOpen(true)}
                 disabled={!isScriptRunSuccess || !viewName.trim()}
-                className={`px-5 py-1 rounded-md bg-gray-200 text-gray-600 text-sm transition ${!isScriptRunSuccess || !viewName.trim()
+                className={`px-3 py-2 rounded-md bg-gray-200 text-gray-600 text-sm transition ${!isScriptRunSuccess || !viewName.trim()
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:bg-gray-300"
                   }`}
@@ -500,41 +818,83 @@ export default function Chat({
                 Save
               </button>
             </div>
+          </div> */}
+          <div className="flex items-center px-5 gap-2">
+            {/* Input */}
+            <Tippy content={viewName} theme="gray" placement="top">
+              <input
+                type="text"
+                value={viewName}
+                onChange={(e) => setViewName(e.target.value)}
+                placeholder="Name and save your custom view"
+                disabled={!isScriptRunSuccess}
+                className={`
+        w-[360px] h-[36px]
+        px-3 text-sm text-gray-700
+        border border-gray-300 rounded-lg
+        bg-white
+        focus:outline-none focus:ring-1 focus:ring-[#5433FF]
+        disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed
+      `}
+              />
+            </Tippy>
+
+            {/* Save Button */}
+            <button
+              onClick={() => setIsConfirmSaveModalOpen(true)}
+              disabled={!isScriptRunSuccess || !viewName.trim()}
+              className={`
+      h-[36px] px-4 text-sm
+      border border-gray-300 rounded-md
+      bg-gray-100 text-gray-600
+      transition
+      ${
+        !isScriptRunSuccess || !viewName.trim()
+          ? "opacity-50 cursor-not-allowed"
+          : "hover:bg-gray-200"
+      }
+    `}
+            >
+              Save
+            </button>
           </div>
         </div>
 
-        <div className="mx-4 p-6 bg-white shadow-sm mb-10 rounded-xl relative">
-          <button
-            onClick={handleRunScript}
-            disabled={isSessionDataMissing || isExecuting} // Disabled when session is missing or executing
-            className={`absolute right-6 top-6 px-5 py-1 bg-gray-200 text-gray-700 text-sm rounded transition-colors ${isSessionDataMissing || isExecuting
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-gray-300"
-              }`}
-          >
-            {isExecuting ? "Running..." : "Run"}
-          </button>
-
-          <div
-            id="script-container"
-            className="mt-10 text-sm font-mono relative min-h-[150px] max-h-[350px] overflow-y-auto max-w-[1300px]"
-          >
-            {/* This SyntaxHighlighter displays the progressively typed and highlighted query. */}
-            <SyntaxHighlighter
-              language="sql"
-              style={oneLight}
-              customStyle={{
-                backgroundColor: "transparent",
-                padding: 0,
-                margin: 0,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-              }}
+        <div className="mx-4 p-6 bg-white shadow-sm mb-10 rounded-xl">
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div
+              id="script-container"
+              className=" w-[100%] text-sm font-mono relative min-h-[150px] max-h-[350px] overflow-y-auto max-w-[1300px]"
             >
-              {typedQuery + (typedQuery === (chat?.query || "") ? "" : " ")}
-            </SyntaxHighlighter>
+              <SyntaxHighlighter
+                language="sql"
+                style={oneLight}
+                customStyle={{
+                  backgroundColor: "transparent",
+                  padding: 0,
+                  margin: 0,
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}
+              >
+                {typedQuery + (typedQuery === (chat?.query || "") ? "" : " ")}
+              </SyntaxHighlighter>
+            </div>
+            <button
+              onClick={handleRunScript}
+              // disabled={isSessionDataMissing || isExecuting}
+              disabled={
+                isSessionDataMissing || isExecuting || !isScriptGenerated
+              }
+              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${
+                isSessionDataMissing || isExecuting || !isScriptGenerated
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-300"
+              }`}
+            >
+              {isExecuting ? "Running..." : "Run"}
+            </button>
           </div>
-
           {displayedLogs.length > 0 && (
             <div className="mt-6 pt-6 border-t border-gray-200 space-y-2 text-sm -mx-6 px-5">
               {displayedLogs.map((log, i) => (
@@ -550,21 +910,23 @@ export default function Chat({
             </div>
           )}
         </div>
+        <div className="m-5">
+          {" "}
+          {tableData && tableData.rows.length > 0 && (
+            <div className=" bg-white rounded-xl shadow-md">
+              {" "}
+              <ProductDataTable
+                data={tableData.rows}
+                columns={tableData.columns.filter(
+                  (col) => col.column_name !== "row_hash"
+                )}
+                globalFilter={""}
+              />{" "}
+            </div>
+          )}{" "}
+        </div>
       </div>
-      <div className="mb-10 px-5">
-        {" "}
-        {tableData && tableData.rows.length > 0 && (
-          <div className="p-2 bg-white rounded-xl shadow-md">
-            {" "}
-           
-            <ProductDataTable
-              data={tableData.rows}
-              columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}
-              globalFilter={""}
-            />{" "}
-          </div>
-        )}{" "}
-      </div>
+
       <ConfirmSaveView />
     </div>
   );

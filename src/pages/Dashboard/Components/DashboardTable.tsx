@@ -21,7 +21,9 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
   const { theme } = useTheme();
   const [isExpanded, setIsExpanded] = useState(true);
 
-  const filteredColumns = columns.filter(col => col.column_name !== 'row_hash');
+  const filteredColumns = columns
+    .filter((col, index, self) => index === self.findIndex((t) => t.column_name === col.column_name))
+    .filter(col => col.column_name !== 'row_hash');
 
   if (isLoading) {
     return (
@@ -45,7 +47,7 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
 
   return (
     <div className="px-4">
-      <div className="rounded-xl shadow-xs" >
+      <div className="rounded-xl shadow-xs pb-4" >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           {/* <div>

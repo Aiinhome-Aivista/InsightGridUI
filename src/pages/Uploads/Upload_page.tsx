@@ -23,6 +23,7 @@ export default function UploadPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [uploadResponseData, setUploadResponseData] = useState<any>(null);
+  const [resetKey, setResetKey] = useState(0);
 
 
   
@@ -123,12 +124,13 @@ export default function UploadPage() {
     setIsUploading(true);
     setIsProcessing(false);
 
+    
     try {
       const formData = new FormData();
       formData.append("action", "upload");
       formData.append("session_id", sessionId);
       formData.append("created_by", createdBy);
-
+      formData.append("has_header", "true");
       files.forEach((file) => {
         formData.append("files", file);
       });
@@ -158,6 +160,7 @@ export default function UploadPage() {
       setUploadedFileName(fileInfo.file_name || files[0].name);
       setUploadResponseData(fileInfo);
       setIsModalOpen(true);
+      setResetKey((prev) => prev + 1);
 
       setIsUploading(false);
       setIsProcessing(false);
@@ -192,12 +195,13 @@ export default function UploadPage() {
       </p>
 
       <FileDropZone
+        key={resetKey}
         onUploadComplete={uploadFiles}
         theme={theme}
         disabled={isUploading || isProcessing}
       />
 
-      {isProcessing && (
+      {(isProcessing || isUploading) && (
         <div className="flex flex-col items-center justify-center gap-3 mt-4">
           <div className="flex items-center gap-3">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2" style={{
@@ -225,7 +229,6 @@ export default function UploadPage() {
         </div>
       )}
 
-      {/* ADD THIS MODAL COMPONENT AT THE END */}
       <TableImportModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

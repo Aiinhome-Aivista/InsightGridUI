@@ -7,29 +7,78 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { useTheme } from "../../../theme";
+import DeleteIcon from '@mui/icons-material/Delete';
+import ApiServices from "../../../services/ApiServices";
+import { useAuth } from "../../Auth/AuthContext";
+import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
 
 interface Props {
   files: any[];
   onRefresh?: () => void | Promise<void>;
 }
 
-const STEPS = ["Table Extraction", "Column Extraction", "Data Insights"];
+const STEPS = ["Table Extraction", "Column Extraction", "Data Insert Status"];
 const TOTAL_STEPS = STEPS.length;
 
 export default function DataProcessing({ files, onRefresh }: Props) {
+  const { user, setIsConfirmSaveModalOpen, isConfirmSaveModalOpen } = useAuth();
+
   const { theme } = useTheme();
   const navigate = useNavigate();
   const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedRowDetails, setSelectedRowDetails] = useState<any>(null);
+  const [deleteFile, setDeleteFile] = useState<any>(null);
+
+
+  const ITEMS_PER_PAGE = 10;
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(files.length / ITEMS_PER_PAGE) || 1; // At least 1 page
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, files.length);
+
+  const paginatedFiles = files.slice(startIndex, endIndex);
+
+  const handleRowClick = (file: any) => {
+    try {
+      const parsedData = {
+        ...file,
+        query_titles:
+          typeof file.query_titles === "string"
+            ? JSON.parse(file.query_titles)
+            : file.query_titles || [],
+        report_names:
+          typeof file.report_names === "string"
+            ? JSON.parse(file.report_names)
+            : file.report_names || [],
+      };
+
+      setSelectedRowDetails(parsedData);
+      setIsDetailsModalOpen(true);
+    } catch (err) {
+      console.error("Failed to parse row details", err);
+    }
+  };
+
+
+
 
   const formatTo12Hour = (timeStr) => {
     if (!timeStr) return "";
     const [hour, minute, second] = timeStr.split(":");
     let h = parseInt(hour);
     const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12; // converts '00' → 12 AM
+    h = h % 12 || 12;
     return `${h}:${minute} ${ampm}`;
   };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [files]);
 
 
   useEffect(() => {
@@ -45,7 +94,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       if (file.column_extraction_status?.toLowerCase() === 'done') {
         progress = 2;
       }
-      if (file.data_insights_status?.toLowerCase() === 'done' || file.relationship_mapping_status?.toLowerCase() === 'done') {
+      if (file.data_insert_status?.toLowerCase() === 'done') {
         progress = 3;
       }
 
@@ -62,7 +111,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         await onRefresh();
       }
     } finally {
-      // Keep spinning for at least 500ms for smooth animation
       setTimeout(() => {
         setIsRefreshing(false);
       }, 500);
@@ -79,15 +127,58 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           sessionId: file.session_id,
           sessionName: file.session_name,
           fileName: fileName
-
         }
       });
     }
   };
 
+  const handleDeleteFile = async (file: any) => {
+    setIsConfirmSaveModalOpen(false); setIsDetailsModalOpen(false);
+    try {
+      const payload = {
+        session_id: user?.session_id,
+        created_by: user?.user_id,
+        file_name: file.name || file.file_name,
+      };
+
+      const response = await ApiServices.deleteUploadedFile(payload);
+      const res = response.data;
+
+      // ✅ SUCCESS
+      if (res?.isSuccess) {
+        if (onRefresh) {
+          await onRefresh();
+        }
+        return;
+      }
+
+      // ⚠️ DEPENDENCY CASE (409)
+      if (res?.data?.dependencies?.length) {
+        const tables = res.data.dependencies
+          .map((d: any) => d.table_name)
+          .join(", ");
+
+        alert(
+          `Cannot delete this file.\n\nIt is used by tables:\n${tables}`
+        );
+        return;
+      }
+
+      // ❌ GENERIC FAILURE or Table Does Not Exist
+      alert(res?.message || "Unable to delete file");
+
+    } catch (error: any) {
+      console.error("Delete failed", error);
+      alert("Something went wrong while deleting file");
+    }
+
+
+  };
+
+
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between mb-4 px-2">
+      <div className="flex items-center justify-between mb-2 px-2">
         <label
           className="block text-sm font-medium"
           style={{ color: theme.primaryText }}
@@ -98,8 +189,8 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           <div
             onClick={handleRefresh}
             className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
-                ? "cursor-not-allowed"
-                : "cursor-pointer hover:bg-gray-500/10"
+              ? "cursor-not-allowed"
+              : "cursor-pointer hover:bg-gray-500/10"
               }`}
             style={{ borderColor: theme.border }}
           >
@@ -121,111 +212,430 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         </Tippy>
       </div>
 
-      <div className="max-h-[30vh] overflow-y-auto pr-2">
-        {files.map((file, index) => {
-        const fileName = file.name || file.file_name;
-        const currentProgress = processingProgress[fileName] || 0;
-        const isFullyProcessed = currentProgress >= TOTAL_STEPS;
-
-        const extractionFailed =
-          file.table_extraction_status?.toLowerCase() === "failed" ||
-          file.table_extraction_status?.toLowerCase() === "pending";
-        return (
-          <div
-            key={index}
-            className="flex items-center rounded-lg p-3 w-full min-w-[80px] mb-3 bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
-          >
-            <div className="relative group w-[20%] min-w-[150px]">
-
-              <div
-                className="text-sm font-medium truncate"
-                style={{ color: theme.primaryText }}
-              >
-                {fileName}
-              </div>
-
-              {/* Tooltip */}
-              <div className="
-                  absolute left-1/2 -translate-x-1/2 mt-1
-                  hidden group-hover:block
-                  whitespace-nowrap
-                  bg-[#888585] text-white text-xs px-2 py-1 rounded
-                  shadow-lg z-10
-                "
-              >
-                {fileName}
-              </div>
+      {/* Global Column Headers */}
+      <div className="mb-3 overflow-x-auto">
+        <div className="flex items-center justify-between gap-4 px-4 py-2 rounded-lg" style={{ backgroundColor: theme.border + '20' }}>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              File Name
             </div>
-
-            <div className="flex items-center min-w-[380px] w-[50%] px-4">
-              {extractionFailed ? (
-                <p className="text-red-500 text-sm font-medium">
-                  File Extraction Failed
-                </p>
-              ) : (
-                STEPS.map((stepName, stepIndex) => {
-                  const isCompleted = stepIndex < currentProgress;
-                  const iconColor = isCompleted ? theme.accent : theme.secondaryText;
-
-                  return (
-                    <div
-                      key={stepIndex}
-                      className="flex flex-col items-center flex-1"
-                      style={{ color: iconColor }}
-                    >
-                      {isCompleted ? (
-                        <CheckCircleIcon sx={{ fontSize: 20, color: iconColor }} />
-                      ) : (
-                        <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: iconColor }} />
-                      )}
-                      <span className="text-[10px] mt-1">{stepName}</span>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-
-            {/* Wrapper to group size and time, and push them to the right */}
-            <div className="flex items-center justify-end flex-grow ml-auto">
-              <div
-                className="text-xs text-center min-w-[80px] px-2"
-                style={{ color: theme.secondaryText }}
-              >
-                {file.file_size_mb ? `${file.file_size_mb}` : (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
-              </div>
-              <div
-                className="text-xs text-right min-w-[180px] px-2"
-                style={{ color: theme.secondaryText }}
-              >
-                {formatTo12Hour(file.created_at) || new Date().toLocaleDateString()}
-              </div>
-            </div>
-
-            {/* <div className="flex items-center min-w-[60px] justify-end w-[5%]"> */}
-
-              {/* <button
-                onClick={() => handleNavigateToDashboard(file)}
-                disabled={!isFullyProcessed}
-                title={isFullyProcessed ? "View in Dashboard" : "Processing incomplete"}
-              >
-                <ArrowForwardIcon
-                  className="w-5 h-5"
-                  sx={{
-                    color: isFullyProcessed ? theme.accent : theme.border,
-                    cursor: isFullyProcessed ? 'pointer' : 'not-allowed',
-                    transition: "color 0.2s",
-                    "&:hover": {
-                      color: isFullyProcessed ? theme.primaryText : theme.border
-                    },
-                  }}
-                />
-              </button> */}
-            {/* </div> */}
           </div>
-        );
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              Table Name
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              Rows Affected
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              Connected Queries
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+              Connected Reports
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Table Extraction
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Column Extraction
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Data Insert Status
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              File Size
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Created Date
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Uploaded At
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+              Action
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Files List - No fixed height, no vertical scrolling */}
+      <div className="overflow-x-auto pr-2">
+        {paginatedFiles.map((file, index) => {
+          const fileName = file.name || file.file_name;
+          const currentProgress = processingProgress[fileName] || 0;
+          const isFullyProcessed = currentProgress >= TOTAL_STEPS;
+
+          const extractionFailed =
+            file.table_extraction_status?.toLowerCase() === "failed" ||
+            file.table_extraction_status?.toLowerCase() === "pending";
+
+          return (
+            <div
+              key={index}
+              onClick={() => handleRowClick(file)}
+              className="rounded-lg p-4 w-full mb-3 bg-gray-200 hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
+            >
+              <div className="flex items-center justify-between gap-4">
+                {/* File Name */}
+                <div className="flex-1 min-w-0">
+                  <div className="relative group">
+                    <div
+                      className="text-sm font-medium truncate"
+                      style={{ color: theme.primaryText }}
+                    >
+                      {fileName}
+                    </div>
+                    <div className="absolute left-0 mt-1 hidden group-hover:block whitespace-nowrap bg-[#888585] text-white text-xs px-2 py-1 rounded shadow-lg z-10">
+                      {fileName}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Table Name */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium truncate"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.table_name || 'N/A'}
+                  </div>
+                </div>
+
+                {/* Rows Affected */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.rows_effected || 0}
+                  </div>
+                </div>
+                {/* Connected Queries */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium text-center"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.connected_queries ?? 0}
+                  </div>
+                </div>
+
+                {/* Connected Reports */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium text-center"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.connected_reports ?? 0}
+                  </div>
+                </div>
+
+                {/* Table Extraction Status */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-center">
+                    {extractionFailed ? (
+                      <span className="text-red-500 text-xs font-medium">Failed</span>
+                    ) : file.table_extraction_status?.toLowerCase() === 'done' ? (
+                      <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
+                    ) : (
+                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: theme.secondaryText }} />
+                    )}
+                  </div>
+                </div>
+
+                {/* Column Extraction Status */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-center">
+                    {file.column_extraction_status?.toLowerCase() === 'done' ? (
+                      <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
+                    ) : (
+                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: theme.secondaryText }} />
+                    )}
+                  </div>
+                </div>
+
+                {/* Data Insert Status */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-center">
+                    {file.data_insert_status?.toLowerCase() === 'done' ? (
+                      <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
+                    ) : (
+                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: theme.secondaryText }} />
+                    )}
+                  </div>
+                </div>
+
+                {/* File Size */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-center" style={{ color: theme.primaryText }}>
+                    {file.file_size_mb || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+                  </div>
+                </div>
+
+                {/* Create Date */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium text-center"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.created_date || "N/A"}
+                  </div>
+                </div>
+
+                {/* Uploaded At */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-center" style={{ color: theme.primaryText }}>
+                    {formatTo12Hour(file.created_at) || new Date().toLocaleDateString()}
+                  </div>
+                </div>
+
+                {/* Delete Icon */}
+                <div className="flex-1 min-w-0 flex justify-center">
+                  <Tippy content="Delete file" theme="gray">
+                    <DeleteIcon
+                      onClick={() => { setDeleteFile(file); setIsConfirmSaveModalOpen(true); }}
+                      sx={{
+                        fontSize: 20,
+                        color: "#9ca3af",
+                        cursor: "pointer",
+                        "&:hover": {
+                          color: "#ef4444",
+                        },
+                      }}
+                    />
+                  </Tippy>
+                </div>
+
+              </div>
+            </div>
+          );
         })}
       </div>
+
+      {/* Pagination controls - Always visible */}
+      <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-xl mt-4">
+        <div className="text-sm text-gray-600">
+          Showing {Math.min(startIndex + 1, files.length)} to {Math.min(endIndex, files.length)} of {files.length} files
+        </div>
+
+        <div className="flex items-center gap-1">
+          {/* Previous Button */}
+          <button
+            onClick={() => setCurrentPage(p => p - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === 1
+              ? 'text-gray-400 cursor-not-allowed'
+              : 'text-gray-700 hover:bg-gray-100'
+              }`}
+          >
+            Previous
+          </button>
+
+          {/* Page Numbers */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${currentPage === page
+                ? 'bg-gray-200 text-gray-900'
+                : 'text-gray-700 hover:bg-gray-50'
+                }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {/* Next Button */}
+          <button
+            onClick={() => setCurrentPage(p => p + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === totalPages
+              ? 'text-gray-400 cursor-not-allowed'
+              : 'text-gray-700 hover:bg-gray-100'
+              }`}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+
+      {/* modal for row details */}
+      {isDetailsModalOpen && selectedRowDetails && !isConfirmSaveModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-[560px] max-h-[80vh] rounded-xl shadow-2xl bg-white flex flex-col">
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-3 border-b">
+              <div>
+                <h3
+                  className="text-sm font-semibold"
+                  style={{ color: theme.primaryText }}
+                >
+                  Connected Details
+                </h3>
+                <p className="text-xs text-gray-500">
+                  File & dependency information
+                </p>
+              </div>
+
+              <button
+                onClick={() => setIsDetailsModalOpen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full
+                     hover:bg-gray-200 text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 overflow-y-auto">
+
+              {/* File Info */}
+              <div className="mb-5 grid grid-cols-2 gap-4 text-xs">
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="text-gray-500 mb-1">File Name</div>
+                  <div className="font-medium text-gray-800">
+                    {selectedRowDetails.file_name}
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="text-gray-500 mb-1">Table Name</div>
+                  <div className="font-medium text-gray-800">
+                    {selectedRowDetails.table_name}
+                  </div>
+                </div>
+              </div>
+
+              {/* Queries Section */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-semibold text-gray-700">
+                    Connected Queries
+                  </h4>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                    {selectedRowDetails.query_titles.length}
+                  </span>
+                </div>
+
+                {selectedRowDetails.query_titles.length ? (
+                  <div className="space-y-2">
+                    {selectedRowDetails.query_titles.map((q: string, i: number) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-2 p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+                      >
+                        <span className="mt-0.5 text-xs text-blue-600 font-semibold">
+                          Q{i + 1}
+                        </span>
+                        <span className="text-xs text-gray-800">{q}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-xs text-gray-400 italic">
+                    No connected queries
+                  </div>
+                )}
+              </div>
+
+              {/* Reports Section */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-semibold text-gray-700">
+                    Connected Reports
+                  </h4>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                    {selectedRowDetails.report_names.length}
+                  </span>
+                </div>
+
+                {selectedRowDetails.report_names.length ? (
+                  <div className="space-y-2">
+                    {selectedRowDetails.report_names.map((r: string, i: number) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-2 p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+                      >
+                        <span className="mt-0.5 text-xs text-green-600 font-semibold">
+                          R{i + 1}
+                        </span>
+                        <span className="text-xs text-gray-800">{r}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-xs text-gray-400 italic">
+                    No connected reports
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-3 border-t flex justify-end">
+              <button
+                onClick={() => setIsDetailsModalOpen(false)}
+                className="px-4 py-1.5 text-xs font-medium rounded-md
+                     bg-gray-200 hover:bg-gray-300 text-gray-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isConfirmSaveModalOpen && <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="w-[550px] bg-[#D9D9D9] rounded-2xl shadow-lg border-[11px] border-white flex flex-col justify-center items-center gap-6 p-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold text-gray-700">{deleteFile?.name || deleteFile?.file_name}</h2>
+            {/* <h2 className="text-2xl font-semibold text-gray-700">Delete File</h2> */}
+          </div>
+
+          <p className="text-gray-600 text-xl">
+            Are you sure you want to delete this file?
+          </p>
+
+          <div className="flex gap-4">
+            <button
+              className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 bg-white hover:bg-[#4B1AE7] hover:text-white transition"
+              onClick={() => { setIsConfirmSaveModalOpen(false); setIsDetailsModalOpen(false); }}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="px-6 py-2 rounded-lg bg-[#4B1AE7] text-white hover:opacity-90 transition"
+              onClick={() => handleDeleteFile(deleteFile)}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>}
     </div>
   );
 }
