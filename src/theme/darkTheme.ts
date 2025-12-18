@@ -11,6 +11,7 @@ const darkTheme: ThemeDefinition = {
   secondaryText: "#94a3b8",
   accent: "#38bdf8",
   border: "#334155",
+   button:"#4319C2",
 };
 
 export default darkTheme;

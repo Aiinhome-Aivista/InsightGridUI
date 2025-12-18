@@ -143,7 +143,7 @@ const isEditMode = !!editReport;
           <InputText
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-10 w-full h-10 rounded-xl border focus:outline-none focus:ring-0"
+            className="pl-10 w-full h-10 rounded-xl border focus:outline-none focus:ring-1 focus:ring-[#5433FF]"
             placeholder="Global Search"
           />
         </div>
@@ -153,7 +153,7 @@ const isEditMode = !!editReport;
             value={reportName}
             onChange={(e) => setReportName(e.target.value)}
             placeholder="Write a report name(required)"
-            className=" px-4 w-full md:w-80  h-10 border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-0 gap-1 pr-10"
+            className=" px-4 w-full md:w-80  h-10 border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#5433FF] gap-1 pr-10"
           />
         </div>
         <div className="flex items-start md:items-center justify-center gap-2">
@@ -185,10 +185,11 @@ const isEditMode = !!editReport;
   className="
     w-96 h-10
     border border-gray-200 
-    rounded-xl
+  rounded-xl
     flex items-center justify-between
     transition-all duration-200
     bg-white
+    focus:ring-2 focus:ring-[#5433FF]
   "
   
   // Panel (List) Styling - Added max-w to ensure it doesn't grow too wide

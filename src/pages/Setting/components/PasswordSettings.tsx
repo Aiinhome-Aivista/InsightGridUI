@@ -1,6 +1,6 @@
 // PasswordSettings.tsx
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Eye, EyeOff, Lock, Save, CheckCircle } from 'lucide-react';
@@ -32,7 +32,7 @@ const PasswordSettings: React.FC<PasswordSettingsProps> = ({ activeTab }) => {
     formState: { errors },
     reset,
   } = useForm<FormData>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(schema) as unknown as Resolver<FormData>,
   });
 
   const onSubmit = async (data: FormData) => {
@@ -51,10 +51,10 @@ const PasswordSettings: React.FC<PasswordSettingsProps> = ({ activeTab }) => {
   if (activeTab !== 'password') return null;
 
   return (
-    <div className="max-w-8xl h-full overflow-y-auto px-1">
+    <div className="max-w-8xl h-full overflow-y-auto px-6">
       <div className=" overflow-y-auto ">
-        <h1 className="text-2xl font-bold text-gray-800">Password Settings</h1>
-        <p className="text-gray-600 mt-2">Update your password to keep your account secure</p>
+        {/* <h1 className="text-2xl font-bold text-gray-800">Password Settings</h1> */}
+        <p className="text-gray-600">Update your password to keep your account secure</p>
       </div>
 
       {isSuccess && (

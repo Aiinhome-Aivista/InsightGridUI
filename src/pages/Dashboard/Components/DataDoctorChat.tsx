@@ -11,9 +11,7 @@ import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-
-
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 //for new chat session
 interface StoredMessage {
@@ -33,7 +31,6 @@ interface StoredChatData {
   messages: StoredMessage[];
 }
 
-
 interface ChatSession {
   id: number;
   session_id: string;
@@ -43,7 +40,6 @@ interface ChatSession {
   query: string;
   logs: string[];
   ai_response?: string;
-
 }
 interface TableData {
   rows: any[];
@@ -69,10 +65,7 @@ interface TableData {
 
 const CHAT_STORE_KEY = "data_doctor_chat_store";
 
-const getChatStore = (
-  createdBy: string,
-  sessionId: string
-): StoredChatData => {
+const getChatStore = (createdBy: string, sessionId: string): StoredChatData => {
   try {
     const raw = localStorage.getItem(CHAT_STORE_KEY);
 
@@ -98,7 +91,6 @@ const saveChatStore = (data: StoredChatData) => {
   localStorage.setItem(CHAT_STORE_KEY, JSON.stringify(data));
 };
 
-
 export default function Chat({
   passedData,
 }: {
@@ -108,7 +100,6 @@ export default function Chat({
     messages?: any[];
   };
 }) {
-
   const { setDownloadData } = useAuth();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -147,7 +138,10 @@ export default function Chat({
   const [isExecuting, setIsExecuting] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isScriptRunSuccess, setIsScriptRunSuccess] = useState(false);
-  const [executionMeta, setExecutionMeta] = useState<{ rows_effected?: number | string; query_time?: string } | null>(null);
+  const [executionMeta, setExecutionMeta] = useState<{
+    rows_effected?: number | string;
+    query_time?: string;
+  } | null>(null);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
   const [inputError, setInputError] = useState<string | null>(null);
   const [isScriptGenerated, setIsScriptGenerated] = useState(false);
@@ -166,7 +160,6 @@ export default function Chat({
     setViewName,
     setConfirmSaveAction,
   } = useAuth();
-
 
   // useEffect(() => {
   //   const savedHistory = localStorage.getItem("chat_history");
@@ -218,12 +211,10 @@ export default function Chat({
   const getLastMessage = (messages: any[] = []) =>
     messages.length ? messages[messages.length - 1] : null;
 
-
-  const storedMessages =
-    getChatStore(
-      userData?.user_id || "unknown",
-      chat.session_id
-    ).messages;
+  const storedMessages = getChatStore(
+    userData?.user_id || "unknown",
+    chat.session_id
+  ).messages;
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -231,8 +222,6 @@ export default function Chat({
         chatContainerRef.current.scrollHeight;
     }
   }, [storedMessages.length]);
-
-
 
   // useEffect(() => {
   //   console.log("Chat received passedData:", passedData);
@@ -270,7 +259,7 @@ export default function Chat({
 
       localStorage.removeItem("data_doctor_chat_store");
 
-      setChat(prev => ({
+      setChat((prev) => ({
         ...prev,
         query: "",
         ai_response: "",
@@ -282,7 +271,6 @@ export default function Chat({
       setDisplayedLogs([]);
     }
   }, [passedData]);
-
 
   useEffect(() => {
     if (!passedData?.messages?.length) return;
@@ -310,7 +298,6 @@ export default function Chat({
     setDisplayedLogs([]);
   }, [passedData]);
 
-
   //load only last procedure in editor
   useEffect(() => {
     if (!passedData?.messages?.length) return;
@@ -322,17 +309,15 @@ export default function Chat({
 
     setIsScriptGenerated(false);
 
-    setChat(prev => ({
+    setChat((prev) => ({
       ...prev,
       query: lastMsg.ai_response,
       ai_response: lastMsg.ai_response,
     }));
 
     setTypedQuery(lastMsg.ai_response);
-    setTypewriterKey(prev => prev + 1);
+    setTypewriterKey((prev) => prev + 1);
   }, [passedData]);
-
-
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -345,7 +330,6 @@ export default function Chat({
     if (!chat.session_id || !chat.session_name) {
       return;
     }
-
 
     //for new session storage
 
@@ -364,7 +348,7 @@ export default function Chat({
       is_execute: false,
       row_count: 0,
       query_time: 0,
-      is_success: false
+      is_success: false,
     });
 
     saveChatStore(chatStore);
@@ -402,7 +386,7 @@ export default function Chat({
       );
 
       const currentMsg = updatedStore.messages.find(
-        m => m.query_id === queryId
+        (m) => m.query_id === queryId
       );
 
       if (currentMsg) {
@@ -410,7 +394,6 @@ export default function Chat({
       }
 
       saveChatStore(updatedStore);
-
 
       setChat((prev) => ({
         ...prev,
@@ -429,7 +412,6 @@ export default function Chat({
       // MAIN LINE — script generated successfully
       if (result.ai_response && result.ai_response.trim()) {
       }
-
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message || "Something went wrong";
@@ -439,7 +421,6 @@ export default function Chat({
       //  script not generated
       setIsScriptGenerated(false);
       setIsScriptRunSuccess(false);
-
     } finally {
       setIsSending(false);
     }
@@ -493,12 +474,10 @@ export default function Chat({
         response.data.data &&
         Array.isArray(response.data.data.rows)
       ) {
-
         const rowCount =
           response.data.data.total_rows ?? response.data.data.rows.length;
 
-        const executionTime =
-          response.data.data.execution_time ?? null;
+        const executionTime = response.data.data.execution_time ?? null;
 
         const rows = response.data.data.rows;
         // If there are rows, derive columns from the keys of the first row object
@@ -518,7 +497,6 @@ export default function Chat({
 
         setIsScriptRunSuccess(true);
 
-
         // ======================================
         // POINT-5: Update execution SUCCESS
         // ======================================
@@ -530,7 +508,7 @@ export default function Chat({
         // Find latest non-executed message
         const lastMsg = [...store.messages]
           .reverse()
-          .find(m => m.is_execute === false);
+          .find((m) => m.is_execute === false);
 
         if (lastMsg) {
           lastMsg.is_execute = true;
@@ -540,8 +518,6 @@ export default function Chat({
         }
 
         saveChatStore(store);
-
-
       } else {
         setTableData(null);
         setDisplayedLogs([
@@ -562,7 +538,7 @@ export default function Chat({
 
       const lastMsg = [...store.messages]
         .reverse()
-        .find(m => m.ai_response === chat.query);
+        .find((m) => m.ai_response === chat.query);
 
       if (lastMsg) {
         lastMsg.is_execute = true;
@@ -570,7 +546,6 @@ export default function Chat({
       }
 
       saveChatStore(store);
-
     } finally {
       setIsExecuting(false); // Stop loading
     }
@@ -583,7 +558,6 @@ export default function Chat({
   //   setMessageHistory(updatedHistory);
   //   localStorage.setItem("chat_history", JSON.stringify(updatedHistory));
   // };
-
 
   useEffect(() => {
     const query = chat?.query || "";
@@ -602,7 +576,7 @@ export default function Chat({
 
     const typingInterval = setInterval(() => {
       if (i < query.length) {
-        setTypedQuery(prev => prev + query.charAt(i));
+        setTypedQuery((prev) => prev + query.charAt(i));
         i++;
       } else {
         clearInterval(typingInterval);
@@ -628,7 +602,6 @@ export default function Chat({
   //       chatContainerRef.current.scrollHeight;
   //   }
   // }, [messageHistory]);
-
 
   // const handleConfirmSave = async () => {
   //   if (!chat || !viewName.trim()) return;
@@ -661,7 +634,6 @@ export default function Chat({
   //   }
   // };
 
-
   const handleConfirmSave = async () => {
     if (!chat || !viewName.trim()) return;
 
@@ -689,8 +661,8 @@ export default function Chat({
         is_success: msg.is_success ? 1 : 0,
         row_count: msg.row_count ?? 0,
         query_time: msg.query_time ?? null,
-        created_at: msg.created_at
-      }))
+        created_at: msg.created_at,
+      })),
     };
 
     console.log("Full session save payload:", payload);
@@ -712,8 +684,6 @@ export default function Chat({
       navigate("/layout/query-list");
     }
   };
-
-
 
   return (
     <div className="w-full min-h-screen px-5 mt-5">
@@ -740,9 +710,8 @@ export default function Chat({
         {/* Chat Box */}
         <div
           ref={chatContainerRef}
-          className="px-5 py-6 text-gray-700 whitespace-pre-line flex flex-col gap-4 max-h-[300px] overflow-y-auto"
+          className="px-5 py-6 text-gray-700 whitespace-pre-line flex flex-col gap-4 max-h-[300px] overflow-y-auto "
         >
-
           <div className="self-start bg-gray-100 p-3 rounded-xl rounded-tl-none text-gray-800 max-w-[80%]  ">
             How can I assist you right now?
           </div>
@@ -758,7 +727,7 @@ export default function Chat({
 
               {item.ai_response && (
                 <div className="mt-1 text-xs text-gray-600">
-                  AI generated
+                  Sp generated
                 </div>
               )}
 
@@ -769,16 +738,15 @@ export default function Chat({
               )}
             </div>
           ))}
-
-
         </div>
 
         {/* Input */}
         <form
           onSubmit={handleSendMessage}
-          className="mx-4 border rounded-xl flex justify-between items-center bg-[#FBFBFB] px-5 py-2  text-gray-500"
+          className="mx-4 border rounded-xl flex justify-between items-center bg-[#FBFBFB] px-5 py-2 text-gray-500 outline-none focus-within:ring-1
+    focus-within:ring-[#5433FF]
+    "
         >
-
           <input
             type="text"
             value={inputValue}
@@ -787,7 +755,6 @@ export default function Chat({
               setInputValue(e.target.value);
               if (inputError) setInputError(null);
             }}
-
             placeholder={
               passedData
                 ? "Ask a query to generate a script" // If editing → no placeholder
@@ -797,15 +764,14 @@ export default function Chat({
             className="w-full h-full bg-transparent  outline-none text-sm text-gray-800"
           />
 
-
-
           <button
             type="submit"
             disabled={isSessionDataMissing || isSending} // Disabled when session is missing or sending
-            className={`p-2 rounded-full hover:bg-gray-100 ${isSessionDataMissing || isSending
-              ? "opacity-50 cursor-not-allowed"
-              : ""
-              }`}
+            className={`p-2 rounded-full hover:bg-gray-100 ${
+              isSessionDataMissing || isSending
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
           >
             {isSending ? (
               <AutorenewRoundedIcon className="w-6 h-6 text-gray-600 animate-spin" />
@@ -815,11 +781,8 @@ export default function Chat({
           </button>
         </form>
         {inputError && (
-          <p className="mt-2 text-sm text-red-600 mx-4">
-            {inputError}
-          </p>
+          <p className="mt-2 text-sm text-red-600 mx-4">{inputError}</p>
         )}
-
       </div>
 
       {/* Script Section */}
@@ -830,9 +793,8 @@ export default function Chat({
             <p className="text-sm text-gray-500 mb-4">Run available script</p>
           </h1>
 
-          <div className="flex flex-row items-center justify-between px-5 pr-0">
-            {/* Left empty space or other content can stay here */}
-            <div className="w-[420px] flex items-center justify-between bg-white border border-gray-200 rounded-xl px-5 py-2 shadow-sm">
+          {/* <div className="flex flex-row items-center justify-between px-5 pr-0">
+            <div className={`w-[420px] flex items-center justify-between border rounded-xl px-5 py-2 shadow-sm ${isScriptRunSuccess ? "bg-[#FBFBFB] border-[#4319C2]" : "bg-white border-gray-200"}`}>
 
               <Tippy content={viewName} theme="gray" placement="top">
                 <input
@@ -843,7 +805,7 @@ export default function Chat({
                     passedData?.query_title ? "" : "Please enter query name"
                   }
                   disabled={!isScriptRunSuccess}
-                  className="focus:outline-none focus:ring-0 w-[84%] truncate"
+                  className="focus:outline-none focus:ring-0 w-[84%] truncate bg-transparent"
                 />
               </Tippy>
               <button
@@ -857,6 +819,45 @@ export default function Chat({
                 Save
               </button>
             </div>
+          </div> */}
+          <div className="flex items-center px-5 gap-2">
+            {/* Input */}
+            <Tippy content={viewName} theme="gray" placement="top">
+              <input
+                type="text"
+                value={viewName}
+                onChange={(e) => setViewName(e.target.value)}
+                placeholder="Name and save your custom view"
+                disabled={!isScriptRunSuccess}
+                className={`
+        w-[360px] h-[36px]
+        px-3 text-sm text-gray-700
+        border border-gray-300 rounded-lg
+        bg-white
+        focus:outline-none focus:ring-1 focus:ring-[#5433FF]
+        disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed
+      `}
+              />
+            </Tippy>
+
+            {/* Save Button */}
+            <button
+              onClick={() => setIsConfirmSaveModalOpen(true)}
+              disabled={!isScriptRunSuccess || !viewName.trim()}
+              className={`
+      h-[36px] px-4 text-sm
+      border border-gray-300 rounded-md
+      bg-gray-100 text-gray-600
+      transition
+      ${
+        !isScriptRunSuccess || !viewName.trim()
+          ? "opacity-50 cursor-not-allowed"
+          : "hover:bg-gray-200"
+      }
+    `}
+            >
+              Save
+            </button>
           </div>
         </div>
 
@@ -884,14 +885,13 @@ export default function Chat({
               onClick={handleRunScript}
               // disabled={isSessionDataMissing || isExecuting}
               disabled={
-                isSessionDataMissing ||
-                isExecuting ||
-                !isScriptGenerated
+                isSessionDataMissing || isExecuting || !isScriptGenerated
               }
-              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${isSessionDataMissing || isExecuting || !isScriptGenerated
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-300"
-                }`}
+              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${
+                isSessionDataMissing || isExecuting || !isScriptGenerated
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-300"
+              }`}
             >
               {isExecuting ? "Running..." : "Run"}
             </button>
@@ -916,10 +916,11 @@ export default function Chat({
           {tableData && tableData.rows.length > 0 && (
             <div className=" bg-white rounded-xl shadow-md">
               {" "}
-
               <ProductDataTable
                 data={tableData.rows}
-                columns={tableData.columns.filter(col => col.column_name !== 'row_hash')}
+                columns={tableData.columns.filter(
+                  (col) => col.column_name !== "row_hash"
+                )}
                 globalFilter={""}
               />{" "}
             </div>
