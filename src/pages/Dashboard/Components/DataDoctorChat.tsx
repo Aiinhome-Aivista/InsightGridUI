@@ -725,7 +725,9 @@ export default function Chat({
               <div className="font-medium">{item.query}</div>
 
               {item.ai_response && (
-                <div className="mt-1 text-xs text-gray-600">AI generated</div>
+                <div className="mt-1 text-xs text-gray-600">
+                  Sp generated
+                </div>
               )}
 
               {item.is_execute && (
