@@ -670,9 +670,10 @@ export default function Chat({
       userData?.user_id || "unknown",
       chat.session_id
     );
-    const messagesToSend = parentQueryId
-      ? store.messages.slice(1)   //  EDIT → root বাদ
-      : store.messages;           // NEW → সব যাবে
+    // const messagesToSend = parentQueryId
+    //   ? store.messages.slice(1)   //  EDIT → root বাদ
+    //   : store.messages;           // NEW → সব যাবে
+    const messagesToSend = store.messages;
 
     // 2Build FULL payload
     const payload = {
