@@ -7,6 +7,11 @@ import ArchiveIcon from "../../assets/archive.svg";
 import DownloadIcon from "../../assets/download_2.svg";
 
 export default function LandingDashboard() {
+  function getCurrentYear() {
+    return new Date().getFullYear();
+  }
+
+  const currentYear = getCurrentYear();
 return (
   <div className="w-full bg-white flex flex-col">
     {/* MAIN SECTION */}
@@ -87,7 +92,7 @@ return (
     </footer>
 
     <p className="px-20 text-[#BDBDBD] text-xs pb-6">
-      ©2020 Aiihome Technologies Pvt. Ltd. All rights reserved
+      ©{currentYear} Aiinhome Technologies Pvt. Ltd. All rights reserved
     </p>
   </div>
 );
