@@ -51,7 +51,17 @@ const PasswordSettings: React.FC<PasswordSettingsProps> = ({ activeTab }) => {
       )}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <div className=" rounded-xl mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 pt-5">Change Password</h3>
+          <div className="flex items-center justify-between mb-4 pt-5">
+            <h3 className="text-lg font-semibold text-gray-800">Change Password</h3>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              <Save size={18} />
+              {isSaving ? 'Updating...' : 'Update Password'}
+            </button>
+          </div>
           
           <div className="space-y-3">
             {/* Current Password */}
@@ -147,16 +157,6 @@ const PasswordSettings: React.FC<PasswordSettingsProps> = ({ activeTab }) => {
               )}
             </div>
           </div>
-        </div>
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={isSaving}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-          >
-            <Save size={18} />
-            {isSaving ? 'Updating...' : 'Update Password'}
-          </button>
         </div>
       </form>
     </div>
