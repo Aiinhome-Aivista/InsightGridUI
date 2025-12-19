@@ -54,7 +54,7 @@ const PasswordSettings: React.FC<PasswordSettingsProps> = ({ activeTab }) => {
     <div className="max-w-8xl h-full overflow-y-auto px-6">
       <div className=" overflow-y-auto ">
         {/* <h1 className="text-2xl font-bold text-gray-800">Password Settings</h1> */}
-        <p className="text-gray-600">Update your password to keep your account secure</p>
+        <p className="text-gray-600 pb-2">Update your password to keep your account secure</p>
       </div>
 
       {isSuccess && (
@@ -65,7 +65,7 @@ const PasswordSettings: React.FC<PasswordSettingsProps> = ({ activeTab }) => {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-        <div className="bg-white rounded-xl shadow-sm mb-6">
+        <div className=" rounded-xl mb-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4 pt-5">Change Password</h3>
           
           <div className="space-y-3">

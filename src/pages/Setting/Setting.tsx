@@ -596,9 +596,9 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="h-full bg-gray-50">
+    <div className="h-full">
       {/* Header */}
-      <div className="bg-white px-6">
+      <div className=" px-6">
         <div className="flex items-center justify-between h-16">
           {/* Left Title */}
           <h1 className="text-2xl font-bold text-gray-800">

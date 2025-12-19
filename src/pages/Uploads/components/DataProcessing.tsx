@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ApiServices from "../../../services/ApiServices";
 import { useAuth } from "../../Auth/AuthContext";
 import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
+import { Snackbar, Alert } from "@mui/material";
 
 interface Props {
   files: any[];
@@ -31,6 +32,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedRowDetails, setSelectedRowDetails] = useState<any>(null);
   const [deleteFile, setDeleteFile] = useState<any>(null);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error" | "warning" | "info";
+  }>({ open: false, message: "", severity: "success" });
 
 
   const ITEMS_PER_PAGE = 10;
@@ -149,27 +155,27 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         if (onRefresh) {
           await onRefresh();
         }
+        setSnackbar({ open: true, message: "File deleted successfully", severity: "success" });
         return;
       }
 
-      // ⚠️ DEPENDENCY CASE (409)
       if (res?.data?.dependencies?.length) {
         const tables = res.data.dependencies
           .map((d: any) => d.table_name)
           .join(", ");
 
-        alert(
-          `Cannot delete this file.\n\nIt is used by tables:\n${tables}`
-        );
+        setSnackbar({
+          open: true,
+          message: `Cannot delete this file. It is already used in queries${tables}` ,
+          severity: "error",
+        });
         return;
       }
-
-      // ❌ GENERIC FAILURE or Table Does Not Exist
-      alert(res?.message || "Unable to delete file");
+      setSnackbar({ open: true, message: res?.message || "Unable to delete file", severity: "error" });
 
     } catch (error: any) {
       console.error("Delete failed", error);
-      alert("Something went wrong while deleting file");
+      setSnackbar({ open: true, message: "Something went wrong while deleting file", severity: "error" });
     }
 
 
@@ -636,6 +642,17 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           </div>
         </div>
       </div>}
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: "100%" }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
