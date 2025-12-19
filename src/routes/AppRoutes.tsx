@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "../pages/Auth/AuthContext";
 import Upload_page from "../pages/Uploads/Upload_page";
 import Login from "../pages/Auth/Login";
-import LandingPage from "../pages/LandingPage/LandingPage";
+import LandingPage from "../pages/LandingPage/LandingPageParents";
 import ProtectedRoute from "./ProtectedRoute";
 import QueryDesigner from "../pages/query-designer/QueryDesignerParent";
 import ShowQuery from "../pages/query-designer/QueryDesignerManage";
@@ -27,7 +27,7 @@ function AppRoutes() {
             <Route path="report-scheduler" element={<ReportSchedulerManage />} />
             <Route path="report-designer-view" element={<ReportDesignerParents />} />
             <Route path="query-designer" element={<QueryDesigner />} />
-              <Route path="Customize" element={<Settings />} />
+              <Route path="Settings" element={<Settings />} />
             {/* <Route path="customize" element={<Customize_page />} /> */}
             <Route path="dashboard" element={<Dashboard />} />
           </Route>

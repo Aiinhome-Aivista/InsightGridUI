@@ -5,7 +5,6 @@ import { useAuth } from "../pages/Auth/AuthContext";
 interface ConfirmSaveViewProps {
   type?: string;
 }
-
 export default function ConfirmSaveView({ type = "Query" }: ConfirmSaveViewProps) {
   const { isConfirmSaveModalOpen, setIsConfirmSaveModalOpen, viewName, confirmSave } = useAuth();
   const onCancel = () => setIsConfirmSaveModalOpen(false);
