@@ -78,7 +78,7 @@ export default function Dashboard() {
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">File Name</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Table Extract Status</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Column Extract Status</th>
-                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Data Insights Status</th>
+                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Data Insert  Status</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">File Size</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Updated At</th>
                   </tr>

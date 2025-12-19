@@ -17,14 +17,14 @@ import { useAuth } from "../../pages/Auth/AuthContext";
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
 import HourglassTopTwoToneIcon from '@mui/icons-material/HourglassTopTwoTone';
-import ManageAccountsTwoToneIcon from '@mui/icons-material/ManageAccountsTwoTone';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 const menuItems = [
     { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard" },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list" },
   { name: "Report Designer", icon: SummarizeOutlinedIcon , path: "report-designer" },
   // { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" },
-    { name: "Customize", icon: TuneOutlinedIcon, path: "Customize" },
+    { name: "Settings", icon: SettingsRoundedIcon, path: "Customize" },
   //  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
 
 ];
