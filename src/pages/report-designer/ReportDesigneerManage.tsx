@@ -117,14 +117,10 @@ const ReportDesignManage = () => {
     try {
       const aiResponse = report?.query?.ai_responce;
       if (!aiResponse) return;
-
       const execRes = await ApiServices.executeSql({
         sql_query: aiResponse,
       });
-
       const api = execRes.data.data;
-
-      // ✅ only last word "report" remove
       const cleanFileName = report.report_name
         .replace(/\s*report$/i, "")
         .trim();
@@ -137,7 +133,7 @@ const ReportDesignManage = () => {
           })),
         },
         "download",
-        cleanFileName   // ✅ এখানেই যাবে
+        cleanFileName 
       );
 
     } catch (err) {
@@ -153,9 +149,7 @@ const ReportDesignManage = () => {
   };
   return (
     <div className="mx-auto px-6 py-8">
-      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        {/* Left Side */}
         <div className="flex items-center gap-8">
           <div>
             <h1 className="text-xl font-semibold text-gray-900 leading-tight">

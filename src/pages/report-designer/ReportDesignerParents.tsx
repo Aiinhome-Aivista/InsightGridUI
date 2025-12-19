@@ -151,7 +151,7 @@ export default function TableView() {
         setIsRefreshing={setIsRefreshing}
       />
       {selectedTables.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400">
+        <div className="flex flex-col items-center justify-center h-[69vh] text-gray-400">
           <div className="mb-3 text-4xl">🗑️</div>
           <p className="text-sm font-medium">
             Please select a view to create report
