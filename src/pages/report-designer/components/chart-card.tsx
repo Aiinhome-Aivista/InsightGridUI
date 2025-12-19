@@ -1,5 +1,5 @@
 
-import AnimatedToggleButton from '../../Dashboard/Components/AnimatedToggleButton';
+import AnimatedToggleButton from '../../query-designer/components/AnimatedToggleButton';
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import BarChartIcon from "@mui/icons-material/BarChart";
 

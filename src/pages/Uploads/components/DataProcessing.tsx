@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ApiServices from "../../../services/ApiServices";
 import { useAuth } from "../../Auth/AuthContext";
 import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
+import { Snackbar, Alert } from "@mui/material";
 
 interface Props {
   files: any[];
@@ -31,6 +32,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedRowDetails, setSelectedRowDetails] = useState<any>(null);
   const [deleteFile, setDeleteFile] = useState<any>(null);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error" | "warning" | "info";
+  }>({ open: false, message: "", severity: "success" });
 
 
   const ITEMS_PER_PAGE = 10;
@@ -150,6 +156,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         if (onRefresh) {
           await onRefresh();
         }
+        setSnackbar({ open: true, message: "File deleted successfully", severity: "success" });
         return;
       }
 

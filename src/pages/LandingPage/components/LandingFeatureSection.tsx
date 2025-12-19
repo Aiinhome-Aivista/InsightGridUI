@@ -1,6 +1,5 @@
 import React from "react";
-import previewImage from "../../assets/MacBook.svg";
-
+import previewImage from "../../../assets/MacBook.svg";
 export default function LandingFeatureSection() {
   return (
     <section
@@ -11,7 +10,6 @@ export default function LandingFeatureSection() {
     text-white
   "
 >
-      {/* ---- LEFT CONTENT ---- */}
       <div
         className="
           z-10 w-full md:w-[50%]
@@ -37,8 +35,6 @@ export default function LandingFeatureSection() {
           Simply upload your Excel or CSV file and let the system do the work.
         </p>
       </div>
-
-      {/* ---- RIGHT MOCKUP IMAGE ---- */}
       <div
         className="
           z-10 flex justify-center
