@@ -26,6 +26,26 @@ export default function Dashboard() {
       console.error('Error fetching dashboard data:', error);
     }
   }
+const formatApiDateTime = (dateStr) => {
+  if (!dateStr) return "";
+
+  // Remove GMT so browser won't convert timezone
+  const cleanDate = dateStr.replace(" GMT", "");
+
+  const date = new Date(cleanDate + " UTC");
+
+  return date.toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "UTC", // 👈 force same time as API
+  });
+};
+
+
 
   const stats = dashboardData
     ? {
@@ -63,14 +83,14 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Right side */}
           <div className="w-[60%] bg-[#D9D9D9] rounded-lg p-3 overflow-auto">
             {dashboardData?.latest_file ? (
               <table className="w-full text-sm border-collapse border border-gray-400">
                 <thead>
                   <tr>
-                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Session Name</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">File Name</th>
+                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Table Name</th>
+                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Rows Affected</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Table Extract Status</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Column Extract Status</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Data Insert  Status</th>
@@ -80,13 +100,16 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.session_name}</td>
                     <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.file_name}</td>
-                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.file_size}</td>
-                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.table_extract_status}</td>
-                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.column_extract_status}</td>
-                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.data_insights_status}</td>
-                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.updated_at}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.table_name}</td>
+                      <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.last_inserted_rows}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.table_extraction_status}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.column_extraction_status}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.data_insert_status}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.file_size_mb}</td>
+   <td className="py-2 px-2 text-gray-800 border border-gray-400">
+  {formatApiDateTime(dashboardData.latest_file.updated_at)}
+</td>
                   </tr>
                 </tbody>
               </table>
