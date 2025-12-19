@@ -1,4 +1,3 @@
-// AccountSettings.tsx
 import React, { useState } from 'react';
 import { useForm, Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,15 +6,10 @@ import {
   User, 
   Mail, 
   Phone, 
-  MapPin, 
   Camera, 
   Trash2,
   Save,
-  Shield,
-  Bell
 } from 'lucide-react';
-
-// Validation schema
 const schema = yup.object({
   firstName: yup.string().required('First name is required'),
   lastName: yup.string().required('Last name is required'),
@@ -28,13 +22,10 @@ const schema = yup.object({
   residentialAddress: yup.string().required('Address is required'),
   zipCode: yup.string().notRequired(),
 });
-
 type FormData = Partial<yup.InferType<typeof schema>>;
-
 interface ProfileSettingsProps {
   activeTab: string;
 }
-
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -69,12 +60,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log('Form data:', data);
     setIsSaving(false);
-    // Show success message
     alert('Profile updated successfully!');
   };
-
   if (activeTab !== 'profile') return null;
-
   return (
     <div className="max-w-8xl">
       <form onSubmit={handleSubmit(onSubmit)} className="relative">
@@ -88,7 +76,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
-        {/* Profile Picture Section */}
         <div className="rounded-xl px-4 ">
           <div className="flex flex-col md:flex-row items-start md:items-center ">
             <div className="relative p-4 ">
@@ -133,13 +120,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
             </div>
           </div>
         </div>
-
-        {/* Personal Information */}
         <div className="rounded-xl pt-3 px-6">
           <h3 className="text-lg font-semibold text-gray-800 pb-2"> Company Details </h3>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {/* First Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Company Name *
@@ -160,8 +143,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                 <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
               )}
             </div>
-
-            {/* Last Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Company Code *
@@ -222,8 +203,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                 <p className="mt-1 text-sm text-red-600">{errors.zipCode.message}</p>
               )}
             </div>
-
-            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email *
@@ -244,8 +223,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                 <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
               )}
             </div>
-
-            {/* Mobile Number */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number *

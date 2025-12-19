@@ -1,10 +1,8 @@
-// PasswordSettings.tsx
 import React, { useState } from 'react';
 import { useForm, Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Eye, EyeOff, Lock, Save, CheckCircle } from 'lucide-react';
-
 const schema = yup.object({
   currentPassword: yup.string().required('Current password is required').min(6, 'Password must be at least 6 characters'),
   newPassword: yup.string().required('New password is required').min(8, 'Password must be at least 8 characters'),
@@ -12,20 +10,16 @@ const schema = yup.object({
     .required('Please confirm your password')
     .oneOf([yup.ref('newPassword')], 'Passwords must match'),
 });
-
 type FormData = yup.InferType<typeof schema>;
-
 interface PasswordSettingsProps {
   activeTab: string;
 }
-
 const PasswordSettings: React.FC<PasswordSettingsProps> = ({ activeTab }) => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -34,36 +28,27 @@ const PasswordSettings: React.FC<PasswordSettingsProps> = ({ activeTab }) => {
   } = useForm<FormData>({
     resolver: yupResolver(schema) as unknown as Resolver<FormData>,
   });
-
   const onSubmit = async (data: FormData) => {
     setIsSaving(true);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     console.log('Password data:', data);
     setIsSaving(false);
     setIsSuccess(true);
     reset();
-    
-    // Hide success message after 3 seconds
     setTimeout(() => setIsSuccess(false), 3000);
   };
-
   if (activeTab !== 'password') return null;
-
   return (
     <div className="max-w-8xl h-full overflow-y-auto px-6">
       <div className=" overflow-y-auto ">
-        {/* <h1 className="text-2xl font-bold text-gray-800">Password Settings</h1> */}
         <p className="text-gray-600 pb-2">Update your password to keep your account secure</p>
       </div>
-
       {isSuccess && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
           <CheckCircle className="text-green-600" size={20} />
           <span className="text-green-800">Password updated successfully!</span>
         </div>
       )}
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <div className=" rounded-xl mb-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4 pt-5">Change Password</h3>
@@ -163,8 +148,6 @@ const PasswordSettings: React.FC<PasswordSettingsProps> = ({ activeTab }) => {
             </div>
           </div>
         </div>
-
-        {/* Save Button */}
         <div className="flex justify-end">
           <button
             type="submit"

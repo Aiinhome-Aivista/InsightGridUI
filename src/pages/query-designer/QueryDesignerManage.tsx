@@ -8,7 +8,6 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { useTheme } from "../../theme";
 import ProductDataTable from "./components/DataTable";
-
 const QueryDesignerManage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -24,26 +23,19 @@ const QueryDesignerManage = () => {
     if (!dateStr || !timeStr) return "";
 
     try {
-      // Convert DD-MM-YYYY → YYYY-MM-DD
       const [d, m, y] = dateStr.split("-");
       const isoDate = `${y}-${m}-${d}`;
-
-      // Convert 12hr → 24hr with JS
       const cleanTime = new Date(`1970-01-01 ${timeStr}`).toLocaleTimeString("en-GB", {
         hour12: false,
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
       });
-
       const fullTimestamp = `${isoDate} ${cleanTime}`;
-
       const created = new Date(fullTimestamp);
       const now = new Date();
-
       let diffMs = now.getTime() - created.getTime();
       if (diffMs < 0) return "Just now";
-
       const seconds = Math.floor(diffMs / 1000);
       const minutes = Math.floor(seconds / 60);
       const hours = Math.floor(minutes / 60);
@@ -106,9 +98,6 @@ const QueryDesignerManage = () => {
   const handleDetailsClick = (rowData) => {
     navigate("/layout/query-designer", { state: { ...location.state, data: rowData, type: 'workflow' } });
   };
-
-
-
   const getLastMessageMeta = (messages = []) => {
     if (!Array.isArray(messages) || messages.length === 0) {
       return {
@@ -145,7 +134,6 @@ const QueryDesignerManage = () => {
       )
     };
   });
-
   const queryColumns = [
     {
       column_name: 'query_title',
@@ -178,7 +166,6 @@ const QueryDesignerManage = () => {
       sortable: false
     }
   ];
-
   return (
     <div className="mx-auto px-6 py-8">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
@@ -190,7 +177,6 @@ const QueryDesignerManage = () => {
 
             </p>
           </div>
-
           <button
             onClick={() => navigate("/layout/query-designer")}
             className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
@@ -240,8 +226,6 @@ const QueryDesignerManage = () => {
           </Tippy>
         </div>
       </div>
-
-      {/* Content */}
       {isLoading ? (
         <div className="flex justify-center items-center py-10">
           <AutorenewRoundedIcon className="w-5 h-5 animate-spin text-gray-500"   fontSize="small"/>

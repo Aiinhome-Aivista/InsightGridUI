@@ -16,7 +16,6 @@ interface DashboardTableProps {
   viewSelection: string;
   isLoading?: boolean;
 }
-
 export default function TableParents({ data, columns, insights, globalFilter, tableName, viewSelection, isLoading }: DashboardTableProps) {
   const { theme } = useTheme();
   const [isExpanded, setIsExpanded] = useState(true);
@@ -34,7 +33,6 @@ export default function TableParents({ data, columns, insights, globalFilter, ta
       </div>
     );
   }
-
   if (!tableName) {
     return (
       <div className="px-4 mb-5">

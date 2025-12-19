@@ -12,8 +12,6 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-
-//for new chat session
 interface StoredMessage {
   query_id: number;
   query: string;

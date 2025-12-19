@@ -25,7 +25,6 @@ interface HeaderProps {
   };
 }
 
-
 export default function DashboardHeader({
   onRefresh,
   onTableSelect,
@@ -53,13 +52,11 @@ export default function DashboardHeader({
     (opt) => opt.value === viewSelection
   );
 
-
   useEffect(() => {
     if (passedData) {
       console.log("DashboardHeader received edit data:", passedData);
     }
   }, [passedData]);
-
 
   const handleViewChange = (e: { value: any }) => {
     const selectedTable = e.value;
@@ -96,24 +93,17 @@ export default function DashboardHeader({
     }
   };
   const handleRefresh = () => {
-    // Don't do anything if already refreshing
     if (isRefreshing) return;
-
     setIsRefreshing(true);
     onRefresh();
-
-    // Simulate a refresh delay
     setTimeout(() => setIsRefreshing(false), 1000);
   };
-
   const handleDropdownShow = () => {
     window.addEventListener("scroll", handleScroll, true);
   };
-
   const handleDropdownHide = () => {
     window.removeEventListener("scroll", handleScroll, true);
   };
-
   const handleScroll = () => {
     dropdownRef.current?.hide();
   };
@@ -124,7 +114,6 @@ export default function DashboardHeader({
         className="w-full"
       >
         <div className="px-3 sm:px-4 lg:px-3 ">
-          {/* Responsive Flex Container */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
             <div className="flex items-center w-full md:w-auto">
               <button
@@ -138,7 +127,6 @@ export default function DashboardHeader({
                 <h1 className="text-lg md:text-xl font-bold text-gray-800 tracking-tight">
                   Query Designer
                 </h1>
-
                 {passedData?.query_title && (
                   <span className="text-sm text-gray-500 -mt-1">
                     {passedData.query_title}
@@ -165,13 +153,9 @@ export default function DashboardHeader({
                   flex items-center justify-between
                   transition-all duration-200
                 "
-
-                // Panel (List) Styling
                 panelClassName="
                   bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
                 "
-
-                // PassThrough (PT) props for deep styling
                 pt={{
                   root: { className: 'cursor-pointer' },
                   input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
