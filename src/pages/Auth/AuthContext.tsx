@@ -21,9 +21,7 @@ interface AuthContextType {
   confirmSave: () => void;
   setConfirmSaveAction: (action: () => void) => void;
 }
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(() => {
     try {
@@ -41,9 +39,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [viewName, setViewName] = useState("");
   const [downloadData, setDownloadData] = useState<TableData | null>(null);
   const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
-
-
-
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
     setUser(userData);

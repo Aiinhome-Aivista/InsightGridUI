@@ -4,7 +4,6 @@ import Header from '../common/ui/Header'
 import Sidebar from '../common/ui/Sidebar'
 import Footer from '../common/ui/Footer'
 import { useTheme } from '../theme'
-
 export default function AppLayout() {
   const { theme } = useTheme()
   return (

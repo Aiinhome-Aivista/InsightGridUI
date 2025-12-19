@@ -6,8 +6,8 @@ import "../../../styles/primereact-table.css";
 
 interface ColumnConfig {
   column_name: string;
-  header?: string; // Optional custom header label
-  sortable?: boolean; // Optional - whether column is sortable (default: true)
+  header?: string;
+  sortable?: boolean;
 }
 
 interface ProductDataTableProps {
@@ -16,14 +16,12 @@ interface ProductDataTableProps {
   showPagination?: boolean;
   columns: (ColumnConfig | { column_name: string })[];
 }
-
 export default function ProductDataTable({
   data,
   globalFilter,
   showPagination = true,
   columns = []
 }: ProductDataTableProps) {
-  // Ensure columns are unique to prevent rendering errors
   const uniqueColumns = columns.filter((col, index, self) => 
     index === self.findIndex((t) => t.column_name === col.column_name)
   );
@@ -38,12 +36,8 @@ export default function ProductDataTable({
   const totalRecords = data.length;
   const totalPages = Math.ceil(totalRecords / rows);
   const currentPage = Math.floor(first / rows) + 1;
-
-  // Sliding window for page numbers
   const [pageWindowStart, setPageWindowStart] = useState(1);
   const maxVisiblePages = 5;
-
-  // Update filters when globalFilter prop changes
   useEffect(() => {
     setFilters({
       global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
@@ -51,8 +45,6 @@ export default function ProductDataTable({
     setFirst(0);
     setPageWindowStart(1);
   }, [globalFilter]);
-
-  // Helper function to format header text (default formatting)
   const formatHeader = (headerText: string) => {
     if (!headerText) return '';
     return headerText
@@ -60,35 +52,25 @@ export default function ProductDataTable({
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
-
-  // Handle page change
   const onPageChange = (page: number) => {
     const newFirst = (page - 1) * rows;
     setFirst(newFirst);
-
-    // Adjust sliding window
     if (page > pageWindowStart + maxVisiblePages - 1) {
       setPageWindowStart(page - maxVisiblePages + 1);
     } else if (page < pageWindowStart) {
       setPageWindowStart(page);
     }
   };
-
-  // Handle Previous button
   const onPrevious = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
     }
   };
-
-  // Handle Next button
   const onNext = () => {
     if (currentPage < totalPages) {
       onPageChange(currentPage + 1);
     }
   };
-
-  // Generate visible page numbers
   const getVisiblePages = () => {
     const pages = [];
     const endPage = Math.min(pageWindowStart + maxVisiblePages - 1, totalPages);
@@ -98,9 +80,7 @@ export default function ProductDataTable({
     }
     return pages;
   };
-
   const visiblePages = getVisiblePages();
-
   return (
     <div style={{ maxWidth: "89vw" }}>
       <DataTable
@@ -120,9 +100,7 @@ export default function ProductDataTable({
         rowClassName={() => "border-b border-gray-200"}
       >
         {uniqueColumns.map((col, index) => {
-          // Check if custom header is provided, otherwise use default formatting
           const headerLabel = 'header' in col && col.header ? col.header : formatHeader(col.column_name);
-          // Check if sortable is explicitly set, otherwise default to true
           const isSortable = 'sortable' in col ? col.sortable : true;
 
           return (
@@ -145,17 +123,12 @@ export default function ProductDataTable({
           );
         })}
       </DataTable>
-
-
-      {/* Custom Pagination */}
       {showPagination && (
         <div className="flex items-center justify-between px-4 py-1 bg-white border-t border-gray-200 rounded-b-xl">
           <div className="text-sm text-gray-600">
             Showing {first + 1} to {Math.min(first + rows, totalRecords)} of {totalRecords} results
           </div>
-
           <div className="flex items-center gap-1">
-            {/* Previous Button */}
             <button
               onClick={onPrevious}
               disabled={currentPage === 1}
@@ -166,8 +139,6 @@ export default function ProductDataTable({
             >
               Previous
             </button>
-
-            {/* Page Numbers */}
             {visiblePages.map((page) => (
               <button
                 key={page}
@@ -180,8 +151,6 @@ export default function ProductDataTable({
                 {page}
               </button>
             ))}
-
-            {/* Next Button */}
             <button
               onClick={onNext}
               disabled={currentPage === totalPages}

@@ -4,7 +4,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { useTheme } from "../../../theme";
-import ProductDataTable from "../Components/DataTable";
+import ProductDataTable from "./DataTable";
 import { IconButton } from "@mui/material";
 import "../../../styles/primereact-table.css";
 interface DashboardTableProps {
@@ -16,8 +16,7 @@ interface DashboardTableProps {
   viewSelection: string;
   isLoading?: boolean;
 }
-
-export default function DashboardTable({ data, columns, insights, globalFilter, tableName, viewSelection, isLoading }: DashboardTableProps) {
+export default function TableParents({ data, columns, insights, globalFilter, tableName, viewSelection, isLoading }: DashboardTableProps) {
   const { theme } = useTheme();
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -34,7 +33,6 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
       </div>
     );
   }
-
   if (!tableName) {
     return (
       <div className="px-4 mb-5">
@@ -48,38 +46,6 @@ export default function DashboardTable({ data, columns, insights, globalFilter, 
   return (
     <div className="px-4">
       <div className="rounded-xl shadow-xs pb-4" >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          {/* <div>
-            <h2 className="text-md font-semibold flex items-center gap-2" style={{ color: theme.primaryText }}>
-              {tableName} 
-            </h2>
-            <p className="text-xs mt-1" style={{ color: theme.secondaryText }}>
-              This table is showing all {tableName} 
-            </p>
-          </div> */}
-
-          {/* <div className="flex items-center gap-2">
-            <AnimatedToggleButton
-              options={[
-                  { label: "Meta Data", value: 'metadata' },
-                  { label: "Data View", value: 'dataview' },
-                  { label: "Insight", value: 'insights' },
-             
-              ]}
-              defaultSelected={defaultSelectionIndex}
-              onChange={(_index, value) => {
-                setToggleSelection(value as string);
-              }}
-              mode="text"
-            />
-            <IconButton onClick={() => setIsExpanded(!isExpanded)} size="small">
-              {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </div> */}
-        </div>
-
-        {/* CONDITIONAL RENDER */}
         {isExpanded && (
           <>
             {viewSelection === 'metadata' && (

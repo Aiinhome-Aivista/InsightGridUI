@@ -1,7 +1,7 @@
 import { useState } from "react";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import { useTheme } from "../../../theme";
-import ProductDataTable from "../../Dashboard/Components/DataTable";
+import ProductDataTable from "../../query-designer/components/DataTable";
 
 interface DataViewTableProps {
   allData: { [key: string]: any };
