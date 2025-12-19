@@ -7,9 +7,9 @@ import { useAuth } from "../Auth/AuthContext";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { useTheme } from "../../theme";
-import ProductDataTable from "./Components/DataTable";
+import ProductDataTable from "./components/DataTable";
 
-const ShowQuery = () => {
+const QueryDesignerManage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [queries, setQueries] = useState([]);
@@ -125,24 +125,6 @@ const ShowQuery = () => {
     };
   };
 
-  // Transform queries data to include time_ago and action button
-  // const transformedQueries = queries.map((query) => ({
-  //   ...query,
-  //   time_ago: timeAgo(query.created_date, query.created_at),
-  //   action: (
-  //     <div className="text-right">
-  //       <button
-  //         className="text-[#46BA2F] bg-[rgba(53,255,2,0.1)] px-4 py-1 rounded-full text-xs font-medium hover:bg-green-200"
-  //         onClick={() => handleDetailsClick(query)}
-  //       >
-  //         Edit
-  //       </button>
-  //     </div>
-  //   )
-  // }));
-
-
-
   const transformedQueries = queries.map((query) => {
     const { query_time, rows_effected } = getLastMessageMeta(query.messages);
 
@@ -164,11 +146,6 @@ const ShowQuery = () => {
     };
   });
 
-
-
-
-
-  // Define columns with custom headers for the ProductDataTable
   const queryColumns = [
     {
       column_name: 'query_title',
@@ -204,9 +181,7 @@ const ShowQuery = () => {
 
   return (
     <div className="mx-auto px-6 py-8">
-      {/* Header Container */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        {/* Left Side: Title text AND Action Button grouped together */}
         <div className="flex items-center gap-8">
           <div>
             <h1 className="text-xl font-semibold text-[#1C1B1F] leading-tight">Query Designer</h1>
@@ -226,10 +201,7 @@ const ShowQuery = () => {
             Create Query
           </button>
         </div>
-
-        {/* Right Side: Search & Refresh */}
         <div className="flex items-center gap-3">
-          {/* Search Input */}
           <div className="relative group">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg
@@ -250,8 +222,6 @@ const ShowQuery = () => {
               style={{ width: '568px' }}
             />
           </div>
-
-          {/* Refresh Icon */}
           <Tippy content="Refresh" theme="gray">
             <button
               onClick={handleRefresh}
@@ -295,4 +265,4 @@ const ShowQuery = () => {
   );
 };
 
-export default ShowQuery;
+export default QueryDesignerManage;

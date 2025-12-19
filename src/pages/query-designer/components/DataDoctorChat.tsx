@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import ApiService from "../../../services/ApiServices";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import ProductDataTable from "./DataTable";
+import ProductDataTable from "../../query-designer/components/DataTable";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useAuth } from "../../Auth/AuthContext";

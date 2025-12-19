@@ -38,17 +38,12 @@ export default function Dashboard() {
 
   return (
     <div className="h-[100%] bg-gray-50 p-4 flex flex-col overflow-hidden">
-      {/* Header */}
       <div className="mb-3 flex-shrink-0 pl-4">
         <h1 className="text-xl font-semibold text-gray-800">Insights Dashboard</h1>
         <p className="text-xs text-gray-500">{dashboardData?.latest_file?.session_name || 'File & Report Summary'}</p>
       </div>
-
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col gap-4 overflow-hidden min-h-0 p-4">
-        {/* First Row: Stats and Latest File */}
         <div className="flex gap-4 flex-1">
-          {/* Left side - 4 cards in 2x2 grid (40% width) */}
           <div className="w-[40%] grid grid-cols-2 gap-4">
             <div className="bg-[#D9D9D9] rounded-lg p-3 flex flex-col items-center justify-center">
               <p className="text-2xl font-bold text-gray-800">{stats.totalUploaded}</p>
@@ -102,45 +97,27 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-
-        {/* Second Row: Placeholder Cards */}
         <div className="flex gap-4 flex-1">
           <div className="w-[20%] bg-[#D9D9D9] rounded-lg p-3">
-            {/* Card 5 - 20% width */}
           </div>
           <div className="w-[50%] bg-[#D9D9D9] rounded-lg p-3">
-            {/* Card 6 - 50% width */}
           </div>
           <div className="w-[30%] bg-[#D9D9D9] rounded-lg p-3">
-            {/* Card 7 - 30% width */}
           </div>
         </div>
-
-        {/* Third Row: Placeholder Cards */}
         <div className="flex gap-4 flex-1">
-          {/* First card */}
           <div className="w-[30%] bg-[#D9D9D9] rounded-lg p-3">
-            {/* Card 8 content */}
           </div>
-
-          {/* Second card */}
           <div className="w-[20%] bg-[#D9D9D9] rounded-lg p-3">
-            {/* Card 9 content */}
           </div>
-
-          {/* Right column with 4 stacked cards */}
           <div className="w-[50%] flex flex-col gap-4">
             <div className="flex-1 bg-[#D9D9D9] rounded-lg p-2">
-              {/* Small card 1 */}
             </div>
             <div className="flex-1 bg-[#D9D9D9] rounded-lg p-2">
-              {/* Small card 2 */}
             </div>
             <div className="flex-1 bg-[#D9D9D9] rounded-lg p-2">
-              {/* Small card 3 */}
             </div>
             <div className="flex-1 bg-[#D9D9D9] rounded-lg p-2">
-              {/* Small card 4 */}
             </div>
           </div>
         </div>
