@@ -82,7 +82,7 @@ export default function ProductDataTable({
   };
   const visiblePages = getVisiblePages();
   return (
-    <div style={{ maxWidth: "89vw" }}>
+    <div style={{ maxWidth: "87vw" }}>
       <DataTable
         value={data}
         paginator
