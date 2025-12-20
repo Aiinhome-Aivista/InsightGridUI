@@ -762,7 +762,7 @@ export default function Chat({
                 disabled={!isScriptRunSuccess}
                 className={`
         w-[360px] h-[36px]
-      px-1 text-sm text-gray-700
+      px-3 text-sm text-gray-700
         border border-gray-300 rounded-lg
         bg-white
         focus:outline-none focus:ring-1 focus:ring-[#5433FF]
