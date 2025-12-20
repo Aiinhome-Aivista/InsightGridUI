@@ -349,7 +349,7 @@ export default function Chat({
     try {
       const payload = {
         session_id: chat.session_id,
-        created_by: userData?.user_id || "unknown",
+        // created_by: userData?.user_id || "unknown",
         user_query: inputValue,
       };
 
@@ -429,7 +429,8 @@ export default function Chat({
     setIsExecuting(true);
     try {
       const payload = {
-        sql_query: executableQuery,
+        session_id: userData?.session_id,
+        sql_query: executableQuery, 
       };
       console.log("Executing SQL Payload:", payload);
       const response = await ApiService.executeSql(payload);
@@ -587,9 +588,12 @@ export default function Chat({
       userData?.user_id || "unknown",
       chat.session_id
     );
-    const messagesToSend = parentQueryId
-      ? store.messages.slice(1) 
-      : store.messages;          
+    // const messagesToSend = parentQueryId
+    //   ? store.messages.slice(1)   
+    //   : store.messages;           
+    const messagesToSend = store.messages;
+
+    // 2Build FULL payload
     const payload = {
       session_id: chat.session_id,
       created_by: userData?.user_id || "unknown",
