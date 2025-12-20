@@ -52,7 +52,7 @@ export default function Login() {
     setNotification({ open: false, message: "", severity: "info" });
     let res = null;
     try {
-      const payload = { user_email, password };
+      const payload = { user_email, password, company_code: companyCode };
       const response = await ApiServices.login(payload);
       res = response.data; // LoginResponse
       console.log("Login Response:", res);
