@@ -84,21 +84,21 @@ export default function Login() {
     }
   };
 
-  const isFormValid =
-    user_email.trim() !== "" &&
-    password.trim() !== "" &&
-    captchaInput.trim() !== "" &&
-    !loading &&
-    !emailError;
-
   // const isFormValid =
   //   user_email.trim() !== "" &&
   //   password.trim() !== "" &&
-  //   companyCode.trim() !== "" &&
   //   captchaInput.trim() !== "" &&
   //   !loading &&
-  //   !emailError &&
-  //   !companyCodeError;
+  //   !emailError;
+
+  const isFormValid =
+    user_email.trim() !== "" &&
+    password.trim() !== "" &&
+    companyCode.trim() !== "" &&
+    captchaInput.trim() !== "" &&
+    !loading &&
+    !emailError &&
+    !companyCodeError;
 
   function getCurrentYear() {
     return new Date().getFullYear();
@@ -208,7 +208,7 @@ export default function Login() {
             </button>
           </div>
 
-          {/* <div className="w-full">
+          <div className="w-full">
             <input
               type="text"
               placeholder="Company Code"
@@ -236,7 +236,7 @@ export default function Login() {
                 {companyCodeError}
               </p>
             )}
-          </div> */}
+          </div>
 
 
           <div className="flex items-center gap-2">
