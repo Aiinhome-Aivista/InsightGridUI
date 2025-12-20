@@ -112,13 +112,13 @@ export default function Chat({
   const sessionData = getStoredUser();
   const defaultSession = {
     session_id: sessionData?.session_id || "",
-    session_name: sessionData?.session_name || "Chat01", // Re-enabled session_name
+    session_name: sessionData?.session_name || "Chat01",
   };
   const isSessionDataMissing = !defaultSession.session_id;
   const [chat, setChat] = useState<ChatSession>({
     id: 1,
     session_id: defaultSession.session_id,
-    session_name: defaultSession.session_name, // Re-enabled session_name
+    session_name: defaultSession.session_name,
     question: isSessionDataMissing
       ? "FATAL ERROR: Session ID Missing."
       : "How can I assist you right now?",
@@ -249,14 +249,10 @@ export default function Chat({
   //   }
   // }, [passedData]);
 
-  //clean messages for new query
   useEffect(() => {
-    // CREATE MODE → clear chat
     if (!passedData) {
       console.log("Create mode: clearing chat history");
-
       localStorage.removeItem("data_doctor_chat_store");
-
       setChat((prev) => ({
         ...prev,
         query: "",
@@ -267,8 +263,6 @@ export default function Chat({
       setTypedQuery("");
       setIsScriptGenerated(false);
       setDisplayedLogs([]);
-
-      // clears query name for new report
       setViewName("");
       setParentQueryId(null);
     }
@@ -276,41 +270,28 @@ export default function Chat({
 
   useEffect(() => {
     if (!passedData?.messages?.length) return;
-
     console.log("Edit mode: patching chat history", passedData);
-    //  ADD THIS LINE (EXACT FIX)
     if (passedData.id) {
-      setParentQueryId(passedData.id);   //  parent_query_id set
+      setParentQueryId(passedData.id); 
     }
-    // 1 Set query title
     if (passedData.query_title) {
       setViewName(passedData.query_title);
     }
-
-    // 2 Patch ALL old queries into chat store
     const patchedMessages = mapMessagesToChatStore(passedData.messages);
-
     saveChatStore({
       created_by: userData?.user_id || "unknown",
       session_id: chat.session_id,
       messages: patchedMessages,
     });
-
-    // 3 Force UI update
     setDisplayedLogs([]);
   }, [passedData]);
 
-  //load only last procedure in editor
   useEffect(() => {
     if (!passedData?.messages?.length) return;
-
     const lastMsg = getLastMessage(passedData.messages);
     if (!lastMsg?.ai_response) return;
-
     console.log("Edit mode: loading last procedure");
-
     setIsScriptGenerated(false);
-
     setChat((prev) => ({
       ...prev,
       query: lastMsg.ai_response,
@@ -324,16 +305,12 @@ export default function Chat({
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !chat) return;
-
-    // reset before sending new query
     setIsScriptGenerated(false);
     setInputError(null);
 
     if (!chat.session_id || !chat.session_name) {
       return;
     }
-
-    //for new session storage
 
     const queryId = Date.now();
 
@@ -378,10 +355,6 @@ export default function Chat({
 
       const response = await ApiService.chat(payload);
       const result = response.data?.data || {};
-
-      // ================================
-      // POINT-4: Update AI response
-      // ================================
       const updatedStore = getChatStore(
         userData?.user_id || "unknown",
         chat.session_id
@@ -404,23 +377,17 @@ export default function Chat({
         ai_response: result.ai_response || "",
         logs: result.logs || [],
       }));
-
       setDisplayedLogs([]);
       setTypewriterKey((prev) => prev + 1);
       setInputValue("");
       setTableData(null);
       setIsScriptRunSuccess(false);
-
-      // MAIN LINE — script generated successfully
       if (result.ai_response && result.ai_response.trim()) {
       }
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message || "Something went wrong";
-
       setInputError(errorMessage);
-
-      //  script not generated
       setIsScriptGenerated(false);
       setIsScriptRunSuccess(false);
     } finally {
@@ -436,8 +403,6 @@ export default function Chat({
 
     if (queryMatch) {
       let query = queryMatch[0];
-
-      // Remove stored procedure definitions if they exist
       query = query
         .replace(/DELIMITER\s*;;/gi, "")
         .replace(/CREATE\s+PROCEDURE[\s\S]*?BEGIN/gi, "")
@@ -445,7 +410,7 @@ export default function Chat({
 
       return query.split(";")[0].trim() + ";";
     }
-    return ""; // Return empty if no query is found
+    return "";
   };
   const handleRunScript = async () => {
     if (!chat) {
@@ -453,7 +418,7 @@ export default function Chat({
       return;
     }
 
-    const executableQuery = extractSqlQuery(chat.query?.trim() || ""); // Extract clean query for execution
+    const executableQuery = extractSqlQuery(chat.query?.trim() || "");
     if (!executableQuery || !chat.session_id) {
       setDisplayedLogs(["No script to run."]);
       setTableData(null);
@@ -461,14 +426,12 @@ export default function Chat({
       return;
     }
 
-    setIsExecuting(true); // Start loading
+    setIsExecuting(true);
     try {
       const payload = {
-        sql_query: executableQuery, // Use the extracted query
+        sql_query: executableQuery,
       };
-
       console.log("Executing SQL Payload:", payload);
-
       const response = await ApiService.executeSql(payload);
 
       if (
@@ -478,11 +441,8 @@ export default function Chat({
       ) {
         const rowCount =
           response.data.data.total_rows ?? response.data.data.rows.length;
-
         const executionTime = response.data.data.execution_time ?? null;
-
         const rows = response.data.data.rows;
-        // If there are rows, derive columns from the keys of the first row object
         const columns =
           rows.length > 0
             ? Object.keys(rows[0]).map((key) => ({ column_name: key }))
@@ -491,23 +451,15 @@ export default function Chat({
         setTableData({ rows, columns });
         setDownloadData({ rows, columns });
         setDisplayedLogs([response.data.message || "Execution successful."]);
-        // capture execution metadata if provided by backend
         setExecutionMeta({
           rows_effected: rowCount,
           query_time: executionTime,
         });
-
         setIsScriptRunSuccess(true);
-
-        // ======================================
-        // POINT-5: Update execution SUCCESS
-        // ======================================
         const store = getChatStore(
           userData?.user_id || "unknown",
           chat.session_id
         );
-
-        // Find latest non-executed message
         const lastMsg = [...store.messages]
           .reverse()
           .find((m) => m.is_execute === false);
@@ -516,7 +468,7 @@ export default function Chat({
           lastMsg.is_execute = true;
           lastMsg.is_success = true;
           lastMsg.row_count = rowCount;
-          lastMsg.query_time = executionTime; // STRING like "0.005 sec"
+          lastMsg.query_time = executionTime;
         }
 
         saveChatStore(store);
@@ -530,9 +482,6 @@ export default function Chat({
       }
     } catch (error) {
       console.error("Execute SQL API Error:", error);
-      // ======================================
-      // POINT-6: Update execution FAILURE
-      // ======================================
       const store = getChatStore(
         userData?.user_id || "unknown",
         chat.session_id
@@ -549,7 +498,7 @@ export default function Chat({
 
       saveChatStore(store);
     } finally {
-      setIsExecuting(false); // Stop loading
+      setIsExecuting(false);
     }
   };
   // const handleDeleteMessage = (queryId: number) => {
@@ -563,17 +512,13 @@ export default function Chat({
 
   useEffect(() => {
     const query = chat?.query || "";
-    setTypedQuery(""); // Clear previous query
-    // setIsScriptGenerated(false);
+    setTypedQuery("");
     const scriptContainerRef = document.getElementById("script-container");
-
-    if (!query) return; // No query, nothing to type
-
+    if (!query) return;
     let i = 0;
-    // Set the first character immediately
     if (query.length > 0) {
       setTypedQuery(query.charAt(0));
-      i = 1; // Start interval from the second character
+      i = 1;
     }
 
     const typingInterval = setInterval(() => {
@@ -582,17 +527,17 @@ export default function Chat({
         i++;
       } else {
         clearInterval(typingInterval);
-        setIsScriptGenerated(true); // ENABLE RUN ONLY AFTER FINISH
+        setIsScriptGenerated(true);
       }
       if (scriptContainerRef) {
         scriptContainerRef.scrollTop = scriptContainerRef.scrollHeight;
       }
-    }, 10); // Typing speed
+    }, 10);
 
     return () => {
       clearInterval(typingInterval);
     };
-  }, [chat, typewriterKey]); // Rerun when chat changes or message is sent
+  }, [chat, typewriterKey]);
 
   useEffect(() => {
     setConfirmSaveAction(() => handleConfirmSave);
@@ -638,17 +583,13 @@ export default function Chat({
 
   const handleConfirmSave = async () => {
     if (!chat || !viewName.trim()) return;
-
-    // 1 Read from localStorage (SOURCE OF TRUTH)
     const store = getChatStore(
       userData?.user_id || "unknown",
       chat.session_id
     );
     const messagesToSend = parentQueryId
-      ? store.messages.slice(1)   //  EDIT → root বাদ
-      : store.messages;           // NEW → সব যাবে
-
-    // 2Build FULL payload
+      ? store.messages.slice(1) 
+      : store.messages;          
     const payload = {
       session_id: chat.session_id,
       created_by: userData?.user_id || "unknown",
@@ -670,9 +611,7 @@ export default function Chat({
 
     try {
       const response = await ApiService.saveChat(payload);
-
       if (response.data.isSuccess) {
-        //  CLEAR localStorage AFTER successful save
         localStorage.removeItem("data_doctor_chat_store");
       } else {
         console.error("Save failed:", response.data.message);
@@ -696,8 +635,6 @@ export default function Chat({
           <p className="font-bold">Session Data Missing</p>
         </div>
       )}
-
-      {/* Chat Header */}
       <div className="pb-5 bg-[#D9D9D91A] rounded-xl">
         <div className="px-5 pt-4">
           <h1 className="text-lg font-semibold text-gray-800">
@@ -707,8 +644,6 @@ export default function Chat({
             <div className="border-b-2 border-[#D9D9D9] w-[100%] gap-6 mt-1 flex" />
           </div>
         </div>
-
-        {/* Chat Box */}
         <div
           ref={chatContainerRef}
           className="px-5 py-6 text-gray-700 whitespace-pre-line flex flex-col gap-4 max-h-[300px] overflow-y-auto "
@@ -716,8 +651,6 @@ export default function Chat({
           <div className="self-start bg-gray-100 p-3 rounded-xl rounded-tl-none text-gray-800 max-w-[80%]  ">
             How can I assist you right now?
           </div>
-
-          {/* Replace this section */}
           {storedMessages.map((item) => (
             <div
               key={item.query_id}
@@ -740,11 +673,9 @@ export default function Chat({
             </div>
           ))}
         </div>
-
-        {/* Input */}
         <form
           onSubmit={handleSendMessage}
-          className="mx-4 border rounded-xl flex justify-between items-center bg-[#FBFBFB] px-5 py-2 text-gray-500 outline-none focus-within:ring-1
+          className="mx-5 border rounded-xl flex justify-between items-center bg-[#FBFBFB] py-2 text-gray-500 outline-none focus-within:ring-1
     focus-within:ring-[#5433FF]
     "
         >
@@ -758,16 +689,15 @@ export default function Chat({
             }}
             placeholder={
               passedData
-                ? "Ask a query to generate a script" // If editing → no placeholder
+                ? "Ask a query to generate a script"
                 : "Ask a query to generate a script"
             }
             disabled={isSessionDataMissing || isSending}
-            className="w-full h-full bg-transparent  outline-none text-sm text-gray-800"
+            className="w-full h-full bg-transparent px-3 outline-none text-sm text-gray-800"
           />
-
           <button
             type="submit"
-            disabled={isSessionDataMissing || isSending} // Disabled when session is missing or sending
+            disabled={isSessionDataMissing || isSending}
             className={`p-2 rounded-full hover:bg-gray-100 ${isSessionDataMissing || isSending
               ? "opacity-50 cursor-not-allowed"
               : ""
@@ -784,10 +714,8 @@ export default function Chat({
           <p className="mt-2 text-sm text-red-600 mx-4">{inputError}</p>
         )}
       </div>
-
-      {/* Script Section */}
       <div className="bg-[#D9D9D91A] p-2 mt-5 rounded-xl">
-        <div className="flex flex-row items-center justify-between px-5">
+        <div className="flex flex-row items-center justify-between px-4">
           <h1 className="text-lg font-semibold text-gray-800 mt-1">
             Generated Procedure
             <p className="text-sm text-gray-500 mb-4">Run available script</p>
@@ -820,8 +748,7 @@ export default function Chat({
               </button>
             </div>
           </div> */}
-          <div className="flex items-center px-5 gap-2">
-            {/* Input */}
+          <div className="flex items-center gap-2">
             <Tippy content={viewName} theme="gray" placement="top">
               <input
                 type="text"
@@ -831,7 +758,7 @@ export default function Chat({
                 disabled={!isScriptRunSuccess}
                 className={`
         w-[360px] h-[36px]
-        px-3 text-sm text-gray-700
+      px-1 text-sm text-gray-700
         border border-gray-300 rounded-lg
         bg-white
         focus:outline-none focus:ring-1 focus:ring-[#5433FF]
@@ -839,13 +766,11 @@ export default function Chat({
       `}
               />
             </Tippy>
-
-            {/* Save Button */}
             <button
               onClick={() => setIsConfirmSaveModalOpen(true)}
               disabled={!isScriptRunSuccess || !viewName.trim()}
               className={`
-      h-[36px] px-4 text-sm
+      h-[36px] px-3 text-sm
       border border-gray-300 rounded-md
       bg-gray-100 text-gray-600
       transition
