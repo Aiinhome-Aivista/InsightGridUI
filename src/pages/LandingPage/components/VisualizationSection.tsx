@@ -1,10 +1,7 @@
-import previewImage from "../../assets/Dashboard_preview.svg";
-
+import previewImage from "../../../assets/Dashboard_preview.svg";
 export default function VisualizationSection() {
   return (
     <section className="w-full min-h-screen bg-[#256CC9] py-32 relative overflow-hidden">
-
-      {/* Right blurred dashboard */}
       <img
         src={previewImage}
         alt="visual-preview"
@@ -16,19 +13,12 @@ export default function VisualizationSection() {
           maskImage: "linear-gradient(to left, black 60%, transparent 100%)",
         }}
       />
-
-      {/* Content Container */}
       <div className="max-w-[1350px] mx-auto flex items-center pl-10">
-        {/* Left Text Column */}
         <div className="w-[55%] text-white">
 
           <h2 className="text-[46px] font-semibold leading-tight tracking-tight">
             Build beautiful <br /> visualizations instantly.
           </h2>
-
-          {/* Underline highlight */}
-          {/* <div className=" mt-4 w-16 h-[8px] rounded-full bg-white/95" /> */}
-
           <p className="mt-10 text-white/85 text-[16px] leading-[29px] pr-10">
             From any column, simply click Insight to view smart, data-aware
             graph suggestions—text columns automatically offer bar charts, pie

@@ -1,6 +1,5 @@
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+
 import { useState, useEffect } from "react";
-import Tooltip from "@mui/material/Tooltip";
 import { useTheme } from "../../theme";
 import LogoutModal from "../../Modal/LogoutModal";
 import { useAuth } from "../../pages/Auth/AuthContext";
@@ -65,7 +64,6 @@ export default function Header() {
         }}
       >
         <div className="flex justify-between items-center w-full">
-          {/* Left Logo Section */}
           <div className="flex items-center">
             <p className="text-base md:text-lg font-semibold tracking-tight" style={{ color: theme.primaryText }}>
               <span style={{ color: theme.primaryText }}>A</span>
@@ -81,26 +79,10 @@ export default function Header() {
               </span>
             </p>
           </div>
-
-          {/* Right Date & Time Section */}
           <div className="flex items-center gap-3 text-sm" style={{ color: theme.secondaryText }}>
             <p>
               {formattedDate} | {formattedTime}
             </p>
-            {/* <Tooltip title="Logout" arrow>
-              <LogoutRoundedIcon
-                onClick={handleLogout}
-                sx={{
-                  color: theme.secondaryText,
-                  fontSize: "20px",
-                  cursor: "pointer",
-                  transition: "color 0.2s ease-in-out",
-                  "&:hover": {
-                    color: theme.primaryText,
-                  },
-                }}
-              />
-            </Tooltip> */}
           </div>
         </div>
       </header>

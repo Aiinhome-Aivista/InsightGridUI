@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ApiServices from "../../../services/ApiServices";
 import { useAuth } from "../../Auth/AuthContext";
 import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
+import { Snackbar, Alert } from "@mui/material";
 
 interface Props {
   files: any[];
@@ -31,6 +32,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedRowDetails, setSelectedRowDetails] = useState<any>(null);
   const [deleteFile, setDeleteFile] = useState<any>(null);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error" | "warning" | "info";
+  }>({ open: false, message: "", severity: "success" });
 
 
   const ITEMS_PER_PAGE = 10;
@@ -42,6 +48,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, files.length);
 
   const paginatedFiles = files.slice(startIndex, endIndex);
+  const [fileDependencies, setFileDependencies] = useState<string | null>(null);
 
   const handleRowClick = (file: any) => {
     try {
@@ -133,7 +140,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   };
 
   const handleDeleteFile = async (file: any) => {
-    setIsConfirmSaveModalOpen(false); setIsDetailsModalOpen(false);
     try {
       const payload = {
         session_id: user?.session_id,
@@ -144,35 +150,39 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       const response = await ApiServices.deleteUploadedFile(payload);
       const res = response.data;
 
-      // ✅ SUCCESS
       if (res?.isSuccess) {
+        setIsConfirmSaveModalOpen(false);
+        setIsDetailsModalOpen(false);
         if (onRefresh) {
           await onRefresh();
         }
+        setSnackbar({ open: true, message: "File deleted successfully", severity: "success" });
         return;
       }
 
-      // ⚠️ DEPENDENCY CASE (409)
       if (res?.data?.dependencies?.length) {
         const tables = res.data.dependencies
           .map((d: any) => d.table_name)
+          .filter((name: string) => name && name.trim()) // Filter out empty/undefined names
           .join(", ");
 
-        alert(
-          `Cannot delete this file.\n\nIt is used by tables:\n${tables}`
-        );
+        const message = tables
+          ? `Cannot delete this file.\n\nIt is used by tables:\n${tables}`
+          : `Cannot delete this file.\n\nIt is used by other tables.`;
+
+        setFileDependencies(message);
         return;
       }
 
-      // ❌ GENERIC FAILURE or Table Does Not Exist
       alert(res?.message || "Unable to delete file");
-
+      setIsConfirmSaveModalOpen(false);
+      setIsDetailsModalOpen(false);
     } catch (error: any) {
       console.error("Delete failed", error);
       alert("Something went wrong while deleting file");
+      setIsConfirmSaveModalOpen(false);
+      setIsDetailsModalOpen(false);
     }
-
-
   };
 
 
@@ -414,7 +424,12 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 <div className="flex-1 min-w-0 flex justify-center">
                   <Tippy content="Delete file" theme="gray">
                     <DeleteIcon
-                      onClick={() => { setDeleteFile(file); setIsConfirmSaveModalOpen(true); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteFile(file);
+                        setFileDependencies(null);
+                        setIsConfirmSaveModalOpen(true);
+                      }}
                       sx={{
                         fontSize: 20,
                         color: "#9ca3af",
@@ -608,34 +623,21 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         </div>
       )}
 
-      {isConfirmSaveModalOpen && <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
-        <div className="w-[550px] bg-[#D9D9D9] rounded-2xl shadow-lg border-[11px] border-white flex flex-col justify-center items-center gap-6 p-8">
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold text-gray-700">{deleteFile?.name || deleteFile?.file_name}</h2>
-            {/* <h2 className="text-2xl font-semibold text-gray-700">Delete File</h2> */}
-          </div>
-
-          <p className="text-gray-600 text-xl">
-            Are you sure you want to delete this file?
-          </p>
-
-          <div className="flex gap-4">
-            <button
-              className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 bg-white hover:bg-[#4B1AE7] hover:text-white transition"
-              onClick={() => { setIsConfirmSaveModalOpen(false); setIsDetailsModalOpen(false); }}
-            >
-              Cancel
-            </button>
-
-            <button
-              className="px-6 py-2 rounded-lg bg-[#4B1AE7] text-white hover:opacity-90 transition"
-              onClick={() => handleDeleteFile(deleteFile)}
-            >
-              Confirm
-            </button>
-          </div>
-        </div>
-      </div>}
+      <ConfirmSaveView
+        customTitle={deleteFile?.name || deleteFile?.file_name}
+        customMessage={
+          fileDependencies
+            ? fileDependencies
+            : "Are you sure you want to delete this file?"
+        }
+        customOnCancel={() => {
+          setIsConfirmSaveModalOpen(false);
+          setIsDetailsModalOpen(false);
+          setFileDependencies(null);
+        }}
+        customOnConfirm={() => handleDeleteFile(deleteFile)}
+        showConfirmButton={!fileDependencies}
+      />
     </div>
   );
 }

@@ -24,7 +24,7 @@ const menuItems = [
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list" },
   { name: "Report Designer", icon: SummarizeOutlinedIcon , path: "report-designer" },
   // { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" },
-    { name: "Settings", icon: SettingsRoundedIcon, path: "Customize" },
+    { name: "Settings", icon: SettingsRoundedIcon, path: "Settings" },
   //  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
 
 ];
@@ -164,8 +164,6 @@ export default function Sidebar() {
           })}
         </nav>
       </div>
-
-      {/* Logout Button */}
       <div className={`py-4 ${collapsed ? 'px-4' : 'px-3'}`} style={{ borderColor: theme.border }}>
         <Tippy
           content="Logout"

@@ -1,7 +1,5 @@
 import axios from "axios";
 import { GET_APIS, POST_APIS } from "../../connection";
-//import { LoginPayload, LoginResponse } from "../models/login.model";
-
 class ApiServices {
   login(body) {
     return axios.post(POST_APIS.login, body);
@@ -17,8 +15,6 @@ class ApiServices {
   executeSql(body) {
     return axios.post(POST_APIS.execute_sql, body);
   }
-
-
   // fileUpload(formData) {
   //   return axios.post(POST_APIS.fileUpload, formData, {
   //     headers: { 'Content-Type': 'multipart/form-data' },

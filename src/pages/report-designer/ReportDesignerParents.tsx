@@ -6,9 +6,6 @@ import ApiServices from "../../services/ApiServices";
 import { useLocation } from "react-router-dom";
 import { MdOutlineDescription } from "react-icons/md";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-
-
-
 export default function TableView() {
   const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -19,11 +16,8 @@ export default function TableView() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [reportName, setReportName] = useState("");
   const [editReport, setEditReport] = useState<any>(null);
-
-
   const location = useLocation();
   const report = location.state?.report;
-
   useEffect(() => {
     if (report) {
       console.log(" Edit report received:", report);
@@ -32,44 +26,27 @@ export default function TableView() {
       setReportName(report.report_name || "");
     }
   }, [report]);
-
-
   useEffect(() => {
     getSavedQueryResponse();
   }, []);
-
   const getSavedQueryResponse = async () => {
     try {
       setLoading(true);
-
       const userData = JSON.parse(localStorage.getItem("ig_user"));
       const payload = {
         created_by: userData?.user_id,
         session_id: userData?.session_id,
       };
-
       const response = await ApiServices.getSavedQueryResponse(payload);
       const apiData = response.data.data;
-
-      // const dropdown = apiData.queries?.map((q) => ({
-      //   label: q.query_title,
-      //   value: q, // full query object
-      // }));
-
-      //ad for new scenario
       const dropdown = apiData.queries?.flatMap((q) => {
         if (!q.messages || q.messages.length === 0) return [];
-
-        // Always take last message
         const lastMessage = q.messages[q.messages.length - 1];
-
-        // safety check (optional but recommended)
         if (!lastMessage.ai_response) return [];
-
         return [{
           label: q.query_title,
           value: {
-            id: lastMessage.id,              // query_history_id
+            id: lastMessage.id,           
             ai_response: lastMessage.ai_response,
             query_title: q.query_title,
           }
@@ -77,8 +54,8 @@ export default function TableView() {
       });
 
       setTableOptions(dropdown || []);
-      setSelectedTables([]); // ✅ placeholder visible
-      setAllData({});        // ✅ clear previous table
+      setSelectedTables([]); 
+      setAllData({});    
       setTableOptions(dropdown);
 
     } catch (err) {
@@ -87,8 +64,6 @@ export default function TableView() {
       setLoading(false);
     }
   };
-
-
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -132,22 +107,20 @@ export default function TableView() {
   const handleSaveReport = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("ig_user"));
-
       if (!selectedTables.length) {
         console.error("No query selected");
         return;
       }
-
-      const selectedQuery = selectedTables[0]; //  full query object
+      const selectedQuery = selectedTables[0]; 
 
       const payload = {
         session_id: userData?.session_id,
         created_by: userData?.user_id,
         // report_id: `report_${Date.now()}`,
         report_id: editReport?.report_id
-          ? editReport.report_id          // EDIT MODE
+          ? editReport.report_id    
           : `report_${Date.now()}`,
-        query_history_id: selectedQuery.id, //  DYNAMIC ID
+        query_history_id: selectedQuery.id, 
         report_name: reportName,
       };
 
@@ -178,7 +151,7 @@ export default function TableView() {
         setIsRefreshing={setIsRefreshing}
       />
       {selectedTables.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400">
+        <div className="flex flex-col items-center justify-center h-[69vh] text-gray-400">
           <div className="mb-3 text-4xl">🗑️</div>
           <p className="text-sm font-medium">
             Please select a view to create report

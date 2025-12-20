@@ -7,7 +7,6 @@ import { useAuth } from "./AuthContext";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
 export default function Login() {
   const { login } = useAuth();
   const [user_email, setUserEmail] = useState("");
@@ -24,10 +23,8 @@ export default function Login() {
     message: "",
     severity: "info",
   });
-
   const [captchaCode, setCaptchaCode] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
-
   const generateCaptcha = () => {
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let code = "";
@@ -36,11 +33,9 @@ export default function Login() {
     }
     setCaptchaCode(code);
   };
-
   useEffect(() => {
     generateCaptcha();
   }, []);
-
   const handleLogin = async (e) => {
     e.preventDefault();
     if (captchaInput !== captchaCode) {
@@ -53,14 +48,11 @@ export default function Login() {
       setCaptchaInput("");
       return;
     }
-
     setLoading(true);
     setNotification({ open: false, message: "", severity: "info" });
-
     let res = null;
-
     try {
-      const payload = { user_email, password }; // LoginPayload
+      const payload = { user_email, password };
       const response = await ApiServices.login(payload);
       res = response.data; // LoginResponse
       console.log("Login Response:", res);

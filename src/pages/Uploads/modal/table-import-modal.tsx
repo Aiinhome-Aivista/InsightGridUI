@@ -247,7 +247,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 file_name: apiData?.file_name,
                 schema: schema,
                 is_existing: createNewTable === "no",
-              has_header: createNewTable === "yes"
+                has_header: createNewTable === "yes"
                     ? true                     //  New table → always header
                     : treatFirstRowAsHeader
             };
@@ -616,7 +616,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 {/* <div>
                                     <div className="flex items-center justify-between mb-2">
                                         <h4 className="text-xs font-semibold text-gray-900">
-                                            Extracted Columns
+                                            Columns Preview
                                         </h4>
                                         {createNewTable === 'yes' && (
                                             <button
@@ -668,7 +668,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
                                         <h4 className="text-xs font-semibold text-gray-900">
-                                            Extracted Columns
+                                            Columns Preview
                                         </h4>
                                     </div>
 
@@ -882,7 +882,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         {createNewTable === 'yes' && (
                                             <div className="flex items-center">
                                                 <p className="text-xs text-gray-700 font-medium flex-1">
-                                                    {tableName}
+                                                    Table Name - {tableName}
                                                 </p>
                                             </div>
                                         )}
@@ -945,7 +945,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             </div>
                                             <div className="flex items-center justify-between mb-2">
                                                 <h4 className="text-xs font-semibold text-gray-900">
-                                                    Column Preview (Showing 5 out of {totalRows} rows)
+                                                    Data Preview (Showing {previewRows.length} out of {totalRows} rows)
                                                 </h4>
                                             </div>
 

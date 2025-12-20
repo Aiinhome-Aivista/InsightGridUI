@@ -119,12 +119,9 @@ export default function UploadPage() {
   async function uploadFiles(files: File[]) {
     if (!files || files.length === 0) return;
     if (uploadInProgress.current) return;
-
     uploadInProgress.current = true;
     setIsUploading(true);
     setIsProcessing(false);
-
-    
     try {
       const formData = new FormData();
       formData.append("action", "upload");
@@ -134,29 +131,21 @@ export default function UploadPage() {
       files.forEach((file) => {
         formData.append("files", file);
       });
-
       setProcessingFileName(
         files.length > 1 ? `${files.length} files` : files[0].name
       );
-
       const uploadResponse = await ApiService.fileUpload(formData);
       console.log("Upload Response:", uploadResponse?.data);
-
       const responseData = uploadResponse?.data;
-
       if (!responseData?.isSuccess) {
         console.error("Upload failed:", responseData?.message);
         return;
       }
-
-      //  FIX: Response "data" is an object, not an array
       const fileInfo = responseData.data;
       if (!fileInfo) {
         console.error("File info missing.");
         return;
       }
-
-      // SUCCESS — OPEN MODAL
       setUploadedFileName(fileInfo.file_name || files[0].name);
       setUploadResponseData(fileInfo);
       setIsModalOpen(true);
@@ -174,10 +163,6 @@ export default function UploadPage() {
       setIsProcessing(false);
     }
   }
-
-
-
-
   return (
     <div className="w-full rounded-lg p-8">
       <h2
@@ -228,7 +213,6 @@ export default function UploadPage() {
           </p>
         </div>
       )}
-
       <TableImportModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

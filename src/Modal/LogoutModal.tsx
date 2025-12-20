@@ -17,7 +17,6 @@ export default function LogoutModal() {
         className="rounded-xl shadow-lg p-8 min-w-[420px] max-w-[420px] text-center relative flex flex-col items-center justify-center"
         style={{ backgroundColor: theme.surface, color: theme.primaryText }}
       >
-        {/* Cancel icon at top right */}
         <button
           onClick={onClose}
           className="absolute top-2 right-2 transition"
