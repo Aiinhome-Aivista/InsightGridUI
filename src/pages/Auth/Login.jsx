@@ -16,7 +16,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [companyCode, setCompanyCode] = useState("");
   const [companyCodeError, setCompanyCodeError] = useState("");
-
+  const currentYear = getCurrentYear();
 
   const [notification, setNotification] = useState({
     open: false,
@@ -100,6 +100,9 @@ export default function Login() {
   //   !emailError &&
   //   !companyCodeError;
 
+  function getCurrentYear() {
+    return new Date().getFullYear();
+  }
 
 
   const handleCloseNotification = () =>
@@ -274,7 +277,7 @@ export default function Login() {
 
         </form>
         <p className="text-white/70 text-xs absolute bottom-14">
-          ©2025 Aiihome Technologies Pvt. Ltd. All rights reserved
+          ©{currentYear} Aiinhome Technologies Pvt. Ltd. All rights reserved
         </p>
       </div>
     </div>
