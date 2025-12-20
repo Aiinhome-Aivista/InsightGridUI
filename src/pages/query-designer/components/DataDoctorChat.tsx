@@ -679,7 +679,7 @@ export default function Chat({
         </div>
         <form
           onSubmit={handleSendMessage}
-          className="mx-5 border rounded-xl flex justify-between items-center bg-[#FBFBFB] py-2 text-gray-500 outline-none focus-within:ring-1
+          className="mx-5 border rounded-xl flex justify-between items-center bg-[#FBFBFB] text-gray-500 outline-none focus-within:ring-1
     focus-within:ring-[#5433FF]
     "
         >
