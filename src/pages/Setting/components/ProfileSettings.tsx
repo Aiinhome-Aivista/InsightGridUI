@@ -7,6 +7,10 @@ import {
   Camera,
   Trash2,
   Save,
+  Building2,  
+  Hash,       
+  MapPin,
+  Package
 } from 'lucide-react';
 interface ProfileSettingsProps {
   activeTab: string;
@@ -140,7 +144,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
               </label>
               <div className="relative ">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <User size={18} className="text-gray-400" />
+                  <Building2 size={18} className="text-gray-400" />
                 </div>
                 <input
                   type="text"
@@ -163,7 +167,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <User size={18} className="text-gray-400" />
+                  <Hash size={18} className="text-gray-400" />
                 </div>
                 <input
                   type="text"
@@ -186,7 +190,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <User size={18} className="text-gray-400" />
+                  <MapPin size={18} className="text-gray-400" />
                 </div>
                 <input
                   type="text"
@@ -209,7 +213,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <User size={18} className="text-gray-400" />
+                  <Package size={18} className="text-gray-400" />
                 </div>
                 <input
                   type="text"
