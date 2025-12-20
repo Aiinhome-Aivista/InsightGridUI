@@ -368,7 +368,7 @@ export default function Chat({
     try {
       const payload = {
         session_id: chat.session_id,
-        created_by: userData?.user_id || "unknown",
+        // created_by: userData?.user_id || "unknown",
         user_query: inputValue,
       };
 
@@ -460,6 +460,7 @@ export default function Chat({
     setIsExecuting(true); // Start loading
     try {
       const payload = {
+        session_id: userData?.session_id,
         sql_query: executableQuery, // Use the extracted query
       };
 

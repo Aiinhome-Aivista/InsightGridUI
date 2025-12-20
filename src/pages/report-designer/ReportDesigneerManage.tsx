@@ -14,6 +14,7 @@ const ReportDesignManage = () => {
   const [loading, setLoading] = useState(false);
   const { downloadData, setDownloadData } = useAuth();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const userData = JSON.parse(localStorage.getItem("ig_user"));
   const timeAgo = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return "";
     try {
@@ -95,6 +96,7 @@ const ReportDesignManage = () => {
       if (!aiResponse) return;
       const execRes = await ApiServices.executeSql({
         sql_query: aiResponse,
+        session_id: userData?.session_id
       });
       const api = execRes.data.data;
       const cleanFileName = report.report_name
@@ -119,6 +121,7 @@ const ReportDesignManage = () => {
       if (!aiResponse) return;
       const execRes = await ApiServices.executeSql({
         sql_query: aiResponse,
+        session_id: userData?.session_id
       });
       const api = execRes.data.data;
       const cleanFileName = report.report_name

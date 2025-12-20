@@ -6,6 +6,7 @@ import ApiServices from "../../services/ApiServices";
 import { useLocation } from "react-router-dom";
 import { MdOutlineDescription } from "react-icons/md";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+
 export default function TableView() {
   const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -18,6 +19,8 @@ export default function TableView() {
   const [editReport, setEditReport] = useState<any>(null);
   const location = useLocation();
   const report = location.state?.report;
+  const userData = JSON.parse(localStorage.getItem("ig_user"));
+
   useEffect(() => {
     if (report) {
       console.log(" Edit report received:", report);
@@ -32,7 +35,7 @@ export default function TableView() {
   const getSavedQueryResponse = async () => {
     try {
       setLoading(true);
-      const userData = JSON.parse(localStorage.getItem("ig_user"));
+      // const userData = JSON.parse(localStorage.getItem("ig_user"));
       const payload = {
         created_by: userData?.user_id,
         session_id: userData?.session_id,
@@ -84,7 +87,10 @@ export default function TableView() {
 
   const handleRunScript = async (sqlQuery: string) => {
     try {
-      const payload = { sql_query: sqlQuery };
+      const payload = { 
+        session_id: userData?.session_id,
+        sql_query: sqlQuery
+       };
       const response = await ApiServices.executeSql(payload);
       const api = response.data.data;
 
