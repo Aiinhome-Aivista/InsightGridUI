@@ -14,6 +14,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [companyCode, setCompanyCode] = useState("");
+  const [companyCodeError, setCompanyCodeError] = useState("");
+  const currentYear = getCurrentYear();
+
   const [notification, setNotification] = useState({
     open: false,
     message: "",
@@ -50,7 +54,9 @@ export default function Login() {
     try {
       const payload = { user_email, password };
       const response = await ApiServices.login(payload);
-      res = response.data; 
+      res = response.data; // LoginResponse
+      console.log("Login Response:", res);
+
       if (res.isSuccess) {
         setNotification({
           open: true,
@@ -77,12 +83,27 @@ export default function Login() {
       if (!res?.isSuccess) setLoading(false);
     }
   };
+
   const isFormValid =
     user_email.trim() !== "" &&
     password.trim() !== "" &&
     captchaInput.trim() !== "" &&
     !loading &&
     !emailError;
+
+  // const isFormValid =
+  //   user_email.trim() !== "" &&
+  //   password.trim() !== "" &&
+  //   companyCode.trim() !== "" &&
+  //   captchaInput.trim() !== "" &&
+  //   !loading &&
+  //   !emailError &&
+  //   !companyCodeError;
+
+  function getCurrentYear() {
+    return new Date().getFullYear();
+  }
+
 
   const handleCloseNotification = () =>
     setNotification((prev) => ({ ...prev, open: false }));
@@ -157,9 +178,8 @@ export default function Login() {
                   setEmailError("");
                 }
               }}
-              className={`w-full px-4 py-2 rounded-md bg-transparent border ${
-                emailError ? "border-red-400" : "border-white/40"
-              } text-white outline-none placeholder-white/60`}
+              className={`w-full px-4 py-2 rounded-md bg-transparent border ${emailError ? "border-red-400" : "border-white/40"
+                } text-white outline-none placeholder-white/60`}
             />
             {emailError && (
               <p className="text-red-400 text-xs mt-1 ml-1">{emailError}</p>
@@ -188,6 +208,37 @@ export default function Login() {
             </button>
           </div>
 
+          {/* <div className="w-full">
+            <input
+              type="text"
+              placeholder="Company Code"
+              value={companyCode}
+              onChange={(e) => {
+                const val = e.target.value.toUpperCase();
+                setCompanyCode(val);
+
+                // example validation: min 3 chars, alphanumeric only
+                const codeRegex = /^[A-Z0-9]{3,}$/;
+                if (val && !codeRegex.test(val)) {
+                  setCompanyCodeError(
+                    "Company Code must be at least 3 characters (A–Z, 0–9)"
+                  );
+                } else {
+                  setCompanyCodeError("");
+                }
+              }}
+              className={`w-full px-4 py-2 rounded-md bg-transparent border ${companyCodeError ? "border-red-400" : "border-white/40"
+                } text-white outline-none placeholder-white/60`}
+            />
+
+            {companyCodeError && (
+              <p className="text-red-400 text-xs mt-1 ml-1">
+                {companyCodeError}
+              </p>
+            )}
+          </div> */}
+
+
           <div className="flex items-center gap-2">
             <div
               className="flex-1 bg-white/20 text-white text-center font-bold tracking-widest py-2 rounded-md select-none"
@@ -212,22 +263,21 @@ export default function Login() {
             className="w-full px-4 py-2 rounded-md bg-transparent border border-white/40 text-white outline-none placeholder-white/60"
           />
 
-         <button
-  type="submit"
-  disabled={!isFormValid}
-  className={`w-full py-2 rounded-md font-medium transition
-    ${
-      isFormValid
-        ? "bg-white/40 text-white hover:bg-white/60"
-        : "bg-white/20 text-white/50 cursor-not-allowed"
-    }`}
->
-  {loading ? "Logging in..." : "Login"}
-</button>
+          <button
+            type="submit"
+            disabled={!isFormValid}
+            className={`w-full py-2 rounded-md font-medium transition
+    ${isFormValid
+                ? "bg-white/40 text-white hover:bg-white/60"
+                : "bg-white/20 text-white/50 cursor-not-allowed"
+              }`}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
 
         </form>
         <p className="text-white/70 text-xs absolute bottom-14">
-          ©2025 Aiihome Technologies Pvt. Ltd. All rights reserved
+          ©{currentYear} Aiinhome Technologies Pvt. Ltd. All rights reserved
         </p>
       </div>
     </div>

@@ -267,6 +267,10 @@ export default function Chat({
       setTypedQuery("");
       setIsScriptGenerated(false);
       setDisplayedLogs([]);
+
+      // clears query name for new report
+      setViewName("");
+      setParentQueryId(null);
     }
   }, [passedData]);
 
@@ -766,11 +770,10 @@ export default function Chat({
           <button
             type="submit"
             disabled={isSessionDataMissing || isSending} // Disabled when session is missing or sending
-            className={`p-2 rounded-full hover:bg-gray-100 ${
-              isSessionDataMissing || isSending
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
+            className={`p-2 rounded-full hover:bg-gray-100 ${isSessionDataMissing || isSending
+              ? "opacity-50 cursor-not-allowed"
+              : ""
+              }`}
           >
             {isSending ? (
               <AutorenewRoundedIcon className="w-6 h-6 text-gray-600 animate-spin" />
@@ -848,11 +851,10 @@ export default function Chat({
       border border-gray-300 rounded-md
       bg-gray-100 text-gray-600
       transition
-      ${
-        !isScriptRunSuccess || !viewName.trim()
-          ? "opacity-50 cursor-not-allowed"
-          : "hover:bg-gray-200"
-      }
+      ${!isScriptRunSuccess || !viewName.trim()
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-200"
+                }
     `}
             >
               Save
@@ -886,11 +888,10 @@ export default function Chat({
               disabled={
                 isSessionDataMissing || isExecuting || !isScriptGenerated
               }
-              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${
-                isSessionDataMissing || isExecuting || !isScriptGenerated
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-300"
-              }`}
+              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${isSessionDataMissing || isExecuting || !isScriptGenerated
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-gray-300"
+                }`}
             >
               {isExecuting ? "Running..." : "Run"}
             </button>
