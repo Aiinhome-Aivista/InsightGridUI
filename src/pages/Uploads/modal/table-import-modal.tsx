@@ -1062,10 +1062,11 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 </div>
 
                 <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-end gap-2">
-                    {(step === 'preview' || step === 'success') && (
+                    {step === 'preview' && (
                         <button
                             onClick={handleBack}
-                            className="px-4 py-1.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium text-xs"
+                            disabled={true}
+                            className="px-4 py-1.5 border border-gray-200 text-gray-400 rounded-lg cursor-not-allowed bg-gray-50 font-medium text-xs transition-colors"
                         >
                             Back
                         </button>
