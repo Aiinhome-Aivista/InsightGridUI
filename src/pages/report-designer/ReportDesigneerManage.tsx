@@ -285,7 +285,7 @@ const ReportDesignManage = () => {
           </table>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center h-[300px]">
+        <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-20rem)]">
           <MdOutlineHourglassEmpty size={40} className="text-gray-400" />
           <p className="text-gray-500 mt-2">Empty Report List</p>
         </div>

@@ -99,6 +99,7 @@ export default function Chat({
   };
 }) {
   const { setDownloadData } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const getStoredUser = () => {
@@ -147,6 +148,11 @@ export default function Chat({
   // const [messageHistory, setMessageHistory] = useState<ChatHistoryItem[]>([]);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [parentQueryId, setParentQueryId] = useState<number | null>(null);
+
+  const [saveModalConfig, setSaveModalConfig] = useState<{
+    customMessage?: string;
+    showConfirmButton?: boolean;
+  }>({});
 
   const isDefaultQuestion =
     chat?.question === "How can I assist you right now?" ||
@@ -633,6 +639,26 @@ export default function Chat({
     }
   };
 
+  const handleSaveClick = () => {
+    const existingTitles = (location.state as any)?.existingTitles || [];
+    const isDuplicate = existingTitles.some(
+      (title: string) =>
+        title.toLowerCase() === viewName.trim().toLowerCase() &&
+        title.toLowerCase() !== passedData?.query_title?.toLowerCase()
+    );
+
+    if (isDuplicate) {
+      setSaveModalConfig({
+        customMessage: "Query name already exists. Please choose a different name.",
+        showConfirmButton: false,
+      });
+      setIsConfirmSaveModalOpen(true);
+      return;
+    }
+    setSaveModalConfig({});
+    setIsConfirmSaveModalOpen(true);
+  };
+
   return (
     <div className="w-full min-h-screen px-5 mt-5">
       {isSessionDataMissing && (
@@ -775,7 +801,7 @@ export default function Chat({
               />
             </Tippy>
             <button
-              onClick={() => setIsConfirmSaveModalOpen(true)}
+              onClick={handleSaveClick}
               disabled={!isScriptRunSuccess || !viewName.trim()}
               className={`
       h-[36px] px-3 text-sm
@@ -859,7 +885,7 @@ export default function Chat({
         </div>
       </div>
 
-      <ConfirmSaveView />
+      <ConfirmSaveView {...saveModalConfig} />
     </div>
   );
 }
