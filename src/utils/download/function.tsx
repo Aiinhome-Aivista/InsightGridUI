@@ -45,49 +45,58 @@ export const generatePDF = async (data, mode = "download", fileName = "report"
   const headerStartY = 40;
 
   // Logo
+  const logoX = 40;
+  const logoY = headerStartY;
+  const logoW = 50;
+  const logoH = 40;
+
   if (logoUrl) {
-    try {
-      const logoBase64 = await fetchImageAsBase64(logoUrl);
-      doc.addImage(logoBase64, "JPEG", 40, headerStartY, 50, 40);
-    } catch (e) {
-      console.warn("Logo load failed");
-    }
+    const logoBase64 = await fetchImageAsBase64(logoUrl);
+    doc.addImage(logoBase64, "JPEG", logoX, logoY, logoW, logoH);
   }
 
-  // Company name (same line as logo)
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text(companyName, 100, headerStartY + 25);
+  // Row 1: Company name (VERTICALLY CENTERED with logo)
+  const companyFontSize = 16;
 
-  // Company address (auto wrap)
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(companyFontSize);
+
+  const companyNameY =
+    logoY + logoH / 2 + companyFontSize / 2 - 2; // perfectly centered
+
+  doc.text(companyName, logoX + logoW + 10, companyNameY);
+
+
+  // Row 2: Address (limited width, not full row)
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
 
-  const addressX = 100;
-  const addressY = headerStartY + 42;
-  const maxAddressWidth = pageWidth - 160;
+  const addressX = 40;              // start from left
+  const addressY = logoY + logoH + 8;
+  const addressWidth = 300;         // 👈 LIMIT WIDTH HERE
 
-  // Split address into wrapped lines
-  const addressLines = doc.splitTextToSize(companyAddress, maxAddressWidth);
+  const addressLines = doc.splitTextToSize(
+    companyAddress,
+    addressWidth
+  );
 
-  // Draw address
   doc.text(addressLines, addressX, addressY);
 
-  // Calculate Y after address
-  const addressHeight = addressLines.length * 12;
 
-  // Created date (placed safely below address)
+  // Row 3: Created date (below address)
+  const lineHeight = 12;
+  const addressHeight = addressLines.length * lineHeight;
+
   doc.text(
     `Created On - ${createdDate}`,
     addressX,
     addressY + addressHeight + 4
   );
 
-
-
   // Divider
   const dividerY = addressY + addressHeight + 20;
   doc.line(40, dividerY, pageWidth - 40, dividerY);
+
 
 
 
@@ -129,9 +138,9 @@ export const generatePDF = async (data, mode = "download", fileName = "report"
   // PREVIEW vs DOWNLOAD
   if (mode === "preview") {
     const pdfUrl = doc.output("bloburl");
-    window.open(pdfUrl); 
+    window.open(pdfUrl); //  browser preview
   } else {
-    // doc.save("sales-report.pdf"); 
+    // doc.save("sales-report.pdf"); //  direct download
     doc.save(`${fileName}.pdf`);
 
   }
