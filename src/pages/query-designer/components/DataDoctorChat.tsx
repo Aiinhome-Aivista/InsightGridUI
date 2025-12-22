@@ -591,7 +591,11 @@ export default function Chat({
     // const messagesToSend = parentQueryId
     //   ? store.messages.slice(1)   
     //   : store.messages;           
-    const messagesToSend = store.messages;
+    // const messagesToSend = store.messages;
+
+    const messagesToSend = store.messages.filter(
+      m => m.query_id >= 10 ** 12   // only NEW messages
+    );
 
     // 2Build FULL payload
     const payload = {
