@@ -822,14 +822,13 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     </div>
 
                                     {/* Custom Pagination */}
-                                    {totalPages > 1 && (
+                                    {/* {totalPages > 1 && (
                                         <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-xl">
                                             <div className="text-sm text-gray-600">
                                                 Showing {startIndex + 1} to {endIndex} of {totalRecords} columns
                                             </div>
 
                                             <div className="flex items-center gap-1">
-                                                {/* Previous Button */}
                                                 <button
                                                     onClick={onPrevious}
                                                     disabled={currentPage === 1}
@@ -840,8 +839,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 >
                                                     Previous
                                                 </button>
-
-                                                {/* Page Numbers */}
                                                 {visiblePages.map((page) => (
                                                     <button
                                                         key={page}
@@ -855,7 +852,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     </button>
                                                 ))}
 
-                                                {/* Next Button */}
                                                 <button
                                                     onClick={onNext}
                                                     disabled={currentPage === totalPages}
@@ -868,7 +864,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                 </button>
                                             </div>
                                         </div>
-                                    )}
+                                    )} */}
                                 </div>
                             </>
                         ) : step === 'preview' ? (
@@ -1065,7 +1061,11 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                     {(step === 'preview' || step === 'success') && (
                         <button
                             onClick={handleBack}
-                            className="px-4 py-1.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium text-xs"
+                            disabled={step === 'preview' && createNewTable === 'yes' && !isSchemaMismatch}
+                            className={`px-4 py-1.5 border border-gray-300 text-gray-700 rounded-lg transition-colors font-medium text-xs ${step === 'preview' && createNewTable === 'yes' && !isSchemaMismatch
+                                ? "opacity-50 cursor-not-allowed bg-gray-100"
+                                : "hover:bg-gray-100"
+                                }`}
                         >
                             Back
                         </button>
@@ -1130,3 +1130,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 };
 
 export default TableImportModal;
+     
+
+
