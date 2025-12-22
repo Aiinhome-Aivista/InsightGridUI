@@ -96,7 +96,8 @@ const QueryDesignerManage = () => {
   };
 
   const handleDetailsClick = (rowData) => {
-    navigate("/layout/query-designer", { state: { ...location.state, data: rowData, type: 'workflow' } });
+    const existingTitles = queries.map((q: any) => q.query_title);
+    navigate("/layout/query-designer", { state: { ...location.state, data: rowData, type: 'workflow', existingTitles } });
   };
   const getLastMessageMeta = (messages = []) => {
     if (!Array.isArray(messages) || messages.length === 0) {
@@ -178,7 +179,10 @@ const QueryDesignerManage = () => {
             </p>
           </div>
           <button
-            onClick={() => navigate("/layout/query-designer")}
+            onClick={() => {
+              const existingTitles = queries.map((q: any) => q.query_title);
+              navigate("/layout/query-designer", { state: { existingTitles } });
+            }}
             className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
             style={{
               width: '108px',
@@ -227,9 +231,8 @@ const QueryDesignerManage = () => {
         </div>
       </div>
       {isLoading ? (
-        <div className="flex justify-center items-center py-10">
-          <AutorenewRoundedIcon className="w-5 h-5 animate-spin text-gray-500"   fontSize="small"/>
-          
+       <div className="flex justify-center py-24 text-gray-500">
+          <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
         </div>
       ) : error ? (
         <div className="text-center py-10 text-red-500">{error}</div>
