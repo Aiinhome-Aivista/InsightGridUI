@@ -227,6 +227,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         setIsEditingTableName(false);
     };
 
+
     const handleNext = async () => {
         const schema = columns.map(col => ({
             column: col.name,
@@ -235,34 +236,34 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             primary: col.primary
         }));
 
-        // STEP 1: CONFIGURE -> Create Table & Get Preview
+        // ================================
+        // STEP 1: CONFIGURE → PREVIEW
+        // ================================
         if (step === "configure") {
             setStep("loading");
 
             const payload = {
-                action: createNewTable === 'yes' ? "create_table" : "preview",
+                action: createNewTable === "yes" ? "create_table" : "preview",
                 session_id: sessionId,
                 created_by: createdBy,
-                table_name: createNewTable === 'no' ? selectedTable : tableName,
+                table_name: createNewTable === "no" ? selectedTable : tableName,
                 file_name: apiData?.file_name,
-                schema: schema,
+                schema,
                 is_existing: createNewTable === "no",
-                has_header: createNewTable === "yes"
-                    ? true                     //  New table → always header
-                    : treatFirstRowAsHeader
+                has_header:
+                    createNewTable === "yes"
+                        ? true
+                        : treatFirstRowAsHeader
             };
-
-            console.log(" Sending configure step payload:", payload);
 
             try {
                 const response = await ApiService.preview(payload);
                 const resData = response.data.data;
 
-                console.log("Configure Step Response:", resData);
-
                 setCreateTableResponse(resData);
                 setPreviewRows(resData?.preview_rows || []);
                 settotalRows(resData?.total_rows || 0);
+
                 setIsSchemaMismatch(false);
                 setSchemaMismatchData(null);
 
@@ -274,26 +275,48 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 }, 300);
 
             } catch (err: any) {
-                console.error("Configure Step API Error:", err);
                 const apiRes = err?.response?.data;
 
-                if (err?.response?.status === 400 && apiRes?.message?.toLowerCase().includes("schema mismatch")) {
-                    setIsSchemaMismatch(true);
+                setIsSchemaMismatch(true);
+
+                // ================================
+                // CASE 1: TABLE ALREADY EXISTS (409)
+                // ================================
+                if (err?.response?.status === 409) {
                     setSchemaMismatchData({
+                        type: "TABLE_EXISTS",
+                        message: apiRes?.message,
+                        extra_in_csv: [],
+                        missing_in_csv: []
+                    });
+                }
+                // ================================
+                // CASE 2: SCHEMA MISMATCH
+                // ================================
+                else if (
+                    err?.response?.status === 400 &&
+                    apiRes?.message?.toLowerCase().includes("schema mismatch")
+                ) {
+                    setSchemaMismatchData({
+                        type: "SCHEMA_MISMATCH",
                         message: apiRes.message,
                         extra_in_csv: apiRes?.data?.extra_in_csv || [],
                         missing_in_csv: apiRes?.data?.missing_in_csv || []
                     });
-                } else {
-                    setIsSchemaMismatch(true);
+                }
+                // ================================
+                // CASE 3: GENERIC ERROR
+                // ================================
+                else {
                     setSchemaMismatchData({
-                        message: apiRes?.message || "An unexpected error occurred during table creation.",
+                        type: "GENERIC",
+                        message: apiRes?.message || "An unexpected error occurred.",
                         extra_in_csv: [],
                         missing_in_csv: []
                     });
                 }
 
-                // Go to preview screen even on error to show the mismatch message
+                // Move to preview screen to show error
                 setSlideDirection("left");
                 setTimeout(() => {
                     setStep("preview");
@@ -301,61 +324,16 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                     setTimeout(() => setSlideDirection("none"), 50);
                 }, 300);
             }
+
             return;
         }
 
-
-        // STEP 2: PREVIEW -> Insert Data
-        // if (step === "preview") {
-        //     if (insertData !== 'yes') return;
-        //     setStep("loading");
-
-        //     const insertPayload = {
-        //         action: "insert_data",
-        //         session_id: sessionId,
-        //         created_by: createdBy,
-        //         file_name: apiData?.file_name,
-        //         table_name: createNewTable === 'no' ? selectedTable : tableName,
-        //         is_existing: createNewTable === "no",
-        //         schema: schema // Schema is still needed for validation on the backend
-        //     };
-
-        //     console.log(" Sending insert_data payload:", insertPayload);
-
-        //     try {
-        //         const response = await ApiService.preview(insertPayload);
-        //         console.log(" Insert Response:", response.data);
-        //         setInsertResponse(response?.data?.data);
-        //     } catch (err) {
-        //         console.error(" Insert API Error:", err);
-        //         setInsertResponse({ summary_message: "Failed to insert data." });
-        //     }
-
-        //     setTimeout(() => {
-        //         setStep("success"); // Go to final success/fail screen
-        //     }, 800);
-
-        //     return;
-        // }
-
-
-        // STEP 2: PREVIEW
+        // ================================
+        // STEP 2: PREVIEW → INSERT / FINISH
+        // ================================
         if (step === "preview") {
 
-            const insertPayload = {
-                action: "insert_data",
-                session_id: sessionId,
-                created_by: createdBy,
-                file_name: apiData?.file_name,
-                table_name: createNewTable === 'no' ? selectedTable : tableName,
-                is_existing: createNewTable === "no",
-                schema: schema,
-                has_header: createNewTable === "yes"
-                    ? true
-                    : treatFirstRowAsHeader
-                // treat_first_row_as_header: treatFirstRowAsHeader
-            };
-            // CASE 1 → User chose NOT to insert data
+            // CASE: USER CHOSE NOT TO INSERT DATA
             if (insertData === "no") {
                 setInsertResponse({
                     summary_message: `Table "${tableName}" created successfully. Data was not inserted.`
@@ -368,7 +346,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 return;
             }
 
-            // CASE 2 → Insert data = YES
+            // CASE: INSERT DATA
             if (insertData === "yes") {
                 setStep("loading");
 
@@ -377,19 +355,18 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                     session_id: sessionId,
                     created_by: createdBy,
                     file_name: apiData?.file_name,
-                    table_name: createNewTable === 'no' ? selectedTable : tableName,
+                    table_name: createNewTable === "no" ? selectedTable : tableName,
                     is_existing: createNewTable === "no",
-                    schema: schema
+                    schema
                 };
-
-                console.log("Sending insert_data payload:", insertPayload);
 
                 try {
                     const response = await ApiService.preview(insertPayload);
                     setInsertResponse(response?.data?.data);
                 } catch (err) {
-                    console.error("Insert API Error:", err);
-                    setInsertResponse({ summary_message: "Failed to insert data." });
+                    setInsertResponse({
+                        summary_message: "Failed to insert data."
+                    });
                 }
 
                 setTimeout(() => {
@@ -672,9 +649,11 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         </h4>
                                     </div>
 
-                                    {/* Table */}
-                                    <div className="rounded-lg overflow-hidden w-[100%]">
-                                        <div className="bg-gray-50 border-b border-gray-200 w-[100%] flex justify-between">
+                                    {/* TABLE CONTAINER */}
+                                    <div className="rounded-lg border border-gray-200 w-full">
+
+                                        {/* ===== TABLE HEADER (FIXED) ===== */}
+                                        <div className="bg-gray-50 border-b border-gray-200 flex">
                                             <div className="px-3 py-2 flex-1">
                                                 <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Column Name
@@ -695,15 +674,16 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                                     Primary Key
                                                 </span>
                                             </div>
-                                            {createNewTable === 'yes' && (
-                                                <div className="px-3 py-2 flex items-center gap-3 text-right w-[110px]">
+
+                                            {createNewTable === "yes" && (
+                                                <div className="px-3 py-2 w-[110px] flex items-center gap-2">
                                                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                         Action
                                                     </span>
                                                     <button
                                                         onClick={handleAddColumn}
                                                         className="p-1.5 bg-[#3D5B811A] rounded-full text-gray-700 hover:text-blue-600 transition"
-                                                        title="Add Row"
+                                                        title="Add Column"
                                                     >
                                                         <Plus className="w-3.5 h-3.5" />
                                                     </button>
@@ -711,161 +691,124 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             )}
                                         </div>
 
-                                        {paginatedColumns.map((column) => (
-                                            <div
-                                                key={column.id}
-                                                className="flex border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
-                                            >
-                                                <div className="flex-1 px-3 py-2.5">
-                                                    {column.isEditing ? (
-                                                        <input
-                                                            type="text"
-                                                            value={column.name}
-                                                            onChange={(e) => handleColumnChange(column.id, 'name', e.target.value)}
-                                                            className="w-full px-2 py-1.5 border border-gray-300 border-opacity-30 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
-                                                            placeholder="Column name"
-                                                        />
-                                                    ) : (
-                                                        <span className="text-xs text-gray-700">{column.name}</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 px-3 py-2.5">
-                                                    {column.isEditing ? (
-                                                        <select
-                                                            value={column.dataType}
-                                                            onChange={(e) => handleColumnChange(column.id, 'dataType', e.target.value)}
-                                                            className="w-full px-2 py-1.5 border border-gray-300 border-opacity-30 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
-                                                        >
-                                                            <option value="INT">INT</option>
-                                                            <option value="VARCHAR">VARCHAR</option>
-                                                            <option value="TEXT">TEXT</option>
-                                                            <option value="DATE">DATE</option>
-                                                            <option value="DATETIME">DATETIME</option>
-                                                            <option value="DECIMAL">DECIMAL</option>
-                                                            <option value="BOOLEAN">BOOLEAN</option>
-                                                        </select>
-                                                    ) : (
-                                                        <span className="text-xs text-gray-500">{column.dataType}</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 px-3 py-2.5">
-                                                    {column.isEditing ? (
-                                                        <input
-                                                            type="number"
-                                                            value={column.length}
-                                                            onChange={(e) => handleColumnChange(column.id, 'length', e.target.value)}
-                                                            className="w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
-                                                            placeholder="Length"
-                                                        />
-                                                    ) : (
-                                                        <span className="text-xs text-gray-500">{column.length}</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 px-3 py-2.5 flex">
-                                                    {column.isEditing ? (
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={column.primary}
-                                                            onChange={(e) => handleColumnChange(column.id, 'primary', e.target.checked)}
-                                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                                                        />
-                                                    ) : (
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={column.primary}
-                                                            disabled
-                                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded cursor-not-allowed"
-                                                        />
-                                                    )}
-                                                </div>
-                                                {createNewTable === 'yes' && (
-                                                    <div className=" px-3 py-2.5 flex items-center gap-2 w-[110px]">
+                                        {/* ===== SCROLLABLE BODY ===== */}
+                                        <div className="overflow-y-auto max-h-[320px]">
+                                            {columns.map((column) => (
+                                                <div
+                                                    key={column.id}
+                                                    className="flex border-b border-gray-200 border-opacity-30 last:border-b-0 hover:bg-gray-50 transition-colors"
+                                                >
+                                                    {/* Column Name */}
+                                                    <div className="flex-1 px-3 py-2.5">
                                                         {column.isEditing ? (
-                                                            <>
-                                                                <button
-                                                                    onClick={() => handleSave(column.id)}
-                                                                    className="text-gray-400 hover:text-green-600 transition-colors"
-                                                                    title="Save"
-                                                                >
-                                                                    <Save className="w-3.5 h-3.5" />
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleDeleteColumn(column.id)}
-                                                                    className="text-gray-400 hover:text-red-600 transition-colors"
-                                                                    title="Delete"
-                                                                >
-                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                </button>
-                                                            </>
+                                                            <input
+                                                                type="text"
+                                                                value={column.name}
+                                                                onChange={(e) =>
+                                                                    handleColumnChange(column.id, "name", e.target.value)
+                                                                }
+                                                                className="w-full px-2 py-1.5 border border-gray-300 rounded-md text-xs focus:ring-2 focus:ring-blue-500"
+                                                                placeholder="Column name"
+                                                            />
                                                         ) : (
-                                                            <>
-                                                                <button
-                                                                    onClick={() => handleEditClick(column.id)}
-                                                                    className="text-gray-400 hover:text-blue-600 transition-colors"
-                                                                    title="Edit"
-                                                                >
-                                                                    <Edit2 className="w-3.5 h-3.5" />
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleDeleteColumn(column.id)}
-                                                                    className="text-gray-400 hover:text-red-600 transition-colors"
-                                                                    title="Delete"
-                                                                >
-                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                </button>
-                                                            </>
+                                                            <span className="text-xs text-gray-700">{column.name}</span>
                                                         )}
                                                     </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
 
-                                    {/* Custom Pagination */}
-                                    {/* {totalPages > 1 && (
-                                        <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-xl">
-                                            <div className="text-sm text-gray-600">
-                                                Showing {startIndex + 1} to {endIndex} of {totalRecords} columns
-                                            </div>
+                                                    {/* Data Type */}
+                                                    <div className="flex-1 px-3 py-2.5">
+                                                        {column.isEditing ? (
+                                                            <select
+                                                                value={column.dataType}
+                                                                onChange={(e) =>
+                                                                    handleColumnChange(column.id, "dataType", e.target.value)
+                                                                }
+                                                                className="w-full px-2 py-1.5 border border-gray-300 rounded-md text-xs focus:ring-2 focus:ring-blue-500"
+                                                            >
+                                                                <option value="INT">INT</option>
+                                                                <option value="VARCHAR">VARCHAR</option>
+                                                                <option value="TEXT">TEXT</option>
+                                                                <option value="DATE">DATE</option>
+                                                                <option value="DATETIME">DATETIME</option>
+                                                                <option value="DECIMAL">DECIMAL</option>
+                                                                <option value="BOOLEAN">BOOLEAN</option>
+                                                            </select>
+                                                        ) : (
+                                                            <span className="text-xs text-gray-500">{column.dataType}</span>
+                                                        )}
+                                                    </div>
 
-                                            <div className="flex items-center gap-1">
-                                                <button
-                                                    onClick={onPrevious}
-                                                    disabled={currentPage === 1}
-                                                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === 1
-                                                        ? 'text-gray-400 cursor-not-allowed'
-                                                        : 'text-gray-700 hover:bg-gray-100'
-                                                        }`}
-                                                >
-                                                    Previous
-                                                </button>
-                                                {visiblePages.map((page) => (
-                                                    <button
-                                                        key={page}
-                                                        onClick={() => onPageChange(page)}
-                                                        className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${currentPage === page
-                                                            ? 'bg-gray-200 text-gray-900'
-                                                            : 'text-gray-700 hover:bg-gray-50'
-                                                            }`}
-                                                    >
-                                                        {page}
-                                                    </button>
-                                                ))}
+                                                    {/* Length */}
+                                                    <div className="flex-1 px-3 py-2.5">
+                                                        {column.isEditing ? (
+                                                            <input
+                                                                type="number"
+                                                                value={column.length}
+                                                                onChange={(e) =>
+                                                                    handleColumnChange(column.id, "length", e.target.value)
+                                                                }
+                                                                className="w-full px-2 py-1.5 border border-gray-300 rounded-md text-xs focus:ring-2 focus:ring-blue-500"
+                                                            />
+                                                        ) : (
+                                                            <span className="text-xs text-gray-500">{column.length}</span>
+                                                        )}
+                                                    </div>
 
-                                                <button
-                                                    onClick={onNext}
-                                                    disabled={currentPage === totalPages}
-                                                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === totalPages
-                                                        ? 'text-gray-400 cursor-not-allowed'
-                                                        : 'text-gray-700 hover:bg-gray-100'
-                                                        }`}
-                                                >
-                                                    Next
-                                                </button>
-                                            </div>
+                                                    {/* Primary Key */}
+                                                    <div className="flex-1 px-3 py-2.5 flex">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={column.primary}
+                                                            disabled={!column.isEditing}
+                                                            onChange={(e) =>
+                                                                handleColumnChange(column.id, "primary", e.target.checked)
+                                                            }
+                                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                                                        />
+                                                    </div>
+
+                                                    {/* Actions */}
+                                                    {createNewTable === "yes" && (
+                                                        <div className="px-3 py-2.5 flex items-center gap-2 w-[110px]">
+                                                            {column.isEditing ? (
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => handleSave(column.id)}
+                                                                        className="text-gray-400 hover:text-green-600"
+                                                                    >
+                                                                        <Save className="w-3.5 h-3.5" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDeleteColumn(column.id)}
+                                                                        className="text-gray-400 hover:text-red-600"
+                                                                    >
+                                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => handleEditClick(column.id)}
+                                                                        className="text-gray-400 hover:text-blue-600"
+                                                                    >
+                                                                        <Edit2 className="w-3.5 h-3.5" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDeleteColumn(column.id)}
+                                                                        className="text-gray-400 hover:text-red-600"
+                                                                    >
+                                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
-                                    )} */}
+                                    </div>
                                 </div>
+
                             </>
                         ) : step === 'preview' ? (
                             <>
@@ -891,43 +834,50 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
                                         {/* TITLE */}
                                         <h4 className="text-base font-semibold text-red-700 text-center mb-6">
-                                            ⚠️ {schemaMismatchData?.message?.toLowerCase().includes("schema mismatch")
-                                                ? "Schema Mismatch Detected"
-                                                : "Error Creating Table"}
+                                            ⚠️ Error Creating Table
                                         </h4>
 
-                                        {/* CONTENT */}
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                                            {/* EXTRA COLUMNS */}
-                                            <div className="bg-white border border-red-200 rounded-lg p-4">
-                                                <p className="text-sm font-semibold text-red-600 mb-3">
-                                                    Extra Columns in CSV
-                                                </p>
-                                                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 max-h-56 overflow-y-auto">
-                                                    {schemaMismatchData?.extra_in_csv?.map((item, index) => (
-                                                        <li key={index}>{item}</li>
-                                                    ))}
-                                                </ul>
+                                        {/*  CASE: TABLE ALREADY EXISTS */}
+                                        {schemaMismatchData?.type === "TABLE_EXISTS" ? (
+                                            <div className="text-center text-sm text-red-700 font-medium">
+                                                {schemaMismatchData.message}
                                             </div>
+                                        ) : (
+                                            <>
+                                                {/*  OTHER CASES → SHOW EXTRA & MISSING */}
 
-                                            {/* MISSING COLUMNS */}
-                                            <div className="bg-white border border-red-200 rounded-lg p-4">
-                                                <p className="text-sm font-semibold text-red-600 mb-3">
-                                                    Missing Columns in CSV
-                                                </p>
-                                                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 max-h-56 overflow-y-auto">
-                                                    {schemaMismatchData?.missing_in_csv?.map((item, index) => (
-                                                        <li key={index}>{item}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div className="text-center mt-4 text-xs text-red-700">
-                                            Please go back and correct the schema or upload a valid file.
-                                            <br />
-                                            <span className="font-bold">{schemaMismatchData?.message}</span>
-                                        </div>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                                    {/* EXTRA COLUMNS */}
+                                                    <div className="bg-white border border-red-200 rounded-lg p-4">
+                                                        <p className="text-sm font-semibold text-red-600 mb-3">
+                                                            Extra Columns in CSV
+                                                        </p>
+                                                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 max-h-56 overflow-y-auto">
+                                                            {schemaMismatchData?.extra_in_csv?.map((item, index) => (
+                                                                <li key={index}>{item}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+
+                                                    {/* MISSING COLUMNS */}
+                                                    <div className="bg-white border border-red-200 rounded-lg p-4">
+                                                        <p className="text-sm font-semibold text-red-600 mb-3">
+                                                            Missing Columns in CSV
+                                                        </p>
+                                                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 max-h-56 overflow-y-auto">
+                                                            {schemaMismatchData?.missing_in_csv?.map((item, index) => (
+                                                                <li key={index}>{item}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div className="text-center mt-4 text-xs text-red-700">
+                                                    Please go back and correct the schema or upload a valid file.
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 ) : (
                                     <>
@@ -1130,6 +1080,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 };
 
 export default TableImportModal;
-     
+
 
 

@@ -24,6 +24,10 @@ export default function ConfirmSaveView({
   const onConfirm = customOnConfirm || confirmSave;
   const displayTitle = customTitle || viewName;
   const displayMessage = customMessage || `Do you want to save the ${type.toLowerCase()}?`;
+  const isDuplicateMessage =
+    !!customMessage &&
+    customMessage.toLowerCase().includes("already exists");
+
 
   if (!isConfirmSaveModalOpen) return null;
 
@@ -35,9 +39,17 @@ export default function ConfirmSaveView({
           <h2 className="text-2xl font-semibold text-gray-700">{displayTitle}</h2>
         </div>
 
-        <p className="text-gray-600 text-xl whitespace-pre-line text-center">
+        {/* <p className="text-gray-600 text-xl whitespace-pre-line text-center">
+          {displayMessage}
+        </p> */}
+
+        <p
+          className={`text-xl whitespace-pre-line text-center ${isDuplicateMessage ? "text-red-600 font-medium" : "text-gray-600"
+            }`}
+        >
           {displayMessage}
         </p>
+
 
         <div className="flex gap-4">
           {showConfirmButton ? (
