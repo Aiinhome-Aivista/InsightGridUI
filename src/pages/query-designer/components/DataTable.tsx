@@ -3,6 +3,7 @@ import { Column } from "primereact/column";
 import { FilterMatchMode } from "primereact/api";
 import { useState, useEffect } from "react";
 import "../../../styles/primereact-table.css";
+import ColumnHeaderWithAggregation from "../../report-designer/components/ColumnHeaderWithAggregation";
 
 interface ColumnConfig {
   column_name: string;
@@ -15,14 +16,19 @@ interface ProductDataTableProps {
   globalFilter: string;
   showPagination?: boolean;
   columns: (ColumnConfig | { column_name: string })[];
+  showColumnDropdownIcon?: boolean;
+  columnAggregations?: Record<string, string[]>;
+  onAggregationSelect?: (column: string, agg: string) => void;
 }
 export default function ProductDataTable({
   data,
   globalFilter,
   showPagination = true,
-  columns = []
+  columns = [],
+  columnAggregations,
+  onAggregationSelect,
 }: ProductDataTableProps) {
-  const uniqueColumns = columns.filter((col, index, self) => 
+  const uniqueColumns = columns.filter((col, index, self) =>
     index === self.findIndex((t) => t.column_name === col.column_name)
   );
 
@@ -38,6 +44,7 @@ export default function ProductDataTable({
   const currentPage = Math.floor(first / rows) + 1;
   const [pageWindowStart, setPageWindowStart] = useState(1);
   const maxVisiblePages = 5;
+
   useEffect(() => {
     setFilters({
       global: { value: globalFilter, matchMode: FilterMatchMode.CONTAINS },
@@ -108,7 +115,16 @@ export default function ProductDataTable({
               style={{ whiteSpace: "nowrap", width: "auto" }}
               key={`${col.column_name}_${index}`}
               field={col.column_name}
-              header={headerLabel}
+              // header={headerLabel}
+              header={
+                <ColumnHeaderWithAggregation
+                  label={headerLabel}
+                  columnName={col.column_name}
+                  aggregations={columnAggregations?.[col.column_name] || []}
+                  onAggregationSelect={onAggregationSelect} />
+              }
+
+
               sortable={isSortable}
               headerStyle={{
                 fontSize: '15px',

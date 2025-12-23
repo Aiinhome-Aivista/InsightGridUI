@@ -1,7 +1,7 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const GET_APIS = {
-  
+
 };
 
 export const POST_APIS = {
@@ -18,7 +18,8 @@ export const POST_APIS = {
   // get_chat_history: `${BASE_URL}get_uploaded_table_with_tabledata`,
   get_table_data: `${BASE_URL}get_full_table_info`,
   get_saved_query_response: `${BASE_URL}get_saved_query_response`,
-  get_report_list:`${BASE_URL}report_list`,
+  get_report_list: `${BASE_URL}report_list`,
   report_save: `${BASE_URL}report_save`,
   delete_uploaded_file: `${BASE_URL}delete_uploaded_file`,
+  aggregation: `${BASE_URL}aggregation`
 };

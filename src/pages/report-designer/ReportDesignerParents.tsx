@@ -20,6 +20,13 @@ export default function TableView() {
   const location = useLocation();
   const report = location.state?.report;
   const userData = JSON.parse(localStorage.getItem("ig_user"));
+  const [selectedAggregations, setSelectedAggregations] = useState<
+    {
+      column: string;
+      agg: string;
+      value?: number;
+    }[]
+  >([]);
 
   useEffect(() => {
     if (report) {
@@ -49,7 +56,7 @@ export default function TableView() {
         return [{
           label: q.query_title,
           value: {
-            id: lastMessage.id,           
+            id: lastMessage.id,
             ai_response: lastMessage.ai_response,
             query_title: q.query_title,
           }
@@ -57,8 +64,8 @@ export default function TableView() {
       });
 
       setTableOptions(dropdown || []);
-      setSelectedTables([]); 
-      setAllData({});    
+      setSelectedTables([]);
+      setAllData({});
       setTableOptions(dropdown);
 
     } catch (err) {
@@ -87,10 +94,10 @@ export default function TableView() {
 
   const handleRunScript = async (sqlQuery: string) => {
     try {
-      const payload = { 
+      const payload = {
         session_id: userData?.session_id,
         sql_query: sqlQuery
-       };
+      };
       const response = await ApiServices.executeSql(payload);
       const api = response.data.data;
 
@@ -100,6 +107,7 @@ export default function TableView() {
           rows: api.rows,
           columns: api.columns.map((col) => ({ column_name: col })),
           procedure_sql: sqlQuery,
+          visualization: api.visualization
         },
       };
 
@@ -117,16 +125,16 @@ export default function TableView() {
         console.error("No query selected");
         return;
       }
-      const selectedQuery = selectedTables[0]; 
+      const selectedQuery = selectedTables[0];
 
       const payload = {
         session_id: userData?.session_id,
         created_by: userData?.user_id,
         // report_id: `report_${Date.now()}`,
         report_id: editReport?.report_id
-          ? editReport.report_id    
+          ? editReport.report_id
           : `report_${Date.now()}`,
-        query_history_id: selectedQuery.id, 
+        query_history_id: selectedQuery.id,
         report_name: reportName,
       };
 
@@ -138,6 +146,55 @@ export default function TableView() {
     }
   };
 
+  // const handleAggregationSelect = async (column: string, agg: string) => {
+  //   const baseSql = selectedTables[0].ai_response; // 🔥 full SQL with FROM
+
+  //   const payload = {
+  //     session_id: userData?.session_id,
+  //     column,
+  //     agg,
+  //     base_sql: baseSql   // ✅ NEW
+  //   };
+
+  //   const res = await ApiServices.aggregation(payload);
+
+  //   const value = res.data.data.value;
+
+  //   setSelectedAggregations(prev =>
+  //     prev.map(p =>
+  //       p.column === column && p.agg === agg
+  //         ? { ...p, value }
+  //         : p
+  //     )
+  //   );
+  // };
+
+  const handleAggregationSelect = async (column: string, agg: string) => {
+    const baseSql = selectedTables[0].ai_response;
+
+    // 🔥 backend call first
+    const payload = {
+      session_id: userData?.session_id,
+      column,
+      agg,
+      base_sql: baseSql
+    };
+
+    const res = await ApiServices.aggregation(payload);
+    const value = res.data.data.value;
+
+    // ✅ now add directly with value
+    setSelectedAggregations(prev => {
+      const exists = prev.find(p => p.column === column && p.agg === agg);
+      if (exists) return prev;
+
+      return [...prev, { column, agg, value }];
+    });
+  };
+
+  useEffect(() => {
+    console.log('selectedAggregations', selectedAggregations)
+  }, [selectedAggregations])
 
   return (
     <div className="flex flex-col  bg-[#D9D9D91A] rounded-xl m-4 max-w-screen overflow-hidden">
@@ -170,10 +227,10 @@ export default function TableView() {
         </div>
       ) : isRefreshing ? (
         <div className="flex flex-col items-center justify-center w-full h-96">
-                        <AutorenewRoundedIcon 
-                          className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""}`} 
-                          fontSize="small"
-                        />
+          <AutorenewRoundedIcon
+            className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""}`}
+            fontSize="small"
+          />
           <p className="text-gray-500 text-lg mt-4">Loading Data...</p>
         </div>
       ) : (
@@ -181,7 +238,28 @@ export default function TableView() {
           allData={allData}
           selectedTables={selectedTables.map((t) => t.ai_response)}
           globalFilter={globalFilter}
+          onAggregationSelect={handleAggregationSelect}
         />
+      )}
+      {/* ===== Aggregation Cards ===== */}
+      {selectedAggregations.length > 0 && (
+        <div className="px-4 py-3 bg-white border-b">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            {selectedAggregations.map((item, index) => (
+              <div
+                key={`${item.column}_${item.agg}_${index}`}
+                className="rounded-lg border p-3 bg-gray-50"
+              >
+                <div className="text-xs text-gray-500 uppercase">
+                  {item.agg} of {item.column}
+                </div>
+                <div className="text-lg font-semibold text-gray-800 mt-1">
+                  {item.value}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
     </div>

@@ -69,13 +69,16 @@ class ApiServices {
   }
 
   report_save(body) {
-    return axios.post(POST_APIS.report_save,body);
+    return axios.post(POST_APIS.report_save, body);
   }
 
   deleteUploadedFile(body) {
     return axios.post(POST_APIS.delete_uploaded_file, body);
   }
+  aggregation(body) {
+    return axios.post(POST_APIS.aggregation, body);
 
+  }
 }
 
 export default new ApiServices();
