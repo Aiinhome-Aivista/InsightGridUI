@@ -1,4 +1,3 @@
-
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -7,12 +6,76 @@ const fetchImageAsBase64 = async (url: string): Promise<string> => {
   const res = await fetch(url);
   const blob = await res.blob();
 
-  return new Promise<string>((resolve) => {
+  const base64 = await new Promise<string>((resolve) => {
     const reader = new FileReader();
     reader.onloadend = () => resolve(reader.result as string);
     reader.readAsDataURL(blob);
   });
+
+  return await cropImageBase64(base64);
 };
+
+
+
+
+const cropImageBase64 = (base64: string): Promise<string> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = base64;
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      let minX = width, minY = height, maxX = 0, maxY = 0;
+
+      const isBackground = (r: number, g: number, b: number) =>
+        (r + g + b) / 3 > 235;
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 4;
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
+          const a = data[idx + 3];
+
+          if (a > 10 && !isBackground(r, g, b)) {
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+          }
+        }
+      }
+
+      if (minX > maxX || minY > maxY) {
+        resolve(base64);
+        return;
+      }
+
+      const cropW = maxX - minX + 1;
+      const cropH = maxY - minY + 1;
+
+      const croppedCanvas = document.createElement("canvas");
+      const croppedCtx = croppedCanvas.getContext("2d")!;
+      croppedCanvas.width = cropW;
+      croppedCanvas.height = cropH;
+
+      croppedCtx.drawImage(canvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+
+      resolve(croppedCanvas.toDataURL("image/png"));
+    };
+  });
+};
+
+
+
 
 export const generatePDF = async (data, mode = "download", fileName = "report"
 ) => {
@@ -52,7 +115,8 @@ export const generatePDF = async (data, mode = "download", fileName = "report"
 
   if (logoUrl) {
     const logoBase64 = await fetchImageAsBase64(logoUrl);
-    doc.addImage(logoBase64, "JPEG", logoX, logoY, logoW, logoH);
+    doc.addImage(logoBase64, "PNG", logoX, logoY, logoW, logoH);
+
   }
 
   // Row 1: Company name (VERTICALLY CENTERED with logo)
@@ -71,9 +135,9 @@ export const generatePDF = async (data, mode = "download", fileName = "report"
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
 
-  const addressX = 40;              // start from left
+  const addressX = 38;
   const addressY = logoY + logoH + 8;
-  const addressWidth = 300;         // 👈 LIMIT WIDTH HERE
+  const addressWidth = pageWidth * 0.35;
 
   const addressLines = doc.splitTextToSize(
     companyAddress,
@@ -81,6 +145,7 @@ export const generatePDF = async (data, mode = "download", fileName = "report"
   );
 
   doc.text(addressLines, addressX, addressY);
+
 
 
   // Row 3: Created date (below address)
