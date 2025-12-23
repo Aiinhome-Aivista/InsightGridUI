@@ -278,7 +278,7 @@ export default function Chat({
     if (!passedData?.messages?.length) return;
     console.log("Edit mode: patching chat history", passedData);
     if (passedData.id) {
-      setParentQueryId(passedData.id); 
+      setParentQueryId(passedData.id);
     }
     if (passedData.query_title) {
       setViewName(passedData.query_title);
@@ -436,7 +436,7 @@ export default function Chat({
     try {
       const payload = {
         session_id: userData?.session_id,
-        sql_query: executableQuery, 
+        sql_query: executableQuery,
       };
       console.log("Executing SQL Payload:", payload);
       const response = await ApiService.executeSql(payload);
@@ -639,22 +639,45 @@ export default function Chat({
     }
   };
 
+  // const handleSaveClick = () => {
+  //   const existingTitles = (location.state as any)?.existingTitles || [];
+  //   console.log('object',existingTitles)
+  //   const isDuplicate = existingTitles.some(
+  //     (title: string) =>
+  //       title.toLowerCase() === viewName.trim().toLowerCase() &&
+  //       title.toLowerCase() !== passedData?.query_title?.toLowerCase()
+  //   );
+
+  //   if (isDuplicate) {
+  //     setSaveModalConfig({
+  //       customMessage: "Query name already exists. Please choose a different name.",
+  //       showConfirmButton: false,
+  //     });
+  //     setIsConfirmSaveModalOpen(true);
+  //     return;
+  //   }
+  //   setSaveModalConfig({});
+  //   setIsConfirmSaveModalOpen(true);
+  // };
+  
   const handleSaveClick = () => {
     const existingTitles = (location.state as any)?.existingTitles || [];
+
     const isDuplicate = existingTitles.some(
       (title: string) =>
-        title.toLowerCase() === viewName.trim().toLowerCase() &&
-        title.toLowerCase() !== passedData?.query_title?.toLowerCase()
+        title.trim().toLowerCase() === viewName.trim().toLowerCase()
     );
 
     if (isDuplicate) {
       setSaveModalConfig({
         customMessage: "Query name already exists. Please choose a different name.",
-        showConfirmButton: false,
+        showConfirmButton: false, // ❌ no confirm
       });
       setIsConfirmSaveModalOpen(true);
       return;
     }
+
+    // ✅ unique → normal save confirm
     setSaveModalConfig({});
     setIsConfirmSaveModalOpen(true);
   };

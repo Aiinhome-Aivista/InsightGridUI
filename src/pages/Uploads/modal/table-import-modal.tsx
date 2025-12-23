@@ -365,7 +365,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                     setInsertResponse(response?.data?.data);
                 } catch (err) {
                     setInsertResponse({
-                        summary_message: "Failed to insert data."
+                        summary_message: err?.response?.data?.message
                     });
                 }
 
