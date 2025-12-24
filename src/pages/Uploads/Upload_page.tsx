@@ -63,59 +63,6 @@ export default function UploadPage() {
   }
 
 
-  // async function uploadFiles(files: File[]) {
-  //   if (!files || files.length === 0) return;
-
-  //   if (uploadInProgress.current) return;
-
-  //   uploadInProgress.current = true;
-  //   setIsUploading(true);
-  //   setIsProcessing(false);
-
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append('session_id', sessionId);
-  //     formData.append('created_by', createdBy);
-  //     files.forEach(file => {
-  //       formData.append('files', file);
-  //     });
-
-  //     setProcessingFileName(files.length > 1 ? `${files.length} files` : files[0].name);
-
-  //     const uploadResponse = await ApiService.fileUpload(formData);
-  //     const responseData = uploadResponse.data;
-
-  //     if (!responseData.isSuccess) {
-  //       throw new Error(responseData.message || 'Upload failed');
-  //     }
-
-  //     const uploadedFile = responseData.data && responseData.data.length > 0
-  //       ? responseData.data[0]
-  //       : null;
-
-  //     if (!uploadedFile) {
-  //       throw new Error('No file data returned from upload');
-  //     }
-
-  //     const actualSessionId = uploadedFile.session_id || sessionId;
-  //     setIsUploading(false);
-  //     setIsProcessing(false);
-
-  //     await trackFiles();
-
-  //     // ADD THESE TWO LINES TO OPEN MODAL AFTER UPLOAD
-  //     setUploadedFileName(files.length > 1 ? `${files.length} files` : files[0].name);
-  //     setIsModalOpen(true);
-
-  //   } catch (error: any) {
-  //     console.error('Error uploading files:', error);
-  //     alert(`Error uploading files: ${error.message || 'Please try again.'}`);
-  //     setIsUploading(false);
-  //     setIsProcessing(false);
-  //     uploadInProgress.current = false;
-  //   }
-  // }
-
   async function uploadFiles(files: File[]) {
     if (!files || files.length === 0) return;
     if (uploadInProgress.current) return;
