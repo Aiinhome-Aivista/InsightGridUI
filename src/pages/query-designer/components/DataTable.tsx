@@ -55,7 +55,10 @@ export default function ProductDataTable({
   });
 
   const [first, setFirst] = useState(0);
-  const rows = 5;
+  // const rows = 5;
+  const rows = enableRowGrouping
+    ? data.length        // 🔥 group mode → exact rows
+    : 5;                 // normal mode
 
   // const totalRecords = data.length;
   const totalRecords = enableRowGrouping
@@ -66,6 +69,7 @@ export default function ProductDataTable({
   const currentPage = Math.floor(first / rows) + 1;
   const [pageWindowStart, setPageWindowStart] = useState(1);
   const maxVisiblePages = 5;
+  const [openAggColumn, setOpenAggColumn] = useState<string | null>(null);
 
 
   const rowClassName = (rowData: any) => {
@@ -124,7 +128,7 @@ export default function ProductDataTable({
     <div style={{ maxWidth: "88vw" }}>
       <DataTable
         value={data}
-        paginator
+        paginator={!enableRowGrouping}
         rows={showPagination ? rows : data.length}
         first={first}
         onPage={(e) => setFirst(e.first)}
@@ -156,7 +160,11 @@ export default function ProductDataTable({
                   label={headerLabel}
                   columnName={col.column_name}
                   aggregations={columnAggregations?.[col.column_name] || []}
-                  onAggregationSelect={onAggregationSelect} />
+                  onAggregationSelect={onAggregationSelect}
+                  openAggColumn={openAggColumn}
+                  setOpenAggColumn={setOpenAggColumn}
+                />
+
               }
 
 

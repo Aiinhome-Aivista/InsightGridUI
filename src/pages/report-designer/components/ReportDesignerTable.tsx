@@ -18,7 +18,7 @@ export interface ChartConfig {
   id: string;
   type: "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
   xAxis?: string;
-  yAxis?: string | string[];   // ✅ IMPORTANT
+  yAxis?: string | string[];   //  IMPORTANT
   value?: string;
   size?: string;
   label?: string;
@@ -409,17 +409,46 @@ export default function DataViewTable({
                   {groupByColumns.length > 0 && (
                     <MultiSelect
                       filter
+                      showClear={false}
                       value={selectedGroupBy}
                       options={groupByColumns.map((col: string) => ({
                         label: col.replace(/_/g, " ").toUpperCase(),
                         value: col,
                       }))}
-                      onChange={(e) => {
-                        setSelectedGroupBy(e.value);
+                      // onChange={(e) => {
+                      //   setSelectedGroupBy(e.value);
 
+                      //   const groups = groupRows(
+                      //     filteredRows,
+                      //     e.value,
+                      //     aggregations,
+                      //     aggregationOrder
+                      //   );
+
+                      //   const collapsed = groups
+                      //     .filter(r => r.__isGroup)
+                      //     .reduce((acc: any, g: any) => {
+                      //       acc[g.__groupKey] = true;
+                      //       return acc;
+                      //     }, {});
+
+                      //   setCollapsedGroups(collapsed);
+                      // }}
+                      onChange={(e) => {
+                        const newGroups = e.value;
+                        setSelectedGroupBy(newGroups);
+
+                        // 🔥 GROUP BY CLEARED
+                        if (newGroups.length === 0) {
+                          setAggregations([]);          // ✅ clear footer aggregations
+                          setCollapsedGroups({});       // ✅ reset group state
+                          return;
+                        }
+
+                        // 🔹 GROUP BY APPLIED
                         const groups = groupRows(
                           filteredRows,
-                          e.value,
+                          newGroups,
                           aggregations,
                           aggregationOrder
                         );
@@ -437,8 +466,16 @@ export default function DataViewTable({
 
                       placeholder="Group By"
                       display="chip"
-                      className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center"
+                      className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
                       panelClassName="bg-gray-50 border border-gray-200 rounded-lg shadow-sm"
+                      pt={{
+                        filterContainer: {
+                          className: "pb-3"   // search নিচে space
+                        },
+                        list: {
+                          className: "mt-4"   // 🔥 search & options gap
+                        }
+                      }}
                     />
                   )}
 
@@ -467,8 +504,16 @@ export default function DataViewTable({
                       }}
                       placeholder="Filter"
                       display="chip"
-                      className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center"
+                      className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
                       panelClassName="bg-gray-50 border border-gray-200 rounded-lg shadow-sm"
+                      pt={{
+                        filterContainer: {
+                          className: "pb-3"   // search নিচে space
+                        },
+                        list: {
+                          className: "mt-4"   // 🔥 search & options gap
+                        }
+                      }}
                     />
                   )}
                   {/* ===== FILTER INPUTS ===== */}
