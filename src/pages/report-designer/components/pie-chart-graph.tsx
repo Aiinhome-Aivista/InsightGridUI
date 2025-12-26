@@ -1,72 +1,47 @@
-import { useEffect, useState } from "react";
-import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
-export default function PieChartGraph() {
-  const [animatedValue, setAnimatedValue] = useState(0);
-  const targetValue = 25;
-  const gapSize = 5;
+export default function PieChartGraph({ config }: { config: any }) {
+  if (!config?.rows || !config?.xAxis || !config?.yAxis) return null;
 
-  useEffect(() => {
-    const duration = 1500;
-    const steps = 60;
-    const increment = targetValue / steps;
-    let currentStep = 0;
+  const grouped: Record<string, number> = {};
 
-    const timer = setInterval(() => {
-      currentStep++;
-      if (currentStep <= steps) {
-        setAnimatedValue(currentStep * increment);
-      } else {
-        setAnimatedValue(targetValue);
-        clearInterval(timer);
-      }
-    }, duration / steps);
+  config.rows.forEach((r: any) => {
+    const key = String(r[config.xAxis]);
 
-    return () => clearInterval(timer);
-  }, []);
+    if (config.agg === "count") {
+      grouped[key] = (grouped[key] || 0) + 1;
+    } else {
+      grouped[key] =
+        (grouped[key] || 0) + Number(r[config.yAxis] || 0);
+    }
+  });
 
-  const blueAngle = (animatedValue / 100) * 360;
-  const grayAngle = 360 - blueAngle - (gapSize * 2);
 
-  const data = [
-    { name: 'Gap1', value: gapSize, color: 'transparent' },
-    { name: 'Completed', value: blueAngle, color: '#4F46E5' },
-    { name: 'Gap2', value: gapSize, color: 'transparent' },
-    { name: 'Remaining', value: grayAngle, color: '#E5E7EB' }
-  ];
+  const data = Object.entries(grouped).map(([name, value]) => ({
+    name,
+    value
+  }));
+
+  const COLORS = ["#4F46E5", "#6366F1", "#818CF8", "#A5B4FC"];
 
   return (
-    <div className="relative flex items-center justify-center" style={{ height: '200px' }}>
+    <div className="w-full h-[240px]">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
-            cx="50%"
-            cy="50%"
-            startAngle={90}
-            endAngle={-270}
-            innerRadius="65%"
-            outerRadius="85%"
-            paddingAngle={0}
             dataKey="value"
-            strokeWidth={0}
-            animationDuration={0}
-            isAnimationActive={false}
+            nameKey="name"
+            outerRadius="80%"
+            label
           >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+            {data.map((_, i) => (
+              <Cell key={i} fill={COLORS[i % COLORS.length]} />
             ))}
           </Pie>
+          <Tooltip />
         </PieChart>
       </ResponsiveContainer>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-xl font-bold text-gray-900">
-            {Math.round(animatedValue)}%
-          </div>
-          <div className="text-sm text-gray-500 mt-1">Complete</div>
-        </div>
-      </div>
     </div>
   );
 }

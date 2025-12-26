@@ -7,12 +7,16 @@ import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import WaterfallChartIcon from '@mui/icons-material/WaterfallChart';
 import { useState, useEffect } from 'react';
+import { MultiSelect } from "primereact/multiselect";
 
 interface ChartSidebarProps {
-  onChartSelect?: (chartTypes: string[]) => void;
+  columns: { column_name: string; label: string }[];
+  rows: any[];
+  columnTypes: Record<string, string>;
+  onChartSelect: (config: any) => void;
   onClose?: () => void;
-  selectedCharts?: string[];
 }
+
 
 interface ChartOption {
   id: string;
@@ -21,12 +25,11 @@ interface ChartOption {
   subtitle: string;
 }
 
-export default function ChartSidebar({ onChartSelect, onClose, selectedCharts: initialSelectedCharts = [] }: ChartSidebarProps) {
-  const [selectedCharts, setSelectedCharts] = useState<string[]>(initialSelectedCharts);
+export default function ChartSidebar({ onChartSelect, onClose, columns, columnTypes, rows }: ChartSidebarProps) {
 
-  useEffect(() => {
-    setSelectedCharts(initialSelectedCharts);
-  }, [initialSelectedCharts]);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+
+
 
   const chartOptions: ChartOption[] = [
     {
@@ -72,73 +75,322 @@ export default function ChartSidebar({ onChartSelect, onClose, selectedCharts: i
       subtitle: 'Compare Value'
     }
   ];
+  const normalizeType = (t?: string, colName?: string) => {
+    if (!t) return "text";
 
-  const handleChartClick = (chartType: string) => {
-    // CHANGED: Replace current selection with new chart instead of toggling
-    const newSelection = selectedCharts.includes(chartType)
-      ? [] // If clicking the same chart, deselect it
-      : [chartType]; // Otherwise, replace with the new chart
+    // 👇 treat IDs as countable numeric
+    if (
+      ["int", "decimal"].includes(t) ||
+      colName?.toLowerCase().endsWith("_id")
+    ) {
+      return "number";
+    }
 
-    setSelectedCharts(newSelection);
-    if (onChartSelect) {
-      onChartSelect(newSelection);
+    if (t === "datetime") return "date";
+    return "text";
+  };
+  const orderedSelected = selectedColumns.map(col => ({
+    name: col,
+    type: normalizeType(columnTypes?.[col], col)
+  }));
+
+  const typedSelected = selectedColumns.map(c => ({
+    name: c,
+    type: normalizeType(columnTypes?.[c])
+  }));
+  // const isChartDisabled = (chartId: string) => {
+  //   const cols = orderedSelected;
+
+  //   if (cols.length === 0) return true;
+
+  //   switch (chartId) {
+
+  //     case "bar":
+  //     case "pie":
+  //       return !(
+  //         cols.length >= 2 &&
+  //         cols[0].type === "text" &&
+  //         cols[1].type === "number"
+  //       );
+
+  //     case "kpi":
+  //       return !(
+  //         cols.length === 1 &&
+  //         cols[0].type === "number"
+  //       );
+
+  //     case "box":
+  //       return !(
+  //         cols.length === 1 &&
+  //         cols[0].type === "number"
+  //       );
+
+  //     case "mixed":
+  //       return !(
+  //         cols.length >= 3 &&
+  //         cols[0].type === "text" &&
+  //         cols.slice(1).every(c => c.type === "number")
+  //       );
+
+  //     case "bubble":
+  //       return !(
+  //         cols.length >= 2 &&
+  //         cols[0].type === "number" &&
+  //         cols[1].type === "number"
+  //       );
+
+  //     case "waterfall":
+  //       return !(
+  //         cols.length >= 2 &&
+  //         (cols[0].type === "text" || cols[0].type === "date") &&
+  //         cols[1].type === "number"
+  //       );
+
+  //     default:
+  //       return true;
+  //   }
+  // };
+
+  const isChartDisabled = (chartId: string) => {
+    const cols = orderedSelected;
+
+    if (cols.length === 0) return true;
+
+    switch (chartId) {
+      case "bar":
+      case "pie":
+        return !(cols.length >= 1);
+
+      case "kpi":
+        return !(cols.length === 1);
+
+      case "box":
+        return !(cols.length === 1);
+
+      case "mixed":
+        return !(cols.length >= 2);
+
+      case "bubble":
+        return !(
+          cols.length >= 2 &&
+          cols.every(c => c.type === "number")
+        );
+
+      case "waterfall":
+        return !(cols.length >= 1);
+
+      default:
+        return true;
     }
   };
+
+  const autoAssignColumns = (chartType: string) => {
+    const cols = orderedSelected;
+
+    switch (chartType) {
+
+      case "bar":
+      case "pie":
+        return {
+          xAxis: cols[0].name,
+          yAxis: cols[0].name,   // ✅ SAME COLUMN (COUNT)
+          agg: "count"
+        };
+
+
+
+      case "kpi":
+        return {
+          value: cols[0].name,
+          agg: "count"
+        };
+
+      case "box":
+        return {
+          xAxis: cols[0].name,
+          agg: "count"
+        };
+
+
+      case "mixed":
+        return {
+          xAxis: cols[0].name,
+          yAxis: cols.slice(1).map(c => c.name)
+        };
+
+      case "bubble":
+        return {
+          xAxis: cols[0].name,
+          yAxis: cols[1].name,
+          size: cols[2]?.name,
+          label: cols[3]?.name
+        };
+
+      case "waterfall":
+        return {
+          xAxis: cols[0].name,
+          agg: "count"   // ✅ শুধু এটুকু add করো
+        };
+
+
+      default:
+        return null;
+    }
+  };
+
+
+
+
+  const handleChartClick = (chartType: string) => {
+    if (chartType !== "kpi" && selectedColumns.length === 0) return;
+
+    const mapping = autoAssignColumns(chartType);
+    if (!mapping) return;
+
+    onChartSelect({
+      type: chartType,
+      ...mapping,
+      rows
+    });
+  };
+
+
+
 
   return (
     <div className="fixed top-0 right-0 w-80 bg-white shadow-lg h-screen border-l overflow-y-auto z-50">
       <div className="sticky top-0 bg-white z-10 p-4 border-b">
-        <div className="flex justify-between items-center mb-3">
+        {/* Title + Close */}
+        <div className="flex justify-between items-center mb-2">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Recommended Graph</h3>
-            <p className="text-xs text-gray-500 mt-0.5">Table: Product Details</p>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Recommended Graph
+            </h3>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Table: Product Details
+            </p>
           </div>
+
           {onClose && (
             <button
               onClick={onClose}
               className="p-1 hover:bg-gray-100 rounded-md transition"
               aria-label="Close sidebar"
             >
-              <CloseIcon sx={{ fontSize: '1.25rem' }} className="text-gray-500" />
+              <CloseIcon sx={{ fontSize: "1.25rem" }} className="text-gray-500" />
             </button>
           )}
         </div>
-        {selectedCharts.length > 0 && (
-          <div className="mt-3 text-xs text-blue-600 font-medium">
-            {selectedCharts.length} chart selected
-          </div>
-        )}
+
+        {/* MULTISELECT — FULL WIDTH */}
+        <MultiSelect
+          options={columns.map(c => ({
+            label: c.label,
+            value: c.column_name
+          }))}
+          value={selectedColumns}
+          // onChange={(e) => setSelectedColumns(e.value)}
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select Column"
+          display="chip"
+          showClear={false}
+          filter
+          pt={{
+            root: {
+              className:
+                "w-full bg-gray-50 border border-gray-200 rounded-2xl min-h-[56px] flex items-center hover:border-gray-300 focus-within:border-indigo-500"
+            },
+
+            label: {
+              className: "text-gray-400 text-base px-4"
+            },
+
+            trigger: {
+              className: "text-gray-500 px-4"
+            },
+
+            /* DROPDOWN PANEL */
+            panel: {
+              className:
+                "rounded-2xl border border-gray-200 shadow-lg mt-2 bg-gray-50 overflow-hidden"
+            },
+
+            /* SEARCH WRAPPER */
+            filterContainer: {
+              className:
+                "px-3 pt-3 pb-2 bg-gray-50 border-b border-gray-200 relative"
+            },
+
+            /* SEARCH INPUT */
+            filterInput: {
+              className:
+                "w-full pl-9 pr-3 py-2 rounded-lg bg-white border border-gray-300 text-sm " +
+                "focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+            },
+
+            /* OPTION LIST */
+            list: {
+              className: "pt-5 pb-3 bg-gray-50"
+            },
+
+            item: {
+              className:
+                "flex items-center gap-2 text-sm px-4 py-2 cursor-pointer hover:bg-gray-200 rounded-md"
+            },
+
+            token: {
+              className:
+                "bg-indigo-50 text-indigo-700 rounded-lg text-xs px-2 py-1"
+            }
+          }}
+
+
+
+
+
+        />
+
+
+
+
       </div>
+
       <div className="p-4">
-        <div className="grid grid-cols-2 gap-4">
-          {chartOptions.map((chart) => (
-            <button
-              key={chart.id}
-              onClick={() => handleChartClick(chart.id)}
-              className={`flex flex-col items-center justify-center p-2 bg-gray-50 rounded-lg transition cursor-pointer border-2 ${selectedCharts.includes(chart.id)
-                ? 'border-blue-500 bg-blue-50 shadow-sm'
-                : 'border-transparent hover:border-blue-500 hover:shadow-sm'
-                }`}
-            >
-              <div className="w-full aspect-square flex items-center justify-center bg-gray-100 rounded-lg mb-2 relative">
-                <div className="flex items-center justify-center text-gray-700">
+        <div className="flex flex-col gap-2">
+          {chartOptions.map(chart => {
+            const disabled = isChartDisabled(chart.id);
+
+            return (
+              <button
+                key={chart.id}
+                disabled={disabled}
+                onClick={() => handleChartClick(chart.id)}
+                className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg border transition text-left
+          ${disabled
+                    ? "opacity-40 cursor-not-allowed bg-gray-50"
+                    : "bg-white hover:bg-blue-50 hover:border-blue-500"
+                  }`}
+              >
+                {/* ICON */}
+                <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-md">
                   {chart.icon}
                 </div>
-                {selectedCharts.includes(chart.id) && (
-                  <div className="absolute top-1 right-1 bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                    ✓
-                  </div>
-                )}
-              </div>
-              <h4 className="text-sm font-semibold text-gray-900 text-center">
-                {chart.name}
-              </h4>
-              <p className="text-xs text-gray-500 mt-0.5 text-center">
-                {chart.subtitle}
-              </p>
-            </button>
-          ))}
+
+                {/* TEXT */}
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-gray-900">
+                    {chart.name}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {chart.subtitle}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
         </div>
+
       </div>
     </div>
   );

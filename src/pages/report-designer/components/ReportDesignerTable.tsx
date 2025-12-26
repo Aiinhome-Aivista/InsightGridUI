@@ -1,74 +1,13 @@
-// import { useState } from "react";
-// import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
-// import { useTheme } from "../../../theme";
-// import ProductDataTable from "../../query-designer/components/DataTable";
-// interface DataViewTableProps {
-//   allData: { [key: string]: any };
-//   selectedTables: string[];
-//   globalFilter: string;
-// }
-// export default function DataViewTable({
-//   allData,
-//   selectedTables,
-//   globalFilter,
-// }: DataViewTableProps) {
-//   const { theme } = useTheme();
-//   return (
-//     <div>
-//       {selectedTables.map((tableKey) => {
-//         const table = allData[tableKey];
-//         if (!table) return null;
-//         const columns = table.columns?.map((col: { column_name: string }) => ({
-//           column_name: col.column_name,
-//           header: col.column_name.replace(/_/g, ' ').toUpperCase(),
-//           sortable: true,
-//         })) || [];
-
-//         return (
-//           <div key={tableKey} className="px-4 pb-6">
-//             <div className="rounded-xl shadow-xs p-4 bg-white">
-//               <div className="flex items-start justify-between mb-4">
-//                 <div>
-//                   <h2
-//                     className="text-sm font-semibold flex items-center gap-2"
-//                     style={{ color: theme.primaryText }}
-//                   >
-//                     <GridViewRoundedIcon
-//                       sx={{ fontSize: "1rem", color: theme.primaryText }}
-//                     />
-//                     {table.title}
-//                   </h2>
-//                   <p
-//                     className="text-xs mt-1"
-//                     style={{ color: theme.secondaryText }}
-//                   >
-//                     This displays {table.title.toLowerCase()} details.
-//                   </p>
-//                 </div>
-//               </div>
-//               <ProductDataTable
-//                 data={table.rows || []}
-//                 globalFilter={globalFilter}
-//                 showPagination={true}
-//                 columns={columns}
-//               />
-//             </div>
-//           </div>
-//         );
-//       })}
-//     </div>
-//   );
-// }
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import TableRowsRoundedIcon from "@mui/icons-material/TableRowsRounded";
 import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
-import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import { useTheme } from "../../../theme";
 import ProductDataTable from "../../query-designer/components/DataTable";
 import { MultiSelect } from "primereact/multiselect";
-import { Accordion, AccordionTab } from "primereact/accordion";
+import ChartSidebar from "./ChartSidebar";
+import RenderCharts from "./render-charts";
+
 
 interface DataViewTableProps {
   allData: { [key: string]: any };
@@ -77,24 +16,75 @@ interface DataViewTableProps {
   onAggregationSelect?: (column: string, agg: string) => void;
 
 }
+export interface ChartConfig {
+  id: string;
+  type: "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
+  xAxis?: string;
+  yAxis?: string | string[];   // ✅ IMPORTANT
+  value?: string;
+  size?: string;
+  label?: string;
+  agg?: "count" | "sum";
+  rows: any[];
+}
+
+
+
+// const groupRows = (rows: any[], groupCols: string[]) => {
+//   if (!groupCols.length) return rows;
+
+//   const result: any[] = [];
+//   const map: Record<string, any[]> = {};
+
+//   rows.forEach(row => {
+//     const key = groupCols.map(col => row[col]).join(" | ");
+//     if (!map[key]) map[key] = [];
+//     map[key].push(row);
+//   });
+
+//   Object.entries(map).forEach(([groupKey, items]) => {
+//     result.push({
+//       __isGroup: true,
+//       __groupLabel: `${groupCols.join(", ").toUpperCase()}: ${groupKey}`,
+//       __count: items.length,
+//     });
+
+//     items.forEach(item => result.push(item));
+//   });
+
+//   return result;
+// };
+
 const groupRows = (rows: any[], groupCols: string[]) => {
   if (!groupCols.length) return rows;
 
+  const result: any[] = [];
   const map: Record<string, any[]> = {};
 
   rows.forEach(row => {
     const key = groupCols.map(col => row[col]).join(" | ");
-
-    if (!map[key]) {
-      map[key] = [];
-    }
+    if (!map[key]) map[key] = [];
     map[key].push(row);
   });
 
-  return Object.entries(map).map(([groupKey, items]) => ({
-    __groupKey: groupKey,
-    __rows: items,
-  }));
+  Object.entries(map).forEach(([groupKey, items]) => {
+    result.push({
+      __isGroup: true,
+      __groupKey: groupKey,
+      __groupLabel: `${groupCols.join(", ").toUpperCase()}: ${groupKey}`,
+      __count: items.length,
+      __collapsed: true   // ✅ default collapsed
+    });
+
+    items.forEach(item =>
+      result.push({
+        ...item,
+        __parentGroup: groupKey
+      })
+    );
+  });
+
+  return result;
 };
 
 
@@ -111,8 +101,11 @@ export default function DataViewTable({
     { column: string; operator: string }[]
   >([]);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-  const [activeGroupKey, setActiveGroupKey] = useState<string | null>(null);
+  const [showChartSidebar, setShowChartSidebar] = useState(false);
+  const [charts, setCharts] = useState<ChartConfig[]>([]);
   const primaryTableKey = selectedTables[0];
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+
   const applyFilters = (rows: any[]) => {
     if (!selectedFilters.length) return rows;
 
@@ -174,23 +167,22 @@ export default function DataViewTable({
       ? allData[primaryTableKey].rows || []
       : [];
   const filteredRows = applyFilters(baseRows);
-
-  // const groupedData =
+  // const displayRows =
   //   selectedGroupBy.length > 0
-  //     ? groupRows(baseRows, selectedGroupBy)
-  //     : [];
-  const groupedData =
-    selectedGroupBy.length > 0
-      ? groupRows(filteredRows, selectedGroupBy)
-      : [];
+  //     ? groupRows(filteredRows, selectedGroupBy)
+  //     : filteredRows;
+  const grouped = selectedGroupBy.length > 0
+    ? groupRows(filteredRows, selectedGroupBy)
+    : filteredRows;
 
-  useEffect(() => {
-    if (groupedData.length > 0) {
-      setActiveGroupKey(groupedData[0].__groupKey);
-    } else {
-      setActiveGroupKey(null);
-    }
-  }, [selectedGroupBy.join("|")]);
+  const displayRows = grouped.filter(row => {
+    if (!row.__parentGroup) return true; // group row
+    return !collapsedGroups[row.__parentGroup]; // hide children if collapsed
+  });
+
+  // 🔥 Charts should NEVER use grouped rows
+  const chartRows = filteredRows;
+
 
   const getColumnType = (table: any, column: string) => {
     const type = table?.visualization?.column_types?.[column];
@@ -204,8 +196,16 @@ export default function DataViewTable({
     return "text";
   };
 
+  const removeChart = (id: string) => {
+    setCharts(prev => prev.filter(c => c.id !== id));
+  };
 
-
+  const toggleGroup = (key: string) => {
+    setCollapsedGroups(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
 
   return (
     <div>
@@ -221,6 +221,15 @@ export default function DataViewTable({
           })) || [];
         const groupByColumns = table.visualization?.group_by || [];
         const filters = table.visualization?.filters || {};
+        const chartColumns =
+          table.columns?.map((col: { column_name: string }) => ({
+            column_name: col.column_name,                  // ✅ SAME KEY
+            label: col.column_name.replace(/_/g, " ").toUpperCase(),
+          })) || [];
+
+        const chartColumnTypes =
+          table.visualization?.column_types || {};
+
 
 
 
@@ -258,11 +267,18 @@ export default function DataViewTable({
                       }))}
                       onChange={(e) => {
                         setSelectedGroupBy(e.value);
-                        console.log("GROUP BY:", e.value);
 
-                        // 🔥 future:
-                        // onGroupBySelect?.(e.value)
+                        // 🔥 initialize all groups as collapsed
+                        const groups = groupRows(filteredRows, e.value)
+                          .filter(r => r.__isGroup)
+                          .reduce((acc: any, g: any) => {
+                            acc[g.__groupKey] = true;
+                            return acc;
+                          }, {});
+
+                        setCollapsedGroups(groups);
                       }}
+
                       placeholder="Group By"
                       display="chip"
                       className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center"
@@ -371,7 +387,10 @@ export default function DataViewTable({
                   {/* View Toggle */}
                   <div className="flex border rounded-md overflow-hidden">
                     <button
-                      onClick={() => setViewType("table")}
+                      onClick={() => {
+                        setViewType("table");
+                        setShowChartSidebar(false); // ✅ ADD THIS
+                      }}
                       className={`px-2 py-1 ${viewType === "table"
                         ? "bg-gray-100"
                         : "hover:bg-gray-50"
@@ -380,7 +399,10 @@ export default function DataViewTable({
                       <TableRowsRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
                     <button
-                      onClick={() => setViewType("chart")}
+                      onClick={() => {
+                        setViewType("chart");
+                        setShowChartSidebar(true);
+                      }}
                       className={`px-2 py-1 ${viewType === "chart"
                         ? "bg-gray-100"
                         : "hover:bg-gray-50"
@@ -388,55 +410,56 @@ export default function DataViewTable({
                     >
                       <BarChartRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
+
                   </div>
                 </div>
               </div>
-              {viewType === "table" ? (
-                selectedGroupBy.length > 0 ? (
-                  <Accordion activeIndex={0} className="w-full">
-                    {groupedData.map((group: any, idx: number) => (
-                      <AccordionTab
-                        key={group.__groupKey}
-                        header={
-                          <div className="flex justify-between items-center w-full">
-                            <span className="font-semibold">
-                              {group.__groupKey}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              {group.__rows.length} rows
-                            </span>
-                          </div>
-                        }
-                      >
-                        {/* Scrollable table container */}
-                        <div className="max-h-[420px] overflow-y-auto border rounded-lg">
-                          <ProductDataTable
-                            data={group.__rows}
-                            globalFilter={globalFilter}
-                            showPagination={true}
-                            columns={columns}
-                            columnAggregations={table.visualization?.aggregations}
-                            onAggregationSelect={onAggregationSelect}
-                          />
-                        </div>
-                      </AccordionTab>
-                    ))}
-                  </Accordion>
-                ) : (
-                  <ProductDataTable
-                    data={filteredRows}
-                    globalFilter={globalFilter}
-                    showPagination={true}
-                    columns={columns}
-                    columnAggregations={table.visualization?.aggregations}
-                    onAggregationSelect={onAggregationSelect}
-                  />
-                )
-              ) : (
-                <div className="h-40 flex items-center justify-center text-sm text-gray-400">
-                  Chart view (coming soon)
-                </div>
+              {viewType === "table" &&
+
+                <ProductDataTable
+                  data={displayRows}
+                  globalFilter={globalFilter}
+                  showPagination={true}
+                  columns={columns}
+                  columnAggregations={table.visualization?.aggregations}
+                  onAggregationSelect={onAggregationSelect}
+                  enableRowGrouping={selectedGroupBy.length > 0}
+                  collapsedGroups={collapsedGroups}        // ✅ NEW
+                  onToggleGroup={toggleGroup}
+                />
+              }
+
+              {showChartSidebar && (
+                <ChartSidebar
+                  columns={chartColumns}                // ✅ clean columns
+                  rows={chartRows}
+                  columnTypes={chartColumnTypes}        // ✅ exact map
+                  onChartSelect={(config) => {
+                    setCharts(prev => [
+                      ...prev,
+                      {
+                        ...config,
+                        id: Date.now().toString()
+                      }
+                    ]);
+                    setViewType("chart");
+                  }}
+
+                  onClose={() => {
+                    setShowChartSidebar(false);
+                    setViewType("table");
+                  }}
+                />
               )}
+
+
+              {viewType === "chart" && (
+                <RenderCharts
+                  charts={charts}
+                  onRemoveChart={removeChart}
+                />
+              )}
+
 
 
             </div>

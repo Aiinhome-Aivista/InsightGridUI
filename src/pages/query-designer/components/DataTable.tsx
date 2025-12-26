@@ -4,6 +4,8 @@ import { FilterMatchMode } from "primereact/api";
 import { useState, useEffect } from "react";
 import "../../../styles/primereact-table.css";
 import ColumnHeaderWithAggregation from "../../report-designer/components/ColumnHeaderWithAggregation";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
 
 interface ColumnConfig {
   column_name: string;
@@ -19,6 +21,10 @@ interface ProductDataTableProps {
   showColumnDropdownIcon?: boolean;
   columnAggregations?: Record<string, string[]>;
   onAggregationSelect?: (column: string, agg: string) => void;
+  enableRowGrouping?: boolean;
+  collapsedGroups?: Record<string, boolean>;
+  onToggleGroup?: (key: string) => void;
+
 }
 export default function ProductDataTable({
   data,
@@ -27,6 +33,9 @@ export default function ProductDataTable({
   columns = [],
   columnAggregations,
   onAggregationSelect,
+  enableRowGrouping,
+  collapsedGroups,
+  onToggleGroup
 }: ProductDataTableProps) {
   const uniqueColumns = columns.filter((col, index, self) =>
     index === self.findIndex((t) => t.column_name === col.column_name)
@@ -39,11 +48,23 @@ export default function ProductDataTable({
   const [first, setFirst] = useState(0);
   const rows = 5;
 
-  const totalRecords = data.length;
+  // const totalRecords = data.length;
+  const totalRecords = enableRowGrouping
+    ? data.filter(r => !r.__isGroup).length
+    : data.length;
+
   const totalPages = Math.ceil(totalRecords / rows);
   const currentPage = Math.floor(first / rows) + 1;
   const [pageWindowStart, setPageWindowStart] = useState(1);
   const maxVisiblePages = 5;
+
+
+  const rowClassName = (rowData: any) => {
+    if (rowData.__isGroup) {
+      return "bg-gray-100 font-semibold";
+    }
+    return "border-b border-gray-200";
+  };
 
   useEffect(() => {
     setFilters({
@@ -104,7 +125,10 @@ export default function ProductDataTable({
 
         className="custom-table"
         stripedRows
-        rowClassName={() => "border-b border-gray-200"}
+        // rowClassName={() => "border-b border-gray-200"}
+        rowClassName={enableRowGrouping ? rowClassName : undefined}
+
+
       >
         {uniqueColumns.map((col, index) => {
           const headerLabel = 'header' in col && col.header ? col.header : formatHeader(col.column_name);
@@ -135,6 +159,59 @@ export default function ProductDataTable({
                 fontSize: '14px',
                 fontWeight: 400
               }}
+              // body={(rowData) => {
+              //   if (enableRowGrouping && rowData.__isGroup) {
+              //     if (index === 0) {
+              //       return (
+              //         <div className="py-2 px-2 font-semibold text-gray-700">
+              //           {rowData.__groupLabel}
+              //           <span className="ml-2 text-xs text-gray-500">
+              //             ({rowData.__count})
+              //           </span>
+              //         </div>
+              //       );
+              //     }
+              //     return null; // অন্য column ফাঁকা
+              //   }
+
+              //   return rowData[col.column_name];
+              // }}
+              body={(rowData) => {
+                if (enableRowGrouping && rowData.__isGroup) {
+                  if (index === 0) {
+                    const collapsed = collapsedGroups?.[rowData.__groupKey] ?? true;
+
+                    return (
+                      <div
+                        className="flex items-center justify-between py-2 px-2 font-semibold text-gray-700 cursor-pointer"
+                        onClick={() => onToggleGroup?.(rowData.__groupKey)}
+                      >
+                        <div className="flex items-center gap-1">
+                          {rowData.__groupLabel}
+                          <span className="ml-2 text-xs text-gray-500">
+                            ({rowData.__count})
+                          </span>
+                        </div>
+
+                        <span className="flex items-center">
+                          {collapsed ? (
+                            <KeyboardArrowDownRoundedIcon fontSize="medium" />
+                          ) : (
+                            <KeyboardArrowUpRoundedIcon fontSize="medium" />
+                          )}
+                        </span>
+                      </div>
+                    );
+                  }
+                  return null;
+                }
+
+
+               
+
+                return rowData[col.column_name];
+              }}
+
             />
           );
         })}
