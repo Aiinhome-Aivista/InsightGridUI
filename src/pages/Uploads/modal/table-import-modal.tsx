@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'lucide-react';
 import ApiService from '../../../services/ApiServices';
 
@@ -51,6 +51,9 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     // Pagination state for Extracted Columns table
     const [currentPage, setCurrentPage] = useState(1);
     const [pageWindowStart, setPageWindowStart] = useState(1);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const progressRef = useRef(null);
+
     const rowsPerPage = 5;
     const maxVisiblePages = 5;
 
@@ -70,6 +73,13 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         setCurrentPage(1);
         setPageWindowStart(1);
     }, [columns.length]);
+
+    useEffect(() => {
+        if (!isOpen) {
+            stopProgressPolling();
+        }
+    }, [isOpen]);
+
 
     // Handle page change
     const onPageChange = (page: number) => {
@@ -228,6 +238,38 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     };
 
 
+    const startProgressPolling = () => {
+        setUploadProgress(0);
+
+        progressRef.current = setInterval(async () => {
+            try {
+                const res = await ApiService.getUploadProgress({
+                    session_id: sessionId,
+                    file_name: apiData?.file_name,
+                });
+
+                const percent = res?.data?.data?.percentage ?? 0;
+                setUploadProgress(percent);
+
+                if (percent >= 100 && progressRef.current) {
+                    clearInterval(progressRef.current);
+                    progressRef.current = null;
+                }
+            } catch (err) {
+                console.error("Progress API error", err);
+            }
+        }, 2000);
+    };
+
+    const stopProgressPolling = () => {
+        if (progressRef.current) {
+            clearInterval(progressRef.current);
+            progressRef.current = null;
+        }
+    };
+
+
+
     const handleNext = async () => {
         const schema = columns.map(col => ({
             column: col.name,
@@ -347,8 +389,38 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             }
 
             // CASE: INSERT DATA
+            // if (insertData === "yes") {
+            //     setStep("loading");
+
+            //     const insertPayload = {
+            //         action: "insert_data",
+            //         session_id: sessionId,
+            //         created_by: createdBy,
+            //         file_name: apiData?.file_name,
+            //         table_name: createNewTable === "no" ? selectedTable : tableName,
+            //         is_existing: createNewTable === "no",
+            //         schema
+            //     };
+
+            //     try {
+            //         const response = await ApiService.preview(insertPayload);
+            //         setInsertResponse(response?.data?.data);
+            //     } catch (err) {
+            //         setInsertResponse({
+            //             summary_message: err?.response?.data?.message
+            //         });
+            //     }
+
+            //     setTimeout(() => {
+            //         setStep("success");
+            //     }, 800);
+            // }
+
             if (insertData === "yes") {
                 setStep("loading");
+
+                // ✅ START PROGRESS
+                startProgressPolling();
 
                 const insertPayload = {
                     action: "insert_data",
@@ -367,12 +439,16 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                     setInsertResponse({
                         summary_message: err?.response?.data?.message
                     });
-                }
+                } finally {
+                    // 🛑 STOP POLLING
+                    stopProgressPolling();
 
-                setTimeout(() => {
-                    setStep("success");
-                }, 800);
+                    setTimeout(() => {
+                        setStep("success");
+                    }, 300);
+                }
             }
+
 
             return;
         }
@@ -921,9 +997,27 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 )}
                             </>
                         ) : step === 'loading' ? (
-                            <div className="flex flex-col items-center justify-center">
-                                <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-                                <p className="text-sm text-gray-600">Processing...</p>
+                            // <div className="flex flex-col items-center justify-center">
+                            //     <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
+                            //     <p className="text-sm text-gray-600">Processing...</p>
+                            // </div>
+                            <div className="flex flex-col items-center justify-center gap-3">
+                                <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+
+                                <p className="text-sm font-medium text-gray-700">
+                                    Inserting data...
+                                </p>
+
+                                <div className="w-72 bg-gray-200 rounded-full h-2 overflow-hidden">
+                                    <div
+                                        className="bg-blue-600 h-2 transition-all duration-300"
+                                        style={{ width: `${uploadProgress}%` }}
+                                    />
+                                </div>
+
+                                <p className="text-xs text-gray-600">
+                                    {uploadProgress}% completed
+                                </p>
                             </div>
                         ) : (
                             <>
