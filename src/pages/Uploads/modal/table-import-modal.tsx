@@ -481,18 +481,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 )}
 
                                 {/* First Row as Header Checkbox */}
-
-                                {/* <label className="flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={treatFirstRowAsHeader}
-                                            onChange={(e) => setTreatFirstRowAsHeader(e.target.checked)}
-                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                        />
-                                        <span className="ml-2 text-xs text-gray-700 font-medium">
-                                            Treat first row as header
-                                        </span>
-                                    </label> */}
                                 <label className="flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -589,57 +577,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-xs font-semibold text-gray-900">
-                                            Columns Preview
-                                        </h4>
-                                        {createNewTable === 'yes' && (
-                                            <button
-                                                onClick={handleAddColumn}
-                                                className="px-3 py-1.5 bg-[#3D5B811A] rounded-lg text-gray-700 hover:text-blue-600 transition flex items-center gap-2"
-                                                title="Add Column"
-                                            >
-                                                <Plus className="w-3.5 h-3.5" />
-                                                <span className="text-xs font-medium">Add Column</span>
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    <ProductDataTable
-                                        data={columns}
-                                        globalFilter=""
-                                        showPagination={false}
-                                        columns={[
-                                            {
-                                                column_name: 'name',
-                                                header: 'Column Name',
-                                                sortable: true
-                                            },
-                                            {
-                                                column_name: 'dataType',
-                                                header: 'Data Type',
-                                                sortable: true
-                                            },
-                                            {
-                                                column_name: 'length',
-                                                header: 'Length',
-                                                sortable: true
-                                            },
-                                            {
-                                                column_name: 'primary',
-                                                header: 'Primary Key',
-                                                sortable: false
-                                            },
-                                            ...(createNewTable === 'yes' ? [{
-                                                column_name: 'actions',
-                                                header: 'Actions',
-                                                sortable: false
-                                            }] : [])
-                                        ]}
-                                    />
-                                </div> */}
 
                                 {/* Extracted Column Section */}
                                 <div>
@@ -1038,24 +975,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             >
                                 Cancel
                             </button>
-                            {/* <button
-                                onClick={handleNext}
-                                disabled={
-                                    (step === 'preview' && (insertData !== "yes" || isSchemaMismatch)) ||
-                                    (step === 'configure' && (createNewTable === 'no' && !selectedTable))
-                                }
-                                className={`px-4 py-1.5 rounded-lg font-medium text-xs transition-colors
-                                    ${(step === 'preview' && (insertData !== "yes" || isSchemaMismatch)) ||
-                                    (step === 'configure' && (createNewTable === 'no' && !selectedTable))
-                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                        : "bg-blue-600 text-white hover:bg-blue-700"
-                                    }
-                                `}
-                            >
-                                {step === 'configure'
-                                    ? (createNewTable === 'yes' ? 'Create Table & Preview' : 'Preview')
-                                    : 'Next'}
-                            </button> */}
 
                             <button
                                 onClick={handleNext}

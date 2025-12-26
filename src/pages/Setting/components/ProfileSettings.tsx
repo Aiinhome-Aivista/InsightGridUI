@@ -7,8 +7,8 @@ import {
   Camera,
   Trash2,
   Save,
-  Building2,  
-  Hash,       
+  Building2,
+  Hash,
   MapPin,
   Package
 } from 'lucide-react';
@@ -81,16 +81,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
   return (
     <div className="max-w-8xl">
       <form onSubmit={formik.handleSubmit} className="relative">
-        {/* <div className="absolute top-6 right-6">
-          <button
-            type="submit"
-            disabled={isSaving}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-          >
-            <Save size={18} />
-            {isSaving ? 'Saving...' : 'Save Changes'}
-          </button>
-        </div> */}
         <div className="rounded-xl px-4 ">
           <div className="flex flex-col md:flex-row items-start md:items-center ">
             <div className="relative p-4 ">
@@ -115,23 +105,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">{userData?.company_name || 'Company Name'}</h3>
-              {/* <div className="flex flex-wrap gap-3">
-                <label
-                  htmlFor="avatar-upload"
-                  className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 cursor-pointer transition-colors flex items-center gap-2"
-                >
-                  <Camera size={18} />
-                  Upload New
-                </label>
-                <button
-                  type="button"
-                  onClick={handleDeleteAvatar}
-                  className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors flex items-center gap-2"
-                >
-                  <Trash2 size={18} />
-                  Delete avatar
-                </button>
-              </div> */}
             </div>
           </div>
         </div>
