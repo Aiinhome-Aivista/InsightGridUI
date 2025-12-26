@@ -1,7 +1,5 @@
 
-import AnimatedToggleButton from '../../query-designer/components/AnimatedToggleButton';
-import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
-import BarChartIcon from "@mui/icons-material/BarChart";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 // ==================== TYPES ====================
 interface ChartCardProps {
@@ -10,23 +8,6 @@ interface ChartCardProps {
   children: React.ReactNode;
   onRemove?: () => void;
 }
-
-// interface WaterfallDataPoint {
-//   name: string;
-//   value: number;
-//   isTotal?: boolean;
-// }
-
-// interface ChartSidebarProps {
-//   onChartSelect?: (chartTypes: string[]) => void;
-// }
-
-// interface ChartOption {
-//   id: string;
-//   name: string;
-//   icon: React.ReactNode;
-//   subtitle: string;
-// }
 
 // ==================== GLOBAL REUSABLE CHART CARD ====================
 export default function ChartCard({ title, description, children, onRemove }: ChartCardProps) {
@@ -38,33 +19,18 @@ export default function ChartCard({ title, description, children, onRemove }: Ch
           <p className="text-xs text-gray-500">{description}</p>
         </div>
         <div className="flex gap-2">
-          <AnimatedToggleButton
-                  options={[
-                    { icon: <GridViewRoundedIcon />, value: 'opt1' },
-                    { icon: <BarChartIcon />, value: 'opt2' }
-                  ]}
-                //   defaultSelected={selectionMode}
-                //   onChange={onModeChange}
-          
-                  width="auto"
-                  height="auto"
-                  buttonPadding="0.2rem 0.3rem"
-                  backgroundColor="#f3f4f6"
-                  activeBackgroundColor="#ffffff"
-                  textColor="#6b7280"
-                  activeTextColor="#111827"
-                  iconSize="0.6rem"
-                  iconPosition="left"
-                  mode="icon" // 'icon' | 'text' | 'both'
-                />
-          {/* {onRemove && (
-            <button 
+          {onRemove && (
+            <button
               onClick={onRemove}
-              className="p-2 rounded hover:bg-red-50 transition"
+              className="p-1.5 rounded-md hover:bg-red-50 transition"
+              title="Remove chart"
             >
-              <CloseIcon className="text-red-600" sx={{ fontSize: '1.5rem' }} />
+              <DeleteOutlineIcon
+                sx={{ fontSize: "1.5rem" }}
+                className="text-red-500 hover:text-red-600"
+              />
             </button>
-          )} */}
+          )}
         </div>
       </div>
       {children}

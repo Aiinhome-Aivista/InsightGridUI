@@ -7,101 +7,58 @@ import BubbleChartGraph from "./bubble-chart-graph";
 import WaterfallChartGraph from "./waterfall-chart-graph";
 import BoxPlotGraph from "./box-plot-graph";
 
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult
+} from "@hello-pangea/dnd";
+
 interface RenderChartsProps {
   charts: ChartConfig[];
   onRemoveChart: (id: string) => void;
+  onReorderCharts: (charts: ChartConfig[]) => void; // 🔥 NEW
+
 }
 
-export default function RenderCharts({ charts, onRemoveChart }: RenderChartsProps) {
+export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }: RenderChartsProps) {
+
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const items = Array.from(charts);
+    const [moved] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, moved);
+
+    onReorderCharts(items); // 🔥 update order
+  };
 
   const renderChart = (chart: ChartConfig) => {
     switch (chart.type) {
-
       case "bar":
-        return (
-          <ChartCard
-            key={chart.id}
-            title={`Bar Chart: ${chart.xAxis}`}
-            description={`Count of ${chart.yAxis}`}
-            onRemove={() => onRemoveChart(chart.id)}
-          >
-            <BarChartGraph config={chart} />
-          </ChartCard>
-        );
+        return <BarChartGraph config={chart} />;
 
       case "pie":
-        return (
-          <ChartCard
-            key={chart.id}
-            title={`Pie Chart: ${chart.xAxis}`}
-            description={`Distribution of ${chart.yAxis}`}
-            onRemove={() => onRemoveChart(chart.id)}
-          >
-            <PieChartGraph config={chart} />
-          </ChartCard>
-        );
+        return <PieChartGraph config={chart} />;
 
       case "kpi":
         return (
-          <ChartCard
-            key={chart.id}
-            title="KPI"
-            description={`Count of ${chart.value}`}
-            onRemove={() => onRemoveChart(chart.id)}
-          >
-            <div className="text-4xl font-bold text-center py-12">
-              {chart.rows.length}
-            </div>
-          </ChartCard>
+          <div className="text-4xl font-bold text-center py-12">
+            {chart.rows.length}
+          </div>
         );
 
       case "mixed":
-        return (
-          <ChartCard
-            key={chart.id}
-            title={`Mixed Chart: ${chart.xAxis}`}
-            description={`Multiple metrics`}
-            onRemove={() => onRemoveChart(chart.id)}
-          >
-            <MixedChartGraph config={chart} />
-          </ChartCard>
-        );
+        return <MixedChartGraph config={chart} />;
 
       case "bubble":
-        return (
-          <ChartCard
-            key={chart.id}
-            title="Bubble Chart"
-            description={`${chart.xAxis} vs ${chart.yAxis}`}
-            onRemove={() => onRemoveChart(chart.id)}
-          >
-            <BubbleChartGraph config={chart} />
-          </ChartCard>
-        );
+        return <BubbleChartGraph config={chart} />;
 
       case "waterfall":
-        return (
-          <ChartCard
-            key={chart.id}
-            title="Waterfall Chart"
-            description={`Change over ${chart.xAxis}`}
-            onRemove={() => onRemoveChart(chart.id)}
-          >
-            <WaterfallChartGraph config={chart} />
-          </ChartCard>
-        );
+        return <WaterfallChartGraph config={chart} />;
 
       case "box":
-        return (
-          <ChartCard
-            key={chart.id}
-            title="Box Plot"
-            description={`Distribution of ${chart.value}`}
-            onRemove={() => onRemoveChart(chart.id)}
-          >
-            <BoxPlotGraph config={chart} />
-          </ChartCard>
-        );
+        return <BoxPlotGraph config={chart} />;
 
       default:
         return null;
@@ -109,9 +66,53 @@ export default function RenderCharts({ charts, onRemoveChart }: RenderChartsProp
   };
 
   return (
-    <div className="flex gap-6 flex-wrap">
-      {charts.map(renderChart)}
-    </div>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="charts">
+        {(provided) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className="
+        grid 
+        grid-cols-1 
+        sm:grid-cols-2 
+        xl:grid-cols-2
+        gap-3 
+        sm:gap-4 
+        xl:gap-5
+        w-full
+        max-w-[1200px]
+      "
+          >
+            {charts.map((chart, index) => (
+              <Draggable key={chart.id} draggableId={chart.id} index={index}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    className={`w-full transition ${snapshot.isDragging ? "ring-2 ring-indigo-400 rounded-xl" : ""
+                      }`}
+                  >
+                    <ChartCard
+                      title={`${chart.type.toUpperCase()} Chart`}
+                      description={
+                        chart.xAxis ? `Based on ${chart.xAxis}` : "Chart"
+                      }
+                      onRemove={() => onRemoveChart(chart.id)}
+                    >
+                      {renderChart(chart)}
+                    </ChartCard>
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+
+    </DragDropContext>
   );
 }
 

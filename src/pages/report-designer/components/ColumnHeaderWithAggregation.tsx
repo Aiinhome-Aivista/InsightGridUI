@@ -24,7 +24,7 @@ export default function ColumnHeaderWithAggregation({
             <span>{label}</span>
 
             <KeyboardArrowDownRoundedIcon
-                sx={{ fontSize: 20, cursor: "pointer" }}
+                sx={{ fontSize: 25, cursor: "pointer" }}
                 onClick={() => setOpen(!open)}
             />
 

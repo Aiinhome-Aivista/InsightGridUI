@@ -24,6 +24,12 @@ interface ProductDataTableProps {
   enableRowGrouping?: boolean;
   collapsedGroups?: Record<string, boolean>;
   onToggleGroup?: (key: string) => void;
+  aggregationMap?: Record<
+    string,
+    Record<"SUM" | "AVG" | "MIN" | "MAX" | "COUNT", number>
+  >;
+  aggregationOrder?: string[];
+  isGrouped?: boolean;
 
 }
 export default function ProductDataTable({
@@ -35,7 +41,10 @@ export default function ProductDataTable({
   onAggregationSelect,
   enableRowGrouping,
   collapsedGroups,
-  onToggleGroup
+  onToggleGroup,
+  aggregationMap,
+  aggregationOrder,
+  isGrouped = false
 }: ProductDataTableProps) {
   const uniqueColumns = columns.filter((col, index, self) =>
     index === self.findIndex((t) => t.column_name === col.column_name)
@@ -109,6 +118,8 @@ export default function ProductDataTable({
     return pages;
   };
   const visiblePages = getVisiblePages();
+
+
   return (
     <div style={{ maxWidth: "88vw" }}>
       <DataTable
@@ -159,34 +170,19 @@ export default function ProductDataTable({
                 fontSize: '14px',
                 fontWeight: 400
               }}
-              // body={(rowData) => {
-              //   if (enableRowGrouping && rowData.__isGroup) {
-              //     if (index === 0) {
-              //       return (
-              //         <div className="py-2 px-2 font-semibold text-gray-700">
-              //           {rowData.__groupLabel}
-              //           <span className="ml-2 text-xs text-gray-500">
-              //             ({rowData.__count})
-              //           </span>
-              //         </div>
-              //       );
-              //     }
-              //     return null; // অন্য column ফাঁকা
-              //   }
-
-              //   return rowData[col.column_name];
-              // }}
               body={(rowData) => {
-                if (enableRowGrouping && rowData.__isGroup) {
+
+                // 🔹 GROUP HEADER
+                if (rowData.__isGroup) {
                   if (index === 0) {
                     const collapsed = collapsedGroups?.[rowData.__groupKey] ?? true;
 
                     return (
                       <div
-                        className="flex items-center justify-between py-2 px-2 font-semibold text-gray-700 cursor-pointer"
+                        className="flex items-center justify-between cursor-pointer font-semibold"
                         onClick={() => onToggleGroup?.(rowData.__groupKey)}
                       >
-                        <div className="flex items-center gap-1">
+                        <div>
                           {rowData.__groupLabel}
                           <span className="ml-2 text-xs text-gray-500">
                             ({rowData.__count})
@@ -195,9 +191,9 @@ export default function ProductDataTable({
 
                         <span className="flex items-center">
                           {collapsed ? (
-                            <KeyboardArrowDownRoundedIcon fontSize="medium" />
+                            <KeyboardArrowDownRoundedIcon fontSize="small" />
                           ) : (
-                            <KeyboardArrowUpRoundedIcon fontSize="medium" />
+                            <KeyboardArrowUpRoundedIcon fontSize="small" />
                           )}
                         </span>
                       </div>
@@ -207,15 +203,69 @@ export default function ProductDataTable({
                 }
 
 
-               
+                // 🔹 GROUP AGGREGATION ROW
+                if (rowData.__isGroupAgg) {
+                  if (index === 0) {
+                    return (
+                      <div className="text-xs font-semibold text-gray-700">
+                        {rowData.__aggregationOrder.map(a => (
+                          <div key={a}>{a}</div>
+                        ))}
+                      </div>
+                    );
+                  }
 
+                  const colAgg = rowData.__aggregationMap[col.column_name];
+                  if (!colAgg) return null;
+
+                  return (
+                    <div className="text-xs font-semibold text-right">
+                      {rowData.__aggregationOrder.map(a => (
+                        <div key={a}>
+                          {colAgg[a]?.toFixed?.(2) ?? ""}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                }
+
+                // 🔹 NORMAL ROW
                 return rowData[col.column_name];
               }}
+              footer={
+                !isGrouped && aggregationMap && aggregationOrder?.length ? (
+                  index === 0 ? (
+                    // 🔹 LEFT LABEL COLUMN
+                    <div className="flex flex-col gap-1 text-xs text-gray-700">
+                      {aggregationOrder.map(a => (
+                        <div key={a}>{a}</div>
+                      ))}
+                    </div>
+                  ) : aggregationMap[col.column_name] ? (
+                    // 🔹 VALUE COLUMN
+                    <div className="flex flex-col gap-1 text-xs text-gray-700 text-right">
+                      {aggregationOrder.map(a => (
+                        <div key={a}>
+                          {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
+                        </div>
+                      ))}
+                    </div>
+                  ) : null
+                ) : null
+              }
+
+
+
+
+
+
 
             />
           );
         })}
       </DataTable>
+
+
       {showPagination && (
         <div className="flex items-center justify-between px-4 py-1 bg-white border-t border-gray-200 rounded-b-xl">
           <div className="text-sm text-gray-600">
