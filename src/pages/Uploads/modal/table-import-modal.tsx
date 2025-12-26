@@ -52,6 +52,8 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     const [currentPage, setCurrentPage] = useState(1);
     const [pageWindowStart, setPageWindowStart] = useState(1);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [isInsertLoading, setIsInsertLoading] = useState(false);
+
     const progressRef = useRef(null);
 
     const rowsPerPage = 5;
@@ -417,6 +419,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             // }
 
             if (insertData === "yes") {
+                setIsInsertLoading(true);
                 setStep("loading");
 
                 // ✅ START PROGRESS
@@ -442,6 +445,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 } finally {
                     // 🛑 STOP POLLING
                     stopProgressPolling();
+                    setIsInsertLoading(false);
 
                     setTimeout(() => {
                         setStep("success");
@@ -997,29 +1001,37 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 )}
                             </>
                         ) : step === 'loading' ? (
-                            // <div className="flex flex-col items-center justify-center">
-                            //     <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-                            //     <p className="text-sm text-gray-600">Processing...</p>
-                            // </div>
-                            <div className="flex flex-col items-center justify-center gap-3">
-                                <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                            isInsertLoading ? (
+                                // ✅ INSERT DATA LOADER (with progress)
+                                <div className="flex flex-col items-center justify-center gap-3">
+                                    <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
 
-                                <p className="text-sm font-medium text-gray-700">
-                                    Inserting data...
-                                </p>
+                                    <p className="text-sm font-medium text-gray-700">
+                                        Inserting data...
+                                    </p>
 
-                                <div className="w-72 bg-gray-200 rounded-full h-2 overflow-hidden">
-                                    <div
-                                        className="bg-blue-600 h-2 transition-all duration-300"
-                                        style={{ width: `${uploadProgress}%` }}
-                                    />
+                                    <div className="w-72 bg-gray-200 rounded-full h-2 overflow-hidden">
+                                        <div
+                                            className="bg-blue-600 h-2 transition-all duration-300"
+                                            style={{ width: `${uploadProgress}%` }}
+                                        />
+                                    </div>
+
+                                    <p className="text-xs text-gray-600">
+                                        {uploadProgress}% completed
+                                    </p>
                                 </div>
-
-                                <p className="text-xs text-gray-600">
-                                    {uploadProgress}% completed
-                                </p>
-                            </div>
+                            ) : (
+                                // ✅ PREVIEW LOADER (simple, no progress)
+                                <div className="flex flex-col items-center justify-center">
+                                    <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-3" />
+                                    <p className="text-sm text-gray-600">
+                                        Preparing preview...
+                                    </p>
+                                </div>
+                            )
                         ) : (
+
                             <>
                                 <div className="flex items-center justify-center gap-2">
                                     <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
