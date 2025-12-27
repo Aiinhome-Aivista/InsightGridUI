@@ -90,6 +90,7 @@ const ReportDesignManage = () => {
     )
   );
 
+  
   const handlePreview = async (report: any) => {
     try {
       const aiResponse = report?.query?.ai_responce;
@@ -109,7 +110,7 @@ const ReportDesignManage = () => {
           columns: api.columns.map((c: string) => ({ column_name: c })),
         },
         "preview",
-        cleanFileName   
+        cleanFileName
       );
     } catch (err) {
       console.error("Preview failed", err);
@@ -136,7 +137,7 @@ const ReportDesignManage = () => {
           })),
         },
         "download",
-        cleanFileName 
+        cleanFileName
       );
 
     } catch (err) {
@@ -229,6 +230,8 @@ const ReportDesignManage = () => {
                 <th className="px-5 py-3 text-left">Report Name</th>
                 <th className="px-5 py-3 text-left">Saving Date</th>
                 <th className="px-5 py-3 text-left">Saving Time</th>
+                <th className="px-5 py-3 text-left">Update Date</th>
+                <th className="px-5 py-3 text-left">Update Time</th>
                 <th className="px-5 py-3 text-left">Rows</th>
                 <th className="px-5 py-3 text-right">Action</th>
               </tr>
@@ -248,6 +251,14 @@ const ReportDesignManage = () => {
 
                     <td className="px-6 py-3 text-xs text-gray-600">
                       {timeAgo(item.actual_created_date, item.actual_created_at)}
+                    </td>
+
+                    <td className="px-6 py-3 text-xs text-gray-600">
+                      {item.actual_saved_date}
+                    </td>
+
+                    <td className="px-6 py-3 text-xs text-gray-600">
+                      {timeAgo(item.actual_saved_date, item.actual_saved_at)}
                     </td>
 
                     <td className="px-6 py-3 text-xs text-gray-600">

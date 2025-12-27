@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import TableRowsRoundedIcon from "@mui/icons-material/TableRowsRounded";
 import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
@@ -13,6 +13,26 @@ interface DataViewTableProps {
   allData: { [key: string]: any };
   selectedTables: string[];
   globalFilter: string;
+
+  selectedGroupBy: string[];
+  setSelectedGroupBy: (v: string[]) => void;
+
+  selectedFilters: { column: string; operator: string }[];
+  setSelectedFilters: (v: { column: string; operator: string }[]) => void;
+
+  filterValues: Record<string, any>;
+  setFilterValues: (v: Record<string, any>) => void;
+
+  aggregations: { column: string; agg: string }[];
+  setAggregations: React.Dispatch<
+    React.SetStateAction<{ column: string; agg: string }[]>
+  >;
+
+  selectedChartColumns: string[];
+  setSelectedChartColumns: (v: string[]) => void;
+
+  charts: ChartConfig[];
+  setCharts: React.Dispatch<React.SetStateAction<ChartConfig[]>>;
 }
 export interface ChartConfig {
   id: string;
@@ -123,22 +143,69 @@ export default function DataViewTable({
   selectedTables,
   globalFilter,
 
+  selectedGroupBy,
+  setSelectedGroupBy,
+
+  selectedFilters,
+  setSelectedFilters,
+
+  filterValues,
+  setFilterValues,
+
+  aggregations,
+  setAggregations,
+
+  selectedChartColumns,
+  setSelectedChartColumns,
+
+  charts,
+  setCharts,
+
 }: DataViewTableProps) {
   const { theme } = useTheme();
   const [viewType, setViewType] = useState<"table" | "chart">("table");
-  const [selectedGroupBy, setSelectedGroupBy] = useState<string[]>([]);
-  const [selectedFilters, setSelectedFilters] = useState<
-    { column: string; operator: string }[]
-  >([]);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  // const [selectedGroupBy, setSelectedGroupBy] = useState<string[]>([]);
+  // const [selectedFilters, setSelectedFilters] = useState<
+  //   { column: string; operator: string }[]
+  // >([]);
+  // const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [showChartSidebar, setShowChartSidebar] = useState(false);
-  const [charts, setCharts] = useState<ChartConfig[]>([]);
+  // const [charts, setCharts] = useState<ChartConfig[]>([]);
   const primaryTableKey = selectedTables[0];
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-  const [aggregations, setAggregations] = useState<
-    { column: string; agg: string }[]
-  >([]);
-  const [selectedChartColumns, setSelectedChartColumns] = useState<string[]>([]);
+  // const [aggregations, setAggregations] = useState<
+  //   { column: string; agg: string }[]
+  // >([]);
+  // const [selectedChartColumns, setSelectedChartColumns] = useState<string[]>([]);
+
+
+  useEffect(() => {
+    if (!selectedGroupBy.length) return;
+    if (!allData || selectedTables.length === 0) return;
+
+    const tableKey = selectedTables[0];
+    const table = allData[tableKey];
+    if (!table) return;
+
+    const rows = table.rows || [];
+
+    const collapsed: Record<string, boolean> = {};
+
+    rows.forEach(row => {
+      const key = selectedGroupBy.map(col => row[col]).join(" | ");
+      collapsed[key] = true; // 🔥 DEFAULT COLLAPSED
+    });
+
+    setCollapsedGroups(collapsed);
+  }, [selectedGroupBy, allData]);
+  useEffect(() => {
+    if (charts.length > 0) {
+      setViewType("table");        // table view
+      setShowChartSidebar(false); // charts below table
+    }
+  }, [charts]);
+
+
 
   const applyFilters = (rows: any[]) => {
     if (!selectedFilters.length) return rows;
@@ -380,6 +447,10 @@ export default function DataViewTable({
           table.visualization?.column_types || {};
 
 
+        const chartsWithRows = charts.map(c => ({
+          ...c,
+          rows: chartRows
+        }));
 
 
         return (
@@ -619,7 +690,8 @@ export default function DataViewTable({
               {showChartSidebar && charts.length > 0 && (
                 <div className="mb-6">
                   <RenderCharts
-                    charts={charts}
+                    charts={chartsWithRows}
+
                     onRemoveChart={removeChart}
                     onReorderCharts={setCharts}
                   />
@@ -696,7 +768,7 @@ export default function DataViewTable({
               {!showChartSidebar && charts.length > 0 && (
                 <div className="mt-6">
                   <RenderCharts
-                    charts={charts}
+                    charts={chartsWithRows}
                     onRemoveChart={removeChart}
                     onReorderCharts={setCharts}
                   />
