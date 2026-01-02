@@ -33,53 +33,55 @@ export default function ChartSidebar({ onChartSelect, onClose, columns, columnTy
 
   const chartOptions: ChartOption[] = [
     {
-      id: 'line',
-      name: 'Line Chart',
-      icon: <TrendingUpIcon sx={{ fontSize: '2rem' }} />,
-      subtitle: 'Trend Over Time'
-    },
-    {
       id: 'bar',
       name: 'Bar Chart',
       icon: <BarChartIcon sx={{ fontSize: '2rem' }} />,
       subtitle: 'Compare Value'
     },
+    // {
+    //   id: 'box',
+    //   name: 'Box Plot',
+    //   icon: <CandlestickChartIcon sx={{ fontSize: '2rem' }} />,
+    //   subtitle: 'Distribution'
+    // },
+    // {
+    //   id: 'bubble',
+    //   name: 'Bubble Chart',
+    //   icon: <BubbleChartIcon sx={{ fontSize: '2rem' }} />,
+    //   subtitle: 'Compare Value'
+    // },
+    //  {
+    //   id: 'kpi',
+    //   name: 'KPI',
+    //   icon: <SpeedIcon sx={{ fontSize: '2rem' }} />,
+    //   subtitle: 'Key Metric'
+    // },
     {
-      id: 'mixed',
-      name: 'Mixed Chart',
-      icon: <ShowChartIcon sx={{ fontSize: '2rem' }} />,
-      subtitle: 'Distribution'
+      id: 'line',
+      name: 'Line Chart',
+      icon: <TrendingUpIcon sx={{ fontSize: '2rem' }} />,
+      subtitle: 'Trend Over Time'
     },
-    {
-      id: 'box',
-      name: 'Box Plot',
-      icon: <CandlestickChartIcon sx={{ fontSize: '2rem' }} />,
-      subtitle: 'Distribution'
-    },
-    {
-      id: 'kpi',
-      name: 'KPI',
-      icon: <SpeedIcon sx={{ fontSize: '2rem' }} />,
-      subtitle: 'Key Metric'
-    },
-    {
-      id: 'bubble',
-      name: 'Bubble Chart',
-      icon: <BubbleChartIcon sx={{ fontSize: '2rem' }} />,
-      subtitle: 'Compare Value'
-    },
+
+    // {
+    //   id: 'mixed',
+    //   name: 'Mixed Chart',
+    //   icon: <ShowChartIcon sx={{ fontSize: '2rem' }} />,
+    //   subtitle: 'Distribution'
+    // },
+
     {
       id: 'pie',
       name: 'Pie Chart',
       icon: <PieChartIcon sx={{ fontSize: '2rem' }} />,
       subtitle: 'Compare Value'
     },
-    {
-      id: 'waterfall',
-      name: 'Waterfall Chart',
-      icon: <WaterfallChartIcon sx={{ fontSize: '2rem' }} />,
-      subtitle: 'Compare Value'
-    }
+    // {
+    //   id: 'waterfall',
+    //   name: 'Waterfall Chart',
+    //   icon: <WaterfallChartIcon sx={{ fontSize: '2rem' }} />,
+    //   subtitle: 'Compare Value'
+    // }
   ];
   const normalizeType = (t?: string, colName?: string) => {
     if (!t) return "text";
