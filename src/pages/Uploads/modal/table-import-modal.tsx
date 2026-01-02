@@ -260,7 +260,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             } catch (err) {
                 console.error("Progress API error", err);
             }
-        }, 10000);
+        }, 5000);
     };
 
     const stopProgressPolling = () => {
