@@ -198,12 +198,12 @@ export default function DataViewTable({
 
     setCollapsedGroups(collapsed);
   }, [selectedGroupBy, allData]);
-  useEffect(() => {
-    if (charts.length > 0) {
-      setViewType("table");        // table view
-      setShowChartSidebar(false); // charts below table
-    }
-  }, [charts]);
+  // useEffect(() => {
+  //   if (charts.length > 0) {
+  //     setViewType("table");        // table view
+  //     setShowChartSidebar(false); // charts below table
+  //   }
+  // }, [charts]);
 
 
 
