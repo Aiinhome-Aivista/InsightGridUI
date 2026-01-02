@@ -13,6 +13,7 @@ import {
   Draggable,
   DropResult
 } from "@hello-pangea/dnd";
+import LineChartGraph from "./line-chart-graph";
 
 interface RenderChartsProps {
   charts: ChartConfig[];
@@ -59,6 +60,8 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }:
 
       case "box":
         return <BoxPlotGraph config={chart} />;
+      case "line":
+        return <LineChartGraph config={chart} />;
 
       default:
         return null;

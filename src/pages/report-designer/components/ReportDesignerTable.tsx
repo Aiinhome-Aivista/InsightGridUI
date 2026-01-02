@@ -36,7 +36,7 @@ interface DataViewTableProps {
 }
 export interface ChartConfig {
   id: string;
-  type: "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
+  type: "line" | "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
   xAxis?: string;
   yAxis?: string | string[];   //  IMPORTANT
   value?: string;
