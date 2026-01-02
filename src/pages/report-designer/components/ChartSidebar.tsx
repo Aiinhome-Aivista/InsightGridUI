@@ -15,6 +15,8 @@ interface ChartSidebarProps {
   columnTypes: Record<string, string>;
   onChartSelect: (config: any) => void;
   onClose?: () => void;
+  selectedColumns: string[];                 // ✅ NEW
+  onSelectedColumnsChange: (cols: string[]) => void; // ✅ NEW
 }
 
 
@@ -25,11 +27,8 @@ interface ChartOption {
   subtitle: string;
 }
 
-export default function ChartSidebar({ onChartSelect, onClose, columns, columnTypes, rows }: ChartSidebarProps) {
-
-  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
-
-
+export default function ChartSidebar({ onChartSelect, onClose, columns, columnTypes, rows, selectedColumns,
+  onSelectedColumnsChange, }: ChartSidebarProps) {
 
   const chartOptions: ChartOption[] = [
     {
@@ -266,9 +265,9 @@ export default function ChartSidebar({ onChartSelect, onClose, columns, columnTy
             <h3 className="text-lg font-semibold text-gray-900">
               Recommended Graph
             </h3>
-            <p className="text-xs text-gray-500 mt-0.5">
+            {/* <p className="text-xs text-gray-500 mt-0.5">
               Table: Product Details
-            </p>
+            </p> */}
           </div>
 
           {onClose && (
@@ -289,12 +288,9 @@ export default function ChartSidebar({ onChartSelect, onClose, columns, columnTy
             value: c.column_name
           }))}
           value={selectedColumns}
-          // onChange={(e) => setSelectedColumns(e.value)}
-          optionLabel="label"
-          optionValue="value"
+          onChange={(e) => onSelectedColumnsChange(e.value)} // 🔥 single source
           placeholder="Select Column"
           display="chip"
-          showClear={false}
           filter
           pt={{
             root: {

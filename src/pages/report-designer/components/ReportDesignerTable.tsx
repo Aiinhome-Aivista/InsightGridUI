@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import TableRowsRoundedIcon from "@mui/icons-material/TableRowsRounded";
 import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
@@ -13,14 +13,32 @@ interface DataViewTableProps {
   allData: { [key: string]: any };
   selectedTables: string[];
   globalFilter: string;
-  onAggregationSelect?: (column: string, agg: string) => void;
 
+  selectedGroupBy: string[];
+  setSelectedGroupBy: (v: string[]) => void;
+
+  selectedFilters: { column: string; operator: string }[];
+  setSelectedFilters: (v: { column: string; operator: string }[]) => void;
+
+  filterValues: Record<string, any>;
+  setFilterValues: (v: Record<string, any>) => void;
+
+  aggregations: { column: string; agg: string }[];
+  setAggregations: React.Dispatch<
+    React.SetStateAction<{ column: string; agg: string }[]>
+  >;
+
+  selectedChartColumns: string[];
+  setSelectedChartColumns: (v: string[]) => void;
+
+  charts: ChartConfig[];
+  setCharts: React.Dispatch<React.SetStateAction<ChartConfig[]>>;
 }
 export interface ChartConfig {
   id: string;
   type: "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
   xAxis?: string;
-  yAxis?: string | string[];   // ✅ IMPORTANT
+  yAxis?: string | string[];   //  IMPORTANT
   value?: string;
   size?: string;
   label?: string;
@@ -28,38 +46,60 @@ export interface ChartConfig {
   rows: any[];
 }
 
+const calculateAggregation = (
+  rows: any[],
+  aggregations: { column: string; agg: string }[]
+) => {
+  const map: Record<string, Record<string, number>> = {};
 
+  aggregations.forEach(({ column, agg }) => {
+    if (!map[column]) map[column] = {};
 
-// const groupRows = (rows: any[], groupCols: string[]) => {
-//   if (!groupCols.length) return rows;
+    switch (agg) {
+      case "count":
+        map[column]["COUNT"] = rows.length;
+        break;
 
-//   const result: any[] = [];
-//   const map: Record<string, any[]> = {};
+      case "sum":
+        map[column]["SUM"] = rows.reduce(
+          (a, r) => a + Number(r[column] || 0),
+          0
+        );
+        break;
 
-//   rows.forEach(row => {
-//     const key = groupCols.map(col => row[col]).join(" | ");
-//     if (!map[key]) map[key] = [];
-//     map[key].push(row);
-//   });
+      case "avg":
+        map[column]["AVG"] =
+          rows.reduce((a, r) => a + Number(r[column] || 0), 0) /
+          (rows.length || 1);
+        break;
 
-//   Object.entries(map).forEach(([groupKey, items]) => {
-//     result.push({
-//       __isGroup: true,
-//       __groupLabel: `${groupCols.join(", ").toUpperCase()}: ${groupKey}`,
-//       __count: items.length,
-//     });
+      case "min":
+        map[column]["MIN"] = Math.min(
+          ...rows.map(r => Number(r[column] || 0))
+        );
+        break;
 
-//     items.forEach(item => result.push(item));
-//   });
+      case "max":
+        map[column]["MAX"] = Math.max(
+          ...rows.map(r => Number(r[column] || 0))
+        );
+        break;
+    }
+  });
 
-//   return result;
-// };
+  return map;
+};
 
-const groupRows = (rows: any[], groupCols: string[]) => {
+const groupRows = (
+  rows: any[],
+  groupCols: string[],
+  aggregations: { column: string; agg: string }[],
+  aggregationOrder: string[]
+) => {
   if (!groupCols.length) return rows;
 
-  const result: any[] = [];
   const map: Record<string, any[]> = {};
+  const finalRows: any[] = [];
 
   rows.forEach(row => {
     const key = groupCols.map(col => row[col]).join(" | ");
@@ -68,43 +108,104 @@ const groupRows = (rows: any[], groupCols: string[]) => {
   });
 
   Object.entries(map).forEach(([groupKey, items]) => {
-    result.push({
+    // 🔹 GROUP HEADER
+    finalRows.push({
       __isGroup: true,
       __groupKey: groupKey,
       __groupLabel: `${groupCols.join(", ").toUpperCase()}: ${groupKey}`,
       __count: items.length,
-      __collapsed: true   // ✅ default collapsed
     });
 
+    // 🔹 CHILD ROWS
     items.forEach(item =>
-      result.push({
+      finalRows.push({
         ...item,
-        __parentGroup: groupKey
+        __parentGroup: groupKey,
       })
     );
+
+    // 🔹 GROUP AGGREGATION ROW
+    finalRows.push({
+      __isGroupAgg: true,
+      __parentGroup: groupKey,
+      __aggregationMap: calculateAggregation(items, aggregations),
+      __aggregationOrder: aggregationOrder,
+    });
   });
 
-  return result;
+  return finalRows;
 };
+
 
 
 export default function DataViewTable({
   allData,
   selectedTables,
   globalFilter,
-  onAggregationSelect,
+
+  selectedGroupBy,
+  setSelectedGroupBy,
+
+  selectedFilters,
+  setSelectedFilters,
+
+  filterValues,
+  setFilterValues,
+
+  aggregations,
+  setAggregations,
+
+  selectedChartColumns,
+  setSelectedChartColumns,
+
+  charts,
+  setCharts,
+
 }: DataViewTableProps) {
   const { theme } = useTheme();
   const [viewType, setViewType] = useState<"table" | "chart">("table");
-  const [selectedGroupBy, setSelectedGroupBy] = useState<string[]>([]);
-  const [selectedFilters, setSelectedFilters] = useState<
-    { column: string; operator: string }[]
-  >([]);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  // const [selectedGroupBy, setSelectedGroupBy] = useState<string[]>([]);
+  // const [selectedFilters, setSelectedFilters] = useState<
+  //   { column: string; operator: string }[]
+  // >([]);
+  // const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [showChartSidebar, setShowChartSidebar] = useState(false);
-  const [charts, setCharts] = useState<ChartConfig[]>([]);
+  // const [charts, setCharts] = useState<ChartConfig[]>([]);
   const primaryTableKey = selectedTables[0];
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  // const [aggregations, setAggregations] = useState<
+  //   { column: string; agg: string }[]
+  // >([]);
+  // const [selectedChartColumns, setSelectedChartColumns] = useState<string[]>([]);
+
+
+  useEffect(() => {
+    if (!selectedGroupBy.length) return;
+    if (!allData || selectedTables.length === 0) return;
+
+    const tableKey = selectedTables[0];
+    const table = allData[tableKey];
+    if (!table) return;
+
+    const rows = table.rows || [];
+
+    const collapsed: Record<string, boolean> = {};
+
+    rows.forEach(row => {
+      const key = selectedGroupBy.map(col => row[col]).join(" | ");
+      collapsed[key] = true; // 🔥 DEFAULT COLLAPSED
+    });
+
+    setCollapsedGroups(collapsed);
+  }, [selectedGroupBy, allData]);
+  useEffect(() => {
+    if (charts.length > 0) {
+      setViewType("table");        // table view
+      setShowChartSidebar(false); // charts below table
+    }
+  }, [charts]);
+
+
 
   const applyFilters = (rows: any[]) => {
     if (!selectedFilters.length) return rows;
@@ -167,18 +268,72 @@ export default function DataViewTable({
       ? allData[primaryTableKey].rows || []
       : [];
   const filteredRows = applyFilters(baseRows);
-  // const displayRows =
-  //   selectedGroupBy.length > 0
-  //     ? groupRows(filteredRows, selectedGroupBy)
-  //     : filteredRows;
-  const grouped = selectedGroupBy.length > 0
-    ? groupRows(filteredRows, selectedGroupBy)
-    : filteredRows;
+  const aggregationOrder = Array.from(
+    new Set(
+      aggregations.map(a => a.agg.toUpperCase())
+    )
+  );
+
+  const aggregationMap: Record<string, Record<string, number>> = {};
+
+  aggregations.forEach(({ column, agg }) => {
+    if (!aggregationMap[column]) {
+      aggregationMap[column] = {};
+    }
+
+    switch (agg) {
+      case "count":
+        aggregationMap[column]["COUNT"] = filteredRows.length;
+        break;
+
+      case "sum":
+        aggregationMap[column]["SUM"] =
+          filteredRows.reduce(
+            (acc, row) => acc + Number(row[column] || 0),
+            0
+          );
+        break;
+
+      case "avg":
+        aggregationMap[column]["AVG"] =
+          filteredRows.reduce(
+            (acc, row) => acc + Number(row[column] || 0),
+            0
+          ) / (filteredRows.length || 1);
+        break;
+
+      case "min":
+        aggregationMap[column]["MIN"] = Math.min(
+          ...filteredRows.map(r => Number(r[column] || 0))
+        );
+        break;
+
+      case "max":
+        aggregationMap[column]["MAX"] = Math.max(
+          ...filteredRows.map(r => Number(r[column] || 0))
+        );
+        break;
+    }
+  });
+
+
+  const grouped =
+    selectedGroupBy.length > 0
+      ? groupRows(
+        filteredRows,
+        selectedGroupBy,
+        aggregations,
+        aggregationOrder
+      )
+      : filteredRows;
+
+
 
   const displayRows = grouped.filter(row => {
-    if (!row.__parentGroup) return true; // group row
-    return !collapsedGroups[row.__parentGroup]; // hide children if collapsed
+    if (row.__isGroup || row.__isGroupAgg) return true;
+    return !collapsedGroups[row.__parentGroup];
   });
+
 
   // 🔥 Charts should NEVER use grouped rows
   const chartRows = filteredRows;
@@ -197,8 +352,19 @@ export default function DataViewTable({
   };
 
   const removeChart = (id: string) => {
-    setCharts(prev => prev.filter(c => c.id !== id));
+    setCharts(prevCharts => {
+      const updatedCharts = prevCharts.filter(c => c.id !== id);
+
+      // 🔥 recalc columns still in use
+      const stillUsedColumns = getColumnsUsedByCharts(updatedCharts);
+
+      // 🔥 update selected columns accordingly
+      setSelectedChartColumns(stillUsedColumns);
+
+      return updatedCharts;
+    });
   };
+
 
   const toggleGroup = (key: string) => {
     setCollapsedGroups(prev => ({
@@ -206,6 +372,56 @@ export default function DataViewTable({
       [key]: !prev[key]
     }));
   };
+
+  const removeChartsByColumns = (activeColumns: string[]) => {
+    setCharts(prev =>
+      prev.filter(chart => {
+        const usedColumns = [
+          chart.xAxis,
+          ...(Array.isArray(chart.yAxis) ? chart.yAxis : [chart.yAxis]),
+          chart.value,
+          chart.size,
+          chart.label
+        ].filter(Boolean) as string[];
+
+        return usedColumns.every(col => activeColumns.includes(col));
+      })
+    );
+  };
+  const getColumnsUsedByCharts = (charts: ChartConfig[]) => {
+    const cols = new Set<string>();
+
+    charts.forEach(chart => {
+      if (chart.xAxis) cols.add(chart.xAxis);
+
+      if (Array.isArray(chart.yAxis)) {
+        chart.yAxis.forEach(c => cols.add(c));
+      } else if (chart.yAxis) {
+        cols.add(chart.yAxis);
+      }
+
+      if (chart.value) cols.add(chart.value);
+      if (chart.size) cols.add(chart.size);
+      if (chart.label) cols.add(chart.label);
+    });
+
+    return Array.from(cols);
+  };
+
+  const isSameChart = (a: ChartConfig, b: Partial<ChartConfig>) => {
+    const normalize = (v: any) =>
+      Array.isArray(v) ? v.join("|") : v ?? "";
+
+    return (
+      a.type === b.type &&
+      normalize(a.xAxis) === normalize(b.xAxis) &&
+      normalize(a.yAxis) === normalize(b.yAxis) &&
+      normalize(a.value) === normalize(b.value) &&
+      normalize(a.size) === normalize(b.size) &&
+      normalize(a.label) === normalize(b.label)
+    );
+  };
+
 
   return (
     <div>
@@ -231,6 +447,10 @@ export default function DataViewTable({
           table.visualization?.column_types || {};
 
 
+        const chartsWithRows = charts.map(c => ({
+          ...c,
+          rows: chartRows
+        }));
 
 
         return (
@@ -260,29 +480,73 @@ export default function DataViewTable({
                   {groupByColumns.length > 0 && (
                     <MultiSelect
                       filter
+                      showClear={false}
                       value={selectedGroupBy}
                       options={groupByColumns.map((col: string) => ({
                         label: col.replace(/_/g, " ").toUpperCase(),
                         value: col,
                       }))}
-                      onChange={(e) => {
-                        setSelectedGroupBy(e.value);
+                      // onChange={(e) => {
+                      //   setSelectedGroupBy(e.value);
 
-                        // 🔥 initialize all groups as collapsed
-                        const groups = groupRows(filteredRows, e.value)
+                      //   const groups = groupRows(
+                      //     filteredRows,
+                      //     e.value,
+                      //     aggregations,
+                      //     aggregationOrder
+                      //   );
+
+                      //   const collapsed = groups
+                      //     .filter(r => r.__isGroup)
+                      //     .reduce((acc: any, g: any) => {
+                      //       acc[g.__groupKey] = true;
+                      //       return acc;
+                      //     }, {});
+
+                      //   setCollapsedGroups(collapsed);
+                      // }}
+                      onChange={(e) => {
+                        const newGroups = e.value;
+                        setSelectedGroupBy(newGroups);
+
+                        // 🔥 GROUP BY CLEARED
+                        if (newGroups.length === 0) {
+                          setAggregations([]);          // ✅ clear footer aggregations
+                          setCollapsedGroups({});       // ✅ reset group state
+                          return;
+                        }
+
+                        // 🔹 GROUP BY APPLIED
+                        const groups = groupRows(
+                          filteredRows,
+                          newGroups,
+                          aggregations,
+                          aggregationOrder
+                        );
+
+                        const collapsed = groups
                           .filter(r => r.__isGroup)
                           .reduce((acc: any, g: any) => {
                             acc[g.__groupKey] = true;
                             return acc;
                           }, {});
 
-                        setCollapsedGroups(groups);
+                        setCollapsedGroups(collapsed);
                       }}
+
 
                       placeholder="Group By"
                       display="chip"
-                      className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center"
+                      className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
                       panelClassName="bg-gray-50 border border-gray-200 rounded-lg shadow-sm"
+                      pt={{
+                        filterContainer: {
+                          className: "pb-3"   // search নিচে space
+                        },
+                        list: {
+                          className: "mt-4"   // 🔥 search & options gap
+                        }
+                      }}
                     />
                   )}
 
@@ -311,8 +575,16 @@ export default function DataViewTable({
                       }}
                       placeholder="Filter"
                       display="chip"
-                      className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center"
+                      className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
                       panelClassName="bg-gray-50 border border-gray-200 rounded-lg shadow-sm"
+                      pt={{
+                        filterContainer: {
+                          className: "pb-3"   // search নিচে space
+                        },
+                        list: {
+                          className: "mt-4"   // 🔥 search & options gap
+                        }
+                      }}
                     />
                   )}
                   {/* ===== FILTER INPUTS ===== */}
@@ -414,7 +686,20 @@ export default function DataViewTable({
                   </div>
                 </div>
               </div>
-              {viewType === "table" &&
+              {/* 🔥 CHARTS ABOVE TABLE WHEN SIDEBAR OPEN */}
+              {showChartSidebar && charts.length > 0 && (
+                <div className="mb-6">
+                  <RenderCharts
+                    charts={chartsWithRows}
+
+                    onRemoveChart={removeChart}
+                    onReorderCharts={setCharts}
+                  />
+                </div>
+              )}
+
+              {/* {viewType === "table" && */}
+              {!(showChartSidebar && charts.length > 0) && (
 
                 <ProductDataTable
                   data={displayRows}
@@ -422,44 +707,73 @@ export default function DataViewTable({
                   showPagination={true}
                   columns={columns}
                   columnAggregations={table.visualization?.aggregations}
-                  onAggregationSelect={onAggregationSelect}
+                  aggregationMap={aggregationMap}
+                  aggregationOrder={aggregationOrder}
+                  isGrouped={selectedGroupBy.length > 0}           // 🔥 NEW
+                  onAggregationSelect={(column, agg) => {
+                    setAggregations(prev => {
+                      const exists = prev.find(
+                        a => a.column === column && a.agg === agg
+                      );
+
+                      // already selected → ignore
+                      if (exists) return prev;
+
+                      // allow multiple aggregation for same column
+                      return [...prev, { column, agg }];
+                    });
+                  }}
+
                   enableRowGrouping={selectedGroupBy.length > 0}
                   collapsedGroups={collapsedGroups}        // ✅ NEW
                   onToggleGroup={toggleGroup}
                 />
-              }
-
+              )}
+              {/* } */}
               {showChartSidebar && (
                 <ChartSidebar
-                  columns={chartColumns}                // ✅ clean columns
+                  columns={chartColumns}
                   rows={chartRows}
-                  columnTypes={chartColumnTypes}        // ✅ exact map
+                  columnTypes={chartColumnTypes}
+                  selectedColumns={selectedChartColumns}
+                  onSelectedColumnsChange={(cols) => {
+                    setSelectedChartColumns(cols);   // ✅ persist
+                    removeChartsByColumns(cols);     // ✅ auto-delete charts
+                  }}
+                  // onChartSelect={(config) => {
+                  //   setCharts(prev => [
+                  //     ...prev,
+                  //     { ...config, id: Date.now().toString() }
+                  //   ]);
+                  // }}
                   onChartSelect={(config) => {
-                    setCharts(prev => [
-                      ...prev,
-                      {
-                        ...config,
-                        id: Date.now().toString()
+                    setCharts(prev => {
+                      const exists = prev.some(chart => isSameChart(chart, config));
+
+                      if (exists) {
+                        return prev; // 🚫 already exists
                       }
-                    ]);
-                    setViewType("chart");
+
+                      return [
+                        ...prev,
+                        { ...config, id: Date.now().toString() }
+                      ];
+                    });
                   }}
 
-                  onClose={() => {
-                    setShowChartSidebar(false);
-                    setViewType("table");
-                  }}
+                  onClose={() => setShowChartSidebar(false)}
                 />
               )}
 
-
-              {viewType === "chart" && (
-                <RenderCharts
-                  charts={charts}
-                  onRemoveChart={removeChart}
-                />
+              {!showChartSidebar && charts.length > 0 && (
+                <div className="mt-6">
+                  <RenderCharts
+                    charts={chartsWithRows}
+                    onRemoveChart={removeChart}
+                    onReorderCharts={setCharts}
+                  />
+                </div>
               )}
-
 
 
             </div>

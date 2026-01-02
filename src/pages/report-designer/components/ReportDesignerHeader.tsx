@@ -51,7 +51,7 @@ export default function DataViewHeader({
     }
   }, [editReport]);
 
-const isEditMode = !!editReport;
+  const isEditMode = !!editReport;
 
   useEffect(() => {
     if (!isEditMode || tableOptions.length === 0) return;
@@ -157,32 +157,32 @@ const isEditMode = !!editReport;
           />
         </div>
         <div className="flex items-start md:items-center justify-center gap-2">
-<Dropdown
-  // --- FUNCTIONAL PROPS ---
-  ref={dropdownRef}
-  value={
-    Array.isArray(selectedTables) && selectedTables.length > 0
-      ? selectedTables[0]
-      : null
-  }
-  options={tableOptions}
-  onChange={(e) => {
-    const val = e.value;
-    // Prevent re-running if the same item is selected
-    if (val !== (selectedTables[0] || null)) {
-      setIsRefreshing(true); // Show loader immediately
-      setSelectedTables(val ? [val] : []); // This will trigger the data fetch in the parent component
-    }
-  }}
-  optionLabel="label"
-  optionValue="value"
-  placeholder="Select Views"
-  itemTemplate={itemTemplate}
-  onShow={handleDropdownShow}
-  onHide={handleDropdownHide}
+          <Dropdown
+            // --- FUNCTIONAL PROPS ---
+            ref={dropdownRef}
+            value={
+              Array.isArray(selectedTables) && selectedTables.length > 0
+                ? selectedTables[0]
+                : null
+            }
+            options={tableOptions}
+            onChange={(e) => {
+              const val = e.value;
+              // Prevent re-running if the same item is selected
+              if (val !== (selectedTables[0] || null)) {
+                setIsRefreshing(true); // Show loader immediately
+                setSelectedTables(val ? [val] : []); // This will trigger the data fetch in the parent component
+              }
+            }}
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select Views"
+            itemTemplate={itemTemplate}
+            onShow={handleDropdownShow}
+            onHide={handleDropdownHide}
 
-  // --- DESIGN & STYLING ---
-  className="
+            // --- DESIGN & STYLING ---
+            className="
     w-96 h-10
     border border-gray-200 
   rounded-xl
@@ -191,32 +191,31 @@ const isEditMode = !!editReport;
     bg-white
     focus:ring-2 focus:ring-[#5433FF]
   "
-  
-  // Panel (List) Styling - Added max-w to ensure it doesn't grow too wide
-  panelClassName="
+
+            // Panel (List) Styling - Added max-w to ensure it doesn't grow too wide
+            panelClassName="
     bg-white rounded-xl border border-gray-100 overflow-hidden text-sm max-w-96
   "
-  
-  // --- DEEP STYLING FIXES ---
-  pt={{
-    root: { className: 'cursor-pointer' },
-    input: { 
-      className: 'text-sm font-medium text-gray-700 px-3 py-2 whitespace-normal break-words h-full flex items-center leading-tight' 
-    },
-    trigger: { className: 'w-8 flex items-center justify-center text-gray-400 shrink-0' },
-    list: { className: 'p-1' },
-    
-    // *** FIX IS HERE: Added 'whitespace-normal' and 'break-words' to item ***
-    item: ({ context }: any) => ({
-      className: `px-3 py-2 rounded-md text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${
-        context.selected
-          ? 'bg-gray-100 font-semibold'
-          : 'hover:bg-gray-50'
-      }`
-    }),
-    itemLabel: { className: 'font-medium' }
-  }}
-/>
+
+            // --- DEEP STYLING FIXES ---
+            pt={{
+              root: { className: 'cursor-pointer' },
+              input: {
+                className: 'text-sm font-medium text-gray-700 px-3 py-2 whitespace-normal break-words h-full flex items-center leading-tight'
+              },
+              trigger: { className: 'w-8 flex items-center justify-center text-gray-400 shrink-0' },
+              list: { className: 'p-1' },
+
+              // *** FIX IS HERE: Added 'whitespace-normal' and 'break-words' to item ***
+              item: ({ context }: any) => ({
+                className: `px-3 py-2 rounded-md text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${context.selected
+                    ? 'bg-gray-100 font-semibold'
+                    : 'hover:bg-gray-50'
+                  }`
+              }),
+              itemLabel: { className: 'font-medium' }
+            }}
+          />
           <button
             onClick={handleSaveClick}
             disabled={!reportName}

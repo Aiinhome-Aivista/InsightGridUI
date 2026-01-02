@@ -6,14 +6,18 @@ export default function ColumnHeaderWithAggregation({
     columnName,
     aggregations = [],
     onAggregationSelect,
+    openAggColumn,
+    setOpenAggColumn
 }: {
     label: string;
     columnName: string;
     aggregations: string[];
     onAggregationSelect?: (column: string, agg: string) => void;
-
+    openAggColumn: string | null;
+    setOpenAggColumn: (col: string | null) => void;
 }) {
-    const [open, setOpen] = useState(false);
+
+    const isOpen = openAggColumn === columnName;
 
     if (!aggregations.length) {
         return <span>{label}</span>;
@@ -24,11 +28,13 @@ export default function ColumnHeaderWithAggregation({
             <span>{label}</span>
 
             <KeyboardArrowDownRoundedIcon
-                sx={{ fontSize: 20, cursor: "pointer" }}
-                onClick={() => setOpen(!open)}
+                sx={{ fontSize: 25, cursor: "pointer" }}
+                onClick={() =>
+                    setOpenAggColumn(isOpen ? null : columnName)
+                }
             />
 
-            {open && (
+            {isOpen && (
                 <div className="absolute top-full left-0 z-50 bg-white border rounded shadow-md text-xs min-w-[120px]">
                     {aggregations.map((agg) => (
                         <div
@@ -36,7 +42,7 @@ export default function ColumnHeaderWithAggregation({
                             className="px-3 py-1 hover:bg-gray-100 cursor-pointer"
                             onClick={() => {
                                 onAggregationSelect?.(columnName, agg);
-                                setOpen(false);
+                                setOpenAggColumn(null);
                             }}
 
                         >

@@ -20,13 +20,25 @@ export default function TableView() {
   const location = useLocation();
   const report = location.state?.report;
   const userData = JSON.parse(localStorage.getItem("ig_user"));
-  const [selectedAggregations, setSelectedAggregations] = useState<
-    {
-      column: string;
-      agg: string;
-      value?: number;
-    }[]
+  // const [selectedAggregations, setSelectedAggregations] = useState<
+  //   {
+  //     column: string;
+  //     agg: string;
+  //     value?: number;
+  //   }[]
+  // >([]);
+
+  // Report config states
+  const [selectedGroupBy, setSelectedGroupBy] = useState<string[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<
+    { column: string; operator: string }[]
   >([]);
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [aggregations, setAggregations] = useState<
+    { column: string; agg: string }[]
+  >([]);
+  const [selectedChartColumns, setSelectedChartColumns] = useState<string[]>([]);
+  const [charts, setCharts] = useState<any[]>([]);
 
   useEffect(() => {
     if (report) {
@@ -36,6 +48,45 @@ export default function TableView() {
       setReportName(report.report_name || "");
     }
   }, [report]);
+  useEffect(() => {
+    if (!report?.report_config) return;
+
+    // 🔥 STRING → OBJECT
+    const config =
+      typeof report.report_config === "string"
+        ? JSON.parse(report.report_config)
+        : report.report_config;
+
+    setSelectedGroupBy(config.group_by || []);
+
+    setSelectedFilters(
+      (config.filters || []).map((f: any) => ({
+        column: f.column,
+        operator: f.operator,
+      }))
+    );
+
+    const values: Record<string, any> = {};
+    (config.filters || []).forEach((f: any) => {
+      values[`${f.column}|${f.operator}`] = f.value;
+    });
+    setFilterValues(values);
+
+    setAggregations(config.aggregations || []);
+    setSelectedChartColumns(config.selected_columns || []);
+    setCharts(
+      (config.charts || [])
+        .sort((a, b) => a.order - b.order)
+        .map((c) => ({
+          ...c,
+          id: crypto.randomUUID(),
+         
+        }))
+    );
+
+  }, [report]);
+
+
   useEffect(() => {
     getSavedQueryResponse();
   }, []);
@@ -118,33 +169,33 @@ export default function TableView() {
       setIsRefreshing(false);
     }
   };
-  const handleSaveReport = async () => {
-    try {
-      const userData = JSON.parse(localStorage.getItem("ig_user"));
-      if (!selectedTables.length) {
-        console.error("No query selected");
-        return;
-      }
-      const selectedQuery = selectedTables[0];
+  // const handleSaveReport = async () => {
+  //   try {
+  //     const userData = JSON.parse(localStorage.getItem("ig_user"));
+  //     if (!selectedTables.length) {
+  //       console.error("No query selected");
+  //       return;
+  //     }
+  //     const selectedQuery = selectedTables[0];
 
-      const payload = {
-        session_id: userData?.session_id,
-        created_by: userData?.user_id,
-        // report_id: `report_${Date.now()}`,
-        report_id: editReport?.report_id
-          ? editReport.report_id
-          : `report_${Date.now()}`,
-        query_history_id: selectedQuery.id,
-        report_name: reportName,
-      };
+  //     const payload = {
+  //       session_id: userData?.session_id,
+  //       created_by: userData?.user_id,
+  //       // report_id: `report_${Date.now()}`,
+  //       report_id: editReport?.report_id
+  //         ? editReport.report_id
+  //         : `report_${Date.now()}`,
+  //       query_history_id: selectedQuery.id,
+  //       report_name: reportName,
+  //     };
 
-      const response = await ApiServices.report_save(payload);
+  //     const response = await ApiServices.report_save(payload);
 
-      console.log("Report saved:", response.data);
-    } catch (error) {
-      console.error("Save report error:", error);
-    }
-  };
+  //     console.log("Report saved:", response.data);
+  //   } catch (error) {
+  //     console.error("Save report error:", error);
+  //   }
+  // };
 
   // const handleAggregationSelect = async (column: string, agg: string) => {
   //   const baseSql = selectedTables[0].ai_response; // 🔥 full SQL with FROM
@@ -169,32 +220,81 @@ export default function TableView() {
   //   );
   // };
 
-  const handleAggregationSelect = async (column: string, agg: string) => {
-    const baseSql = selectedTables[0].ai_response;
+  // const handleAggregationSelect = async (column: string, agg: string) => {
+  //   const baseSql = selectedTables[0].ai_response;
 
-    // 🔥 backend call first
-    const payload = {
-      session_id: userData?.session_id,
-      column,
-      agg,
-      base_sql: baseSql
-    };
+  //   // 🔥 backend call first
+  //   const payload = {
+  //     session_id: userData?.session_id,
+  //     column,
+  //     agg,
+  //     base_sql: baseSql
+  //   };
 
-    const res = await ApiServices.aggregation(payload);
-    const value = res.data.data.value;
+  //   const res = await ApiServices.aggregation(payload);
+  //   const value = res.data.data.value;
 
-    // ✅ now add directly with value
-    setSelectedAggregations(prev => {
-      const exists = prev.find(p => p.column === column && p.agg === agg);
-      if (exists) return prev;
+  //   // ✅ now add directly with value
+  //   setSelectedAggregations(prev => {
+  //     const exists = prev.find(p => p.column === column && p.agg === agg);
+  //     if (exists) return prev;
 
-      return [...prev, { column, agg, value }];
-    });
+  //     return [...prev, { column, agg, value }];
+  //   });
+  // };
+  const handleSaveReport = async () => {
+    try {
+      if (!selectedTables.length) return;
+
+      const user = JSON.parse(localStorage.getItem("ig_user"));
+      const selectedQuery = selectedTables[0];
+
+      const reportConfig = {
+        group_by: selectedGroupBy,
+
+        filters: selectedFilters.map(f => ({
+          column: f.column,
+          operator: f.operator,
+          value: filterValues[`${f.column}|${f.operator}`]
+        })),
+
+        aggregations, // ✅ only column + agg
+
+        selected_columns: selectedChartColumns,
+
+        charts: charts.map((c, index) => ({
+          type: c.type,
+          xAxis: c.xAxis,
+          yAxis: c.yAxis,
+          value: c.value,
+          size: c.size,
+          label: c.label,
+          agg: c.agg,
+          order: index + 1
+        }))
+      };
+
+      const payload = {
+        session_id: user.session_id,
+        created_by: user.user_id,
+        report_id: editReport?.report_id ?? `report_${Date.now()}`,
+        report_name: reportName,
+        query_history_id: selectedQuery.id,
+        report_config: reportConfig
+      };
+      console.log("payload", payload);
+
+      await ApiServices.report_save(payload);
+      console.log("✅ Report saved successfully");
+
+    } catch (err) {
+      console.error("❌ Save report error", err);
+    }
   };
 
-  useEffect(() => {
-    console.log('selectedAggregations', selectedAggregations)
-  }, [selectedAggregations])
+  // useEffect(() => {
+  //   console.log('selectedAggregations', selectedAggregations)
+  // }, [selectedAggregations])
 
   return (
     <div className="flex flex-col  bg-[#D9D9D91A] rounded-xl m-4 max-w-screen overflow-hidden">
@@ -238,11 +338,29 @@ export default function TableView() {
           allData={allData}
           selectedTables={selectedTables.map((t) => t.ai_response)}
           globalFilter={globalFilter}
-          onAggregationSelect={handleAggregationSelect}
+
+          selectedGroupBy={selectedGroupBy}
+          setSelectedGroupBy={setSelectedGroupBy}
+
+          selectedFilters={selectedFilters}
+          setSelectedFilters={setSelectedFilters}
+
+          filterValues={filterValues}
+          setFilterValues={setFilterValues}
+
+          aggregations={aggregations}
+          setAggregations={setAggregations}
+
+          selectedChartColumns={selectedChartColumns}
+          setSelectedChartColumns={setSelectedChartColumns}
+
+          charts={charts}
+          setCharts={setCharts}
+        // onAggregationSelect={handleAggregationSelect}
         />
       )}
       {/* ===== Aggregation Cards ===== */}
-      {selectedAggregations.length > 0 && (
+      {/* {selectedAggregations.length > 0 && (
         <div className="px-4 py-3 bg-white border-b">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
             {selectedAggregations.map((item, index) => (
@@ -260,7 +378,7 @@ export default function TableView() {
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
     </div>
   );
