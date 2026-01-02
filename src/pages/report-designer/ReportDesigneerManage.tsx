@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
@@ -13,6 +13,8 @@ const ReportDesignManage = () => {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { downloadData, setDownloadData } = useAuth();
+  const [reportsFetched, setReportsFetched] = useState(false);
+  const isFetching = useRef(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
   const timeAgo = (dateStr: string, timeStr: string) => {
@@ -64,7 +66,9 @@ const ReportDesignManage = () => {
     fetchReportList();
   }, []);
 
-  const fetchReportList = async () => {
+  const fetchReportList = async (forceRefresh = false) => {
+    if (isFetching.current || (reportsFetched && !forceRefresh)) return;
+    isFetching.current = true;
     try {
       setLoading(true);
       const user = getStoredUser();
@@ -78,8 +82,11 @@ const ReportDesignManage = () => {
       };
       const response = await ApiServices.getReportList(payload);
       setReports(response?.data?.data?.["Report list"] || []);
+      setReportsFetched(true);
     } catch (error) {
+      setReportsFetched(false);
     } finally {
+      isFetching.current = false;
       setLoading(false);
       setIsRefreshing(false);
     }
@@ -149,7 +156,7 @@ const ReportDesignManage = () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
     setGlobalFilter("");
-    await fetchReportList();
+    await fetchReportList(true);
   };
   return (
     <div className="mx-auto px-6 py-8">

@@ -589,81 +589,110 @@ export default function DataViewTable({
                   )}
                   {/* ===== FILTER INPUTS ===== */}
                   {selectedFilters.length > 0 && (
-                    <div className="flex items-center gap-3">
-                      {selectedFilters.map((f) => {
-                        const key = `${f.column}|${f.operator}`;
-                        const type = getColumnType(table, f.column);
+ <div className="flex items-center gap-3 flex-wrap">
 
-                        return (
-                          <div
-                            key={key}
-                            className="flex items-center gap-2 bg-gray-50 border rounded-lg px-3 py-1 h-[40px]"
-                          >
-                            <span className="text-xs text-gray-600 whitespace-nowrap">
-                              {f.column.toUpperCase()} {f.operator}
-                            </span>
+  {selectedFilters.map((f) => {
+    const key = `${f.column}|${f.operator}`;
+    const type = getColumnType(table, f.column);
 
-                            {/* TEXT */}
-                            {type === "text" && (
-                              <input
-                                type="text"
-                                className="border rounded px-2 py-1 text-sm w-40"
-                                placeholder="Enter value"
-                                value={filterValues[key] || ""}
-                                onChange={(e) =>
-                                  setFilterValues({
-                                    ...filterValues,
-                                    [key]: e.target.value,
-                                  })
-                                }
-                              />
-                            )}
+    const inputBaseClass = `
+      h-9
+      border border-gray-300
+      rounded-md
+      px-3
+      text-sm
+      text-gray-700
+      bg-white
+      shadow-sm
+      transition-all duration-200
+      focus:outline-none
+      focus:ring-2 focus:ring-blue-500/30
+      focus:border-blue-500
+      hover:border-gray-400
+    `;
 
-                            {/* NUMBER */}
-                            {type === "number" && f.operator !== "between" && (
-                              <input
-                                type="number"
-                                className="border rounded px-2 py-1 text-sm w-28"
-                                value={filterValues[key] || ""}
-                                onChange={(e) =>
-                                  setFilterValues({
-                                    ...filterValues,
-                                    [key]: Number(e.target.value),
-                                  })
-                                }
-                              />
-                            )}
+    return (
+      <div
+        key={key}
+        className="
+          flex items-center gap-2
+          bg-gray-50
+          border border-gray-200
+          rounded-lg
+          px-3 py-1.5
+          shadow-sm
+          hover:shadow-md
+          transition
+        "
+      >
+        {/* Label */}
+        <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
+          {f.column.replace(/_/g, " ").toUpperCase()}
+          <span className="mx-1 text-gray-400">{f.operator}</span>
+        </span>
 
-                            {/* DATE */}
-                            {type === "date" && f.operator !== "between" && (
-                              <input
-                                type="date"
-                                className="border rounded px-2 py-1 text-sm w-[150px]"
-                                value={filterValues[key] || ""}
-                                onChange={(e) =>
-                                  setFilterValues({
-                                    ...filterValues,
-                                    [key]: e.target.value,
-                                  })
-                                }
-                              />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+        {/* TEXT */}
+        {type === "text" && (
+          <input
+            type="text"
+            placeholder="Enter value"
+            className={`${inputBaseClass} w-40`}
+            value={filterValues[key] || ""}
+            onChange={(e) =>
+              setFilterValues({
+                ...filterValues,
+                [key]: e.target.value,
+              })
+            }
+          />
+        )}
+
+        {/* NUMBER */}
+        {type === "number" && f.operator !== "between" && (
+          <input
+            type="number"
+            className={`${inputBaseClass} w-28`}
+            value={filterValues[key] ?? ""}
+            onChange={(e) =>
+              setFilterValues({
+                ...filterValues,
+                [key]: Number(e.target.value),
+              })
+            }
+          />
+        )}
+
+        {/* DATE */}
+        {type === "date" && f.operator !== "between" && (
+          <input
+            type="date"
+            className={`${inputBaseClass} w-[150px]`}
+            value={filterValues[key] || ""}
+            onChange={(e) =>
+              setFilterValues({
+                ...filterValues,
+                [key]: e.target.value,
+              })
+            }
+          />
+        )}
+      </div>
+    );
+  })}
+</div>
+
+)}
 
 
 
                   {/* View Toggle */}
-                  <div className="flex border rounded-md overflow-hidden">
+                  <div className="flex border rounded-lg overflow-hidden">
                     <button
                       onClick={() => {
                         setViewType("table");
                         setShowChartSidebar(false); // ✅ ADD THIS
                       }}
-                      className={`px-2 py-1 ${viewType === "table"
+                      className={`px-2 py-2 ${viewType === "table"
                         ? "bg-gray-100"
                         : "hover:bg-gray-50"
                         }`}

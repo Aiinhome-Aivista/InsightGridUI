@@ -14,6 +14,7 @@ export default function Dashboard_page() {
   });
   const [tableOptions, setTableOptions] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [tablesFetched, setTablesFetched] = useState(false);
   const location = useLocation();
   const [passedData, setPassedData] = useState<any>(null);
   const handleTableDataSelect = (data: any) => {
@@ -48,6 +49,7 @@ export default function Dashboard_page() {
     }
   };
   const fetchTableData = async () => {
+    if (tablesFetched || isFetching) return;
     setIsFetching(true);
     const user = getStoredUser();
 
@@ -62,6 +64,7 @@ export default function Dashboard_page() {
       const responseData = response.data.data || {};
       const tables = responseData.tables_dropdown || [];
       setTableOptions([...tables].reverse());
+      setTablesFetched(true);
     } catch (error) {
       console.error(" API Error:", error);
     } finally {
@@ -69,8 +72,10 @@ export default function Dashboard_page() {
     }
   };
   useEffect(() => {
-    fetchTableData();
-  }, []);
+    if (passedData) {
+      fetchTableData();
+    }
+  }, [passedData]);
   return (
     <>
       <div className="flex flex-col bg-[#D9D9D91A] rounded-xl m-5 max-w-screen">
@@ -83,6 +88,7 @@ export default function Dashboard_page() {
           onViewChange={setViewSelection}
           passedData={passedData}
           onTableLoading={setIsFetching}
+          onFetchTables={fetchTableData}
         />
         <DashboardTable data={tableData.rows} columns={tableData.columns} insights={tableData.insights} tableName={tableData.tableName} viewSelection={viewSelection} globalFilter={""} isLoading={isFetching} />
       </div>
