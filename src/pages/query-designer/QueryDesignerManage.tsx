@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
 import { useNavigate, useLocation } from "react-router-dom";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
@@ -14,6 +14,8 @@ const QueryDesignerManage = () => {
   const [queries, setQueries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [queriesFetched, setQueriesFetched] = useState(false);
+  const isFetching = useRef(false);
   const location = useLocation();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -59,7 +61,9 @@ const QueryDesignerManage = () => {
     }
   };
 
-  const fetchSavedQueries = async () => {
+  const fetchSavedQueries = async (forceRefresh = false) => {
+    if (isFetching.current || (queriesFetched && !forceRefresh)) return;
+    isFetching.current = true;
     setIsLoading(true);
     setError(null);
     try {
@@ -67,13 +71,16 @@ const QueryDesignerManage = () => {
       const response = await ApiServices.getSavedQueryResponse(payload);
       if (response.data.isSuccess) {
         setQueries(response.data.data.queries || []);
+        setQueriesFetched(true);
       } else {
         setError(response.data.message || "Failed to load queries.");
       }
     } catch (err) {
       setError("An error occurred while fetching saved queries.");
       console.error(err);
+      setQueriesFetched(false);
     } finally {
+      isFetching.current = false;
       setIsLoading(false);
       setIsRefreshing(false);
     }
@@ -92,7 +99,7 @@ const QueryDesignerManage = () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
     setGlobalFilter("");
-    await fetchSavedQueries();
+    await fetchSavedQueries(true);
   };
 
   const handleDetailsClick = (rowData) => {

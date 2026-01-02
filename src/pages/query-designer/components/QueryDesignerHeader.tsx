@@ -18,6 +18,7 @@ interface HeaderProps {
   isLoading: boolean;
   onViewChange: (view: string) => void;
   onTableLoading?: (isLoading: boolean) => void;
+  onFetchTables?: () => void;
 
   passedData?: {
     user_query: string;
@@ -34,6 +35,7 @@ export default function DashboardHeader({
   onViewChange,
   passedData,
   onTableLoading,
+  onFetchTables,
 
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
@@ -60,6 +62,7 @@ export default function DashboardHeader({
 
   const handleViewChange = (e: { value: any }) => {
     const selectedTable = e.value;
+    if (!selectedTable || selectedTable === selectedView) return;
     setSelectedView(selectedTable);
 
     const getStoredUser = () => {
@@ -145,6 +148,7 @@ export default function DashboardHeader({
                 placeholder="Select a Table"
                 onShow={handleDropdownShow}
                 onHide={handleDropdownHide}
+                onMouseDown={() => onFetchTables?.()}
 
                 className="
                   w-72 h-10

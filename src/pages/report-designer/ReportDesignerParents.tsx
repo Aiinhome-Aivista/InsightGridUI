@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import DataViewHeader from "./components/ReportDesignerHeader";
 import DataViewTable from "./components/ReportDesignerTable";
 import { useTheme } from "../../theme";
@@ -18,6 +18,8 @@ export default function TableView() {
   const [reportName, setReportName] = useState("");
   const [editReport, setEditReport] = useState<any>(null);
   const location = useLocation();
+  const [queriesFetched, setQueriesFetched] = useState(false);
+  const isFetching = useRef(false);
   const report = location.state?.report;
   const userData = JSON.parse(localStorage.getItem("ig_user"));
   // const [selectedAggregations, setSelectedAggregations] = useState<
@@ -90,7 +92,9 @@ export default function TableView() {
   useEffect(() => {
     getSavedQueryResponse();
   }, []);
-  const getSavedQueryResponse = async () => {
+  const getSavedQueryResponse = async (forceRefresh = false) => {
+    if (isFetching.current || (queriesFetched && !forceRefresh)) return;
+    isFetching.current = true;
     try {
       setLoading(true);
       // const userData = JSON.parse(localStorage.getItem("ig_user"));
@@ -118,10 +122,13 @@ export default function TableView() {
       setSelectedTables([]);
       setAllData({});
       setTableOptions(dropdown);
+      setQueriesFetched(true);
 
     } catch (err) {
       console.error("API error:", err);
+      setQueriesFetched(false);
     } finally {
+      isFetching.current = false;
       setLoading(false);
     }
   };
@@ -131,7 +138,7 @@ export default function TableView() {
       if (selectedTables.length > 0) {
         await handleRunScript(selectedTables[0].ai_response);
       } else {
-        await getSavedQueryResponse();
+        await getSavedQueryResponse(true);
       }
     } finally {
       setIsRefreshing(false);
