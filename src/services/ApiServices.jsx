@@ -15,12 +15,7 @@ class ApiServices {
   executeSql(body) {
     return axios.post(POST_APIS.execute_sql, body);
   }
-  // fileUpload(formData) {
-  //   return axios.post(POST_APIS.fileUpload, formData, {
-  //     headers: { 'Content-Type': 'multipart/form-data' },
-  //   });
-  // }
-
+ 
   // For file upload (FormData)
   fileUpload(formData) {
     return axios.post(POST_APIS.fileUpload, formData, {
@@ -74,6 +69,11 @@ class ApiServices {
 
   deleteUploadedFile(body) {
     return axios.post(POST_APIS.delete_uploaded_file, body);
+  }
+
+  
+  getUploadProgress(body) {
+    return axios.post(POST_APIS.upload_progress, body);
   }
 
 }
