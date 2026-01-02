@@ -422,7 +422,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                 setIsInsertLoading(true);
                 setStep("loading");
 
-                // ✅ START PROGRESS
+                //  START PROGRESS
                 startProgressPolling();
 
                 const insertPayload = {
@@ -443,7 +443,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                         summary_message: err?.response?.data?.message
                     });
                 } finally {
-                    // 🛑 STOP POLLING
+                    //  STOP POLLING
                     stopProgressPolling();
                     setIsInsertLoading(false);
 
@@ -1002,7 +1002,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             </>
                         ) : step === 'loading' ? (
                             isInsertLoading ? (
-                                // ✅ INSERT DATA LOADER (with progress)
+                                // INSERT DATA LOADER (with progress)
                                 <div className="flex flex-col items-center justify-center gap-3">
                                     <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
 
@@ -1022,7 +1022,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     </p>
                                 </div>
                             ) : (
-                                // ✅ PREVIEW LOADER (simple, no progress)
+                                // PREVIEW LOADER (simple, no progress)
                                 <div className="flex flex-col items-center justify-center">
                                     <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-3" />
                                     <p className="text-sm text-gray-600">
