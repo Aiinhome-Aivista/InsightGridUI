@@ -8,6 +8,7 @@ import PieChartIcon from '@mui/icons-material/PieChart';
 import WaterfallChartIcon from '@mui/icons-material/WaterfallChart';
 import { useState, useEffect } from 'react';
 import { MultiSelect } from "primereact/multiselect";
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
 interface ChartSidebarProps {
   columns: { column_name: string; label: string }[];
@@ -31,6 +32,12 @@ export default function ChartSidebar({ onChartSelect, onClose, columns, columnTy
   onSelectedColumnsChange, }: ChartSidebarProps) {
 
   const chartOptions: ChartOption[] = [
+    {
+      id: 'line',
+      name: 'Line Chart',
+      icon: <TrendingUpIcon sx={{ fontSize: '2rem' }} />,
+      subtitle: 'Trend Over Time'
+    },
     {
       id: 'bar',
       name: 'Bar Chart',
@@ -77,6 +84,13 @@ export default function ChartSidebar({ onChartSelect, onClose, columns, columnTy
   const normalizeType = (t?: string, colName?: string) => {
     if (!t) return "text";
 
+
+    const col = colName?.toLowerCase() || "";
+
+    // 🔥 YEAR columns treated as DATE for line chart
+    if (col.endsWith("_year") || col === "year") {
+      return "date";
+    }
     // 👇 treat IDs as countable numeric
     if (
       ["int", "decimal"].includes(t) ||
@@ -87,6 +101,7 @@ export default function ChartSidebar({ onChartSelect, onClose, columns, columnTy
 
     if (t === "datetime") return "date";
     return "text";
+
   };
   const orderedSelected = selectedColumns.map(col => ({
     name: col,
@@ -177,6 +192,12 @@ export default function ChartSidebar({ onChartSelect, onClose, columns, columnTy
 
       case "waterfall":
         return !(cols.length >= 1);
+      case "line":
+        return !(
+          cols.length >= 2 &&
+          (cols[0].type === "text" || cols[0].type === "date") &&
+          cols[1].type === "number"
+        );
 
       default:
         return true;
@@ -229,6 +250,13 @@ export default function ChartSidebar({ onChartSelect, onClose, columns, columnTy
         return {
           xAxis: cols[0].name,
           agg: "count"   // ✅ শুধু এটুকু add করো
+        };
+
+      case "line":
+        return {
+          xAxis: cols[0].name,
+          yAxis: cols[1].name,
+          agg: "sum"
         };
 
 

@@ -204,51 +204,7 @@ export default function TableView() {
   //   }
   // };
 
-  // const handleAggregationSelect = async (column: string, agg: string) => {
-  //   const baseSql = selectedTables[0].ai_response; // 🔥 full SQL with FROM
-
-  //   const payload = {
-  //     session_id: userData?.session_id,
-  //     column,
-  //     agg,
-  //     base_sql: baseSql   // ✅ NEW
-  //   };
-
-  //   const res = await ApiServices.aggregation(payload);
-
-  //   const value = res.data.data.value;
-
-  //   setSelectedAggregations(prev =>
-  //     prev.map(p =>
-  //       p.column === column && p.agg === agg
-  //         ? { ...p, value }
-  //         : p
-  //     )
-  //   );
-  // };
-
-  // const handleAggregationSelect = async (column: string, agg: string) => {
-  //   const baseSql = selectedTables[0].ai_response;
-
-  //   // 🔥 backend call first
-  //   const payload = {
-  //     session_id: userData?.session_id,
-  //     column,
-  //     agg,
-  //     base_sql: baseSql
-  //   };
-
-  //   const res = await ApiServices.aggregation(payload);
-  //   const value = res.data.data.value;
-
-  //   // ✅ now add directly with value
-  //   setSelectedAggregations(prev => {
-  //     const exists = prev.find(p => p.column === column && p.agg === agg);
-  //     if (exists) return prev;
-
-  //     return [...prev, { column, agg, value }];
-  //   });
-  // };
+  
   const handleSaveReport = async () => {
     try {
       if (!selectedTables.length) return;
@@ -363,7 +319,6 @@ export default function TableView() {
 
           charts={charts}
           setCharts={setCharts}
-        // onAggregationSelect={handleAggregationSelect}
         />
       )}
       {/* ===== Aggregation Cards ===== */}

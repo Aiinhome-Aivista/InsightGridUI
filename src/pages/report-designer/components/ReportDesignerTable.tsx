@@ -36,7 +36,7 @@ interface DataViewTableProps {
 }
 export interface ChartConfig {
   id: string;
-  type: "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
+  type: "line" | "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
   xAxis?: string;
   yAxis?: string | string[];   //  IMPORTANT
   value?: string;
@@ -198,12 +198,12 @@ export default function DataViewTable({
 
     setCollapsedGroups(collapsed);
   }, [selectedGroupBy, allData]);
-  useEffect(() => {
-    if (charts.length > 0) {
-      setViewType("table");        // table view
-      setShowChartSidebar(false); // charts below table
-    }
-  }, [charts]);
+  // useEffect(() => {
+  //   if (charts.length > 0) {
+  //     setViewType("table");        // table view
+  //     setShowChartSidebar(false); // charts below table
+  //   }
+  // }, [charts]);
 
 
 
