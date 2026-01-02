@@ -21,5 +21,7 @@ export const POST_APIS = {
   get_report_list: `${BASE_URL}report_list`,
   report_save: `${BASE_URL}report_save`,
   delete_uploaded_file: `${BASE_URL}delete_uploaded_file`,
-  aggregation: `${BASE_URL}aggregation`
+  aggregation: `${BASE_URL}aggregation`,
+
+  upload_progress: `${BASE_URL}get_upload_progress`,
 };

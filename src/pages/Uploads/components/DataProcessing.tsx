@@ -160,19 +160,26 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         return;
       }
 
-      if (res?.data?.dependencies?.length) {
-        const tables = res.data.dependencies
-          .map((d: any) => d.table_name)
-          .filter((name: string) => name && name.trim()) // Filter out empty/undefined names
-          .join(", ");
+      // if (res?.data?.dependencies?.length) {
+      //   const tables = res.data.dependencies
+      //     .map((d: any) => d.table_name)
+      //     .filter((name: string) => name && name.trim()) // Filter out empty/undefined names
+      //     .join(", ");
 
-        const message = tables
-          ? `Cannot delete this file.\n\nIt is used by tables:\n${tables}`
-          : `Cannot delete this file.\n\nIt is used by other tables.`;
+      //   const message = tables
+      //     ? `Cannot delete this file.\n\nIt is used by tables:\n${tables}`
+      //     : `Cannot delete this file.\n\nIt is used by other tables.`;
 
-        setFileDependencies(message);
+      //   setFileDependencies(message);
+      //   return;
+      // }
+
+      //  show ONLY backend message
+      if (!res?.isSuccess && res?.message) {
+        setFileDependencies(res.message);
         return;
       }
+
 
       alert(res?.message || "Unable to delete file");
       setIsConfirmSaveModalOpen(false);

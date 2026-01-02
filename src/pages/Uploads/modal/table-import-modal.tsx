@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Edit2, ChevronDown, Save, Trash2, Plus, Pencil, Loader2 } from 'lucide-react';
 import ApiService from '../../../services/ApiServices';
 
@@ -51,6 +51,11 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     // Pagination state for Extracted Columns table
     const [currentPage, setCurrentPage] = useState(1);
     const [pageWindowStart, setPageWindowStart] = useState(1);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [isInsertLoading, setIsInsertLoading] = useState(false);
+
+    const progressRef = useRef(null);
+
     const rowsPerPage = 5;
     const maxVisiblePages = 5;
 
@@ -70,6 +75,13 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         setCurrentPage(1);
         setPageWindowStart(1);
     }, [columns.length]);
+
+    useEffect(() => {
+        if (!isOpen) {
+            stopProgressPolling();
+        }
+    }, [isOpen]);
+
 
     // Handle page change
     const onPageChange = (page: number) => {
@@ -228,6 +240,38 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     };
 
 
+    const startProgressPolling = () => {
+        setUploadProgress(0);
+
+        progressRef.current = setInterval(async () => {
+            try {
+                const res = await ApiService.getUploadProgress({
+                    session_id: sessionId,
+                    file_name: apiData?.file_name,
+                });
+
+                const percent = res?.data?.data?.percent ?? 0;
+                setUploadProgress(percent);
+
+                if (percent >= 100 && progressRef.current) {
+                    clearInterval(progressRef.current);
+                    progressRef.current = null;
+                }
+            } catch (err) {
+                console.error("Progress API error", err);
+            }
+        }, 5000);
+    };
+
+    const stopProgressPolling = () => {
+        if (progressRef.current) {
+            clearInterval(progressRef.current);
+            progressRef.current = null;
+        }
+    };
+
+
+
     const handleNext = async () => {
         const schema = columns.map(col => ({
             column: col.name,
@@ -347,8 +391,39 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             }
 
             // CASE: INSERT DATA
+            // if (insertData === "yes") {
+            //     setStep("loading");
+
+            //     const insertPayload = {
+            //         action: "insert_data",
+            //         session_id: sessionId,
+            //         created_by: createdBy,
+            //         file_name: apiData?.file_name,
+            //         table_name: createNewTable === "no" ? selectedTable : tableName,
+            //         is_existing: createNewTable === "no",
+            //         schema
+            //     };
+
+            //     try {
+            //         const response = await ApiService.preview(insertPayload);
+            //         setInsertResponse(response?.data?.data);
+            //     } catch (err) {
+            //         setInsertResponse({
+            //             summary_message: err?.response?.data?.message
+            //         });
+            //     }
+
+            //     setTimeout(() => {
+            //         setStep("success");
+            //     }, 800);
+            // }
+
             if (insertData === "yes") {
+                setIsInsertLoading(true);
                 setStep("loading");
+
+                //  START PROGRESS
+                startProgressPolling();
 
                 const insertPayload = {
                     action: "insert_data",
@@ -367,12 +442,17 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                     setInsertResponse({
                         summary_message: err?.response?.data?.message
                     });
-                }
+                } finally {
+                    //  STOP POLLING
+                    stopProgressPolling();
+                    setIsInsertLoading(false);
 
-                setTimeout(() => {
-                    setStep("success");
-                }, 800);
+                    setTimeout(() => {
+                        setStep("success");
+                    }, 300);
+                }
             }
+
 
             return;
         }
@@ -481,18 +561,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 )}
 
                                 {/* First Row as Header Checkbox */}
-
-                                {/* <label className="flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={treatFirstRowAsHeader}
-                                            onChange={(e) => setTreatFirstRowAsHeader(e.target.checked)}
-                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                        />
-                                        <span className="ml-2 text-xs text-gray-700 font-medium">
-                                            Treat first row as header
-                                        </span>
-                                    </label> */}
                                 <label className="flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -589,57 +657,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-xs font-semibold text-gray-900">
-                                            Columns Preview
-                                        </h4>
-                                        {createNewTable === 'yes' && (
-                                            <button
-                                                onClick={handleAddColumn}
-                                                className="px-3 py-1.5 bg-[#3D5B811A] rounded-lg text-gray-700 hover:text-blue-600 transition flex items-center gap-2"
-                                                title="Add Column"
-                                            >
-                                                <Plus className="w-3.5 h-3.5" />
-                                                <span className="text-xs font-medium">Add Column</span>
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    <ProductDataTable
-                                        data={columns}
-                                        globalFilter=""
-                                        showPagination={false}
-                                        columns={[
-                                            {
-                                                column_name: 'name',
-                                                header: 'Column Name',
-                                                sortable: true
-                                            },
-                                            {
-                                                column_name: 'dataType',
-                                                header: 'Data Type',
-                                                sortable: true
-                                            },
-                                            {
-                                                column_name: 'length',
-                                                header: 'Length',
-                                                sortable: true
-                                            },
-                                            {
-                                                column_name: 'primary',
-                                                header: 'Primary Key',
-                                                sortable: false
-                                            },
-                                            ...(createNewTable === 'yes' ? [{
-                                                column_name: 'actions',
-                                                header: 'Actions',
-                                                sortable: false
-                                            }] : [])
-                                        ]}
-                                    />
-                                </div> */}
 
                                 {/* Extracted Column Section */}
                                 <div>
@@ -984,11 +1001,37 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                 )}
                             </>
                         ) : step === 'loading' ? (
-                            <div className="flex flex-col items-center justify-center">
-                                <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-                                <p className="text-sm text-gray-600">Processing...</p>
-                            </div>
+                            isInsertLoading ? (
+                                // INSERT DATA LOADER (with progress)
+                                <div className="flex flex-col items-center justify-center gap-3">
+                                    <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+
+                                    <p className="text-sm font-medium text-gray-700">
+                                        Inserting data...
+                                    </p>
+
+                                    <div className="w-72 bg-gray-200 rounded-full h-2 overflow-hidden">
+                                        <div
+                                            className="bg-blue-600 h-2 transition-all duration-300"
+                                            style={{ width: `${uploadProgress}%` }}
+                                        />
+                                    </div>
+
+                                    <p className="text-xs text-gray-600">
+                                        {uploadProgress}% completed
+                                    </p>
+                                </div>
+                            ) : (
+                                // PREVIEW LOADER (simple, no progress)
+                                <div className="flex flex-col items-center justify-center">
+                                    <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-3" />
+                                    <p className="text-sm text-gray-600">
+                                        Preparing preview...
+                                    </p>
+                                </div>
+                            )
                         ) : (
+
                             <>
                                 <div className="flex items-center justify-center gap-2">
                                     <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -1038,24 +1081,6 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                             >
                                 Cancel
                             </button>
-                            {/* <button
-                                onClick={handleNext}
-                                disabled={
-                                    (step === 'preview' && (insertData !== "yes" || isSchemaMismatch)) ||
-                                    (step === 'configure' && (createNewTable === 'no' && !selectedTable))
-                                }
-                                className={`px-4 py-1.5 rounded-lg font-medium text-xs transition-colors
-                                    ${(step === 'preview' && (insertData !== "yes" || isSchemaMismatch)) ||
-                                    (step === 'configure' && (createNewTable === 'no' && !selectedTable))
-                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                        : "bg-blue-600 text-white hover:bg-blue-700"
-                                    }
-                                `}
-                            >
-                                {step === 'configure'
-                                    ? (createNewTable === 'yes' ? 'Create Table & Preview' : 'Preview')
-                                    : 'Next'}
-                            </button> */}
 
                             <button
                                 onClick={handleNext}
