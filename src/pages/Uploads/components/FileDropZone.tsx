@@ -18,7 +18,7 @@ export default function FileDropZone({ onUploadComplete, theme, disabled = false
   const [files, setFiles] = useState<File[]>([]);
   const uploadCalledRef = useRef(false);
 
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; 
+  const MAX_FILE_SIZE = 90 * 1024 * 1024; 
   const ALLOWED_TYPES = ["text/csv"];
   const [error, setError] = useState<string>("");
 

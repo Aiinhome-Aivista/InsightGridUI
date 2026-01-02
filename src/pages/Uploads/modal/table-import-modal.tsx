@@ -250,7 +250,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                     file_name: apiData?.file_name,
                 });
 
-                const percent = res?.data?.data?.percentage ?? 0;
+                const percent = res?.data?.data?.percent ?? 0;
                 setUploadProgress(percent);
 
                 if (percent >= 100 && progressRef.current) {
@@ -260,7 +260,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
             } catch (err) {
                 console.error("Progress API error", err);
             }
-        }, 2000);
+        }, 10000);
     };
 
     const stopProgressPolling = () => {
