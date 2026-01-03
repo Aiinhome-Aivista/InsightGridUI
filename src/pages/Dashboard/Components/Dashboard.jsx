@@ -17,7 +17,7 @@ export default function Dashboard() {
   async function fetchDashboardData() {
     try {
       const payload = { created_by: createdBy, session_id: sessionId };
-      const response = await ApiService.getDashboardData(payload);
+      const response = await ApiService.getDashboardData();
       
       if (response.data.isSuccess) {
         setDashboardData(response.data.data);

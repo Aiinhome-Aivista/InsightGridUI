@@ -55,7 +55,7 @@ export default function Sidebar() {
       }
 
       try {
-        await ApiServices.tracker({ created_by: createdBy });
+        await ApiServices.tracker();
         console.log("Tracker API Success");
       } catch (err) {
         console.error("Tracker API Failed:", err);

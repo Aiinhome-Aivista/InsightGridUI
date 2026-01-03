@@ -1,5 +1,22 @@
 import axios from "axios";
 import { GET_APIS, POST_APIS } from "../../connection";
+
+/* ===============================
+   AXIOS TOKEN INTERCEPTOR
+   token will be read from ig_user
+================================ */
+
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("ig_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 class ApiServices {
   login(body) {
     return axios.post(POST_APIS.login, body);
@@ -39,13 +56,13 @@ class ApiServices {
     return axios.post(POST_APIS.save_chat, body);
   }
 
-  tracker(body) {
-    return axios.post(POST_APIS.tracker, body);
+  tracker() {
+    return axios.post(POST_APIS.tracker, {});
   }
 
 
-  getDashboardData(body) {
-    return axios.post(POST_APIS.get_dashboard_data, body);
+  getDashboardData() {
+    return axios.post(POST_APIS.get_dashboard_data, {});
   }
 
   getChatHistory(body) {

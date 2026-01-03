@@ -563,6 +563,7 @@ export default function Login() {
               key={tab.value}
               type="button"
               onClick={() => {
+                console.log("setLoginType:", tab.value);
                 setLoginType(tab.value);
                 setCompanyCode("");
                 setCompanyCodeError("");

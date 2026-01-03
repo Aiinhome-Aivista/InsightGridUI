@@ -41,6 +41,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
+    localStorage.setItem("ig_token", userData.token);
+
     setUser(userData);
     // navigate("/layout/dashboard", { replace: true });
     if (userData.role === "superadmin") {
