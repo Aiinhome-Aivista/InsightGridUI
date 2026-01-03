@@ -14,7 +14,7 @@ interface AuthContextType {
   setIsLogoutModalOpen: Dispatch<SetStateAction<boolean>>;
   isConfirmSaveModalOpen: boolean;
   downloadData: { rows: any[]; columns: any[] } | null;
-  setDownloadData:  Dispatch<TableData | null>;
+  setDownloadData: Dispatch<TableData | null>;
   setIsConfirmSaveModalOpen: Dispatch<SetStateAction<boolean>>;
   viewName: string;
   setViewName: Dispatch<SetStateAction<string>>;
@@ -42,7 +42,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
     setUser(userData);
-    navigate("/layout/dashboard", { replace: true });
+    // navigate("/layout/dashboard", { replace: true });
+    if (userData.role === "superadmin") {
+      navigate("/layout/super-dashboard", { replace: true });
+    } else {
+      navigate("/layout/dashboard", { replace: true });
+    }
   };
 
   const logout = () => {

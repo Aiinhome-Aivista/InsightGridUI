@@ -22,4 +22,6 @@ export const POST_APIS = {
   report_save: `${BASE_URL}report_save`,
   delete_uploaded_file: `${BASE_URL}delete_uploaded_file`,
   upload_progress: `${BASE_URL}get_upload_progress`,
+  super_admin_login: `${BASE_URL}superadmin/login`,
+
 };

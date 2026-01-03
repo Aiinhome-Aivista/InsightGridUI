@@ -15,7 +15,7 @@ class ApiServices {
   executeSql(body) {
     return axios.post(POST_APIS.execute_sql, body);
   }
- 
+
   // For file upload (FormData)
   fileUpload(formData) {
     return axios.post(POST_APIS.fileUpload, formData, {
@@ -71,11 +71,13 @@ class ApiServices {
     return axios.post(POST_APIS.delete_uploaded_file, body);
   }
 
-  
+
   getUploadProgress(body) {
     return axios.post(POST_APIS.upload_progress, body);
   }
-
+  superAdminLogin(body) {
+    return axios.post(POST_APIS.super_admin_login, body);
+  }
 }
 
 export default new ApiServices();
