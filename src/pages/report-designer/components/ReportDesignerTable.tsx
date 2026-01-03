@@ -718,7 +718,7 @@ export default function DataViewTable({
               {/* 🔥 CHARTS ABOVE TABLE WHEN SIDEBAR OPEN */}
               {showChartSidebar && charts.length > 0 && (
                 <div className="mb-6">
-                  <RenderCharts
+                  <RenderCharts 
                     charts={chartsWithRows}
 
                     onRemoveChart={removeChart}
@@ -795,7 +795,7 @@ export default function DataViewTable({
               )}
 
               {!showChartSidebar && charts.length > 0 && (
-                <div className="mt-6">
+                <div className="mt-6" id="report-chart">
                   <RenderCharts
                     charts={chartsWithRows}
                     onRemoveChart={removeChart}

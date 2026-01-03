@@ -1,5 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import html2canvas from "html2canvas";
+
 
 
 const fetchImageAsBase64 = async (url: string): Promise<string> => {
@@ -74,6 +76,19 @@ const cropImageBase64 = (base64: string): Promise<string> => {
   });
 };
 
+const captureChartAsImage = async (elementId: string): Promise<string | null> => {
+  const element = document.getElementById(elementId);
+  if (!element) return null;
+
+  const canvas = await html2canvas(element, {
+    scale: 2,
+    backgroundColor: "#ffffff",
+    useCORS: true,
+  });
+
+  return canvas.toDataURL("image/png");
+};
+
 
 
 
@@ -83,6 +98,8 @@ export const generatePDF = async (data, mode = "download", fileName = "report"
     console.warn("No data available for PDF");
     return;
   }
+
+
 
 
   const user = JSON.parse(localStorage.getItem("ig_user") || "{}");
@@ -158,9 +175,37 @@ export const generatePDF = async (data, mode = "download", fileName = "report"
     addressY + addressHeight + 4
   );
 
-  // Divider
-  const dividerY = addressY + addressHeight + 20;
-  doc.line(40, dividerY, pageWidth - 40, dividerY);
+
+// Divider
+const dividerY = addressY + addressHeight + 20;
+doc.line(40, dividerY, pageWidth - 40, dividerY);
+
+// ===== CHART =====
+let tableStartY = dividerY + 20;
+
+const chartBase64 = await captureChartAsImage("report-chart");
+
+if (chartBase64) {
+  const chartX = 40;
+  const chartY = dividerY + 20;
+  const chartWidth = pageWidth - 80;
+  const chartHeight = 220;
+
+  doc.addImage(
+    chartBase64,
+    "PNG",
+    chartX,
+    chartY,
+    chartWidth,
+    chartHeight
+  );
+
+  tableStartY = chartY + chartHeight + 20;
+}
+
+
+
+
 
 
 
