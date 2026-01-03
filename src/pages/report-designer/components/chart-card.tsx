@@ -12,7 +12,10 @@ interface ChartCardProps {
 // ==================== GLOBAL REUSABLE CHART CARD ====================
 export default function ChartCard({ title, description, children, onRemove }: ChartCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 w-full max-w-md max-h-[350px] flex-shrink-0">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 w-full max-w-md  flex-shrink-0" style={{
+    height: "340px",     // 🔥 FIXED HEIGHT (IMPORTANT)
+    overflow: "visible"  // 🔥 NO CLIPPING
+  }}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-semibold text-gray-900">{title}</h3>

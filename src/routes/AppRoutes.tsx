@@ -12,12 +12,15 @@ import Dashboard from "../pages/Dashboard/Components/Dashboard";
 import ReportDesignerParents from "../pages/report-designer/ReportDesignerParents";
 import ReportSchedulerManage from "../pages/report-scheduler/ReportSchedulerManage";
 import Settings from "../pages/Setting/Setting";
+import ManageCompanyUsers from "../pages/company-users/ManageCompanyUsers";
+import ManageSuperAdminDashboard from "../pages/Superadmin/ManageSuperAdminDashboard";
+import ManageCompanies from "../pages/Superadmin/ManageCompanies";
 function AppRoutes() {
   return (
     <AuthProvider>
       <Routes>
-         <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<Login />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/layout" element={<AppLayout />}>
             <Route index element={<Navigate to="upload" replace />} />
@@ -27,9 +30,12 @@ function AppRoutes() {
             <Route path="report-scheduler" element={<ReportSchedulerManage />} />
             <Route path="report-designer-view" element={<ReportDesignerParents />} />
             <Route path="query-designer" element={<QueryDesigner />} />
-              <Route path="Settings" element={<Settings />} />
+            <Route path="Settings" element={<Settings />} />
             {/* <Route path="customize" element={<Customize_page />} /> */}
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="manage-users" element={<ManageCompanyUsers />} />
+            <Route path="super-dashboard" element={<ManageSuperAdminDashboard />} />
+            <Route path="companies" element={<ManageCompanies />} />
           </Route>
         </Route>
 

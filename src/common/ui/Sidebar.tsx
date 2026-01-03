@@ -18,13 +18,20 @@ import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
 import HourglassTopTwoToneIcon from '@mui/icons-material/HourglassTopTwoTone';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import person_add from '@mui/icons-material/PersonAdd';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 const menuItems = [
-    { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard" },
-  { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload" },
-  { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list" },
-  { name: "Report Designer", icon: SummarizeOutlinedIcon , path: "report-designer" },
+  // 🔹 SUPER ADMIN ONLY
+  { name: "Super Dashboard", icon: SpaceDashboardIcon, path: "super-dashboard", roles: ["superadmin"], },
+  { name: "Company", icon: ApartmentIcon, path: "companies", roles: ["superadmin"], },
+  { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard", roles: ["companyadmin", "user"] },
+  { name: "User", icon: person_add, path: "manage-users", roles: ["companyadmin"] },
+  { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload", roles: ["companyadmin", "user"] },
+  { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list", roles: ["companyadmin", "user"] },
+  { name: "Report Designer", icon: SummarizeOutlinedIcon, path: "report-designer", roles: ["companyadmin", "user"] },
   // { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" },
-    { name: "Settings", icon: SettingsRoundedIcon, path: "Settings" },
+  { name: "Settings", icon: SettingsRoundedIcon, path: "Settings", roles: ["companyadmin", "user"] },
   //  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
 
 ];
@@ -106,8 +113,8 @@ export default function Sidebar() {
       {/* Menu Items */}
       <div className="mt-3 flex-1">
         <nav className={`flex flex-col gap-2 ${collapsed ? 'px-4' : 'px-2'}`}>
-          {menuItems.map((item) => {
-            const Icon = item.icon; 
+          {menuItems.filter(item => item.roles.includes(user?.role)).map((item) => {
+            const Icon = item.icon;
             let isActive = item.path === activePath;
             if (item.path === 'query-list' && activePath === 'query-designer') {
               isActive = true;
@@ -125,11 +132,9 @@ export default function Sidebar() {
               >
                 <Link to={item.path} className="no-underline" onClick={() => handleTabClick(item)}>
                   <div
-                    className={`flex items-center ${
-                      collapsed ? 'justify-center w-12 h-12' : 'justify-start h-12 px-3'
-                    } cursor-pointer rounded-lg transition-colors duration-200 ${
-                      isActive ? '' : ''
-                    } `}
+                    className={`flex items-center ${collapsed ? 'justify-center w-12 h-12' : 'justify-start h-12 px-3'
+                      } cursor-pointer rounded-lg transition-colors duration-200 ${isActive ? '' : ''
+                      } `}
                     style={{
                       backgroundColor: isActive ? theme.accent : undefined,
                       color: isActive ? theme.background : theme.primaryText,
@@ -137,7 +142,7 @@ export default function Sidebar() {
                     }}
                     onMouseEnter={(e) => {
                       if (!isActive) {
-                        e.currentTarget.style.backgroundColor = `${theme.accent}33`; 
+                        e.currentTarget.style.backgroundColor = `${theme.accent}33`;
                       }
                     }}
                     onMouseLeave={(e) => {
@@ -175,7 +180,7 @@ export default function Sidebar() {
             onClick={handleLogout}
             className={`flex items-center cursor-pointer rounded-lg transition-colors duration-200 ${collapsed ? 'justify-center w-12 h-12' : 'justify-start h-12 px-3'}`}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = `${theme.accent}33`; 
+              e.currentTarget.style.backgroundColor = `${theme.accent}33`;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';

@@ -5,6 +5,10 @@ interface TableData {
   rows: any[];
   columns: any[];
 }
+interface PreviewChartData {
+  charts: any[]; // you can replace `any` with ChartConfig later
+}
+
 interface AuthContextType {
   user: any;
   login: (userData: any) => void;
@@ -14,12 +18,15 @@ interface AuthContextType {
   setIsLogoutModalOpen: Dispatch<SetStateAction<boolean>>;
   isConfirmSaveModalOpen: boolean;
   downloadData: { rows: any[]; columns: any[] } | null;
-  setDownloadData:  Dispatch<TableData | null>;
+  setDownloadData: Dispatch<TableData | null>;
   setIsConfirmSaveModalOpen: Dispatch<SetStateAction<boolean>>;
   viewName: string;
   setViewName: Dispatch<SetStateAction<string>>;
   confirmSave: () => void;
   setConfirmSaveAction: (action: () => void) => void;
+  previewChartData: any[] | null;
+  setPreviewChartData: Dispatch<SetStateAction<any[] | null>>;
+
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -39,10 +46,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [viewName, setViewName] = useState("");
   const [downloadData, setDownloadData] = useState<TableData | null>(null);
   const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
+  const [previewChartData, setPreviewChartData] = useState<any[] | null>(null);
+
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
     setUser(userData);
-    navigate("/layout/dashboard", { replace: true });
+    // navigate("/layout/dashboard", { replace: true });
+    if (userData.role === "superadmin") {
+      navigate("/layout/super-dashboard", { replace: true });
+    } else {
+      navigate("/layout/dashboard", { replace: true });
+    }
   };
 
   const logout = () => {
@@ -67,7 +81,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isLogoutModalOpen, setIsLogoutModalOpen,
       isConfirmSaveModalOpen, setIsConfirmSaveModalOpen,
       downloadData, setDownloadData,
-      viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction
+      viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction,  previewChartData,
+    setPreviewChartData
     }}>
       {children}
     </AuthContext.Provider>

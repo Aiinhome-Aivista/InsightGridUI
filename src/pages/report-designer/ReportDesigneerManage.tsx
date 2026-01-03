@@ -7,6 +7,9 @@ import { AuthProvider, useAuth } from "../Auth/AuthContext";
 import ApiServices from "../../services/ApiServices";
 import { generatePDF } from "../../utils/download/function";
 import Tippy from "@tippyjs/react";
+import html2canvas from "html2canvas";
+import RenderCharts from "./components/render-charts";
+
 const ReportDesignManage = () => {
   const navigate = useNavigate();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -17,6 +20,10 @@ const ReportDesignManage = () => {
   const isFetching = useRef(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
+ const {previewChartData, setPreviewChartData } = useAuth();
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+
+
   const timeAgo = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return "";
     try {
@@ -97,32 +104,250 @@ const ReportDesignManage = () => {
     )
   );
 
-  
+  const buildFinalRows = (
+    rawRows: any[],
+    columns: string[],
+    groupBy?: string,
+    aggregations?: {
+      column: string;
+      agg: "sum" | "max" | "min" | "avg" | "count";
+    }[]
+  ) => {
+    const hasGroup = !!groupBy;
+    const hasAgg = !!aggregations?.length;
+
+    // 🟢 Case 1,5 → no group, no agg
+    if (!hasGroup && !hasAgg) {
+      return rawRows;
+    }
+
+    // 🟢 Case 2,6 → agg only
+    if (!hasGroup && hasAgg) {
+      const labelColumn = columns[0];
+      const finalRows: any[] = [];
+
+      aggregations!.forEach((agg) => {
+        const values = rawRows
+          .map((r) => Number(r[agg.column]))
+          .filter((v) => !isNaN(v));
+
+        let val: number | string = "";
+
+        switch (agg.agg) {
+          case "sum":
+            val = values.reduce((a, b) => a + b, 0);
+            break;
+          case "max":
+            val = values.length ? Math.max(...values) : "";
+            break;
+          case "min":
+            val = values.length ? Math.min(...values) : "";
+            break;
+          case "avg":
+            val = values.length
+              ? +(values.reduce((a, b) => a + b, 0) / values.length).toFixed(2)
+              : "";
+            break;
+          case "count":
+            val = values.length;
+            break;
+        }
+
+        const row: any = {};
+        columns.forEach((c) => (row[c] = ""));
+        row[labelColumn] = agg.agg.toUpperCase();
+        row[agg.column] = val;
+        row.__isAggregation = true;
+
+        finalRows.push(row);
+      });
+
+      return finalRows;
+    }
+
+    // 🟢 Case 3,4,7,8 → group exists
+    const grouped: Record<string, any[]> = {};
+    rawRows.forEach((r) => {
+      const key = r[groupBy!] ?? "UNKNOWN";
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(r);
+    });
+
+    const finalRows: any[] = [];
+    const labelColumn = columns[0];
+
+    Object.keys(grouped).forEach((groupKey) => {
+      const rows = grouped[groupKey];
+
+      // normal rows
+      rows.forEach((r) => finalRows.push({ ...r }));
+
+      if (!hasAgg) return;
+
+      aggregations!.forEach((agg) => {
+        const values = rows
+          .map((r) => Number(r[agg.column]))
+          .filter((v) => !isNaN(v));
+
+        let val: number | string = "";
+
+        switch (agg.agg) {
+          case "sum":
+            val = values.reduce((a, b) => a + b, 0);
+            break;
+          case "max":
+            val = values.length ? Math.max(...values) : "";
+            break;
+          case "min":
+            val = values.length ? Math.min(...values) : "";
+            break;
+          case "avg":
+            val = values.length
+              ? +(values.reduce((a, b) => a + b, 0) / values.length).toFixed(2)
+              : "";
+            break;
+          case "count":
+            val = values.length;
+            break;
+        }
+
+        const row: any = {};
+        columns.forEach((c) => (row[c] = ""));
+        row[labelColumn] = agg.agg.toUpperCase();
+        row[agg.column] = val;
+        row.__isAggregation = true;
+
+        finalRows.push(row);
+      });
+    });
+
+    return finalRows;
+  };
+
+
   const handlePreview = async (report: any) => {
+     console.log("Charts for preview:", report);
     try {
       const aiResponse = report?.query?.ai_responce;
       if (!aiResponse) return;
+
       const execRes = await ApiServices.executeSql({
         sql_query: aiResponse,
         session_id: userData?.session_id
       });
+
       const api = execRes.data.data;
+
+      const config =
+        typeof report.report_config === "string"
+          ? JSON.parse(report.report_config)
+          : report.report_config;
+
+      // ✅ TABLE DATA (group + aggregation)
+      const finalRows = buildFinalRows(
+        api.rows,
+        api.columns,
+        config.group_by?.[0],
+        config.aggregations
+      );
+
+
+      // ✅ PREPARE CHART CONFIG (same as edit page)
+      const chartsForPreview = (config.charts || []).map((c: any) => ({
+        ...c,
+        rows: api.rows   // 🔥 IMPORTANT: charts never use grouped rows
+      }));
+
+      console.log("Charts on preview:", chartsForPreview);
+
+      setPreviewChartData(chartsForPreview);
+
+      // 🔥 wait for charts to render
+      await new Promise(res => setTimeout(res, 500));
+
+      // ✅ CAPTURE CHARTS
+      let chartImages: string[] = [];
+
+      if (chartContainerRef.current) {
+        const canvas = await html2canvas(chartContainerRef.current, {
+          scale: 2,
+          backgroundColor: "#ffffff",
+          useCORS: true
+        });
+        chartImages.push(canvas.toDataURL("image/png"));
+      }
+
       const cleanFileName = report.report_name
         .replace(/\s*report$/i, "")
         .trim();
 
+      // ✅ FINAL PDF
       generatePDF(
         {
-          rows: api.rows,
+          rows: finalRows,
           columns: api.columns.map((c: string) => ({ column_name: c })),
         },
+        previewChartData,
         "preview",
-        cleanFileName
+        cleanFileName,
+      
       );
+
     } catch (err) {
       console.error("Preview failed", err);
     }
   };
+
+  // const handlePreview = async (report: any) => {
+  //   console.log('handlePreview', report)
+  //   try {
+  //     const aiResponse = report?.query?.ai_responce;
+  //     if (!aiResponse) return;
+  //     const execRes = await ApiServices.executeSql({
+  //       sql_query: aiResponse,
+  //       session_id: userData?.session_id
+  //     });
+  //     const api = execRes.data.data;
+  //     const cleanFileName = report.report_name
+  //       .replace(/\s*report$/i, "")
+  //       .trim();
+  //     const config = JSON.parse(report.report_config);
+
+  //     console.log("📌 REPORT CONFIG", config);
+
+  //     const finalRows = buildFinalRows(
+  //       api.rows,
+  //       api.columns,
+  //       config.group_by?.[0],        // undefined allowed
+  //       config.aggregations          // undefined allowed
+  //     );
+
+
+
+  //     console.log("🧾 FINAL PDF ROWS", finalRows);
+
+  //     generatePDF(
+  //       {
+  //         rows: finalRows,
+  //         columns: api.columns.map((c: string) => ({ column_name: c })),
+  //       },
+  //       "preview",
+  //       cleanFileName,
+
+  //     );
+
+  //     // generatePDF(
+  //     //   {
+  //     //     rows: api.rows,
+  //     //     columns: api.columns.map((c: string) => ({ column_name: c })),
+  //     //   },
+  //     //   "preview",
+  //     //   cleanFileName
+  //     // );
+  //   } catch (err) {
+  //     console.error("Preview failed", err);
+  //   }
+  // };
   const handleDownload = async (report: any) => {
     try {
       const aiResponse = report?.query?.ai_responce;
@@ -308,7 +533,23 @@ const ReportDesignManage = () => {
           <p className="text-gray-500 mt-2">Empty Report List</p>
         </div>
       )}
+
+
+      {/* 🔥 HIDDEN CHART PREVIEW FOR PDF */}
+      <div 
+        ref={chartContainerRef}
+       style={{ background: "#fff" }}
+      >
+        <RenderCharts
+          charts={previewChartData || []}
+          onRemoveChart={() => { }}
+          onReorderCharts={() => { }}
+        />
+      </div>
+
+
     </div>
+
   );
 };
 
