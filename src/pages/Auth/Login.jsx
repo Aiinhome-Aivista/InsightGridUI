@@ -25,6 +25,11 @@ export default function Login() {
   });
   const [captchaCode, setCaptchaCode] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
+
+  //for tab login
+  const [loginType, setLoginType] = useState("USER"); // USER | COMPANY_ADMIN | SUPER_ADMIN
+
+
   const generateCaptcha = () => {
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let code = "";
@@ -36,8 +41,77 @@ export default function Login() {
   useEffect(() => {
     generateCaptcha();
   }, []);
+
+
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   if (captchaInput !== captchaCode) {
+  //     setNotification({
+  //       open: true,
+  //       message: "Invalid CAPTCHA code",
+  //       severity: "error",
+  //     });
+  //     generateCaptcha();
+  //     setCaptchaInput("");
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   setNotification({ open: false, message: "", severity: "info" });
+  //   let res = null;
+  //   try {
+  //     const payload = { user_email, password, company_code: companyCode };
+  //     const response = await ApiServices.login(payload);
+  //     res = response.data; // LoginResponse
+  //     console.log("Login Response:", res);
+
+  //     if (res.isSuccess) {
+  //       setNotification({
+  //         open: true,
+  //         message: "Login successfully!",
+  //         severity: "success",
+  //       });
+
+  //       setTimeout(() => login(res.data), 1500);
+  //       return;
+  //     }
+
+  //     setNotification({
+  //       open: true,
+  //       message: res?.message || "Login failed",
+  //       severity: "error",
+  //     });
+  //   } catch (err) {
+  //     setNotification({
+  //       open: true,
+  //       message: err.message || "Network Error",
+  //       severity: "error",
+  //     });
+  //   } finally {
+  //     if (!res?.isSuccess) setLoading(false);
+  //   }
+  // };
+
+  // const isFormValid =
+  //   user_email.trim() !== "" &&
+  //   password.trim() !== "" &&
+  //   captchaInput.trim() !== "" &&
+  //   !loading &&
+  //   !emailError;
+
+
+  // const isFormValid =
+  //   user_email.trim() !== "" &&
+  //   password.trim() !== "" &&
+  //   companyCode.trim() !== "" &&
+  //   captchaInput.trim() !== "" &&
+  //   !loading &&
+  //   !emailError &&
+  //   !companyCodeError;
+
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    //  CAPTCHA validation
     if (captchaInput !== captchaCode) {
       setNotification({
         open: true,
@@ -48,57 +122,87 @@ export default function Login() {
       setCaptchaInput("");
       return;
     }
+
     setLoading(true);
     setNotification({ open: false, message: "", severity: "info" });
+
     let res = null;
+
     try {
-      const payload = { user_email, password, company_code: companyCode };
-      const response = await ApiServices.login(payload);
-      res = response.data; // LoginResponse
+      let response;
+
+      //  API selection based on login type
+      if (loginType === "SUPER_ADMIN") {
+        //  Super Admin Login
+        const payload = {
+          user_email,
+          password,
+        };
+
+        response = await ApiServices.superAdminLogin(payload);
+      } else {
+        //  Company Admin &  User Login
+        const payload = {
+          company_code: companyCode,
+          user_email,
+          password,
+        };
+
+        response = await ApiServices.login(payload);
+      }
+
+      res = response.data;
       console.log("Login Response:", res);
 
-      if (res.isSuccess) {
+      //Success handling
+      if (res?.isSuccess) {
         setNotification({
           open: true,
           message: "Login successfully!",
           severity: "success",
         });
 
-        setTimeout(() => login(res.data), 1500);
+        // existing auth flow (UNCHANGED)
+        setTimeout(() => {
+          login(res.data);
+        }, 1500);
+
         return;
       }
 
+      // API-level failure
       setNotification({
         open: true,
         message: res?.message || "Login failed",
         severity: "error",
       });
     } catch (err) {
+      // Network / server error
       setNotification({
         open: true,
-        message: err.message || "Network Error",
+        message:
+          err?.response?.data?.message ||
+          err?.message ||
+          "Network Error",
         severity: "error",
       });
     } finally {
-      if (!res?.isSuccess) setLoading(false);
+      // Stop loader only if failed
+      if (!res?.isSuccess) {
+        setLoading(false);
+      }
     }
   };
-
-  // const isFormValid =
-  //   user_email.trim() !== "" &&
-  //   password.trim() !== "" &&
-  //   captchaInput.trim() !== "" &&
-  //   !loading &&
-  //   !emailError;
 
   const isFormValid =
     user_email.trim() !== "" &&
     password.trim() !== "" &&
-    companyCode.trim() !== "" &&
     captchaInput.trim() !== "" &&
     !loading &&
     !emailError &&
+    (loginType === "SUPER_ADMIN" || companyCode.trim() !== "") &&
     !companyCodeError;
+
 
   function getCurrentYear() {
     return new Date().getFullYear();
@@ -159,9 +263,36 @@ export default function Login() {
             Customize Every View. Empower Every Decision.
           </p>
         </div>
+        {/* //add for tab login */}
+
+        <div className="flex bg-white/20 rounded-lg overflow-hidden mt-6 w-80">
+          {[
+            { label: "Super Admin", value: "SUPER_ADMIN" },
+            { label: "Company Admin", value: "COMPANY_ADMIN" },
+            { label: "User", value: "USER" },
+          ].map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => {
+                setLoginType(tab.value);
+                setCompanyCode("");
+                setCompanyCodeError("");
+              }}
+              className={`flex-1 py-2 text-sm font-medium transition
+        ${loginType === tab.value
+                  ? "bg-white/40 text-white"
+                  : "text-white/70 hover:bg-white/20"
+                }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         <form
           onSubmit={handleLogin}
-          className="mt-16 w-80 flex flex-col space-y-4"
+          className="mt-10 w-80 flex flex-col space-y-4"
         >
           <div className="w-full">
             <input
@@ -208,7 +339,7 @@ export default function Login() {
             </button>
           </div>
 
-          <div className="w-full">
+          {/* <div className="w-full">
             <input
               type="text"
               placeholder="Company Code"
@@ -236,7 +367,39 @@ export default function Login() {
                 {companyCodeError}
               </p>
             )}
-          </div>
+          </div> */}
+
+          {loginType !== "SUPER_ADMIN" && (
+            <div className="w-full">
+              <input
+                type="text"
+                placeholder="Company Code"
+                value={companyCode}
+                onChange={(e) => {
+                  const val = e.target.value.toUpperCase();
+                  setCompanyCode(val);
+
+                  const codeRegex = /^[A-Z0-9]{3,}$/;
+                  if (val && !codeRegex.test(val)) {
+                    setCompanyCodeError(
+                      "Company Code must be at least 3 characters (A–Z, 0–9)"
+                    );
+                  } else {
+                    setCompanyCodeError("");
+                  }
+                }}
+                className={`w-full px-4 py-2 rounded-md bg-transparent border ${companyCodeError ? "border-red-400" : "border-white/40"
+                  } text-white outline-none placeholder-white/60`}
+              />
+
+              {companyCodeError && (
+                <p className="text-red-400 text-xs mt-1 ml-1">
+                  {companyCodeError}
+                </p>
+              )}
+            </div>
+          )}
+
 
 
           <div className="flex items-center gap-2">

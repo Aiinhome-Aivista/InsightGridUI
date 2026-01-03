@@ -5,6 +5,10 @@ class ApiServices {
     return axios.post(POST_APIS.login, body);
   }
 
+  superAdminLogin(body) {
+    return axios.post(POST_APIS.super_admin_login, body);
+  }
+
   getUiData(body) {
     return axios.post(POST_APIS.get_ui_data, body);
   }
@@ -15,11 +19,6 @@ class ApiServices {
   executeSql(body) {
     return axios.post(POST_APIS.execute_sql, body);
   }
-  // fileUpload(formData) {
-  //   return axios.post(POST_APIS.fileUpload, formData, {
-  //     headers: { 'Content-Type': 'multipart/form-data' },
-  //   });
-  // }
 
   // For file upload (FormData)
   fileUpload(formData) {
@@ -69,7 +68,7 @@ class ApiServices {
   }
 
   report_save(body) {
-    return axios.post(POST_APIS.report_save,body);
+    return axios.post(POST_APIS.report_save, body);
   }
 
   deleteUploadedFile(body) {
