@@ -26,7 +26,7 @@ export default function UploadPage() {
   const [resetKey, setResetKey] = useState(0);
 
 
-  
+
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -40,7 +40,7 @@ export default function UploadPage() {
   async function trackFiles() {
     const payload = { created_by: createdBy, session_id: sessionId };
     try {
-      const response = await ApiService.tracker(payload);
+      const response = await ApiService.tracker();
       if (response.data.isSuccess) {
         const files = response.data?.data || [];
         setProcessedFiles(files);
@@ -63,45 +63,92 @@ export default function UploadPage() {
   }
 
 
+  // async function uploadFiles(files: File[]) {
+  //   if (!files || files.length === 0) return;
+  //   if (uploadInProgress.current) return;
+  //   uploadInProgress.current = true;
+  //   setIsUploading(true);
+  //   setIsProcessing(false);
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("action", "upload");
+  //     formData.append("session_id", sessionId);
+  //     formData.append("created_by", createdBy);
+  //     formData.append("has_header", "true");
+  //     files.forEach((file) => {
+  //       formData.append("files", file);
+  //     });
+  //     setProcessingFileName(
+  //       files.length > 1 ? `${files.length} files` : files[0].name
+  //     );
+  //     const uploadResponse = await ApiService.fileUpload(formData);
+  //     console.log("Upload Response:", uploadResponse?.data);
+  //     const responseData = uploadResponse?.data;
+  //     if (!responseData?.isSuccess) {
+  //       console.error("Upload failed:", responseData?.message);
+  //       return;
+  //     }
+  //     const fileInfo = responseData.data;
+  //     if (!fileInfo) {
+  //       console.error("File info missing.");
+  //       return;
+  //     }
+  //     setUploadedFileName(fileInfo.file_name || files[0].name);
+  //     setUploadResponseData(fileInfo);
+  //     setIsModalOpen(true);
+  //     setResetKey((prev) => prev + 1);
+
+  //     setIsUploading(false);
+  //     setIsProcessing(false);
+
+  //     await trackFiles();
+  //   } catch (error: any) {
+  //     console.error("Upload error:", error?.message || error);
+  //   } finally {
+  //     uploadInProgress.current = false;
+  //     setIsUploading(false);
+  //     setIsProcessing(false);
+  //   }
+  // }
   async function uploadFiles(files: File[]) {
     if (!files || files.length === 0) return;
     if (uploadInProgress.current) return;
+
     uploadInProgress.current = true;
     setIsUploading(true);
     setIsProcessing(false);
+
     try {
       const formData = new FormData();
+
       formData.append("action", "upload");
-      formData.append("session_id", sessionId);
-      formData.append("created_by", createdBy);
       formData.append("has_header", "true");
+
       files.forEach((file) => {
         formData.append("files", file);
       });
+
       setProcessingFileName(
         files.length > 1 ? `${files.length} files` : files[0].name
       );
+
       const uploadResponse = await ApiService.fileUpload(formData);
-      console.log("Upload Response:", uploadResponse?.data);
+
       const responseData = uploadResponse?.data;
       if (!responseData?.isSuccess) {
         console.error("Upload failed:", responseData?.message);
         return;
       }
+
       const fileInfo = responseData.data;
-      if (!fileInfo) {
-        console.error("File info missing.");
-        return;
-      }
+
       setUploadedFileName(fileInfo.file_name || files[0].name);
       setUploadResponseData(fileInfo);
       setIsModalOpen(true);
       setResetKey((prev) => prev + 1);
 
-      setIsUploading(false);
-      setIsProcessing(false);
-
       await trackFiles();
+
     } catch (error: any) {
       console.error("Upload error:", error?.message || error);
     } finally {
@@ -110,6 +157,7 @@ export default function UploadPage() {
       setIsProcessing(false);
     }
   }
+
   return (
     <div className="w-full rounded-lg p-8">
       <h2

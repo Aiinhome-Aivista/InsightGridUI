@@ -60,8 +60,8 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
     const maxVisiblePages = 5;
 
     const storedUser = JSON.parse(localStorage.getItem("ig_user") || "{}");
-    const sessionId = storedUser?.session_id || "";
-    const createdBy = storedUser?.user_id || "";
+    // const sessionId = storedUser?.session_id || "";
+    // const createdBy = storedUser?.user_id || "";
 
     // Calculate pagination values
     const totalRecords = columns.length;
@@ -246,7 +246,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
         progressRef.current = setInterval(async () => {
             try {
                 const res = await ApiService.getUploadProgress({
-                    session_id: sessionId,
+                    // session_id: sessionId,
                     file_name: apiData?.file_name,
                 });
 
@@ -288,8 +288,8 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
             const payload = {
                 action: createNewTable === "yes" ? "create_table" : "preview",
-                session_id: sessionId,
-                created_by: createdBy,
+                // session_id: sessionId,
+                // created_by: createdBy,
                 table_name: createNewTable === "no" ? selectedTable : tableName,
                 file_name: apiData?.file_name,
                 schema,
@@ -427,8 +427,8 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
 
                 const insertPayload = {
                     action: "insert_data",
-                    session_id: sessionId,
-                    created_by: createdBy,
+                    // session_id: sessionId,
+                    // created_by: createdBy,
                     file_name: apiData?.file_name,
                     table_name: createNewTable === "no" ? selectedTable : tableName,
                     is_existing: createNewTable === "no",
