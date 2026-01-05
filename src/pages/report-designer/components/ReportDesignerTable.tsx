@@ -96,6 +96,20 @@ const calculateAggregation = (
 
   return map;
 };
+// const groupByRef = useRef<any>(null);
+// const filterRef = useRef<any>(null);
+
+// useEffect(() => {
+//   const handleScroll = () => {
+//     groupByRef.current?.hide();
+//     filterRef.current?.hide();
+//   };
+
+//   window.addEventListener("scroll", handleScroll, true);
+//   return () => {
+//     window.removeEventListener("scroll", handleScroll, true);
+//   };
+// }, []);
 
 const groupRows = (
   rows: any[],
@@ -435,6 +449,7 @@ export default function DataViewTable({
                 <div className="flex items-center gap-3 flex-wrap">
                   {groupByColumns.length > 0 && (
                     <MultiSelect
+                  appendTo="self"
                       filter
                       showClear={false}
                       value={selectedGroupBy}
@@ -464,11 +479,9 @@ export default function DataViewTable({
                       onChange={(e) => {
                         const newGroups = e.value;
                         setSelectedGroupBy(newGroups);
-
-                        // 🔥 GROUP BY CLEARED
                         if (newGroups.length === 0) {
-                          setAggregations([]); // ✅ clear footer aggregations
-                          setCollapsedGroups({}); // ✅ reset group state
+                          setAggregations([]);
+                          setCollapsedGroups({});
                           return;
                         }
 
@@ -492,19 +505,20 @@ export default function DataViewTable({
                       placeholder="Group By"
                       display="chip"
                       className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
-                      panelClassName="bg-gray-50 border border-gray-200 rounded-lg shadow-sm"
+                      panelClassName="fixed-multiselect-panel shadow-lg"
                       pt={{
                         filterContainer: {
-                          className: "pb-3", // search নিচে space
+                          className: "multiselect-filter-fix",
                         },
                         list: {
-                          className: "mt-4", // 🔥 search & options gap
+                          className: "multiselect-list-fix",
                         },
                       }}
                     />
                   )}
                   {Object.keys(filters).length > 0 && (
                     <MultiSelect
+                      appendTo="self"
                       filter
                       value={selectedFilters.map(
                         (f) => `${f.column}|${f.operator}`
@@ -526,13 +540,13 @@ export default function DataViewTable({
                       placeholder="Filter"
                       display="chip"
                       className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
-                      panelClassName="bg-gray-50 border border-gray-200 rounded-lg shadow-sm"
+                      panelClassName="fixed-multiselect-panel shadow-lg"
                       pt={{
                         filterContainer: {
-                          className: "pb-3",
+                          className: "multiselect-filter-fix",
                         },
                         list: {
-                          className: "mt-4",
+                          className: "multiselect-list-fix",
                         },
                       }}
                     />
@@ -672,7 +686,7 @@ export default function DataViewTable({
                   columnAggregations={table.visualization?.aggregations}
                   aggregationMap={aggregationMap}
                   aggregationOrder={aggregationOrder}
-                  isGrouped={selectedGroupBy.length > 0} 
+                  isGrouped={selectedGroupBy.length > 0}
                   onAggregationSelect={(column, agg) => {
                     setAggregations((prev) => {
                       const exists = prev.find(
@@ -694,8 +708,8 @@ export default function DataViewTable({
                   columnTypes={chartColumnTypes}
                   selectedColumns={selectedChartColumns}
                   onSelectedColumnsChange={(cols) => {
-                    setSelectedChartColumns(cols); 
-                    removeChartsByColumns(cols); 
+                    setSelectedChartColumns(cols);
+                    removeChartsByColumns(cols);
                   }}
                   // onChartSelect={(config) => {
                   //   setCharts(prev => [
