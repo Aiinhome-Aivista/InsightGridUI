@@ -6,7 +6,6 @@ import ApiServices from "../../services/ApiServices";
 import { useLocation } from "react-router-dom";
 import { MdOutlineDescription } from "react-icons/md";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-
 export default function TableView() {
   const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -22,15 +21,6 @@ export default function TableView() {
   const isFetching = useRef(false);
   const report = location.state?.report;
   const userData = JSON.parse(localStorage.getItem("ig_user"));
-  // const [selectedAggregations, setSelectedAggregations] = useState<
-  //   {
-  //     column: string;
-  //     agg: string;
-  //     value?: number;
-  //   }[]
-  // >([]);
-
-  // Report config states
   const [selectedGroupBy, setSelectedGroupBy] = useState<string[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<
     { column: string; operator: string }[]
@@ -52,22 +42,18 @@ export default function TableView() {
   }, [report]);
   useEffect(() => {
     if (!report?.report_config) return;
-
-    // 🔥 STRING → OBJECT
     const config =
       typeof report.report_config === "string"
         ? JSON.parse(report.report_config)
         : report.report_config;
 
     setSelectedGroupBy(config.group_by || []);
-
     setSelectedFilters(
       (config.filters || []).map((f: any) => ({
         column: f.column,
         operator: f.operator,
       }))
     );
-
     const values: Record<string, any> = {};
     (config.filters || []).forEach((f: any) => {
       values[`${f.column}|${f.operator}`] = f.value;
@@ -175,36 +161,7 @@ export default function TableView() {
     } finally {
       setIsRefreshing(false);
     }
-  };
-  // const handleSaveReport = async () => {
-  //   try {
-  //     const userData = JSON.parse(localStorage.getItem("ig_user"));
-  //     if (!selectedTables.length) {
-  //       console.error("No query selected");
-  //       return;
-  //     }
-  //     const selectedQuery = selectedTables[0];
-
-  //     const payload = {
-  //       session_id: userData?.session_id,
-  //       created_by: userData?.user_id,
-  //       // report_id: `report_${Date.now()}`,
-  //       report_id: editReport?.report_id
-  //         ? editReport.report_id
-  //         : `report_${Date.now()}`,
-  //       query_history_id: selectedQuery.id,
-  //       report_name: reportName,
-  //     };
-
-  //     const response = await ApiServices.report_save(payload);
-
-  //     console.log("Report saved:", response.data);
-  //   } catch (error) {
-  //     console.error("Save report error:", error);
-  //   }
-  // };
-
-  
+  };  
   const handleSaveReport = async () => {
     try {
       if (!selectedTables.length) return;
@@ -221,7 +178,7 @@ export default function TableView() {
           value: filterValues[`${f.column}|${f.operator}`]
         })),
 
-        aggregations, // ✅ only column + agg
+        aggregations,
 
         selected_columns: selectedChartColumns,
 
@@ -246,13 +203,9 @@ export default function TableView() {
         query_history_id: selectedQuery.id,
         report_config: reportConfig
       };
-      console.log("payload", payload);
-
       await ApiServices.report_save(payload);
-      console.log("✅ Report saved successfully");
-
     } catch (err) {
-      console.error("❌ Save report error", err);
+      console.error(" Save report error", err);
     }
   };
 
@@ -302,22 +255,16 @@ export default function TableView() {
           allData={allData}
           selectedTables={selectedTables.map((t) => t.ai_response)}
           globalFilter={globalFilter}
-
           selectedGroupBy={selectedGroupBy}
           setSelectedGroupBy={setSelectedGroupBy}
-
           selectedFilters={selectedFilters}
           setSelectedFilters={setSelectedFilters}
-
           filterValues={filterValues}
           setFilterValues={setFilterValues}
-
           aggregations={aggregations}
           setAggregations={setAggregations}
-
           selectedChartColumns={selectedChartColumns}
           setSelectedChartColumns={setSelectedChartColumns}
-
           charts={charts}
           setCharts={setCharts}
         />
