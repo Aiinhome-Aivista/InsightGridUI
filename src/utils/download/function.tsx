@@ -240,49 +240,43 @@ export const generatePDF = async (data, previewChartData, mode = "download", fil
   let yPos = dividerY + 12;
 
   const marginX = 40;
-  const gapX = 20;
+  // const gapX = 20;
   const gapY = 20;
 
   const usableWidth = pageWidth - marginX * 2;
-  const chartWidth = (usableWidth - gapX) / 2;
+  //  const chartWidth = (usableWidth - gapX) / 2;
+  const chartWidth = usableWidth; 
   const chartHeight = (chartWidth * 9) / 16;
 
-  let xPos = marginX;
+  // let xPos = marginX;
 
   chartImages.forEach((img, index) => {
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    // Page break
+    // Page break 
     if (yPos + chartHeight > pageHeight - 40) {
       doc.addPage();
       yPos = 40;
-      xPos = marginX;
+      // xPos = marginX;
     }
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    // doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
+    // doc.text(`Chart ${index + 1}`, marginX, yPos - 8);
 
-    doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
+    doc.addImage(img, "PNG", marginX, yPos, chartWidth, chartHeight);
 
-    // Move position
-    if (index % 2 === 0) {
-      // first chart in row → move right
-      xPos += chartWidth + gapX;
-    } else {
-      // second chart → new row
-      xPos = marginX;
-      yPos += chartHeight + gapY;
-    }
+    // Move to next row (one chart per row)
+    yPos += chartHeight + gapY;
   });
 
   /**
    * 🔥 IMPORTANT FIX
    * If last row has only ONE chart, move Y down
    */
-  if (chartImages.length % 2 !== 0) {
-    yPos += chartHeight + gapY;
-  }
+  // if (chartImages.length % 2 !== 0) {
+  //   yPos += chartHeight + gapY;
+  // }
 
 
 
