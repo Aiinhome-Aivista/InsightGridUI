@@ -112,14 +112,14 @@ const captureChartAsImage = async (elementId: string): Promise<string | null> =>
 
 
 
-export const generatePDF = async (data, previewChartData, mode = "download", fileName = "report", 
+export const generatePDF = async (data, previewChartData, mode = "download", fileName = "report",
 ) => {
   if (!data || !data.rows || data.rows.length === 0) {
     console.warn("No data available for PDF");
     return;
   }
 
-  
+
 
 
 
@@ -190,92 +190,92 @@ export const generatePDF = async (data, previewChartData, mode = "download", fil
 
 
   // Row 3: Created date (below address)
-  const lineHeight = 12;
+  const lineHeight = 9;
   const addressHeight = addressLines.length * lineHeight;
 
+  doc.setFontSize(6);
   doc.text(
     `Created On - ${createdDate}`,
     addressX,
     addressY + addressHeight + 4
   );
 
-
-// Divider
-const dividerY = addressY + addressHeight + 20;
-doc.line(40, dividerY, pageWidth - 40, dividerY);
-
-
-const chartImages: string[] = [];
-
-for (const chart of previewChartData || []) {
-  console.log("Capturing chart:", chart);
-  await wait(300);
-  const img = await captureChartAsImage(`report-chart-${chart.id}`);
-  if (img) chartImages.push(img);
-}
-
-// ===== WAIT FOR CHART =====
-
-// ===== CAPTURE CHART =====
+  // Divider
+  const dividerY = addressY + addressHeight + 12;
+  doc.line(40, dividerY, pageWidth - 40, dividerY);
 
 
+  const chartImages: string[] = [];
 
- // ===== CHART IMAGES =====
-let yPos = dividerY + 30;
-
-const marginX = 40;
-const gapX = 20;
-const gapY = 30;
-
-const usableWidth = pageWidth - marginX * 2;
-const chartWidth = (usableWidth - gapX) / 2;
-const chartHeight = (chartWidth * 9) / 16;
-
-let xPos = marginX;
-
-chartImages.forEach((img, index) => {
-  const pageHeight = doc.internal.pageSize.getHeight();
-
-  // Page break
-  if (yPos + chartHeight > pageHeight - 40) {
-    doc.addPage();
-    yPos = 40;
-    xPos = marginX;
+  for (const chart of previewChartData || []) {
+    console.log("Capturing chart:", chart);
+    await wait(300);
+    const img = await captureChartAsImage(`report-chart-${chart.id}`);
+    if (img) chartImages.push(img);
   }
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
+  // ===== WAIT FOR CHART =====
 
-  doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
+  // ===== CAPTURE CHART =====
 
-  // Move position
-  if (index % 2 === 0) {
-    // first chart in row → move right
-    xPos += chartWidth + gapX;
-  } else {
-    // second chart → new row
-    xPos = marginX;
+
+
+  // ===== CHART IMAGES =====
+  let yPos = dividerY + 12;
+
+  const marginX = 40;
+  const gapX = 20;
+  const gapY = 20;
+
+  const usableWidth = pageWidth - marginX * 2;
+  const chartWidth = (usableWidth - gapX) / 2;
+  const chartHeight = (chartWidth * 9) / 16;
+
+  let xPos = marginX;
+
+  chartImages.forEach((img, index) => {
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Page break
+    if (yPos + chartHeight > pageHeight - 40) {
+      doc.addPage();
+      yPos = 40;
+      xPos = marginX;
+    }
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    // doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
+
+    doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
+
+    // Move position
+    if (index % 2 === 0) {
+      // first chart in row → move right
+      xPos += chartWidth + gapX;
+    } else {
+      // second chart → new row
+      xPos = marginX;
+      yPos += chartHeight + gapY;
+    }
+  });
+
+  /**
+   * 🔥 IMPORTANT FIX
+   * If last row has only ONE chart, move Y down
+   */
+  if (chartImages.length % 2 !== 0) {
     yPos += chartHeight + gapY;
   }
-});
-
-/**
- * 🔥 IMPORTANT FIX
- * If last row has only ONE chart, move Y down
- */
-if (chartImages.length % 2 !== 0) {
-  yPos += chartHeight + gapY;
-}
 
 
 
 
-const tableStartY = yPos + 20;
+  // const tableStartY = yPos + 2;
 
-  
+
   autoTable(doc, {
-    startY: tableStartY,
+    startY: yPos,
     head: [columns],
     body: rows.map((r) => columns.map((col) => r[col] ?? "")),
 
@@ -313,7 +313,7 @@ const tableStartY = yPos + 20;
     }
   });
 
- 
+
 
   // PREVIEW vs DOWNLOAD
   if (mode === "preview") {
