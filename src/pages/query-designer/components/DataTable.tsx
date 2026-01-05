@@ -178,7 +178,28 @@ export default function ProductDataTable({
                 fontSize: '14px',
                 fontWeight: 400
               }}
+
               body={(rowData) => {
+                // ✅ FULL WIDTH SEPARATOR (aggregation-wise)
+                if (rowData.__isAggSeparator) {
+                  if (index === 0) {
+                    return (
+                      <div className="relative h-2">
+                        <div
+                          className="
+            absolute
+            left-[-24px]
+            right-[-2000px]
+            top-1/2
+            h-px
+            bg-gray-300
+          "
+                        />
+                      </div>
+                    );
+                  }
+                  return null;
+                }
 
                 // 🔹 GROUP HEADER
                 if (rowData.__isGroup) {
@@ -211,31 +232,38 @@ export default function ProductDataTable({
                 }
 
 
-                // 🔹 GROUP AGGREGATION ROW
-                if (rowData.__isGroupAgg) {
+              
+                // 🔹 AGGREGATION ITEM (COUNT / SUM / MIN / AVG)
+                if (rowData.__isGroupAggItem) {
+                  // 🔹 LEFT LABEL COLUMN
                   if (index === 0) {
                     return (
-                      <div className="text-xs font-semibold text-gray-700">
-                        {rowData.__aggregationOrder.map(a => (
-                          <div key={a}>{a}</div>
-                        ))}
+                      <div className="flex flex-col">
+                        <span className="text-xs font-semibold text-gray-700">
+                          {rowData.__aggLabel}
+                        </span>
+
+                        {/* separator */}
+                        <div className="h-px bg-gray-300 mt-1" />
                       </div>
                     );
                   }
 
-                  const colAgg = rowData.__aggregationMap[col.column_name];
-                  if (!colAgg) return null;
+                  const colAgg = rowData.__aggMap[col.column_name];
+                  if (!colAgg || colAgg[rowData.__aggLabel] == null) return null;
 
                   return (
-                    <div className="text-xs font-semibold text-right">
-                      {rowData.__aggregationOrder.map(a => (
-                        <div key={a}>
-                          {colAgg[a]?.toFixed?.(2) ?? ""}
-                        </div>
-                      ))}
+                    <div className="flex flex-col items-start">
+                      <span className="text-xs font-semibold text-gray-800">
+                        {colAgg[rowData.__aggLabel].toFixed?.(2) ?? ""}
+                      </span>
+
+                      {/* separator */}
+                      <div className="h-px bg-gray-300 mt-1 w-full" />
                     </div>
                   );
                 }
+
 
                 // 🔹 NORMAL ROW
                 return rowData[col.column_name];

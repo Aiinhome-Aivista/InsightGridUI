@@ -109,27 +109,21 @@ const groupRows = (
 
   Object.entries(map).forEach(([groupKey, items]) => {
     // 🔹 GROUP HEADER
-    finalRows.push({
-      __isGroup: true,
-      __groupKey: groupKey,
-      __groupLabel: `${groupCols.join(", ").toUpperCase()}: ${groupKey}`,
-      __count: items.length,
-    });
+    const aggMap = calculateAggregation(items, aggregations);
 
-    // 🔹 CHILD ROWS
-    items.forEach(item =>
+    aggregationOrder.forEach((agg) => {
       finalRows.push({
-        ...item,
+        __isGroupAggItem: true,
         __parentGroup: groupKey,
-      })
-    );
+        __aggLabel: agg,              // COUNT / SUM / MIN / AVG
+        __aggMap: aggMap,             // values
+      });
 
-    // 🔹 GROUP AGGREGATION ROW
-    finalRows.push({
-      __isGroupAgg: true,
-      __parentGroup: groupKey,
-      __aggregationMap: calculateAggregation(items, aggregations),
-      __aggregationOrder: aggregationOrder,
+      // 🔥 separator after EACH aggregation
+      finalRows.push({
+        __isAggSeparator: true,
+        __parentGroup: groupKey,
+      });
     });
   });
 
@@ -589,13 +583,13 @@ export default function DataViewTable({
                   )}
                   {/* ===== FILTER INPUTS ===== */}
                   {selectedFilters.length > 0 && (
- <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-3 flex-wrap">
 
-  {selectedFilters.map((f) => {
-    const key = `${f.column}|${f.operator}`;
-    const type = getColumnType(table, f.column);
+                      {selectedFilters.map((f) => {
+                        const key = `${f.column}|${f.operator}`;
+                        const type = getColumnType(table, f.column);
 
-    const inputBaseClass = `
+                        const inputBaseClass = `
       h-9
       border border-gray-300
       rounded-md
@@ -611,10 +605,10 @@ export default function DataViewTable({
       hover:border-gray-400
     `;
 
-    return (
-      <div
-        key={key}
-        className="
+                        return (
+                          <div
+                            key={key}
+                            className="
           flex items-center gap-2
           bg-gray-50
           border border-gray-200
@@ -624,64 +618,64 @@ export default function DataViewTable({
           hover:shadow-md
           transition
         "
-      >
-        {/* Label */}
-        <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
-          {f.column.replace(/_/g, " ").toUpperCase()}
-          <span className="mx-1 text-gray-400">{f.operator}</span>
-        </span>
+                          >
+                            {/* Label */}
+                            <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
+                              {f.column.replace(/_/g, " ").toUpperCase()}
+                              <span className="mx-1 text-gray-400">{f.operator}</span>
+                            </span>
 
-        {/* TEXT */}
-        {type === "text" && (
-          <input
-            type="text"
-            placeholder="Enter value"
-            className={`${inputBaseClass} w-40`}
-            value={filterValues[key] || ""}
-            onChange={(e) =>
-              setFilterValues({
-                ...filterValues,
-                [key]: e.target.value,
-              })
-            }
-          />
-        )}
+                            {/* TEXT */}
+                            {type === "text" && (
+                              <input
+                                type="text"
+                                placeholder="Enter value"
+                                className={`${inputBaseClass} w-40`}
+                                value={filterValues[key] || ""}
+                                onChange={(e) =>
+                                  setFilterValues({
+                                    ...filterValues,
+                                    [key]: e.target.value,
+                                  })
+                                }
+                              />
+                            )}
 
-        {/* NUMBER */}
-        {type === "number" && f.operator !== "between" && (
-          <input
-            type="number"
-            className={`${inputBaseClass} w-28`}
-            value={filterValues[key] ?? ""}
-            onChange={(e) =>
-              setFilterValues({
-                ...filterValues,
-                [key]: Number(e.target.value),
-              })
-            }
-          />
-        )}
+                            {/* NUMBER */}
+                            {type === "number" && f.operator !== "between" && (
+                              <input
+                                type="number"
+                                className={`${inputBaseClass} w-28`}
+                                value={filterValues[key] ?? ""}
+                                onChange={(e) =>
+                                  setFilterValues({
+                                    ...filterValues,
+                                    [key]: Number(e.target.value),
+                                  })
+                                }
+                              />
+                            )}
 
-        {/* DATE */}
-        {type === "date" && f.operator !== "between" && (
-          <input
-            type="date"
-            className={`${inputBaseClass} w-[150px]`}
-            value={filterValues[key] || ""}
-            onChange={(e) =>
-              setFilterValues({
-                ...filterValues,
-                [key]: e.target.value,
-              })
-            }
-          />
-        )}
-      </div>
-    );
-  })}
-</div>
+                            {/* DATE */}
+                            {type === "date" && f.operator !== "between" && (
+                              <input
+                                type="date"
+                                className={`${inputBaseClass} w-[150px]`}
+                                value={filterValues[key] || ""}
+                                onChange={(e) =>
+                                  setFilterValues({
+                                    ...filterValues,
+                                    [key]: e.target.value,
+                                  })
+                                }
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
 
-)}
+                  )}
 
 
 
@@ -718,7 +712,7 @@ export default function DataViewTable({
               {/* 🔥 CHARTS ABOVE TABLE WHEN SIDEBAR OPEN */}
               {showChartSidebar && charts.length > 0 && (
                 <div className="mb-6">
-                  <RenderCharts 
+                  <RenderCharts
                     charts={chartsWithRows}
 
                     onRemoveChart={removeChart}
