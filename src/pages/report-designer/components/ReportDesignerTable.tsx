@@ -8,6 +8,7 @@ import { MultiSelect } from "primereact/multiselect";
 import ChartSidebar from "./ChartSidebar";
 import RenderCharts from "./render-charts";
 
+
 interface DataViewTableProps {
   allData: { [key: string]: any };
   selectedTables: string[];
@@ -35,17 +36,9 @@ interface DataViewTableProps {
 }
 export interface ChartConfig {
   id: string;
-  type:
-    | "line"
-    | "bar"
-    | "pie"
-    | "kpi"
-    | "box"
-    | "mixed"
-    | "bubble"
-    | "waterfall";
+  type: "line" | "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
   xAxis?: string;
-  yAxis?: string | string[]; //  IMPORTANT
+  yAxis?: string | string[];   //  IMPORTANT
   value?: string;
   size?: string;
   label?: string;
@@ -82,13 +75,13 @@ const calculateAggregation = (
 
       case "min":
         map[column]["MIN"] = Math.min(
-          ...rows.map((r) => Number(r[column] || 0))
+          ...rows.map(r => Number(r[column] || 0))
         );
         break;
 
       case "max":
         map[column]["MAX"] = Math.max(
-          ...rows.map((r) => Number(r[column] || 0))
+          ...rows.map(r => Number(r[column] || 0))
         );
         break;
     }
@@ -122,8 +115,8 @@ const groupRows = (
   const map: Record<string, any[]> = {};
   const finalRows: any[] = [];
 
-  rows.forEach((row) => {
-    const key = groupCols.map((col) => row[col]).join(" | ");
+  rows.forEach(row => {
+    const key = groupCols.map(col => row[col]).join(" | ");
     if (!map[key]) map[key] = [];
     map[key].push(row);
   });
@@ -138,7 +131,7 @@ const groupRows = (
     });
 
     // 🔹 CHILD ROWS
-    items.forEach((item) =>
+    items.forEach(item =>
       finalRows.push({
         ...item,
         __parentGroup: groupKey,
@@ -156,6 +149,8 @@ const groupRows = (
 
   return finalRows;
 };
+
+
 
 export default function DataViewTable({
   allData,
@@ -179,6 +174,7 @@ export default function DataViewTable({
 
   charts,
   setCharts,
+
 }: DataViewTableProps) {
   const { theme } = useTheme();
   const [viewType, setViewType] = useState<"table" | "chart">("table");
@@ -190,13 +186,12 @@ export default function DataViewTable({
   const [showChartSidebar, setShowChartSidebar] = useState(false);
   // const [charts, setCharts] = useState<ChartConfig[]>([]);
   const primaryTableKey = selectedTables[0];
-  const [collapsedGroups, setCollapsedGroups] = useState<
-    Record<string, boolean>
-  >({});
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   // const [aggregations, setAggregations] = useState<
   //   { column: string; agg: string }[]
   // >([]);
   // const [selectedChartColumns, setSelectedChartColumns] = useState<string[]>([]);
+
 
   useEffect(() => {
     if (!selectedGroupBy.length) return;
@@ -210,8 +205,8 @@ export default function DataViewTable({
 
     const collapsed: Record<string, boolean> = {};
 
-    rows.forEach((row) => {
-      const key = selectedGroupBy.map((col) => row[col]).join(" | ");
+    rows.forEach(row => {
+      const key = selectedGroupBy.map(col => row[col]).join(" | ");
       collapsed[key] = true; // 🔥 DEFAULT COLLAPSED
     });
 
@@ -223,6 +218,8 @@ export default function DataViewTable({
   //     setShowChartSidebar(false); // charts below table
   //   }
   // }, [charts]);
+
+
 
   const applyFilters = (rows: any[]) => {
     if (!selectedFilters.length) return rows;
@@ -243,11 +240,10 @@ export default function DataViewTable({
           if (f.operator === "equals") return cellStr === valStr;
           if (f.operator === "like") return cellStr.includes(valStr);
           if (f.operator === "in")
-            return valStr
-              .split(",")
-              .map((v) => v.trim())
-              .includes(cellStr);
+            return valStr.split(",").map(v => v.trim()).includes(cellStr);
         }
+
+        // NUMBER filters
         if (["=", ">", "<"].includes(f.operator)) {
           if (f.operator === "=") return Number(cell) === Number(value);
           if (f.operator === ">") return Number(cell) > Number(value);
@@ -260,6 +256,8 @@ export default function DataViewTable({
             return Number(cell) >= Number(from) && Number(cell) <= Number(to);
           }
         }
+
+        // DATE filters
         if (["before", "after"].includes(f.operator)) {
           const cellDate = new Date(cell).getTime();
           const valDate = new Date(value).getTime();
@@ -285,7 +283,9 @@ export default function DataViewTable({
       : [];
   const filteredRows = applyFilters(baseRows);
   const aggregationOrder = Array.from(
-    new Set(aggregations.map((a) => a.agg.toUpperCase()))
+    new Set(
+      aggregations.map(a => a.agg.toUpperCase())
+    )
   );
 
   const aggregationMap: Record<string, Record<string, number>> = {};
@@ -301,98 +301,131 @@ export default function DataViewTable({
         break;
 
       case "sum":
-        aggregationMap[column]["SUM"] = filteredRows.reduce(
-          (acc, row) => acc + Number(row[column] || 0),
-          0
-        );
+        aggregationMap[column]["SUM"] =
+          filteredRows.reduce(
+            (acc, row) => acc + Number(row[column] || 0),
+            0
+          );
         break;
 
       case "avg":
         aggregationMap[column]["AVG"] =
-          filteredRows.reduce((acc, row) => acc + Number(row[column] || 0), 0) /
-          (filteredRows.length || 1);
+          filteredRows.reduce(
+            (acc, row) => acc + Number(row[column] || 0),
+            0
+          ) / (filteredRows.length || 1);
         break;
 
       case "min":
         aggregationMap[column]["MIN"] = Math.min(
-          ...filteredRows.map((r) => Number(r[column] || 0))
+          ...filteredRows.map(r => Number(r[column] || 0))
         );
         break;
 
       case "max":
         aggregationMap[column]["MAX"] = Math.max(
-          ...filteredRows.map((r) => Number(r[column] || 0))
+          ...filteredRows.map(r => Number(r[column] || 0))
         );
         break;
     }
   });
 
+
   const grouped =
     selectedGroupBy.length > 0
-      ? groupRows(filteredRows, selectedGroupBy, aggregations, aggregationOrder)
+      ? groupRows(
+        filteredRows,
+        selectedGroupBy,
+        aggregations,
+        aggregationOrder
+      )
       : filteredRows;
 
-  const displayRows = grouped.filter((row) => {
+
+
+  const displayRows = grouped.filter(row => {
     if (row.__isGroup || row.__isGroupAgg) return true;
     return !collapsedGroups[row.__parentGroup];
   });
+
+
+  // 🔥 Charts should NEVER use grouped rows
   const chartRows = filteredRows;
+
+
   const getColumnType = (table: any, column: string) => {
     const type = table?.visualization?.column_types?.[column];
+
     if (!type) return "text";
+
     if (type === "varchar") return "text";
     if (type === "int" || type === "decimal") return "number";
     if (type === "datetime") return "date";
+
     return "text";
   };
 
   const removeChart = (id: string) => {
-    setCharts((prevCharts) => {
-      const updatedCharts = prevCharts.filter((c) => c.id !== id);
+    setCharts(prevCharts => {
+      const updatedCharts = prevCharts.filter(c => c.id !== id);
+
+      // 🔥 recalc columns still in use
       const stillUsedColumns = getColumnsUsedByCharts(updatedCharts);
+
+      // 🔥 update selected columns accordingly
       setSelectedChartColumns(stillUsedColumns);
+
       return updatedCharts;
     });
   };
+
+
   const toggleGroup = (key: string) => {
-    setCollapsedGroups((prev) => ({
+    setCollapsedGroups(prev => ({
       ...prev,
-      [key]: !prev[key],
+      [key]: !prev[key]
     }));
   };
+
   const removeChartsByColumns = (activeColumns: string[]) => {
-    setCharts((prev) =>
-      prev.filter((chart) => {
+    setCharts(prev =>
+      prev.filter(chart => {
         const usedColumns = [
           chart.xAxis,
           ...(Array.isArray(chart.yAxis) ? chart.yAxis : [chart.yAxis]),
           chart.value,
           chart.size,
-          chart.label,
+          chart.label
         ].filter(Boolean) as string[];
 
-        return usedColumns.every((col) => activeColumns.includes(col));
+        return usedColumns.every(col => activeColumns.includes(col));
       })
     );
   };
   const getColumnsUsedByCharts = (charts: ChartConfig[]) => {
     const cols = new Set<string>();
-    charts.forEach((chart) => {
+
+    charts.forEach(chart => {
       if (chart.xAxis) cols.add(chart.xAxis);
+
       if (Array.isArray(chart.yAxis)) {
-        chart.yAxis.forEach((c) => cols.add(c));
+        chart.yAxis.forEach(c => cols.add(c));
       } else if (chart.yAxis) {
         cols.add(chart.yAxis);
       }
+
       if (chart.value) cols.add(chart.value);
       if (chart.size) cols.add(chart.size);
       if (chart.label) cols.add(chart.label);
     });
+
     return Array.from(cols);
   };
 
   const isSameChart = (a: ChartConfig, b: Partial<ChartConfig>) => {
-    const normalize = (v: any) => (Array.isArray(v) ? v.join("|") : v ?? "");
+    const normalize = (v: any) =>
+      Array.isArray(v) ? v.join("|") : v ?? "";
+
     return (
       a.type === b.type &&
       normalize(a.xAxis) === normalize(b.xAxis) &&
@@ -402,6 +435,8 @@ export default function DataViewTable({
       normalize(a.label) === normalize(b.label)
     );
   };
+
+
   return (
     <div>
       {selectedTables.map((tableKey) => {
@@ -418,19 +453,26 @@ export default function DataViewTable({
         const filters = table.visualization?.filters || {};
         const chartColumns =
           table.columns?.map((col: { column_name: string }) => ({
-            column_name: col.column_name,
+            column_name: col.column_name,                  // ✅ SAME KEY
             label: col.column_name.replace(/_/g, " ").toUpperCase(),
           })) || [];
-        const chartColumnTypes = table.visualization?.column_types || {};
-        const chartsWithRows = charts.map((c) => ({
+
+        const chartColumnTypes =
+          table.visualization?.column_types || {};
+
+
+        const chartsWithRows = charts.map(c => ({
           ...c,
-          rows: chartRows,
+          rows: chartRows
         }));
+
 
         return (
           <div key={tableKey} className="px-4 pb-6">
             <div className="rounded-xl shadow-xs p-4 bg-white">
+              {/* ===== HEADER ===== */}
               <div className="flex items-start justify-between mb-4">
+                {/* Left */}
                 <div>
                   <h2
                     className="text-sm font-semibold flex items-center gap-2"
@@ -446,6 +488,8 @@ export default function DataViewTable({
                     This displays {table.title.toLowerCase()} details.
                   </p>
                 </div>
+
+                {/* Right Controls (HARDCODED) */}
                 <div className="flex items-center gap-3 flex-wrap">
                   {groupByColumns.length > 0 && (
                     <MultiSelect
@@ -494,7 +538,7 @@ export default function DataViewTable({
                         );
 
                         const collapsed = groups
-                          .filter((r) => r.__isGroup)
+                          .filter(r => r.__isGroup)
                           .reduce((acc: any, g: any) => {
                             acc[g.__groupKey] = true;
                             return acc;
@@ -502,6 +546,8 @@ export default function DataViewTable({
 
                         setCollapsedGroups(collapsed);
                       }}
+
+
                       placeholder="Group By"
                       display="chip"
                       className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
@@ -516,13 +562,13 @@ export default function DataViewTable({
                       }}
                     />
                   )}
+
+
                   {Object.keys(filters).length > 0 && (
                     <MultiSelect
                       appendTo="self"
                       filter
-                      value={selectedFilters.map(
-                        (f) => `${f.column}|${f.operator}`
-                      )}
+                      value={selectedFilters.map(f => `${f.column}|${f.operator}`)}
                       options={Object.entries(filters).flatMap(([col, ops]) =>
                         (ops as string[]).map((op) => ({
                           label: `${col.toUpperCase()} ${op}`,
@@ -536,6 +582,10 @@ export default function DataViewTable({
                         });
 
                         setSelectedFilters(parsed);
+                        console.log("FILTERS:", parsed);
+
+                        // 🔥 future:
+                        // open value input modal
                       }}
                       placeholder="Filter"
                       display="chip"
@@ -551,13 +601,15 @@ export default function DataViewTable({
                       }}
                     />
                   )}
+                  {/* ===== FILTER INPUTS ===== */}
                   {selectedFilters.length > 0 && (
-                    <div className="flex items-center gap-3 flex-wrap">
-                      {selectedFilters.map((f) => {
-                        const key = `${f.column}|${f.operator}`;
-                        const type = getColumnType(table, f.column);
+ <div className="flex items-center gap-3 flex-wrap">
 
-                        const inputBaseClass = `
+  {selectedFilters.map((f) => {
+    const key = `${f.column}|${f.operator}`;
+    const type = getColumnType(table, f.column);
+
+    const inputBaseClass = `
       h-9
       border border-gray-300
       rounded-md
@@ -573,10 +625,10 @@ export default function DataViewTable({
       hover:border-gray-400
     `;
 
-                        return (
-                          <div
-                            key={key}
-                            className="
+    return (
+      <div
+        key={key}
+        className="
           flex items-center gap-2
           bg-gray-50
           border border-gray-200
@@ -586,69 +638,78 @@ export default function DataViewTable({
           hover:shadow-md
           transition
         "
-                          >
-                            <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
-                              {f.column.replace(/_/g, " ").toUpperCase()}
-                              <span className="mx-1 text-gray-400">
-                                {f.operator}
-                              </span>
-                            </span>
-                            {type === "text" && (
-                              <input
-                                type="text"
-                                placeholder="Enter value"
-                                className={`${inputBaseClass} w-40`}
-                                value={filterValues[key] || ""}
-                                onChange={(e) =>
-                                  setFilterValues({
-                                    ...filterValues,
-                                    [key]: e.target.value,
-                                  })
-                                }
-                              />
-                            )}
-                            {type === "number" && f.operator !== "between" && (
-                              <input
-                                type="number"
-                                className={`${inputBaseClass} w-28`}
-                                value={filterValues[key] ?? ""}
-                                onChange={(e) =>
-                                  setFilterValues({
-                                    ...filterValues,
-                                    [key]: Number(e.target.value),
-                                  })
-                                }
-                              />
-                            )}
-                            {type === "date" && f.operator !== "between" && (
-                              <input
-                                type="date"
-                                className={`${inputBaseClass} w-[150px]`}
-                                value={filterValues[key] || ""}
-                                onChange={(e) =>
-                                  setFilterValues({
-                                    ...filterValues,
-                                    [key]: e.target.value,
-                                  })
-                                }
-                              />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+      >
+        {/* Label */}
+        <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
+          {f.column.replace(/_/g, " ").toUpperCase()}
+          <span className="mx-1 text-gray-400">{f.operator}</span>
+        </span>
+
+        {/* TEXT */}
+        {type === "text" && (
+          <input
+            type="text"
+            placeholder="Enter value"
+            className={`${inputBaseClass} w-40`}
+            value={filterValues[key] || ""}
+            onChange={(e) =>
+              setFilterValues({
+                ...filterValues,
+                [key]: e.target.value,
+              })
+            }
+          />
+        )}
+
+        {/* NUMBER */}
+        {type === "number" && f.operator !== "between" && (
+          <input
+            type="number"
+            className={`${inputBaseClass} w-28`}
+            value={filterValues[key] ?? ""}
+            onChange={(e) =>
+              setFilterValues({
+                ...filterValues,
+                [key]: Number(e.target.value),
+              })
+            }
+          />
+        )}
+
+        {/* DATE */}
+        {type === "date" && f.operator !== "between" && (
+          <input
+            type="date"
+            className={`${inputBaseClass} w-[150px]`}
+            value={filterValues[key] || ""}
+            onChange={(e) =>
+              setFilterValues({
+                ...filterValues,
+                [key]: e.target.value,
+              })
+            }
+          />
+        )}
+      </div>
+    );
+  })}
+</div>
+
+)}
+
+
+
+                  {/* View Toggle */}
                   <div className="flex border rounded-lg overflow-hidden">
                     <button
                       onClick={() => {
                         setViewType("table");
-                        setShowChartSidebar(false);
+                        setShowChartSidebar(false); // ✅ ADD THIS
                       }}
-                      className={`px-2 py-2 ${
-                        viewType === "table"
-                          ? "bg-gray-100"
-                          : "hover:bg-gray-50"
-                      }`}
+                      className={`px-2 py-2 ${viewType === "table"
+                        ? "bg-gray-100"
+                        : "hover:bg-gray-50"
+                        }`}
                     >
                       <TableRowsRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
@@ -657,27 +718,32 @@ export default function DataViewTable({
                         setViewType("chart");
                         setShowChartSidebar(true);
                       }}
-                      className={`px-2 py-1 ${
-                        viewType === "chart"
-                          ? "bg-gray-100"
-                          : "hover:bg-gray-50"
-                      }`}
+                      className={`px-2 py-1 ${viewType === "chart"
+                        ? "bg-gray-100"
+                        : "hover:bg-gray-50"
+                        }`}
                     >
                       <BarChartRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
+
                   </div>
                 </div>
               </div>
+              {/* 🔥 CHARTS ABOVE TABLE WHEN SIDEBAR OPEN */}
               {showChartSidebar && charts.length > 0 && (
                 <div className="mb-6">
-                  <RenderCharts
+                  <RenderCharts 
                     charts={chartsWithRows}
+
                     onRemoveChart={removeChart}
                     onReorderCharts={setCharts}
                   />
                 </div>
               )}
+
+              {/* {viewType === "table" && */}
               {!(showChartSidebar && charts.length > 0) && (
+
                 <ProductDataTable
                   data={displayRows}
                   globalFilter={globalFilter}
@@ -688,19 +754,25 @@ export default function DataViewTable({
                   aggregationOrder={aggregationOrder}
                   isGrouped={selectedGroupBy.length > 0}
                   onAggregationSelect={(column, agg) => {
-                    setAggregations((prev) => {
+                    setAggregations(prev => {
                       const exists = prev.find(
-                        (a) => a.column === column && a.agg === agg
+                        a => a.column === column && a.agg === agg
                       );
+
+                      // already selected → ignore
                       if (exists) return prev;
+
+                      // allow multiple aggregation for same column
                       return [...prev, { column, agg }];
                     });
                   }}
+
                   enableRowGrouping={selectedGroupBy.length > 0}
-                  collapsedGroups={collapsedGroups}
+                  collapsedGroups={collapsedGroups}        // ✅ NEW
                   onToggleGroup={toggleGroup}
                 />
               )}
+              {/* } */}
               {showChartSidebar && (
                 <ChartSidebar
                   columns={chartColumns}
@@ -718,21 +790,20 @@ export default function DataViewTable({
                   //   ]);
                   // }}
                   onChartSelect={(config) => {
-                    setCharts((prev) => {
-                      const exists = prev.some((chart) =>
-                        isSameChart(chart, config)
-                      );
+                    setCharts(prev => {
+                      const exists = prev.some(chart => isSameChart(chart, config));
 
                       if (exists) {
-                        return prev;
+                        return prev; // 🚫 already exists
                       }
 
                       return [
                         ...prev,
-                        { ...config, id: Date.now().toString() },
+                        { ...config, id: Date.now().toString() }
                       ];
                     });
                   }}
+
                   onClose={() => setShowChartSidebar(false)}
                 />
               )}
@@ -746,6 +817,8 @@ export default function DataViewTable({
                   />
                 </div>
               )}
+
+
             </div>
           </div>
         );
