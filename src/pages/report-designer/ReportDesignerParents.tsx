@@ -230,25 +230,20 @@ export default function TableView() {
         editReport={editReport}
         setIsRefreshing={setIsRefreshing}
       />
-      {selectedTables.length === 0 ? (
+      {loading || isRefreshing ? (
+        <div className="flex flex-col items-center justify-center w-full h-96">
+          <AutorenewRoundedIcon
+            className="w-5 h-5 text-gray-500 animate-spin"
+            fontSize="small"
+          />
+          <p className="text-gray-500 text-lg mt-4">Loading Data...</p>
+        </div>
+      ) : selectedTables.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[69vh] text-gray-400">
           <div className="mb-3 text-4xl">🗑️</div>
           <p className="text-sm font-medium">
             Please select a view to create report
           </p>
-        </div>
-      ) : selectedTables.length === 0 ? (
-        <div className="flex flex-col items-center justify-center w-full h-96">
-          <MdOutlineDescription size={50} className="text-gray-400" />
-          <p className="text-gray-500 text-lg mt-3">Please select a script to create report</p>
-        </div>
-      ) : isRefreshing ? (
-        <div className="flex flex-col items-center justify-center w-full h-96">
-          <AutorenewRoundedIcon
-            className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""}`}
-            fontSize="small"
-          />
-          <p className="text-gray-500 text-lg mt-4">Loading Data...</p>
         </div>
       ) : (
         <DataViewTable
