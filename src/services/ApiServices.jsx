@@ -81,6 +81,9 @@ class ApiServices {
   getAllCompanies() {
     return axios.get(GET_APIS.get_all_companies);
   }
+  adminCompanyDelete(body) {
+    return axios.post(POST_APIS.admin_company_delete, body);
+  } 
 }
 
 export default new ApiServices();

@@ -23,12 +23,36 @@ function ManageCompanies() {
   const [filters, setFilters] = useState({
     global: { value: "", matchMode: FilterMatchMode.CONTAINS },
   });
-
   const navigate = useNavigate();
   useEffect(() => {
-    console.log("fetchCompanies called");
     fetchCompanies();
   }, []);
+  const columns = [
+    {
+      field: "company_name",
+      header: "Company Name",
+      sortable: true,
+    },
+    {
+      field: "company_email",
+      header: "Company Email",
+      sortable: true,
+    },
+    {
+      field: "phone_number",
+      header: "Company Phone",
+    },
+    {
+      field: "address",
+      header: "Company Address",
+      body: (row: any) => (
+        <div className="max-w-[260px] truncate text-xs" title={row.address}>
+          {row.address}
+        </div>
+      ),
+    },
+  ];
+
 
   const fetchCompanies = async () => {
     try {
@@ -36,8 +60,6 @@ function ManageCompanies() {
       setError(null);
 
       const response = await ApiServices.getAllCompanies();
-      console.log("API response =>", response);
-
       // ✅ Axios correct handling
       if (response?.data?.isSuccess) {
         setCompanies(response.data.data);   // 👈 actual array
@@ -52,67 +74,6 @@ function ManageCompanies() {
     }
   };
 
-
-  const companyColumns = [
-    {
-      column_name: "company_name",
-      header: "Company Name",
-      sortable: true
-    },
-    {
-      column_name: "company_email",
-      header: "Company Email",
-      sortable: true
-    },
-    {
-      column_name: "phone_number",
-      header: "Company Phone",
-      sortable: false
-    },
-    {
-      column_name: "address",
-      header: "Company Address",
-      sortable: false,
-      body: (row: any) => (
-        <div
-          className="max-w-[280px] truncate text-xs"
-          title={row.address}
-        >
-          {row.address}
-        </div>
-      )
-    },
-    {
-      column_name: "__action",
-      header: "Action",
-      sortable: false,
-      body: (row: any) => (
-        <div className="flex justify-end gap-2">
-          <button
-            className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs"
-            onClick={() => navigate(`/layout/register-company/${row.id}`)}
-          >
-            Edit
-          </button>
-
-          <button
-            className="text-red-600 bg-red-100 px-3 py-1 rounded-full text-xs"
-            onClick={() => console.log("Delete", row.id)}
-          >
-            Delete
-          </button>
-        </div>
-      )
-    }
-  ];
-  const addressBodyTemplate = (row: any) => (
-    <div
-      className="max-w-[260px] truncate text-xs"
-      title={row.address}
-    >
-      {row.address}
-    </div>
-  );
   const actionBodyTemplate = (row: any) => (
     <div className="flex justify-end gap-2">
       <button
@@ -128,12 +89,33 @@ function ManageCompanies() {
 
       <button
         className="p-1 rounded hover:bg-red-100 text-red-600"
-        onClick={() => console.log("Delete", row.id)}
+        onClick={() => {
+          if (window.confirm("Are you sure you want to delete this company?")) {
+            deleteCompany(row.id);
+          }
+        }}
       >
         <DeleteOutlineOutlinedIcon fontSize="small" />
       </button>
     </div>
   );
+  const deleteCompany = async (companyId: number) => {
+    console.log('delete call')
+    try {
+      const payload = {
+        company_id: companyId,
+        deleted_by: JSON.parse(localStorage.getItem("ig_user") || "{}")?.user_id,
+      };
+
+      await ApiServices.adminCompanyDelete(payload);
+
+      // ✅ delete হলে list refresh
+      fetchCompanies();
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
+  };
+
 
   const handleRefresh = async () => {
     if (isRefreshing) return;
@@ -232,34 +214,25 @@ function ManageCompanies() {
         emptyMessage="No companies found"
         className="custom-table"
       >
-        <Column
-          field="company_name"
-          header="Company Name"
-          sortable
-        />
+        {/* 🔁 Dynamic Columns */}
+        {columns.map((col) => (
+          <Column
+            key={col.field}
+            field={col.field}
+            header={col.header}
+            sortable={col.sortable}
+            body={col.body}
+          />
+        ))}
 
-        <Column
-          field="company_email"
-          header="Company Email"
-          sortable
-        />
-
-        <Column
-          field="phone_number"
-          header="Company Phone"
-        />
-
-        <Column
-          header="Company Address"
-          body={addressBodyTemplate}
-        />
-
+        {/* 🔒 Static Action Column */}
         <Column
           header="Action"
           body={actionBodyTemplate}
           style={{ width: "120px", textAlign: "right" }}
         />
       </DataTable>
+
 
     </div>
   )
