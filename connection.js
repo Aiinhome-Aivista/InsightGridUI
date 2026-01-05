@@ -1,7 +1,7 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const GET_APIS = {
-
+get_all_companies: `${BASE_URL}admin/get_companies`,
 };
 
 export const POST_APIS = {

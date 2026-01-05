@@ -24,7 +24,7 @@ import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 const menuItems = [
   // 🔹 SUPER ADMIN ONLY
   { name: "Super Dashboard", icon: SpaceDashboardIcon, path: "super-dashboard", roles: ["superadmin"], },
-  { name: "Company", icon: ApartmentIcon, path: "companies", roles: ["superadmin"], },
+  { name: "Company", icon: ApartmentIcon, path: "manage-companies", roles: ["superadmin"], },
   { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard", roles: ["companyadmin", "user"] },
   { name: "User", icon: person_add, path: "manage-users", roles: ["companyadmin"] },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload", roles: ["companyadmin", "user"] },

@@ -78,6 +78,9 @@ class ApiServices {
   superAdminLogin(body) {
     return axios.post(POST_APIS.super_admin_login, body);
   }
+  getAllCompanies() {
+    return axios.get(GET_APIS.get_all_companies);
+  }
 }
 
 export default new ApiServices();
