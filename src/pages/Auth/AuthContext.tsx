@@ -26,7 +26,8 @@ interface AuthContextType {
   setConfirmSaveAction: (action: () => void) => void;
   previewChartData: any[] | null;
   setPreviewChartData: Dispatch<SetStateAction<any[] | null>>;
-
+  downloadChartData: any[] | null;
+  setDownloadChartData: Dispatch<SetStateAction<any[] | null>>;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -47,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [downloadData, setDownloadData] = useState<TableData | null>(null);
   const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
   const [previewChartData, setPreviewChartData] = useState<any[] | null>(null);
+  const [downloadChartData, setDownloadChartData] = useState<any[] | null>(null);
 
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
@@ -81,8 +83,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isLogoutModalOpen, setIsLogoutModalOpen,
       isConfirmSaveModalOpen, setIsConfirmSaveModalOpen,
       downloadData, setDownloadData,
-      viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction,  previewChartData,
-    setPreviewChartData
+      viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction, previewChartData,
+      setPreviewChartData, downloadChartData, setDownloadChartData
     }}>
       {children}
     </AuthContext.Provider>

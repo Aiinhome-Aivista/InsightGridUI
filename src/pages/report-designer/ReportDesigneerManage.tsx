@@ -20,7 +20,7 @@ const ReportDesignManage = () => {
   const isFetching = useRef(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
- const {previewChartData, setPreviewChartData } = useAuth();
+  const { previewChartData, setPreviewChartData, downloadChartData, setDownloadChartData } = useAuth();
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
 
@@ -226,7 +226,7 @@ const ReportDesignManage = () => {
 
 
   const handlePreview = async (report: any) => {
-     console.log("Charts for preview:", report);
+    console.log("Charts for preview:", report);
     try {
       const aiResponse = report?.query?.ai_responce;
       if (!aiResponse) return;
@@ -290,7 +290,7 @@ const ReportDesignManage = () => {
         previewChartData,
         "preview",
         cleanFileName,
-      
+
       );
 
     } catch (err) {
@@ -298,8 +298,8 @@ const ReportDesignManage = () => {
     }
   };
 
-  // const handlePreview = async (report: any) => {
-  //   console.log('handlePreview', report)
+
+  // const handleDownload = async (report: any) => {
   //   try {
   //     const aiResponse = report?.query?.ai_responce;
   //     if (!aiResponse) return;
@@ -311,63 +311,90 @@ const ReportDesignManage = () => {
   //     const cleanFileName = report.report_name
   //       .replace(/\s*report$/i, "")
   //       .trim();
-  //     const config = JSON.parse(report.report_config);
-
-  //     console.log("📌 REPORT CONFIG", config);
-
-  //     const finalRows = buildFinalRows(
-  //       api.rows,
-  //       api.columns,
-  //       config.group_by?.[0],        // undefined allowed
-  //       config.aggregations          // undefined allowed
-  //     );
-
-
-
-  //     console.log("🧾 FINAL PDF ROWS", finalRows);
 
   //     generatePDF(
   //       {
-  //         rows: finalRows,
-  //         columns: api.columns.map((c: string) => ({ column_name: c })),
+  //         rows: api.rows || [],
+  //         columns: (api.columns || []).map((c: string) => ({
+  //           column_name: c,
+  //         })),
   //       },
-  //       "preview",
-  //       cleanFileName,
-
+  //       "download",
+  //       cleanFileName
   //     );
 
-  //     // generatePDF(
-  //     //   {
-  //     //     rows: api.rows,
-  //     //     columns: api.columns.map((c: string) => ({ column_name: c })),
-  //     //   },
-  //     //   "preview",
-  //     //   cleanFileName
-  //     // );
   //   } catch (err) {
-  //     console.error("Preview failed", err);
+  //     console.error("Download failed", err);
   //   }
   // };
+
+
   const handleDownload = async (report: any) => {
     try {
       const aiResponse = report?.query?.ai_responce;
       if (!aiResponse) return;
+
+      // 1️⃣ Execute SQL
       const execRes = await ApiServices.executeSql({
         sql_query: aiResponse,
         session_id: userData?.session_id
       });
+
       const api = execRes.data.data;
+
+      // 2️⃣ Parse config
+      const config =
+        typeof report.report_config === "string"
+          ? JSON.parse(report.report_config)
+          : report.report_config;
+
+      // 3️⃣ TABLE DATA (group + aggregation)
+      const finalRows = buildFinalRows(
+        api.rows,
+        api.columns,
+        config.group_by?.[0],
+        config.aggregations
+      );
+
+      // 4️⃣ Prepare chart data (RAW rows only)
+      const chartsForDownload = (config.charts || []).map((c: any) => ({
+        ...c,
+        rows: api.rows
+      }));
+
+      // 5️⃣ Render hidden charts
+      setDownloadChartData(chartsForDownload);
+
+      // ⏳ MUST wait for recharts render
+      await new Promise(res => setTimeout(res, 900));
+
+      // 6️⃣ Capture charts
+      let chartImages: string[] = [];
+
+      if (chartContainerRef.current) {
+        const canvas = await html2canvas(chartContainerRef.current, {
+          scale: 2,
+          backgroundColor: "#ffffff",
+          useCORS: true
+        });
+
+        chartImages.push(canvas.toDataURL("image/png"));
+      }
+
+      // 7️⃣ PDF name
       const cleanFileName = report.report_name
         .replace(/\s*report$/i, "")
         .trim();
 
+      // 8️⃣ Generate PDF (TABLE + AGG + CHART)
       generatePDF(
         {
-          rows: api.rows || [],
-          columns: (api.columns || []).map((c: string) => ({
-            column_name: c,
-          })),
+          rows: finalRows,
+          columns: api.columns.map((c: string) => ({
+            column_name: c
+          }))
         },
+        chartsForDownload,
         "download",
         cleanFileName
       );
@@ -536,13 +563,12 @@ const ReportDesignManage = () => {
 
 
       {/* 🔥 HIDDEN CHART PREVIEW FOR PDF */}
-      <div 
+      <div
         ref={chartContainerRef}
-       style={{ background: "#fff" }}
+        style={{ background: "#fff" }}
       >
         <RenderCharts
-          charts={previewChartData || []}
-          onRemoveChart={() => { }}
+          charts={downloadChartData || previewChartData || []} onRemoveChart={() => { }}
           onReorderCharts={() => { }}
         />
       </div>
