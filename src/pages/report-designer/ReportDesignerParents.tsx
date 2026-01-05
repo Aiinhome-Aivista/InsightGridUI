@@ -261,7 +261,7 @@ export default function TableView() {
   // }, [selectedAggregations])
 
   return (
-    <div className="flex flex-col  bg-[#D9D9D91A] rounded-xl m-4 max-w-screen overflow-hidden">
+    <div className="flex flex-col rounded-xl m-4 max-w-screen overflow-hidden">
       <DataViewHeader
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
