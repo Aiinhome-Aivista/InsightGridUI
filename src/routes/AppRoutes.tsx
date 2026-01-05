@@ -15,6 +15,7 @@ import Settings from "../pages/Setting/Setting";
 import ManageCompanyUsers from "../pages/company-users/ManageCompanyUsers";
 import ManageSuperAdminDashboard from "../pages/Superadmin/ManageSuperAdminDashboard";
 import ManageCompanies from "../pages/Superadmin/ManageCompanies";
+import RegisterCompany from "../pages/Superadmin/RegisterCompany";
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -35,7 +36,9 @@ function AppRoutes() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="manage-users" element={<ManageCompanyUsers />} />
             <Route path="super-dashboard" element={<ManageSuperAdminDashboard />} />
-            <Route path="companies" element={<ManageCompanies />} />
+            <Route path="manage-companies" element={<ManageCompanies />} />
+            <Route path="register-company" element={<RegisterCompany />} />
+            <Route path="register-company/:id" element={<RegisterCompany />} />
           </Route>
         </Route>
 
