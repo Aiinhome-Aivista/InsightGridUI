@@ -251,12 +251,22 @@ chartImages.forEach((img, index) => {
 
   // Move position
   if (index % 2 === 0) {
+    // first chart in row → move right
     xPos += chartWidth + gapX;
   } else {
+    // second chart → new row
     xPos = marginX;
     yPos += chartHeight + gapY;
   }
 });
+
+/**
+ * 🔥 IMPORTANT FIX
+ * If last row has only ONE chart, move Y down
+ */
+if (chartImages.length % 2 !== 0) {
+  yPos += chartHeight + gapY;
+}
 
 
 
