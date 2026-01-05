@@ -6,7 +6,6 @@ import MixedChartGraph from "./mixed-chart-graph";
 import BubbleChartGraph from "./bubble-chart-graph";
 import WaterfallChartGraph from "./waterfall-chart-graph";
 import BoxPlotGraph from "./box-plot-graph";
-
 import {
   DragDropContext,
   Droppable,
@@ -14,24 +13,19 @@ import {
   DropResult
 } from "@hello-pangea/dnd";
 import LineChartGraph from "./line-chart-graph";
-
 interface RenderChartsProps {
   charts: ChartConfig[];
   onRemoveChart: (id: string) => void;
-  onReorderCharts: (charts: ChartConfig[]) => void; // 🔥 NEW
+  onReorderCharts: (charts: ChartConfig[]) => void;
 
 }
-
 export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }: RenderChartsProps) {
-
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-
     const items = Array.from(charts);
     const [moved] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, moved);
-
-    onReorderCharts(items); // 🔥 update order
+    onReorderCharts(items);
   };
 
   const renderChart = (chart: ChartConfig) => {

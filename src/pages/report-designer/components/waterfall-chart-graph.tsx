@@ -8,16 +8,11 @@ import {
 
 export default function WaterfallChartGraph({ config }: { config: any }) {
   if (!config?.rows || !config?.xAxis) return null;
-
-  // 1️⃣ Group by X-axis
   const grouped: Record<string, number> = {};
-
   config.rows.forEach((r: any) => {
     const key = String(r[config.xAxis]);
     grouped[key] = (grouped[key] || 0) + 1;
   });
-
-  // 2️⃣ Build cumulative waterfall data
   let cumulative = 0;
   const data = Object.entries(grouped).map(([name, count]) => {
     const start = cumulative;

@@ -20,7 +20,6 @@ const QueryDesignerManage = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
   const { theme } = useTheme();
-
   const timeAgo = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return "";
 
@@ -44,7 +43,6 @@ const QueryDesignerManage = () => {
       const days = Math.floor(hours / 24);
       const months = Math.floor(days / 30);
       const years = Math.floor(days / 365);
-
       if (seconds < 5) return "Just now";
       if (seconds < 60) return `${seconds} sec ago`;
       if (minutes < 60) return `${minutes} min ago`;
@@ -52,9 +50,7 @@ const QueryDesignerManage = () => {
       if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
       if (days < 30) return `${Math.floor(days / 7)} week${days >= 14 ? "s" : ""} ago`;
       if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`;
-
       return `${years} year${years > 1 ? "s" : ""} ago`;
-
     } catch (e) {
       console.error("timeAgo parse error:", e);
       return "";

@@ -9,7 +9,6 @@ import { generatePDF } from "../../utils/download/function";
 import Tippy from "@tippyjs/react";
 import html2canvas from "html2canvas";
 import RenderCharts from "./components/render-charts";
-
 const ReportDesignManage = () => {
   const navigate = useNavigate();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -20,21 +19,28 @@ const ReportDesignManage = () => {
   const isFetching = useRef(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
-  const { previewChartData, setPreviewChartData, downloadChartData, setDownloadChartData } = useAuth();
+  const {
+    previewChartData,
+    setPreviewChartData,
+    downloadChartData,
+    setDownloadChartData,
+  } = useAuth();
   const chartContainerRef = useRef<HTMLDivElement>(null);
-
 
   const timeAgo = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return "";
     try {
       const [d, m, y] = dateStr.split("-");
       const isoDate = `${y}-${m}-${d}`;
-      const cleanTime = new Date(`1970-01-01 ${timeStr}`).toLocaleTimeString("en-GB", {
-        hour12: false,
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
+      const cleanTime = new Date(`1970-01-01 ${timeStr}`).toLocaleTimeString(
+        "en-GB",
+        {
+          hour12: false,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }
+      );
       const fullTimestamp = `${isoDate} ${cleanTime}`;
       const created = new Date(fullTimestamp);
       const now = new Date();
@@ -51,11 +57,11 @@ const ReportDesignManage = () => {
       if (minutes < 60) return `${minutes} min ago`;
       if (hours < 24) return `${hours} hr ago`;
       if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
-      if (days < 30) return `${Math.floor(days / 7)} week${days >= 14 ? "s" : ""} ago`;
+      if (days < 30)
+        return `${Math.floor(days / 7)} week${days >= 14 ? "s" : ""} ago`;
       if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`;
 
       return `${years} year${years > 1 ? "s" : ""} ago`;
-
     } catch (e) {
       console.error("timeAgo parse error:", e);
       return "";
@@ -115,24 +121,17 @@ const ReportDesignManage = () => {
   ) => {
     const hasGroup = !!groupBy;
     const hasAgg = !!aggregations?.length;
-
-    // 🟢 Case 1,5 → no group, no agg
     if (!hasGroup && !hasAgg) {
       return rawRows;
     }
-
-    // 🟢 Case 2,6 → agg only
     if (!hasGroup && hasAgg) {
       const labelColumn = columns[0];
       const finalRows: any[] = [];
-
       aggregations!.forEach((agg) => {
         const values = rawRows
           .map((r) => Number(r[agg.column]))
           .filter((v) => !isNaN(v));
-
         let val: number | string = "";
-
         switch (agg.agg) {
           case "sum":
             val = values.reduce((a, b) => a + b, 0);
@@ -152,7 +151,6 @@ const ReportDesignManage = () => {
             val = values.length;
             break;
         }
-
         const row: any = {};
         columns.forEach((c) => (row[c] = ""));
         row[labelColumn] = agg.agg.toUpperCase();
@@ -161,29 +159,20 @@ const ReportDesignManage = () => {
 
         finalRows.push(row);
       });
-
       return finalRows;
     }
-
-    // 🟢 Case 3,4,7,8 → group exists
     const grouped: Record<string, any[]> = {};
     rawRows.forEach((r) => {
       const key = r[groupBy!] ?? "UNKNOWN";
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(r);
     });
-
     const finalRows: any[] = [];
     const labelColumn = columns[0];
-
     Object.keys(grouped).forEach((groupKey) => {
       const rows = grouped[groupKey];
-
-      // normal rows
       rows.forEach((r) => finalRows.push({ ...r }));
-
       if (!hasAgg) return;
-
       aggregations!.forEach((agg) => {
         const values = rows
           .map((r) => Number(r[agg.column]))
@@ -224,16 +213,14 @@ const ReportDesignManage = () => {
     return finalRows;
   };
 
-
   const handlePreview = async (report: any) => {
-    console.log("Charts for preview:", report);
     try {
       const aiResponse = report?.query?.ai_responce;
       if (!aiResponse) return;
 
       const execRes = await ApiServices.executeSql({
         sql_query: aiResponse,
-        session_id: userData?.session_id
+        session_id: userData?.session_id,
       });
 
       const api = execRes.data.data;
@@ -242,37 +229,25 @@ const ReportDesignManage = () => {
         typeof report.report_config === "string"
           ? JSON.parse(report.report_config)
           : report.report_config;
-
-      // ✅ TABLE DATA (group + aggregation)
       const finalRows = buildFinalRows(
         api.rows,
         api.columns,
         config.group_by?.[0],
         config.aggregations
       );
-
-
-      // ✅ PREPARE CHART CONFIG (same as edit page)
       const chartsForPreview = (config.charts || []).map((c: any) => ({
         ...c,
-        rows: api.rows   // 🔥 IMPORTANT: charts never use grouped rows
+        rows: api.rows,
       }));
-
-      console.log("Charts on preview:", chartsForPreview);
-
       setPreviewChartData(chartsForPreview);
-
-      // 🔥 wait for charts to render
-      await new Promise(res => setTimeout(res, 500));
-
-      // ✅ CAPTURE CHARTS
+      await new Promise((res) => setTimeout(res, 500));
       let chartImages: string[] = [];
 
       if (chartContainerRef.current) {
         const canvas = await html2canvas(chartContainerRef.current, {
           scale: 2,
           backgroundColor: "#ffffff",
-          useCORS: true
+          useCORS: true,
         });
         chartImages.push(canvas.toDataURL("image/png"));
       }
@@ -280,8 +255,6 @@ const ReportDesignManage = () => {
       const cleanFileName = report.report_name
         .replace(/\s*report$/i, "")
         .trim();
-
-      // ✅ FINAL PDF
       generatePDF(
         {
           rows: finalRows,
@@ -289,116 +262,62 @@ const ReportDesignManage = () => {
         },
         previewChartData,
         "preview",
-        cleanFileName,
-
+        cleanFileName
       );
-
     } catch (err) {
       console.error("Preview failed", err);
     }
   };
-
-
-  // const handleDownload = async (report: any) => {
-  //   try {
-  //     const aiResponse = report?.query?.ai_responce;
-  //     if (!aiResponse) return;
-  //     const execRes = await ApiServices.executeSql({
-  //       sql_query: aiResponse,
-  //       session_id: userData?.session_id
-  //     });
-  //     const api = execRes.data.data;
-  //     const cleanFileName = report.report_name
-  //       .replace(/\s*report$/i, "")
-  //       .trim();
-
-  //     generatePDF(
-  //       {
-  //         rows: api.rows || [],
-  //         columns: (api.columns || []).map((c: string) => ({
-  //           column_name: c,
-  //         })),
-  //       },
-  //       "download",
-  //       cleanFileName
-  //     );
-
-  //   } catch (err) {
-  //     console.error("Download failed", err);
-  //   }
-  // };
-
-
   const handleDownload = async (report: any) => {
     try {
       const aiResponse = report?.query?.ai_responce;
       if (!aiResponse) return;
-
-      // 1️⃣ Execute SQL
       const execRes = await ApiServices.executeSql({
         sql_query: aiResponse,
-        session_id: userData?.session_id
+        session_id: userData?.session_id,
       });
-
       const api = execRes.data.data;
-
-      // 2️⃣ Parse config
       const config =
         typeof report.report_config === "string"
           ? JSON.parse(report.report_config)
           : report.report_config;
-
-      // 3️⃣ TABLE DATA (group + aggregation)
       const finalRows = buildFinalRows(
         api.rows,
         api.columns,
         config.group_by?.[0],
         config.aggregations
       );
-
-      // 4️⃣ Prepare chart data (RAW rows only)
       const chartsForDownload = (config.charts || []).map((c: any) => ({
         ...c,
-        rows: api.rows
+        rows: api.rows,
       }));
-
-      // 5️⃣ Render hidden charts
       setDownloadChartData(chartsForDownload);
-
-      // ⏳ MUST wait for recharts render
-      await new Promise(res => setTimeout(res, 900));
-
-      // 6️⃣ Capture charts
+      await new Promise((res) => setTimeout(res, 900));
       let chartImages: string[] = [];
 
       if (chartContainerRef.current) {
         const canvas = await html2canvas(chartContainerRef.current, {
           scale: 2,
           backgroundColor: "#ffffff",
-          useCORS: true
+          useCORS: true,
         });
 
         chartImages.push(canvas.toDataURL("image/png"));
       }
-
-      // 7️⃣ PDF name
       const cleanFileName = report.report_name
         .replace(/\s*report$/i, "")
         .trim();
-
-      // 8️⃣ Generate PDF (TABLE + AGG + CHART)
       generatePDF(
         {
           rows: finalRows,
           columns: api.columns.map((c: string) => ({
-            column_name: c
-          }))
+            column_name: c,
+          })),
         },
         chartsForDownload,
         "download",
         cleanFileName
       );
-
     } catch (err) {
       console.error("Download failed", err);
     }
@@ -425,7 +344,7 @@ const ReportDesignManage = () => {
 
           <button
             className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
-            style={{ width: "108px", }}
+            style={{ width: "108px" }}
             onClick={() => navigate("/layout/report-designer-view")}
           >
             Create Report
@@ -466,11 +385,17 @@ const ReportDesignManage = () => {
               className={`
                           w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] 
                           bg-[#D9D9D9] hover:bg-[#D9D9D9] transition-all
-                          ${isRefreshing ? "opacity-70 cursor-wait" : "cursor-pointer"}
+                          ${
+                            isRefreshing
+                              ? "opacity-70 cursor-wait"
+                              : "cursor-pointer"
+                          }
                         `}
             >
               <AutorenewRoundedIcon
-                className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""}`}
+                className={`w-5 h-5 text-gray-500 ${
+                  isRefreshing ? "animate-spin" : ""
+                }`}
                 fontSize="small"
               />
             </button>
@@ -500,16 +425,17 @@ const ReportDesignManage = () => {
               {filteredReports.map((item) => {
                 return (
                   <tr key={item.report_id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 text-xs">
-                      {item.report_name}
-                    </td>
+                    <td className="px-6 py-3 text-xs">{item.report_name}</td>
 
                     <td className="px-6 py-3 text-xs text-gray-600">
                       {item.actual_created_date}
                     </td>
 
                     <td className="px-6 py-3 text-xs text-gray-600">
-                      {timeAgo(item.actual_created_date, item.actual_created_at)}
+                      {timeAgo(
+                        item.actual_created_date,
+                        item.actual_created_at
+                      )}
                     </td>
 
                     <td className="px-6 py-3 text-xs text-gray-600">
@@ -526,11 +452,17 @@ const ReportDesignManage = () => {
 
                     <td className="px-6 py-3">
                       <div className="flex justify-end gap-2">
-                        <button className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs" onClick={() => handlePreview(item)}>
+                        <button
+                          className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs"
+                          onClick={() => handlePreview(item)}
+                        >
                           Preview
                         </button>
 
-                        <button className="text-purple-600 bg-purple-100 px-3 py-1 rounded-full text-xs" onClick={() => handleDownload(item)}>
+                        <button
+                          className="text-purple-600 bg-purple-100 px-3 py-1 rounded-full text-xs"
+                          onClick={() => handleDownload(item)}
+                        >
                           Download
                         </button>
                         <button
@@ -545,7 +477,6 @@ const ReportDesignManage = () => {
                         >
                           Edit
                         </button>
-
                       </div>
                     </td>
                   </tr>
@@ -560,22 +491,14 @@ const ReportDesignManage = () => {
           <p className="text-gray-500 mt-2">Empty Report List</p>
         </div>
       )}
-
-
-      {/* 🔥 HIDDEN CHART PREVIEW FOR PDF */}
-      <div
-        ref={chartContainerRef}
-        style={{ background: "#fff" }}
-      >
+      <div ref={chartContainerRef} style={{ background: "#fff" }}>
         <RenderCharts
-          charts={downloadChartData || previewChartData || []} onRemoveChart={() => { }}
-          onReorderCharts={() => { }}
+          charts={downloadChartData || previewChartData || []}
+          onRemoveChart={() => {}}
+          onReorderCharts={() => {}}
         />
       </div>
-
-
     </div>
-
   );
 };
 

@@ -5,16 +5,12 @@ import { MdOutlineHourglassEmpty } from "react-icons/md";
 import ProductDataTable from '../query-designer/components/DataTable';
 import { useNavigate } from "react-router-dom";
 import ApiServices from "../../services/ApiServices";
-
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { FilterMatchMode } from "primereact/api";
-
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-
 function ManageCompanies() {
-
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,11 +54,9 @@ function ManageCompanies() {
     try {
       setIsLoading(true);
       setError(null);
-
       const response = await ApiServices.getAllCompanies();
-      // ✅ Axios correct handling
       if (response?.data?.isSuccess) {
-        setCompanies(response.data.data);   // 👈 actual array
+        setCompanies(response.data.data);
       } else {
         setError(response?.data?.message || "Failed to fetch companies");
       }
@@ -108,8 +102,6 @@ function ManageCompanies() {
       };
 
       await ApiServices.adminCompanyDelete(payload);
-
-      // ✅ delete হলে list refresh
       fetchCompanies();
     } catch (err) {
       console.error("Delete failed", err);
@@ -214,7 +206,6 @@ function ManageCompanies() {
         emptyMessage="No companies found"
         className="custom-table"
       >
-        {/* 🔁 Dynamic Columns */}
         {columns.map((col) => (
           <Column
             key={col.field}
@@ -224,8 +215,6 @@ function ManageCompanies() {
             body={col.body}
           />
         ))}
-
-        {/* 🔒 Static Action Column */}
         <Column
           header="Action"
           body={actionBodyTemplate}

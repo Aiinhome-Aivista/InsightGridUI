@@ -109,6 +109,12 @@ const groupRows = (
 
   Object.entries(map).forEach(([groupKey, items]) => {
     // 🔹 GROUP HEADER
+    // finalRows.push({
+    //   __isGroup: true,
+    //   __groupKey: groupKey,
+    //   __groupLabel: `${groupCols.join(", ").toUpperCase()}: ${groupKey}`,
+    //   __count: items.length,
+    // });
     const aggMap = calculateAggregation(items, aggregations);
 
     aggregationOrder.forEach((agg) => {

@@ -7,18 +7,14 @@ import {
   ResponsiveContainer,
   CartesianGrid
 } from "recharts";
-
 export default function LineChartGraph({ config }: { config: any }) {
   if (!config?.rows || !config?.xAxis || !config?.yAxis) return null;
-
   const grouped: Record<string, number> = {};
-
   config.rows.forEach((r: any) => {
     const key = String(r[config.xAxis]);
     grouped[key] =
       (grouped[key] || 0) + Number(r[config.yAxis] || 0);
   });
-
   const data = Object.entries(grouped).map(([k, v]) => ({
     name: k,
     value: v
@@ -31,18 +27,15 @@ export default function LineChartGraph({ config }: { config: any }) {
           data={data}
           margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
         >
-          {/* Grid */}
           <CartesianGrid
             vertical={false}
             stroke="#E5E7EB"
             strokeDasharray="3 3"
           />
-
-          {/* Gradient Definition */}
           <defs>
             <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#6366F1" />   {/* indigo */}
-              <stop offset="100%" stopColor="#22C55E" /> {/* green */}
+              <stop offset="0%" stopColor="#6366F1" /> 
+              <stop offset="100%" stopColor="#22C55E" />
             </linearGradient>
           </defs>
 
@@ -72,8 +65,6 @@ export default function LineChartGraph({ config }: { config: any }) {
               config.yAxis.replace(/_/g, " ").toUpperCase()
             ]}
           />
-
-          {/* Colorful Line */}
           <Line
             type="monotone"
             dataKey="value"
