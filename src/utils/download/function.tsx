@@ -89,6 +89,16 @@ const captureChartAsImage = async (elementId: string): Promise<string | null> =>
   element.style.overflow = "visible";
   element.style.height = "auto";
 
+  // Hide elements with "pdf-exclude" class before capturing
+  const excludedElements = element.querySelectorAll('.pdf-exclude');
+  const previousDisplayValues: string[] = [];
+
+  excludedElements.forEach((el, index) => {
+    const htmlEl = el as HTMLElement;
+    previousDisplayValues[index] = htmlEl.style.display;
+    htmlEl.style.display = 'none';
+  });
+
   await new Promise(r => setTimeout(r, 100));
 
   const canvas = await html2canvas(element, {
@@ -97,6 +107,12 @@ const captureChartAsImage = async (elementId: string): Promise<string | null> =>
     useCORS: true,
     scrollX: 0,
     scrollY: -window.scrollY,
+  });
+
+  // Restore visibility of excluded elements
+  excludedElements.forEach((el, index) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.display = previousDisplayValues[index];
   });
 
   element.style.overflow = prevOverflow;
