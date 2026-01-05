@@ -90,7 +90,8 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }:
             {charts.map((chart, index) => (
               <Draggable key={chart.id} draggableId={chart.id} index={index}>
                 {(provided, snapshot) => (
-                  <div
+                  <div  key={chart.id}
+    id={`report-chart-${chart.id}`}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
@@ -106,6 +107,7 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }:
                     >
                       {renderChart(chart)}
                     </ChartCard>
+             
                   </div>
                 )}
               </Draggable>

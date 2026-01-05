@@ -20,7 +20,7 @@ const ReportDesignManage = () => {
   const isFetching = useRef(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
-  const [previewCharts, setPreviewCharts] = useState<any[]>([]);
+ const {previewChartData, setPreviewChartData } = useAuth();
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
 
@@ -226,6 +226,7 @@ const ReportDesignManage = () => {
 
 
   const handlePreview = async (report: any) => {
+     console.log("Charts for preview:", report);
     try {
       const aiResponse = report?.query?.ai_responce;
       if (!aiResponse) return;
@@ -250,14 +251,16 @@ const ReportDesignManage = () => {
         config.aggregations
       );
 
+
       // ✅ PREPARE CHART CONFIG (same as edit page)
       const chartsForPreview = (config.charts || []).map((c: any) => ({
         ...c,
-        id: crypto.randomUUID(),
         rows: api.rows   // 🔥 IMPORTANT: charts never use grouped rows
       }));
 
-      setPreviewCharts(chartsForPreview);
+      console.log("Charts on preview:", chartsForPreview);
+
+      setPreviewChartData(chartsForPreview);
 
       // 🔥 wait for charts to render
       await new Promise(res => setTimeout(res, 500));
@@ -284,9 +287,10 @@ const ReportDesignManage = () => {
           rows: finalRows,
           columns: api.columns.map((c: string) => ({ column_name: c })),
         },
+        previewChartData,
         "preview",
         cleanFileName,
-        chartImages
+      
       );
 
     } catch (err) {
@@ -532,23 +536,12 @@ const ReportDesignManage = () => {
 
 
       {/* 🔥 HIDDEN CHART PREVIEW FOR PDF */}
-      <div
+      <div 
         ref={chartContainerRef}
-        style={{
-          position: "absolute",
-          left: "-9999px",
-          top: "0",
-          width: "1200px",
-          minHeight: "800px",     // 🔥 REQUIRED
-          background: "#ffffff",
-          padding: "16px",
-          display: "block",
-             visibility: "hidden",
-          pointerEvents: "none"
-        }}
+       style={{ background: "#fff" }}
       >
         <RenderCharts
-          charts={previewCharts}
+          charts={previewChartData || []}
           onRemoveChart={() => { }}
           onReorderCharts={() => { }}
         />

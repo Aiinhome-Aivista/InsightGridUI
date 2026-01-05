@@ -81,7 +81,7 @@ export default function TableView() {
         .sort((a, b) => a.order - b.order)
         .map((c) => ({
           ...c,
-          id: crypto.randomUUID(),
+          id: c.id ? c.id  : crypto.randomUUID(),
          
         }))
     );
@@ -233,6 +233,7 @@ export default function TableView() {
           size: c.size,
           label: c.label,
           agg: c.agg,
+          id: c.id,
           order: index + 1
         }))
       };

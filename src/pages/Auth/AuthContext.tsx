@@ -5,6 +5,10 @@ interface TableData {
   rows: any[];
   columns: any[];
 }
+interface PreviewChartData {
+  charts: any[]; // you can replace `any` with ChartConfig later
+}
+
 interface AuthContextType {
   user: any;
   login: (userData: any) => void;
@@ -20,6 +24,9 @@ interface AuthContextType {
   setViewName: Dispatch<SetStateAction<string>>;
   confirmSave: () => void;
   setConfirmSaveAction: (action: () => void) => void;
+  previewChartData: any[] | null;
+  setPreviewChartData: Dispatch<SetStateAction<any[] | null>>;
+
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -39,6 +46,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [viewName, setViewName] = useState("");
   const [downloadData, setDownloadData] = useState<TableData | null>(null);
   const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
+  const [previewChartData, setPreviewChartData] = useState<any[] | null>(null);
+
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
     setUser(userData);
@@ -72,7 +81,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isLogoutModalOpen, setIsLogoutModalOpen,
       isConfirmSaveModalOpen, setIsConfirmSaveModalOpen,
       downloadData, setDownloadData,
-      viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction
+      viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction,  previewChartData,
+    setPreviewChartData
     }}>
       {children}
     </AuthContext.Provider>
