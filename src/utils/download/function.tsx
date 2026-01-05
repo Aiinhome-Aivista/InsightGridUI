@@ -217,39 +217,51 @@ for (const chart of previewChartData || []) {
 // ===== WAIT FOR CHART =====
 
 // ===== CAPTURE CHART =====
-let tableStartY = dividerY + 20;
+
 
 
  // ===== CHART IMAGES =====
-  let yPos = (doc as any).lastAutoTable.finalY + 30;
+let yPos = dividerY + 30;
 
-  for (let i = 0; i < chartImages.length; i++) {
-    const img = chartImages[i];
+const marginX = 40;
+const gapX = 20;
+const gapY = 30;
 
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const pageWidth = doc.internal.pageSize.getWidth();
+const usableWidth = pageWidth - marginX * 2;
+const chartWidth = (usableWidth - gapX) / 2;
+const chartHeight = (chartWidth * 9) / 16;
 
-    const imgWidth = pageWidth - 80;
-    const imgHeight = (imgWidth * 9) / 16; // safe ratio
+let xPos = marginX;
 
-    if (yPos + imgHeight > pageHeight) {
-      doc.addPage();
-      yPos = 40;
-    }
+chartImages.forEach((img, index) => {
+  const pageHeight = doc.internal.pageSize.getHeight();
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text(`Chart ${i + 1}`, 40, yPos - 10);
-
-    doc.addImage(img, "PNG", 40, yPos, imgWidth, imgHeight);
-
-    yPos += imgHeight + 30;
+  // Page break
+  if (yPos + chartHeight > pageHeight - 40) {
+    doc.addPage();
+    yPos = 40;
+    xPos = marginX;
   }
 
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
+
+  doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
+
+  // Move position
+  if (index % 2 === 0) {
+    xPos += chartWidth + gapX;
+  } else {
+    xPos = marginX;
+    yPos += chartHeight + gapY;
+  }
+});
 
 
 
 
+const tableStartY = yPos + 20;
 
   
   autoTable(doc, {
@@ -305,6 +317,4 @@ let tableStartY = dividerY + 20;
 
 };
 
-function useState<T>(arg0: undefined[]): [any, any] {
-  throw new Error("Function not implemented.");
-}
+
