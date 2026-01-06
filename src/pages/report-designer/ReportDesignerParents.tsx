@@ -197,6 +197,7 @@ export default function TableView() {
     deleteButtons.forEach(btn => {
       (btn as HTMLElement).style.visibility = "visible";
     });
+
     element.style.overflow = prevOverflow;
     element.style.height = prevHeight;
 
@@ -232,6 +233,7 @@ export default function TableView() {
           agg: c.agg,
           id: c.id,
           order: index + 1,
+          customTitle: c.customTitle,
         })),
         column_renames: columnRenames,
       };

@@ -51,6 +51,8 @@ export interface ChartConfig {
   agg?: "count" | "sum";
   rows: any[];
   style?: Record<string, any>;
+  customTitle?: string;
+
 }
 
 const calculateAggregation = (
@@ -357,6 +359,9 @@ export default function DataViewTable({
     });
   };
 
+  const renameChart = (id: string, newName: string) => {
+    setCharts(prev => prev.map(c => c.id === id ? { ...c, customTitle: newName } : c));
+  };
 
   const toggleGroup = (key: string) => {
     setCollapsedGroups(prev => ({
@@ -812,9 +817,10 @@ export default function DataViewTable({
                 <div className="mb-6">
                   <RenderCharts
                     charts={chartsWithRows}
-
                     onRemoveChart={removeChart}
                     onReorderCharts={setCharts}
+                    onRenameChart={renameChart}
+
                   />
                 </div>
               )}
@@ -898,6 +904,8 @@ export default function DataViewTable({
                     charts={chartsWithRows}
                     onRemoveChart={removeChart}
                     onReorderCharts={setCharts}
+                    onRenameChart={renameChart}
+
                   />
                 </div>
               )}

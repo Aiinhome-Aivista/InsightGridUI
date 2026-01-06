@@ -1,10 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import html2canvas from "html2canvas";
 
 
-
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 
 const fetchImageAsBase64 = async (url: string): Promise<string> => {
@@ -86,7 +83,7 @@ const cropImageBase64 = (base64: string): Promise<string> => {
 
 
 
-export const generatePDF = async (data, chartImageUrls, mode = "download", fileName = "report",
+export const generatePDF = async (data, chartImageUrls, mode = "download", fileName = "report",previewChartData
 ) => {
   if (!data || !data.rows || data.rows.length === 0) {
     console.warn("No data available for PDF");
@@ -185,14 +182,7 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
   doc.line(40, dividerY, pageWidth - 40, dividerY);
 
 
-  // const chartImages: string[] = [];
 
-  // for (const chart of previewChartData || []) {
-  //   console.log("Capturing chart:", chart);
-  //   await wait(300);
-  //   const img = await captureChartAsImage(`report-chart-${chart.id}`);
-  //   if (img) chartImages.push(img);
-  // }
   const chartImages: string[] = [];
 
   // 🔥 previewChartData is actually IMAGE URL array now
@@ -200,12 +190,6 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
     const base64 = await fetchImageAsBase64(imgUrl);
     chartImages.push(base64);
   }
-
-  // ===== WAIT FOR CHART =====
-
-  // ===== CAPTURE CHART =====
-
-
 
   // ===== CHART IMAGES =====
   let yPos = dividerY + 30;
@@ -234,8 +218,10 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
     doc.setFontSize(11);
     // doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
 
-    doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
+    const chartTitle = previewChartData?.[index]?.customTitle;
+    doc.text(chartTitle, xPos, yPos - 8);
 
+    doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
     // Move position
     if (index % 2 === 0) {
       // first chart in row → move right

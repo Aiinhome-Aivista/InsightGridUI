@@ -288,7 +288,9 @@ const ReportDesignManage = () => {
         },
         chartImages,
         "preview",
-        cleanFileName
+        cleanFileName,
+        previewChartData
+
       );
     } catch (err) {
       console.error("Preview failed", err);
@@ -330,7 +332,8 @@ const ReportDesignManage = () => {
         },
         chartImages,
         "download",
-        cleanFileName
+        cleanFileName,
+        previewChartData
       );
     } catch (err) {
       console.error("Download failed", err);
