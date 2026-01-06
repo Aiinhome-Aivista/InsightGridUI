@@ -227,7 +227,7 @@ export default function ProductDataTable({
                   if (!colAgg) return null;
 
                   return (
-                    <div className="text-xs font-semibold text-right">
+                    <div className="text-xs font-semibold">
                       {rowData.__aggregationOrder.map(a => (
                         <div key={a}>
                           {colAgg[a]?.toFixed?.(2) ?? ""}
@@ -244,14 +244,15 @@ export default function ProductDataTable({
                 !isGrouped && aggregationMap && aggregationOrder?.length ? (
                   index === 0 ? (
                     // 🔹 LEFT LABEL COLUMN
-                    <div className="flex flex-col gap-1 text-xs text-gray-700">
+                    <div className="flex flex-col gap-1 text-xs text-gray-700 font-semibold">
                       {aggregationOrder.map(a => (
                         <div key={a}>{a}</div>
                       ))}
                     </div>
                   ) : aggregationMap[col.column_name] ? (
                     // 🔹 VALUE COLUMN
-                    <div className="flex flex-col gap-1 text-xs text-gray-700 text-right">
+                    
+                    <div className="flex flex-col gap-1 text-xs text-gray-700 font-semibold">
                       {aggregationOrder.map(a => (
                         <div key={a}>
                           {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}

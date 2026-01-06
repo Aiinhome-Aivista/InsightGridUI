@@ -112,7 +112,7 @@ const captureChartAsImage = async (elementId: string): Promise<string | null> =>
 
 
 
-export const generatePDF = async (data, previewChartData, mode = "download", fileName = "report", 
+export const generatePDF = async (data, chartImageUrls, mode = "download", fileName = "report", 
 ) => {
   if (!data || !data.rows || data.rows.length === 0) {
     console.warn("No data available for PDF");
@@ -205,13 +205,20 @@ const dividerY = addressY + addressHeight + 20;
 doc.line(40, dividerY, pageWidth - 40, dividerY);
 
 
+// const chartImages: string[] = [];
+
+// for (const chart of previewChartData || []) {
+//   console.log("Capturing chart:", chart);
+//   await wait(300);
+//   const img = await captureChartAsImage(`report-chart-${chart.id}`);
+//   if (img) chartImages.push(img);
+// }
 const chartImages: string[] = [];
 
-for (const chart of previewChartData || []) {
-  console.log("Capturing chart:", chart);
-  await wait(300);
-  const img = await captureChartAsImage(`report-chart-${chart.id}`);
-  if (img) chartImages.push(img);
+// 🔥 previewChartData is actually IMAGE URL array now
+for (const imgUrl of chartImageUrls || []) {
+  const base64 = await fetchImageAsBase64(imgUrl);
+  chartImages.push(base64);
 }
 
 // ===== WAIT FOR CHART =====
@@ -245,7 +252,7 @@ chartImages.forEach((img, index) => {
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
+  // doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
 
   doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
 

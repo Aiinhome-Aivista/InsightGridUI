@@ -7,8 +7,9 @@ import { AuthProvider, useAuth } from "../Auth/AuthContext";
 import ApiServices from "../../services/ApiServices";
 import { generatePDF } from "../../utils/download/function";
 import Tippy from "@tippyjs/react";
-import html2canvas from "html2canvas";
-import RenderCharts from "./components/render-charts";
+// import html2canvas from "html2canvas";
+// import RenderCharts from "./components/render-charts";
+
 const ReportDesignManage = () => {
   const navigate = useNavigate();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -25,7 +26,7 @@ const ReportDesignManage = () => {
     downloadChartData,
     setDownloadChartData,
   } = useAuth();
-  const chartContainerRef = useRef<HTMLDivElement>(null);
+  // const chartContainerRef = useRef<HTMLDivElement>(null);
 
   const timeAgo = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return "";
@@ -109,6 +110,9 @@ const ReportDesignManage = () => {
       String(v).toLowerCase().includes(globalFilter.toLowerCase())
     )
   );
+  const formatNumber = (value: number, decimals = 2) => {
+    return Number.isFinite(value) ? value.toFixed(decimals) : "";
+  };
 
   const buildFinalRows = (
     rawRows: any[],
@@ -133,24 +137,33 @@ const ReportDesignManage = () => {
           .filter((v) => !isNaN(v));
         let val: number | string = "";
         switch (agg.agg) {
-          case "sum":
-            val = values.reduce((a, b) => a + b, 0);
+          case "sum": {
+            const total = values.reduce((a, b) => a + b, 0);
+            val = formatNumber(total);
             break;
-          case "max":
-            val = values.length ? Math.max(...values) : "";
+          }
+          case "max": {
+            const max = values.length ? Math.max(...values) : NaN;
+            val = formatNumber(max);
             break;
-          case "min":
-            val = values.length ? Math.min(...values) : "";
+          }
+          case "min": {
+            const min = values.length ? Math.min(...values) : NaN;
+            val = formatNumber(min);
             break;
-          case "avg":
-            val = values.length
-              ? +(values.reduce((a, b) => a + b, 0) / values.length).toFixed(2)
-              : "";
+          }
+          case "avg": {
+            const avg = values.length
+              ? values.reduce((a, b) => a + b, 0) / values.length
+              : NaN;
+            val = formatNumber(avg);
             break;
+          }
           case "count":
-            val = values.length;
+            val = values.length.toString(); // count integer থাকলেই ঠিক
             break;
         }
+
         const row: any = {};
         columns.forEach((c) => (row[c] = ""));
         row[labelColumn] = agg.agg.toUpperCase();
@@ -179,24 +192,31 @@ const ReportDesignManage = () => {
           .filter((v) => !isNaN(v));
 
         let val: number | string = "";
-
         switch (agg.agg) {
-          case "sum":
-            val = values.reduce((a, b) => a + b, 0);
+          case "sum": {
+            const total = values.reduce((a, b) => a + b, 0);
+            val = formatNumber(total);
             break;
-          case "max":
-            val = values.length ? Math.max(...values) : "";
+          }
+          case "max": {
+            const max = values.length ? Math.max(...values) : NaN;
+            val = formatNumber(max);
             break;
-          case "min":
-            val = values.length ? Math.min(...values) : "";
+          }
+          case "min": {
+            const min = values.length ? Math.min(...values) : NaN;
+            val = formatNumber(min);
             break;
-          case "avg":
-            val = values.length
-              ? +(values.reduce((a, b) => a + b, 0) / values.length).toFixed(2)
-              : "";
+          }
+          case "avg": {
+            const avg = values.length
+              ? values.reduce((a, b) => a + b, 0) / values.length
+              : NaN;
+            val = formatNumber(avg);
             break;
+          }
           case "count":
-            val = values.length;
+            val = values.length.toString(); // count integer
             break;
         }
 
@@ -241,17 +261,20 @@ const ReportDesignManage = () => {
       }));
       setPreviewChartData(chartsForPreview);
       await new Promise((res) => setTimeout(res, 500));
-      let chartImages: string[] = [];
 
-      if (chartContainerRef.current) {
-        const canvas = await html2canvas(chartContainerRef.current, {
-          scale: 2,
-          backgroundColor: "#ffffff",
-          useCORS: true,
-        });
-        chartImages.push(canvas.toDataURL("image/png"));
-      }
+      // let chartImages: string[] = [];
 
+      // if (chartContainerRef.current) {
+      //   const canvas = await html2canvas(chartContainerRef.current, {
+      //     scale: 2,
+      //     backgroundColor: "#ffffff",
+      //     useCORS: true,
+      //   });
+      //   chartImages.push(canvas.toDataURL("image/png"));
+      // }
+      const chartImages = (config.chart_images || []).map(
+        (img: any) => img.url
+      );
       const cleanFileName = report.report_name
         .replace(/\s*report$/i, "")
         .trim();
@@ -260,7 +283,7 @@ const ReportDesignManage = () => {
           rows: finalRows,
           columns: api.columns.map((c: string) => ({ column_name: c })),
         },
-        previewChartData,
+        chartImages,
         "preview",
         cleanFileName
       );
@@ -291,19 +314,22 @@ const ReportDesignManage = () => {
         ...c,
         rows: api.rows,
       }));
-      setDownloadChartData(chartsForDownload);
-      await new Promise((res) => setTimeout(res, 900));
-      let chartImages: string[] = [];
+      // setDownloadChartData(chartsForDownload);
+      // await new Promise((res) => setTimeout(res, 900));
+      // let chartImages: string[] = [];
 
-      if (chartContainerRef.current) {
-        const canvas = await html2canvas(chartContainerRef.current, {
-          scale: 2,
-          backgroundColor: "#ffffff",
-          useCORS: true,
-        });
+      // if (chartContainerRef.current) {
+      //   const canvas = await html2canvas(chartContainerRef.current, {
+      //     scale: 2,
+      //     backgroundColor: "#ffffff",
+      //     useCORS: true,
+      //   });
 
-        chartImages.push(canvas.toDataURL("image/png"));
-      }
+      //   chartImages.push(canvas.toDataURL("image/png"));
+      // }
+      const chartImages = (config.chart_images || []).map(
+        (img: any) => img.url
+      );
       const cleanFileName = report.report_name
         .replace(/\s*report$/i, "")
         .trim();
@@ -314,7 +340,7 @@ const ReportDesignManage = () => {
             column_name: c,
           })),
         },
-        chartsForDownload,
+        chartImages,
         "download",
         cleanFileName
       );
@@ -385,17 +411,15 @@ const ReportDesignManage = () => {
               className={`
                           w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] 
                           bg-[#D9D9D9] hover:bg-[#D9D9D9] transition-all
-                          ${
-                            isRefreshing
-                              ? "opacity-70 cursor-wait"
-                              : "cursor-pointer"
-                          }
+                          ${isRefreshing
+                  ? "opacity-70 cursor-wait"
+                  : "cursor-pointer"
+                }
                         `}
             >
               <AutorenewRoundedIcon
-                className={`w-5 h-5 text-gray-500 ${
-                  isRefreshing ? "animate-spin" : ""
-                }`}
+                className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""
+                  }`}
                 fontSize="small"
               />
             </button>
@@ -491,13 +515,13 @@ const ReportDesignManage = () => {
           <p className="text-gray-500 mt-2">Empty Report List</p>
         </div>
       )}
-      <div ref={chartContainerRef} style={{ background: "#fff" }}>
+      {/* <div ref={chartContainerRef} style={{ background: "#fff" }}>
         <RenderCharts
           charts={downloadChartData || previewChartData || []}
-          onRemoveChart={() => {}}
-          onReorderCharts={() => {}}
+          onRemoveChart={() => { }}
+          onReorderCharts={() => { }}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

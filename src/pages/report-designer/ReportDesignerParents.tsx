@@ -6,6 +6,8 @@ import ApiServices from "../../services/ApiServices";
 import { useLocation } from "react-router-dom";
 import { MdOutlineDescription } from "react-icons/md";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+import html2canvas from "html2canvas";
+
 export default function TableView() {
   const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -67,8 +69,8 @@ export default function TableView() {
         .sort((a, b) => a.order - b.order)
         .map((c) => ({
           ...c,
-          id: c.id ? c.id  : crypto.randomUUID(),
-         
+          id: c.id ? c.id : crypto.randomUUID(),
+
         }))
     );
 
@@ -161,7 +163,34 @@ export default function TableView() {
     } finally {
       setIsRefreshing(false);
     }
-  };  
+  };
+
+
+  const captureChartAsImage = async (elementId: string): Promise<string | null> => {
+    const element = document.getElementById(elementId);
+    if (!element) return null;
+
+    const prevOverflow = element.style.overflow;
+    const prevHeight = element.style.height;
+
+    element.style.overflow = "visible";
+    element.style.height = "auto";
+
+    await new Promise(r => setTimeout(r, 100));
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      backgroundColor: "#ffffff",
+      useCORS: true,
+      scrollX: 0,
+      scrollY: -window.scrollY,
+    });
+
+    element.style.overflow = prevOverflow;
+    element.style.height = prevHeight;
+
+    return canvas.toDataURL("image/png");
+  };
   const handleSaveReport = async () => {
     try {
       if (!selectedTables.length) return;
@@ -195,13 +224,37 @@ export default function TableView() {
         }))
       };
 
+      const chartImages = [];
+
+      for (let i = 0; i < charts.length; i++) {
+        const chart = charts[i];
+
+        // RenderCharts এ দেওয়া id
+        const elementId = `report-chart-${chart.id}`;
+
+        const imageBase64 = await captureChartAsImage(elementId);
+        if (!imageBase64) continue;
+
+        chartImages.push({
+          chart_id: chart.id,
+          type: chart.type,
+          order: i + 1,
+          image_base64: imageBase64
+        });
+      }
+
+
+
+
+
       const payload = {
         session_id: user.session_id,
         created_by: user.user_id,
         report_id: editReport?.report_id ?? `report_${Date.now()}`,
         report_name: reportName,
         query_history_id: selectedQuery.id,
-        report_config: reportConfig
+        report_config: reportConfig,
+        chart_images: chartImages
       };
       await ApiServices.report_save(payload);
     } catch (err) {

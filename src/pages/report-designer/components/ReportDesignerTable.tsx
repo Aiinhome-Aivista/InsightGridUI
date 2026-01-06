@@ -7,6 +7,7 @@ import ProductDataTable from "../../query-designer/components/DataTable";
 import { MultiSelect } from "primereact/multiselect";
 import ChartSidebar from "./ChartSidebar";
 import RenderCharts from "./render-charts";
+import ReportDesignerChatSidebar from "./Report-chat-sidebar";
 
 
 interface DataViewTableProps {
@@ -173,10 +174,7 @@ export default function DataViewTable({
   // const [charts, setCharts] = useState<ChartConfig[]>([]);
   const primaryTableKey = selectedTables[0];
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-  // const [aggregations, setAggregations] = useState<
-  //   { column: string; agg: string }[]
-  // >([]);
-  // const [selectedChartColumns, setSelectedChartColumns] = useState<string[]>([]);
+  const [showChatSidebar, setShowChatSidebar] = useState(false);
 
 
   useEffect(() => {
@@ -589,13 +587,13 @@ export default function DataViewTable({
                   )}
                   {/* ===== FILTER INPUTS ===== */}
                   {selectedFilters.length > 0 && (
- <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-3 flex-wrap">
 
-  {selectedFilters.map((f) => {
-    const key = `${f.column}|${f.operator}`;
-    const type = getColumnType(table, f.column);
+                      {selectedFilters.map((f) => {
+                        const key = `${f.column}|${f.operator}`;
+                        const type = getColumnType(table, f.column);
 
-    const inputBaseClass = `
+                        const inputBaseClass = `
       h-9
       border border-gray-300
       rounded-md
@@ -611,10 +609,10 @@ export default function DataViewTable({
       hover:border-gray-400
     `;
 
-    return (
-      <div
-        key={key}
-        className="
+                        return (
+                          <div
+                            key={key}
+                            className="
           flex items-center gap-2
           bg-gray-50
           border border-gray-200
@@ -624,64 +622,64 @@ export default function DataViewTable({
           hover:shadow-md
           transition
         "
-      >
-        {/* Label */}
-        <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
-          {f.column.replace(/_/g, " ").toUpperCase()}
-          <span className="mx-1 text-gray-400">{f.operator}</span>
-        </span>
+                          >
+                            {/* Label */}
+                            <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
+                              {f.column.replace(/_/g, " ").toUpperCase()}
+                              <span className="mx-1 text-gray-400">{f.operator}</span>
+                            </span>
 
-        {/* TEXT */}
-        {type === "text" && (
-          <input
-            type="text"
-            placeholder="Enter value"
-            className={`${inputBaseClass} w-40`}
-            value={filterValues[key] || ""}
-            onChange={(e) =>
-              setFilterValues({
-                ...filterValues,
-                [key]: e.target.value,
-              })
-            }
-          />
-        )}
+                            {/* TEXT */}
+                            {type === "text" && (
+                              <input
+                                type="text"
+                                placeholder="Enter value"
+                                className={`${inputBaseClass} w-40`}
+                                value={filterValues[key] || ""}
+                                onChange={(e) =>
+                                  setFilterValues({
+                                    ...filterValues,
+                                    [key]: e.target.value,
+                                  })
+                                }
+                              />
+                            )}
 
-        {/* NUMBER */}
-        {type === "number" && f.operator !== "between" && (
-          <input
-            type="number"
-            className={`${inputBaseClass} w-28`}
-            value={filterValues[key] ?? ""}
-            onChange={(e) =>
-              setFilterValues({
-                ...filterValues,
-                [key]: Number(e.target.value),
-              })
-            }
-          />
-        )}
+                            {/* NUMBER */}
+                            {type === "number" && f.operator !== "between" && (
+                              <input
+                                type="number"
+                                className={`${inputBaseClass} w-28`}
+                                value={filterValues[key] ?? ""}
+                                onChange={(e) =>
+                                  setFilterValues({
+                                    ...filterValues,
+                                    [key]: Number(e.target.value),
+                                  })
+                                }
+                              />
+                            )}
 
-        {/* DATE */}
-        {type === "date" && f.operator !== "between" && (
-          <input
-            type="date"
-            className={`${inputBaseClass} w-[150px]`}
-            value={filterValues[key] || ""}
-            onChange={(e) =>
-              setFilterValues({
-                ...filterValues,
-                [key]: e.target.value,
-              })
-            }
-          />
-        )}
-      </div>
-    );
-  })}
-</div>
+                            {/* DATE */}
+                            {type === "date" && f.operator !== "between" && (
+                              <input
+                                type="date"
+                                className={`${inputBaseClass} w-[150px]`}
+                                value={filterValues[key] || ""}
+                                onChange={(e) =>
+                                  setFilterValues({
+                                    ...filterValues,
+                                    [key]: e.target.value,
+                                  })
+                                }
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
 
-)}
+                  )}
 
 
 
@@ -711,14 +709,24 @@ export default function DataViewTable({
                     >
                       <BarChartRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
-
+                    {/* Chat */}
+                    <button
+                      onClick={() => {
+                        setShowChatSidebar(true);
+                        setShowChartSidebar(false);
+                      }}
+                      className={`px-2 py-2 ${showChatSidebar ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
+                    >
+                      💬
+                    </button>
                   </div>
                 </div>
               </div>
               {/* 🔥 CHARTS ABOVE TABLE WHEN SIDEBAR OPEN */}
               {showChartSidebar && charts.length > 0 && (
                 <div className="mb-6">
-                  <RenderCharts 
+                  <RenderCharts
                     charts={chartsWithRows}
 
                     onRemoveChart={removeChart}
@@ -803,12 +811,17 @@ export default function DataViewTable({
                   />
                 </div>
               )}
-
+              {showChatSidebar && (
+                <ReportDesignerChatSidebar
+                  onClose={() => setShowChatSidebar(false)}
+                />
+              )}
 
             </div>
           </div>
         );
       })}
+
     </div>
   );
 }
