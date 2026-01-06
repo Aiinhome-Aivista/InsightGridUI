@@ -218,8 +218,8 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
     doc.setFontSize(11);
     // doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
 
-    const chartTitle = previewChartData?.[index]?.customTitle;
-    doc.text(chartTitle, xPos, yPos - 8);
+    // const chartTitle = previewChartData?.[index]?.customTitle;
+    // doc.text(chartTitle, xPos, yPos - 8);
 
     doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
     // Move position
