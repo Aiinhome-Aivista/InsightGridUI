@@ -31,7 +31,9 @@ export default function TableView() {
   const [aggregations, setAggregations] = useState<
     { column: string; agg: string }[]
   >([]);
-  const [selectedChartColumns, setSelectedChartColumns] = useState<string[]>([]);
+  const [selectedChartColumns, setSelectedChartColumns] = useState<string[]>(
+    []
+  );
   const [charts, setCharts] = useState<any[]>([]);
 
   useEffect(() => {
@@ -70,12 +72,9 @@ export default function TableView() {
         .map((c) => ({
           ...c,
           id: c.id ? c.id : crypto.randomUUID(),
-
         }))
     );
-
   }, [report]);
-
 
   useEffect(() => {
     getSavedQueryResponse();
@@ -96,14 +95,16 @@ export default function TableView() {
         if (!q.messages || q.messages.length === 0) return [];
         const lastMessage = q.messages[q.messages.length - 1];
         if (!lastMessage.ai_response) return [];
-        return [{
-          label: q.query_title,
-          value: {
-            id: lastMessage.id,
-            ai_response: lastMessage.ai_response,
-            query_title: q.query_title,
-          }
-        }];
+        return [
+          {
+            label: q.query_title,
+            value: {
+              id: lastMessage.id,
+              ai_response: lastMessage.ai_response,
+              query_title: q.query_title,
+            },
+          },
+        ];
       });
 
       setTableOptions(dropdown || []);
@@ -111,7 +112,6 @@ export default function TableView() {
       setAllData({});
       setTableOptions(dropdown);
       setQueriesFetched(true);
-
     } catch (err) {
       console.error("API error:", err);
       setQueriesFetched(false);
@@ -142,7 +142,7 @@ export default function TableView() {
     try {
       const payload = {
         session_id: userData?.session_id,
-        sql_query: sqlQuery
+        sql_query: sqlQuery,
       };
       const response = await ApiServices.executeSql(payload);
       const api = response.data.data;
@@ -153,7 +153,7 @@ export default function TableView() {
           rows: api.rows,
           columns: api.columns.map((col) => ({ column_name: col })),
           procedure_sql: sqlQuery,
-          visualization: api.visualization
+          visualization: api.visualization,
         },
       };
 
@@ -201,10 +201,10 @@ export default function TableView() {
       const reportConfig = {
         group_by: selectedGroupBy,
 
-        filters: selectedFilters.map(f => ({
+        filters: selectedFilters.map((f) => ({
           column: f.column,
           operator: f.operator,
-          value: filterValues[`${f.column}|${f.operator}`]
+          value: filterValues[`${f.column}|${f.operator}`],
         })),
 
         aggregations,
@@ -220,8 +220,8 @@ export default function TableView() {
           label: c.label,
           agg: c.agg,
           id: c.id,
-          order: index + 1
-        }))
+          order: index + 1,
+        })),
       };
 
       const chartImages = [];
@@ -276,32 +276,29 @@ export default function TableView() {
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
-        onRunScript={() => { }}
+        onRunScript={() => {}}
         reportName={reportName}
         setReportName={setReportName}
         onSaveReport={handleSaveReport}
         editReport={editReport}
         setIsRefreshing={setIsRefreshing}
       />
-      {selectedTables.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[69vh] text-gray-400">
-          <div className="mb-3 text-4xl">🗑️</div>
-          <p className="text-sm font-medium">
-            Please select a view to create report
-          </p>
-        </div>
-      ) : selectedTables.length === 0 ? (
-        <div className="flex flex-col items-center justify-center w-full h-96">
-          <MdOutlineDescription size={50} className="text-gray-400" />
-          <p className="text-gray-500 text-lg mt-3">Please select a script to create report</p>
-        </div>
-      ) : isRefreshing ? (
+      {loading || isRefreshing ? (
         <div className="flex flex-col items-center justify-center w-full h-96">
           <AutorenewRoundedIcon
-            className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""}`}
+            className="w-5 h-5 text-gray-500 animate-spin"
             fontSize="small"
           />
           <p className="text-gray-500 text-lg mt-4">Loading Data...</p>
+        </div>
+      ) : selectedTables.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-[69vh] text-gray-400">
+          <div className="mb-3 text-4xl">
+            <span className="material-symbols-outlined text-[30px]">glass_cup</span>
+          </div>
+          <p className="text-sm font-medium">
+            Please select a view to create report
+          </p>
         </div>
       ) : (
         <DataViewTable
@@ -342,7 +339,6 @@ export default function TableView() {
           </div>
         </div>
       )} */}
-
     </div>
   );
 }

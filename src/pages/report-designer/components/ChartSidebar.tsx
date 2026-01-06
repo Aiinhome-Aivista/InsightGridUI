@@ -297,7 +297,7 @@ export default function ChartSidebar({
           pt={{
             root: {
               className:
-                "w-full bg-gray-50 border border-gray-200 rounded-2xl min-h-[56px] flex items-center hover:border-gray-300 focus-within:border-indigo-500",
+                "w-full bg-gray-50 border border-gray-200 rounded-2xl min-h-[46px] flex items-center hover:border-gray-300 focus-within:border-indigo-500",
             },
 
             label: {
@@ -309,19 +309,21 @@ export default function ChartSidebar({
             },
             panel: {
               className:
-                "rounded-2xl border border-gray-200 shadow-lg mt-2 bg-gray-50 overflow-hidden",
+                "rounded-2xl border border-gray-200 shadow-lg mt-2 bg-white",
             },
+
             filterContainer: {
               className:
-                "px-3 pt-3 pb-2 bg-gray-50 border-b border-gray-200 relative",
+                "sticky top-0 z-10 px-3 pt-3 pb-2 border-b border-gray-200 bg-white",
             },
+
             filterInput: {
               className:
-                "w-full pl-9 pr-3 py-2 rounded-lg bg-white border border-gray-300 text-sm " +
+                "w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 text-sm " +
                 "focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500",
             },
             list: {
-              className: "pt-5 pb-3 bg-gray-50",
+              className: "pt-10 pb-3 bg-gray-50 pl-2",
             },
 
             item: {
