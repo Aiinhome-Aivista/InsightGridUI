@@ -495,7 +495,16 @@ const ReportDesignManage = () => {
           <p className="text-gray-500 mt-2">Empty Report List</p>
         </div>
       )}
-      <div ref={chartContainerRef} style={{ background: "#fff" }}>
+      <div
+        ref={chartContainerRef}
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: "-9999px",
+          width: "1200px",
+          background: "#fff",
+        }}
+      >
         <RenderCharts
           charts={downloadChartData || previewChartData || []}
           onRemoveChart={() => {}}
