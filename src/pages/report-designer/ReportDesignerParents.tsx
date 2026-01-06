@@ -33,6 +33,7 @@ export default function TableView() {
     []
   );
   const [charts, setCharts] = useState<any[]>([]);
+  const [columnRenames, setColumnRenames] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (report) {
@@ -72,6 +73,7 @@ export default function TableView() {
           id: c.id ? c.id : crypto.randomUUID(),
         }))
     );
+    setColumnRenames(config.column_renames || {});
   }, [report]);
 
   useEffect(() => {
@@ -193,6 +195,8 @@ export default function TableView() {
           id: c.id,
           order: index + 1,
         })),
+
+        column_renames: columnRenames,
       };
 
       const payload = {
@@ -264,6 +268,8 @@ export default function TableView() {
           setSelectedChartColumns={setSelectedChartColumns}
           charts={charts}
           setCharts={setCharts}
+          columnRenames={columnRenames}
+          setColumnRenames={setColumnRenames}
         />
       )}
       {/* ===== Aggregation Cards ===== */}

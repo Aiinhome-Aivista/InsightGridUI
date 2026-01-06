@@ -33,6 +33,9 @@ interface DataViewTableProps {
 
   charts: ChartConfig[];
   setCharts: React.Dispatch<React.SetStateAction<ChartConfig[]>>;
+
+  columnRenames: Record<string, string>;
+  setColumnRenames: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }
 export interface ChartConfig {
   id: string;
@@ -174,6 +177,8 @@ export default function DataViewTable({
 
   charts,
   setCharts,
+  columnRenames,
+  setColumnRenames,
 
 }: DataViewTableProps) {
   const { theme } = useTheme();
@@ -446,7 +451,7 @@ export default function DataViewTable({
         const columns =
           table.columns?.map((col: { column_name: string }) => ({
             column_name: col.column_name,
-            header: col.column_name.replace(/_/g, " ").toUpperCase(),
+            header: columnRenames[col.column_name] || col.column_name.replace(/_/g, " ").toUpperCase(),
             sortable: false,
           })) || [];
         const groupByColumns = table.visualization?.group_by || [];
@@ -770,6 +775,12 @@ export default function DataViewTable({
                   enableRowGrouping={selectedGroupBy.length > 0}
                   collapsedGroups={collapsedGroups}        // ✅ NEW
                   onToggleGroup={toggleGroup}
+                  onColumnRename={(original, newName) => {
+                    setColumnRenames(prev => ({
+                      ...prev,
+                      [original]: newName
+                    }));
+                  }}
                 />
               )}
               {/* } */}

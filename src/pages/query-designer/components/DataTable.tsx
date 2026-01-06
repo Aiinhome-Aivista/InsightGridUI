@@ -30,6 +30,7 @@ interface ProductDataTableProps {
   >;
   aggregationOrder?: string[];
   isGrouped?: boolean;
+  onColumnRename?: (originalName: string, newName: string) => void;
 
 }
 export default function ProductDataTable({
@@ -44,7 +45,8 @@ export default function ProductDataTable({
   onToggleGroup,
   aggregationMap,
   aggregationOrder,
-  isGrouped = false
+  isGrouped = false,
+  onColumnRename
 }: ProductDataTableProps) {
   const uniqueColumns = columns.filter((col, index, self) =>
     index === self.findIndex((t) => t.column_name === col.column_name)
@@ -163,6 +165,7 @@ export default function ProductDataTable({
                   onAggregationSelect={onAggregationSelect}
                   openAggColumn={openAggColumn}
                   setOpenAggColumn={setOpenAggColumn}
+                  onRename={onColumnRename}
                 />
 
               }

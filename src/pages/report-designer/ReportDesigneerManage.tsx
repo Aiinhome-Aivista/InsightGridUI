@@ -258,7 +258,10 @@ const ReportDesignManage = () => {
       generatePDF(
         {
           rows: finalRows,
-          columns: api.columns.map((c: string) => ({ column_name: c })),
+          columns: api.columns.map((c: string) => ({ 
+            column_name: c,
+            header: config.column_renames?.[c] || undefined 
+          })),
         },
         previewChartData,
         "preview",
@@ -312,6 +315,7 @@ const ReportDesignManage = () => {
           rows: finalRows,
           columns: api.columns.map((c: string) => ({
             column_name: c,
+            header: config.column_renames?.[c] || undefined
           })),
         },
         chartsForDownload,
@@ -417,7 +421,7 @@ const ReportDesignManage = () => {
                 <th className="px-5 py-3 text-left">Update Date</th>
                 <th className="px-5 py-3 text-left">Update Time</th>
                 <th className="px-5 py-3 text-left">Rows</th>
-                <th className="px-5 py-3 text-right">Action</th>
+                <th className="px-24 py-3 text-right">Action</th>
               </tr>
             </thead>
 
