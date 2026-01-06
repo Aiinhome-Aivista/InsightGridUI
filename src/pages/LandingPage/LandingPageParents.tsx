@@ -49,7 +49,7 @@ export default function LandingPageParents() {
           Customize Every View. Empower Every Decision.
         </p>
         <button
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/login/user")}
           className="mt-10 bg-white/40 hover:bg-white/60 text-white 
           px-6 py-2 rounded-md font-medium backdrop-blur-sm transition flex items-center gap-2"
         >

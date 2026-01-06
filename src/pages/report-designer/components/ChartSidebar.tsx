@@ -199,55 +199,96 @@ export default function ChartSidebar({
     }
   };
 
+  // const autoAssignColumns = (chartType: string) => {
+  //   const cols = orderedSelected;
+
+  //   switch (chartType) {
+  //     case "bar":
+  //     case "pie":
+  //       return {
+  //         xAxis: cols[0].name,
+  //         yAxis: cols[0].name,
+  //         agg: "count",
+  //       };
+  //     case "kpi":
+  //       return {
+  //         value: cols[0].name,
+  //         agg: "count",
+  //       };
+
+  //     case "box":
+  //       return {
+  //         xAxis: cols[0].name,
+  //         agg: "count",
+  //       };
+  //     case "mixed":
+  //       return {
+  //         xAxis: cols[0].name,
+  //         yAxis: cols.slice(1).map((c) => c.name),
+  //       };
+  //     case "bubble":
+  //       return {
+  //         xAxis: cols[0].name,
+  //         yAxis: cols[1].name,
+  //         size: cols[2]?.name,
+  //         label: cols[3]?.name,
+  //       };
+  //     case "waterfall":
+  //       return {
+  //         xAxis: cols[0].name,
+  //         agg: "count",
+  //       };
+  //     case "line":
+  //       return {
+  //         xAxis: cols[0].name,
+  //         yAxis: cols[1].name,
+  //         agg: "sum",
+  //       };
+  //     default:
+  //       return null;
+  //   }
+  // };
   const autoAssignColumns = (chartType: string) => {
     const cols = orderedSelected;
 
     switch (chartType) {
+
       case "bar":
       case "pie":
+        // ✅ 2 columns selected → X + Y
+        if (cols.length >= 2) {
+          return {
+            xAxis: cols[0].name,
+            yAxis: cols[1].name,
+            agg: "sum",
+          };
+        }
+
+        // ✅ 1 column → COUNT
         return {
           xAxis: cols[0].name,
           yAxis: cols[0].name,
           agg: "count",
         };
-      case "kpi":
-        return {
-          value: cols[0].name,
-          agg: "count",
-        };
 
-      case "box":
-        return {
-          xAxis: cols[0].name,
-          agg: "count",
-        };
-      case "mixed":
-        return {
-          xAxis: cols[0].name,
-          yAxis: cols.slice(1).map((c) => c.name),
-        };
-      case "bubble":
-        return {
-          xAxis: cols[0].name,
-          yAxis: cols[1].name,
-          size: cols[2]?.name,
-          label: cols[3]?.name,
-        };
-      case "waterfall":
-        return {
-          xAxis: cols[0].name,
-          agg: "count",
-        };
       case "line":
         return {
           xAxis: cols[0].name,
           yAxis: cols[1].name,
           agg: "sum",
         };
+
+      case "kpi":
+        return {
+          value: cols[0].name,
+          agg: "count",
+        };
+
       default:
         return null;
     }
   };
+
   const handleChartClick = (chartType: string) => {
     if (chartType !== "kpi" && selectedColumns.length === 0) return;
     const mapping = autoAssignColumns(chartType);
@@ -348,11 +389,10 @@ export default function ChartSidebar({
                 disabled={disabled}
                 onClick={() => handleChartClick(chart.id)}
                 className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg border transition text-left
-          ${
-            disabled
-              ? "opacity-40 cursor-not-allowed bg-gray-50"
-              : "bg-white hover:bg-blue-50 hover:border-blue-500"
-          }`}
+          ${disabled
+                    ? "opacity-40 cursor-not-allowed bg-gray-50"
+                    : "bg-white hover:bg-blue-50 hover:border-blue-500"
+                  }`}
               >
                 <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-md">
                   {chart.icon}

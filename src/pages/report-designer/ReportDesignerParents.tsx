@@ -35,7 +35,7 @@ export default function TableView() {
     []
   );
   const [charts, setCharts] = useState<any[]>([]);
-
+  const [columnRenames, setColumnRenames] = useState<Record<string, string>>({});
   useEffect(() => {
     if (report) {
       console.log(" Edit report received:", report);
@@ -74,6 +74,8 @@ export default function TableView() {
           id: c.id ? c.id : crypto.randomUUID(),
         }))
     );
+    setColumnRenames(config.column_renames || {});
+
   }, [report]);
 
   useEffect(() => {
@@ -169,6 +171,11 @@ export default function TableView() {
   const captureChartAsImage = async (elementId: string): Promise<string | null> => {
     const element = document.getElementById(elementId);
     if (!element) return null;
+    // HIDE DELETE ICONS BEFORE CAPTURE
+    const deleteButtons = element.querySelectorAll(".chart-delete-btn");
+    deleteButtons.forEach(btn => {
+      (btn as HTMLElement).style.visibility = "hidden";
+    });
 
     const prevOverflow = element.style.overflow;
     const prevHeight = element.style.height;
@@ -186,6 +193,10 @@ export default function TableView() {
       scrollY: -window.scrollY,
     });
 
+    //  RESTORE DELETE ICONS
+    deleteButtons.forEach(btn => {
+      (btn as HTMLElement).style.visibility = "visible";
+    });
     element.style.overflow = prevOverflow;
     element.style.height = prevHeight;
 
@@ -222,6 +233,7 @@ export default function TableView() {
           id: c.id,
           order: index + 1,
         })),
+        column_renames: columnRenames,
       };
 
       const chartImages = [];
@@ -241,7 +253,10 @@ export default function TableView() {
           order: i + 1,
           image_base64: imageBase64
         });
+
       }
+
+
 
 
 
@@ -276,7 +291,7 @@ export default function TableView() {
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
-        onRunScript={() => {}}
+        onRunScript={() => { }}
         reportName={reportName}
         setReportName={setReportName}
         onSaveReport={handleSaveReport}
@@ -317,6 +332,8 @@ export default function TableView() {
           setSelectedChartColumns={setSelectedChartColumns}
           charts={charts}
           setCharts={setCharts}
+          columnRenames={columnRenames}
+          setColumnRenames={setColumnRenames}
         />
       )}
       {/* ===== Aggregation Cards ===== */}

@@ -281,7 +281,10 @@ const ReportDesignManage = () => {
       generatePDF(
         {
           rows: finalRows,
-          columns: api.columns.map((c: string) => ({ column_name: c })),
+          columns: api.columns.map((c: string) => ({ 
+            column_name: c,
+            header: config.column_renames?.[c] || undefined 
+          })),
         },
         chartImages,
         "preview",
@@ -310,23 +313,7 @@ const ReportDesignManage = () => {
         config.group_by?.[0],
         config.aggregations
       );
-      const chartsForDownload = (config.charts || []).map((c: any) => ({
-        ...c,
-        rows: api.rows,
-      }));
-      // setDownloadChartData(chartsForDownload);
-      // await new Promise((res) => setTimeout(res, 900));
-      // let chartImages: string[] = [];
-
-      // if (chartContainerRef.current) {
-      //   const canvas = await html2canvas(chartContainerRef.current, {
-      //     scale: 2,
-      //     backgroundColor: "#ffffff",
-      //     useCORS: true,
-      //   });
-
-      //   chartImages.push(canvas.toDataURL("image/png"));
-      // }
+     
       const chartImages = (config.chart_images || []).map(
         (img: any) => img.url
       );
@@ -338,6 +325,7 @@ const ReportDesignManage = () => {
           rows: finalRows,
           columns: api.columns.map((c: string) => ({
             column_name: c,
+            header: config.column_renames?.[c] || undefined
           })),
         },
         chartImages,
@@ -441,7 +429,7 @@ const ReportDesignManage = () => {
                 <th className="px-5 py-3 text-left">Update Date</th>
                 <th className="px-5 py-3 text-left">Update Time</th>
                 <th className="px-5 py-3 text-left">Rows</th>
-                <th className="px-5 py-3 text-right">Action</th>
+                <th className="px-24 py-3 text-right">Action</th>
               </tr>
             </thead>
 

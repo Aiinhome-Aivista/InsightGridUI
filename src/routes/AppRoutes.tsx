@@ -21,7 +21,11 @@ function AppRoutes() {
     <AuthProvider>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<Login />} />
+        {/* <Route path="/login" element={<Login />} /> */}
+        <Route path="/login" element={<Navigate to="/login/user" replace />} />
+        <Route path="/login/super-admin" element={<Login />} />
+        <Route path="/login/company-admin" element={<Login />} />
+        <Route path="/login/user" element={<Login />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/layout" element={<AppLayout />}>
             <Route index element={<Navigate to="upload" replace />} />

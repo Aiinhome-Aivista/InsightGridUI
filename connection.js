@@ -24,4 +24,5 @@ export const POST_APIS = {
   upload_progress: `${BASE_URL}get_upload_progress`,
   super_admin_login: `${BASE_URL}superadmin/login`,
   admin_company_delete: `${BASE_URL}admin/company_delete`,
+  modify_chart: `${BASE_URL}modify_chart`,
 };

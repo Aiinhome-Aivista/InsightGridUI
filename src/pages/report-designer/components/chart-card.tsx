@@ -25,7 +25,7 @@ export default function ChartCard({ title, description, children, onRemove }: Ch
           {onRemove && (
             <button
               onClick={onRemove}
-              className="p-1.5 rounded-md hover:bg-red-50 transition"
+              className="p-1.5 rounded-md hover:bg-red-50 transition chart-delete-btn"
               title="Remove chart"
             >
               <DeleteOutlineIcon

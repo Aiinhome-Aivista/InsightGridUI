@@ -22,7 +22,25 @@ export default function PieChartGraph({ config }: { config: any }) {
     value
   }));
 
-  const COLORS = ["#4F46E5", "#6366F1", "#818CF8", "#A5B4FC"];
+  // const COLORS = ["#4F46E5", "#6366F1", "#818CF8", "#A5B4FC"];
+  const defaultColors = ["#4F46E5", "#6366F1", "#818CF8", "#A5B4FC"];
+
+  const getColor = (name: string, index: number) => {
+    const colors = config.style?.colors || config.style?.pieColor;
+
+    // 🎯 CASE 1: axis-wise mapping
+    if (colors?.mapping && typeof colors.mapping === "object") {
+      return colors.mapping[name] || defaultColors[index % defaultColors.length];
+    }
+
+    // 🎯 CASE 2: array of colors
+    if (Array.isArray(colors) && colors.length > 0) {
+      return colors[index % colors.length];
+    }
+
+    // 🎯 fallback
+    return defaultColors[index % defaultColors.length];
+  };
 
   return (
     <div className="w-full h-[240px]">
@@ -35,9 +53,13 @@ export default function PieChartGraph({ config }: { config: any }) {
             outerRadius="80%"
             label
           >
-            {data.map((_, i) => (
-              <Cell key={i} fill={COLORS[i % COLORS.length]} />
+            {data.map((entry, i) => (
+              <Cell
+                key={i}
+                fill={getColor(entry.name, i)}
+              />
             ))}
+
           </Pie>
           <Tooltip />
         </PieChart>

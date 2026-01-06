@@ -8,6 +8,8 @@ import { MultiSelect } from "primereact/multiselect";
 import ChartSidebar from "./ChartSidebar";
 import RenderCharts from "./render-charts";
 import ReportDesignerChatSidebar from "./Report-chat-sidebar";
+import { MdChat } from "react-icons/md";
+import ApiServices from "../../../services/ApiServices";
 
 
 interface DataViewTableProps {
@@ -34,8 +36,11 @@ interface DataViewTableProps {
 
   charts: ChartConfig[];
   setCharts: React.Dispatch<React.SetStateAction<ChartConfig[]>>;
+  columnRenames: Record<string, string>;
+  setColumnRenames: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }
 export interface ChartConfig {
+  order: any;
   id: string;
   type: "line" | "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
   xAxis?: string;
@@ -45,6 +50,7 @@ export interface ChartConfig {
   label?: string;
   agg?: "count" | "sum";
   rows: any[];
+  style?: Record<string, any>;
 }
 
 const calculateAggregation = (
@@ -90,21 +96,6 @@ const calculateAggregation = (
 
   return map;
 };
-// const groupByRef = useRef<any>(null);
-// const filterRef = useRef<any>(null);
-
-// useEffect(() => {
-//   const handleScroll = () => {
-//     groupByRef.current?.hide();
-//     filterRef.current?.hide();
-//   };
-
-//   window.addEventListener("scroll", handleScroll, true);
-//   return () => {
-//     window.removeEventListener("scroll", handleScroll, true);
-//   };
-// }, []);
-
 const groupRows = (
   rows: any[],
   groupCols: string[],
@@ -175,21 +166,15 @@ export default function DataViewTable({
 
   charts,
   setCharts,
-
+  columnRenames,
+  setColumnRenames
 }: DataViewTableProps) {
   const { theme } = useTheme();
   const [viewType, setViewType] = useState<"table" | "chart">("table");
-  // const [selectedGroupBy, setSelectedGroupBy] = useState<string[]>([]);
-  // const [selectedFilters, setSelectedFilters] = useState<
-  //   { column: string; operator: string }[]
-  // >([]);
-  // const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [showChartSidebar, setShowChartSidebar] = useState(false);
-  // const [charts, setCharts] = useState<ChartConfig[]>([]);
   const primaryTableKey = selectedTables[0];
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [showChatSidebar, setShowChatSidebar] = useState(false);
-
 
   useEffect(() => {
     if (!selectedGroupBy.length) return;
@@ -210,12 +195,7 @@ export default function DataViewTable({
 
     setCollapsedGroups(collapsed);
   }, [selectedGroupBy, allData]);
-  // useEffect(() => {
-  //   if (charts.length > 0) {
-  //     setViewType("table");        // table view
-  //     setShowChartSidebar(false); // charts below table
-  //   }
-  // }, [charts]);
+
 
 
 
@@ -433,6 +413,115 @@ export default function DataViewTable({
       normalize(a.label) === normalize(b.label)
     );
   };
+  const buildAvailableColumns = () => {
+    const tableKey = selectedTables[0];
+    const table = allData[tableKey];
+
+    if (!table) return [];
+
+    return table.columns.map((col: any) => ({
+      name: col.column_name,
+      type: table.visualization?.column_types?.[col.column_name] || "text"
+    }));
+  };
+
+
+  const normalizeStyle = (chart: ChartConfig) => {
+    if (!chart.style) return chart;
+
+    if (chart.type === "bar" && chart.style.color) {
+      return {
+        ...chart,
+        style: { ...chart.style, barColor: chart.style.color }
+      };
+    }
+
+    if (chart.type === "line" && chart.style.color) {
+      return {
+        ...chart,
+        style: { ...chart.style, lineColor: chart.style.color }
+      };
+    }
+
+    if (chart.type === "pie") {
+      return {
+        ...chart,
+        style: {
+          ...chart.style,
+          colors:
+            chart.style.colors ||
+              chart.style.pieColor ||   // 🔥 ADD THIS
+              chart.style.color
+              ? [chart.style.color]
+              : undefined
+        }
+      };
+    }
+
+
+    return chart;
+  };
+  // 📦 build payload & call backend
+  const getXAxisValues = (chart: ChartConfig) => {
+    if (!chart.xAxis) return [];
+
+    const values = new Set<string>();
+
+    chartRows.forEach(row => {
+      const v = row[chart.xAxis!];
+      if (v !== undefined && v !== null) {
+        values.add(String(v));
+      }
+    });
+
+    return Array.from(values);
+  };
+
+  const handleChatSend = async (message: string) => {
+    try {
+      const payload = {
+        charts: charts.map(c => ({
+          id: c.id,
+          type: c.type,
+          xAxis: c.xAxis,
+          yAxis: c.yAxis,
+          agg: c.agg,
+          style: c.style || {},
+          xAxis_values: getXAxisValues(c)
+        })),
+        available_columns: buildAvailableColumns(),
+        user_message: message
+      };
+
+      const res = await ApiServices.modifyChart(payload);
+
+      const ai = res.data?.data;
+      const aiMessage = res.data?.message; // 🔥 THIS IS WHAT YOU WANT
+
+      if (!ai || ai.blocked) {
+        return ai?.assistant_message || "I couldn’t apply that change.";
+      }
+
+      // 🔥 APPLY CHART UPDATES
+      setCharts(prev =>
+        prev.map(chart => {
+          const update = ai.updates.find(u => u.chart_id === chart.id);
+          if (!update) return chart;
+
+          const updated = { ...chart, ...update.updated_fields };
+          return normalizeStyle(updated);
+        })
+      );
+
+      return aiMessage || "Done ✔️";
+
+    } catch (e) {
+      console.error(e);
+      return "Something went wrong while updating the chart.";
+    }
+  };
+
+
 
 
   return (
@@ -440,11 +529,11 @@ export default function DataViewTable({
       {selectedTables.map((tableKey) => {
         const table = allData[tableKey];
         if (!table) return null;
-
         const columns =
           table.columns?.map((col: { column_name: string }) => ({
             column_name: col.column_name,
-            header: col.column_name.replace(/_/g, " ").toUpperCase(),
+            // header: col.column_name.replace(/_/g, " ").toUpperCase(),
+            header: columnRenames[col.column_name] || col.column_name.replace(/_/g, " ").toUpperCase(),
             sortable: false,
           })) || [];
         const groupByColumns = table.visualization?.group_by || [];
@@ -491,7 +580,7 @@ export default function DataViewTable({
                 <div className="flex items-center gap-3 flex-wrap">
                   {groupByColumns.length > 0 && (
                     <MultiSelect
-                  appendTo="self"
+                      appendTo="self"
                       filter
                       showClear={false}
                       value={selectedGroupBy}
@@ -499,25 +588,7 @@ export default function DataViewTable({
                         label: col.replace(/_/g, " ").toUpperCase(),
                         value: col,
                       }))}
-                      // onChange={(e) => {
-                      //   setSelectedGroupBy(e.value);
 
-                      //   const groups = groupRows(
-                      //     filteredRows,
-                      //     e.value,
-                      //     aggregations,
-                      //     aggregationOrder
-                      //   );
-
-                      //   const collapsed = groups
-                      //     .filter(r => r.__isGroup)
-                      //     .reduce((acc: any, g: any) => {
-                      //       acc[g.__groupKey] = true;
-                      //       return acc;
-                      //     }, {});
-
-                      //   setCollapsedGroups(collapsed);
-                      // }}
                       onChange={(e) => {
                         const newGroups = e.value;
                         setSelectedGroupBy(newGroups);
@@ -580,7 +651,6 @@ export default function DataViewTable({
                         });
 
                         setSelectedFilters(parsed);
-                        console.log("FILTERS:", parsed);
 
                         // 🔥 future:
                         // open value input modal
@@ -732,7 +802,7 @@ export default function DataViewTable({
                       className={`px-2 py-2 ${showChatSidebar ? "bg-gray-100" : "hover:bg-gray-50"
                         }`}
                     >
-                      💬
+                      <MdChat />
                     </button>
                   </div>
                 </div>
@@ -778,6 +848,12 @@ export default function DataViewTable({
                   enableRowGrouping={selectedGroupBy.length > 0}
                   collapsedGroups={collapsedGroups}        // ✅ NEW
                   onToggleGroup={toggleGroup}
+                  onColumnRename={(original, newName) => {
+                    setColumnRenames(prev => ({
+                      ...prev,
+                      [original]: newName
+                    }));
+                  }}
                 />
               )}
               {/* } */}
@@ -828,6 +904,9 @@ export default function DataViewTable({
               {showChatSidebar && (
                 <ReportDesignerChatSidebar
                   onClose={() => setShowChatSidebar(false)}
+                  userName={JSON.parse(localStorage.getItem("ig_user"))?.full_name || "User"}
+                  charts={charts}
+                  onSend={handleChatSend}
                 />
               )}
 

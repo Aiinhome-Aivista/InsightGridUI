@@ -79,31 +79,6 @@ const cropImageBase64 = (base64: string): Promise<string> => {
   });
 };
 
-const captureChartAsImage = async (elementId: string): Promise<string | null> => {
-  const element = document.getElementById(elementId);
-  if (!element) return null;
-
-  const prevOverflow = element.style.overflow;
-  const prevHeight = element.style.height;
-
-  element.style.overflow = "visible";
-  element.style.height = "auto";
-
-  await new Promise(r => setTimeout(r, 100));
-
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    backgroundColor: "#ffffff",
-    useCORS: true,
-    scrollX: 0,
-    scrollY: -window.scrollY,
-  });
-
-  element.style.overflow = prevOverflow;
-  element.style.height = prevHeight;
-
-  return canvas.toDataURL("image/png");
-};
 
 
 
@@ -111,15 +86,14 @@ const captureChartAsImage = async (elementId: string): Promise<string | null> =>
 
 
 
-
-export const generatePDF = async (data, chartImageUrls, mode = "download", fileName = "report", 
+export const generatePDF = async (data, chartImageUrls, mode = "download", fileName = "report",
 ) => {
   if (!data || !data.rows || data.rows.length === 0) {
     console.warn("No data available for PDF");
     return;
   }
 
-  
+
 
 
 
@@ -144,7 +118,13 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
   const rows = data.rows;
   const columns = data.columns.map((c) => c.column_name);
 
-
+  const formatHeader = (headerText: string) => {
+    if (!headerText) return "";
+    return headerText.replace(/_/g, " ").toUpperCase();
+  };
+  const headers = data.columns.map(
+    (c) => c.header || formatHeader(c.column_name)
+  );
   // ===== HEADER =====
   const headerStartY = 40;
 
@@ -200,90 +180,90 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
   );
 
 
-// Divider
-const dividerY = addressY + addressHeight + 20;
-doc.line(40, dividerY, pageWidth - 40, dividerY);
+  // Divider
+  const dividerY = addressY + addressHeight + 20;
+  doc.line(40, dividerY, pageWidth - 40, dividerY);
 
 
-// const chartImages: string[] = [];
+  // const chartImages: string[] = [];
 
-// for (const chart of previewChartData || []) {
-//   console.log("Capturing chart:", chart);
-//   await wait(300);
-//   const img = await captureChartAsImage(`report-chart-${chart.id}`);
-//   if (img) chartImages.push(img);
-// }
-const chartImages: string[] = [];
+  // for (const chart of previewChartData || []) {
+  //   console.log("Capturing chart:", chart);
+  //   await wait(300);
+  //   const img = await captureChartAsImage(`report-chart-${chart.id}`);
+  //   if (img) chartImages.push(img);
+  // }
+  const chartImages: string[] = [];
 
-// 🔥 previewChartData is actually IMAGE URL array now
-for (const imgUrl of chartImageUrls || []) {
-  const base64 = await fetchImageAsBase64(imgUrl);
-  chartImages.push(base64);
-}
-
-// ===== WAIT FOR CHART =====
-
-// ===== CAPTURE CHART =====
-
-
-
- // ===== CHART IMAGES =====
-let yPos = dividerY + 30;
-
-const marginX = 40;
-const gapX = 20;
-const gapY = 30;
-
-const usableWidth = pageWidth - marginX * 2;
-const chartWidth = (usableWidth - gapX) / 2;
-const chartHeight = (chartWidth * 9) / 16;
-
-let xPos = marginX;
-
-chartImages.forEach((img, index) => {
-  const pageHeight = doc.internal.pageSize.getHeight();
-
-  // Page break
-  if (yPos + chartHeight > pageHeight - 40) {
-    doc.addPage();
-    yPos = 40;
-    xPos = marginX;
+  // 🔥 previewChartData is actually IMAGE URL array now
+  for (const imgUrl of chartImageUrls || []) {
+    const base64 = await fetchImageAsBase64(imgUrl);
+    chartImages.push(base64);
   }
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  // doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
+  // ===== WAIT FOR CHART =====
 
-  doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
+  // ===== CAPTURE CHART =====
 
-  // Move position
-  if (index % 2 === 0) {
-    // first chart in row → move right
-    xPos += chartWidth + gapX;
-  } else {
-    // second chart → new row
-    xPos = marginX;
+
+
+  // ===== CHART IMAGES =====
+  let yPos = dividerY + 30;
+
+  const marginX = 40;
+  const gapX = 20;
+  const gapY = 30;
+
+  const usableWidth = pageWidth - marginX * 2;
+  const chartWidth = (usableWidth - gapX) / 2;
+  const chartHeight = (chartWidth * 9) / 16;
+
+  let xPos = marginX;
+
+  chartImages.forEach((img, index) => {
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Page break
+    if (yPos + chartHeight > pageHeight - 40) {
+      doc.addPage();
+      yPos = 40;
+      xPos = marginX;
+    }
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    // doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
+
+    doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
+
+    // Move position
+    if (index % 2 === 0) {
+      // first chart in row → move right
+      xPos += chartWidth + gapX;
+    } else {
+      // second chart → new row
+      xPos = marginX;
+      yPos += chartHeight + gapY;
+    }
+  });
+
+  /**
+   * 🔥 IMPORTANT FIX
+   * If last row has only ONE chart, move Y down
+   */
+  if (chartImages.length % 2 !== 0) {
     yPos += chartHeight + gapY;
   }
-});
-
-/**
- * 🔥 IMPORTANT FIX
- * If last row has only ONE chart, move Y down
- */
-if (chartImages.length % 2 !== 0) {
-  yPos += chartHeight + gapY;
-}
 
 
 
 
-const tableStartY = yPos + 20;
+  const tableStartY = yPos + 20;
 
-  
+
   autoTable(doc, {
     startY: tableStartY,
-    head: [columns],
+    head: [headers],
     body: rows.map((r) => columns.map((col) => r[col] ?? "")),
 
     styles: {
@@ -320,15 +300,23 @@ const tableStartY = yPos + 20;
     }
   });
 
- 
+
 
   // PREVIEW vs DOWNLOAD
   if (mode === "preview") {
     const pdfUrl = doc.output("bloburl");
     window.open(pdfUrl); //  browser preview
   } else {
-    // doc.save("sales-report.pdf"); //  direct download
-    doc.save(`${fileName}.pdf`);
+    const today = new Date();
+
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); // month is 0-based
+    const yyyy = today.getFullYear();
+
+    const dateSuffix = `${dd}${mm}${yyyy}`;
+
+    //Final filename
+    doc.save(`${fileName}${dateSuffix}.pdf`);
 
   }
 
