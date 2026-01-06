@@ -10,7 +10,6 @@
 /* Sort Icon Styling */
 .p-datatable .p-sortable-column .p-sortable-column-icon {
   font-size: 0.7rem !important;
-  /* Decrease icon size */
   width: 0.7rem !important;
   height: 0.7rem !important;
   margin-left: 0.3rem !important;
@@ -31,6 +30,32 @@
   padding: 8px 16px !important;
   border: none !important;
   color: var(--theme-primary-text) !important;
+}
+
+/* Footer with aggregations */
+.p-datatable .p-datatable-tfoot>tr>td {
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* Aggregation container - removes default spacing */
+.aggregation-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Each aggregation row with full border */
+.aggregation-row-item {
+  padding: 8px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.aggregation-row-item:last-child {
+  border-bottom: none;
 }
 
 /* Hover */
@@ -80,13 +105,11 @@
 .custom-paginator .p-paginator-prev:hover,
 .custom-paginator .p-paginator-next:hover {
   background-color: #f3f4f6 !important;
-  /* A light gray for hover */
   color: var(--theme-primary-text) !important;
 }
 
 .custom-paginator .p-paginator-page.p-highlight {
   background-color: #7b96c7 !important;
-  /* Your primary purple color */
   color: white !important;
   font-weight: 600;
 }
