@@ -194,6 +194,7 @@ export default function TableView() {
           agg: c.agg,
           id: c.id,
           order: index + 1,
+          customTitle: c.customTitle,
         })),
 
         column_renames: columnRenames,

@@ -186,9 +186,11 @@ export const generatePDF = async (
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
+    
+    const chartTitle = previewChartData?.[index]?.customTitle || `Chart ${index + 1}`;
+    doc.text(chartTitle, xPos, yPos -8);
 
-    doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
+    doc.addImage(img, "PNG", xPos, yPos , chartWidth, chartHeight);
 
     // Move position
     if (index % 2 === 0) {

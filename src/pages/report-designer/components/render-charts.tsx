@@ -17,9 +17,9 @@ interface RenderChartsProps {
   charts: ChartConfig[];
   onRemoveChart: (id: string) => void;
   onReorderCharts: (charts: ChartConfig[]) => void;
-
+  onRenameChart?: (id: string, newName: string) => void;
 }
-export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }: RenderChartsProps) {
+export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, onRenameChart }: RenderChartsProps) {
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
     const items = Array.from(charts);
@@ -93,11 +93,12 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }:
                       }`}
                   >
                     <ChartCard
-                      title={`${chart.type.toUpperCase()} Chart`}
+                      title={chart.customTitle || `${chart.type.toUpperCase()} Chart`}
                       description={
                         chart.xAxis ? `Based on ${chart.xAxis}` : "Chart"
                       }
                       onRemove={() => onRemoveChart(chart.id)}
+                      onRename={(newName) => onRenameChart?.(chart.id, newName)}
                     >
                       {renderChart(chart)}
                     </ChartCard>
@@ -114,4 +115,3 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }:
     </DragDropContext>
   );
 }
-
