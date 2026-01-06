@@ -86,6 +86,13 @@ const captureChartAsImage = async (elementId: string): Promise<string | null> =>
   const prevOverflow = element.style.overflow;
   const prevHeight = element.style.height;
 
+  // Hide the delete button container during export
+  const actionsContainer = element.querySelector(".chart-actions-hide-on-export") as HTMLElement;
+  const prevActionsDisplay = actionsContainer?.style.display;
+  if (actionsContainer) {
+    actionsContainer.style.display = "none";
+  }
+
   element.style.overflow = "visible";
   element.style.height = "auto";
 
@@ -101,6 +108,11 @@ const captureChartAsImage = async (elementId: string): Promise<string | null> =>
 
   element.style.overflow = prevOverflow;
   element.style.height = prevHeight;
+
+  // Restore the delete button container
+  if (actionsContainer) {
+    actionsContainer.style.display = prevActionsDisplay || "";
+  }
 
   return canvas.toDataURL("image/png");
 };

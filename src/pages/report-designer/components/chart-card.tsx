@@ -13,15 +13,15 @@ interface ChartCardProps {
 export default function ChartCard({ title, description, children, onRemove }: ChartCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 w-full max-w-md  flex-shrink-0" style={{
-    height: "340px",     // 🔥 FIXED HEIGHT (IMPORTANT)
-    overflow: "visible"  // 🔥 NO CLIPPING
-  }}>
+      height: "340px",     // 🔥 FIXED HEIGHT (IMPORTANT)
+      overflow: "visible"  // 🔥 NO CLIPPING
+    }}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
           <p className="text-xs text-gray-500">{description}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 chart-actions-hide-on-export">
           {onRemove && (
             <button
               onClick={onRemove}
