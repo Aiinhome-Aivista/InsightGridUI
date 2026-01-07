@@ -4,7 +4,8 @@ import {
   BarChart,
   ResponsiveContainer,
   XAxis,
-  Tooltip
+  Tooltip,
+  Cell
 } from "recharts";
 
 export default function BarChartGraph({ config }: { config: any }) {
@@ -77,12 +78,19 @@ export default function BarChartGraph({ config }: { config: any }) {
           />
 
 
-          <Bar
-            dataKey="value"
-            fill="#D1D5DB"
-            radius={[8, 8, 0, 0]}
-            maxBarSize={32}
-          />
+          <Bar dataKey="value" radius={[8, 8, 0, 0]} maxBarSize={32}>
+            {chartData.map((entry, index) => (
+              <Cell
+                key={index}
+                fill={
+                  typeof config.style?.barColor === "string"
+                    ? config.style.barColor
+                    : config.style?.barColor?.mapping?.[entry.name] || "#D1D5DB"
+                }
+              />
+            ))}
+          </Bar>
+
         </BarChart>
       </ResponsiveContainer>
     </div>

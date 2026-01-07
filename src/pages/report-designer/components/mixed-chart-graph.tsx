@@ -11,30 +11,22 @@ import {
 
 export default function MixedChartGraph({ config }: { config: any }) {
   if (!config?.rows || !config?.xAxis || !config?.yAxis?.length) return null;
-
-  // 1️⃣ Group by xAxis
   const map: Record<string, any> = {};
-
   config.rows.forEach((r: any) => {
     const key = String(r[config.xAxis]);
-
     if (!map[key]) {
       map[key] = { name: key };
       config.yAxis.forEach((col: string) => {
         map[key][col] = 0;
       });
     }
-
-    // 2️⃣ Count rows (not Number conversion)
     config.yAxis.forEach((col: string) => {
       if (r[col] !== null && r[col] !== undefined) {
         map[key][col] += 1;
       }
     });
   });
-
   const data = Object.values(map);
-
   return (
     <div className="w-full h-[260px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -43,11 +35,7 @@ export default function MixedChartGraph({ config }: { config: any }) {
           <YAxis />
           <Tooltip />
           <Legend />
-
-          {/* Bar for first metric */}
           <Bar dataKey={config.yAxis[0]} fill="#6366F1" />
-
-          {/* Lines for rest */}
           {config.yAxis.slice(1).map((col: string, i: number) => (
             <Line
               key={col}

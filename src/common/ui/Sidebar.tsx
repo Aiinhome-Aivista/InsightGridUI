@@ -22,9 +22,8 @@ import person_add from '@mui/icons-material/PersonAdd';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 const menuItems = [
-  // 🔹 SUPER ADMIN ONLY
   { name: "Super Dashboard", icon: SpaceDashboardIcon, path: "super-dashboard", roles: ["superadmin"], },
-  { name: "Company", icon: ApartmentIcon, path: "companies", roles: ["superadmin"], },
+  { name: "Company", icon: ApartmentIcon, path: "manage-companies", roles: ["superadmin"], },
   { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard", roles: ["companyadmin", "user"] },
   { name: "User", icon: person_add, path: "manage-users", roles: ["companyadmin"] },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload", roles: ["companyadmin", "user"] },
@@ -73,7 +72,6 @@ export default function Sidebar() {
         } h-screen border-r flex flex-col transition-all duration-200`}
       style={{ backgroundColor: theme.surface, borderColor: theme.border, color: theme.primaryText }}
     >
-      {/* Header */}
       <div
         className={`flex items-center border-b border-[#BCC7D2] h-14 ${collapsed ? "px-3 justify-center" : "px-4"
           }`}
@@ -109,8 +107,6 @@ export default function Sidebar() {
           )}
         </button>
       </div>
-
-      {/* Menu Items */}
       <div className="mt-3 flex-1">
         <nav className={`flex flex-col gap-2 ${collapsed ? 'px-4' : 'px-2'}`}>
           {menuItems.filter(item => item.roles.includes(user?.role)).map((item) => {

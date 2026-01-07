@@ -1,7 +1,7 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const GET_APIS = {
-
+  get_all_companies: `${BASE_URL}admin/get_companies`,
 };
 
 export const POST_APIS = {
@@ -23,5 +23,6 @@ export const POST_APIS = {
   delete_uploaded_file: `${BASE_URL}delete_uploaded_file`,
   upload_progress: `${BASE_URL}get_upload_progress`,
   super_admin_login: `${BASE_URL}superadmin/login`,
-
+  admin_company_delete: `${BASE_URL}admin/company_delete`,
+  modify_chart: `${BASE_URL}modify_chart`,
 };

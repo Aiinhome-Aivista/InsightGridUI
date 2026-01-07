@@ -7,6 +7,10 @@ import ProductDataTable from "../../query-designer/components/DataTable";
 import { MultiSelect } from "primereact/multiselect";
 import ChartSidebar from "./ChartSidebar";
 import RenderCharts from "./render-charts";
+import ReportDesignerChatSidebar from "./Report-chat-sidebar";
+import { MdChat } from "react-icons/md";
+import ApiServices from "../../../services/ApiServices";
+import { useAuth } from "../../Auth/AuthContext";
 
 
 interface DataViewTableProps {
@@ -33,8 +37,11 @@ interface DataViewTableProps {
 
   charts: ChartConfig[];
   setCharts: React.Dispatch<React.SetStateAction<ChartConfig[]>>;
+  columnRenames: Record<string, string>;
+  setColumnRenames: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }
 export interface ChartConfig {
+  order: any;
   id: string;
   type: "line" | "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
   xAxis?: string;
@@ -44,6 +51,9 @@ export interface ChartConfig {
   label?: string;
   agg?: "count" | "sum";
   rows: any[];
+  style?: Record<string, any>;
+  customTitle?: string;
+
 }
 
 const calculateAggregation = (
@@ -89,7 +99,6 @@ const calculateAggregation = (
 
   return map;
 };
-
 const groupRows = (
   rows: any[],
   groupCols: string[],
@@ -160,24 +169,16 @@ export default function DataViewTable({
 
   charts,
   setCharts,
-
+  columnRenames,
+  setColumnRenames
 }: DataViewTableProps) {
   const { theme } = useTheme();
   const [viewType, setViewType] = useState<"table" | "chart">("table");
-  // const [selectedGroupBy, setSelectedGroupBy] = useState<string[]>([]);
-  // const [selectedFilters, setSelectedFilters] = useState<
-  //   { column: string; operator: string }[]
-  // >([]);
-  // const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [showChartSidebar, setShowChartSidebar] = useState(false);
-  // const [charts, setCharts] = useState<ChartConfig[]>([]);
   const primaryTableKey = selectedTables[0];
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-  // const [aggregations, setAggregations] = useState<
-  //   { column: string; agg: string }[]
-  // >([]);
-  // const [selectedChartColumns, setSelectedChartColumns] = useState<string[]>([]);
-
+  const [showChatSidebar, setShowChatSidebar] = useState(false);
+  const { chatHistory, setChatHistory } = useAuth();
 
   useEffect(() => {
     if (!selectedGroupBy.length) return;
@@ -198,12 +199,7 @@ export default function DataViewTable({
 
     setCollapsedGroups(collapsed);
   }, [selectedGroupBy, allData]);
-  // useEffect(() => {
-  //   if (charts.length > 0) {
-  //     setViewType("table");        // table view
-  //     setShowChartSidebar(false); // charts below table
-  //   }
-  // }, [charts]);
+
 
 
 
@@ -365,6 +361,9 @@ export default function DataViewTable({
     });
   };
 
+  const renameChart = (id: string, newName: string) => {
+    setCharts(prev => prev.map(c => c.id === id ? { ...c, customTitle: newName } : c));
+  };
 
   const toggleGroup = (key: string) => {
     setCollapsedGroups(prev => ({
@@ -421,6 +420,142 @@ export default function DataViewTable({
       normalize(a.label) === normalize(b.label)
     );
   };
+  const buildAvailableColumns = () => {
+    const tableKey = selectedTables[0];
+    const table = allData[tableKey];
+
+    if (!table) return [];
+
+    return table.columns.map((col: any) => ({
+      name: col.column_name,
+      type: table.visualization?.column_types?.[col.column_name] || "text"
+    }));
+  };
+
+
+  const normalizeStyle = (chart: ChartConfig) => {
+    if (!chart.style) return chart;
+
+    if (chart.type === "bar" && chart.style.color) {
+      return {
+        ...chart,
+        style: { ...chart.style, barColor: chart.style.color }
+      };
+    }
+
+    if (chart.type === "line" && chart.style.color) {
+      return {
+        ...chart,
+        style: { ...chart.style, lineColor: chart.style.color }
+      };
+    }
+
+    if (chart.type === "pie") {
+      return {
+        ...chart,
+        style: {
+          ...chart.style,
+          colors:
+            chart.style.colors ||
+              chart.style.pieColor ||   // 🔥 ADD THIS
+              chart.style.color
+              ? [chart.style.color]
+              : undefined
+        }
+      };
+    }
+
+
+    return chart;
+  };
+  // 📦 build payload & call backend
+  const getXAxisValues = (chart: ChartConfig) => {
+    if (!chart.xAxis) return [];
+
+    const values = new Set<string>();
+
+    chartRows.forEach(row => {
+      const v = row[chart.xAxis!];
+      if (v !== undefined && v !== null) {
+        values.add(String(v));
+      }
+    });
+
+    return Array.from(values);
+  };
+
+  const handleChatSend = async (message: string) => {
+    try {
+      const payload = {
+        charts: charts.map(c => ({
+          id: c.id,
+          type: c.type,
+          xAxis: c.xAxis,
+          yAxis: c.yAxis,
+          agg: c.agg,
+          style: c.style || {},
+          xAxis_values: getXAxisValues(c)
+        })),
+        available_columns: buildAvailableColumns(),
+        user_message: message
+      };
+
+      const res = await ApiServices.modifyChart(payload);
+
+      const ai = res.data?.data;
+      const aiMessage = res.data?.message; // 🔥 THIS IS WHAT YOU WANT
+
+      if (!ai || ai.blocked) {
+        return ai?.assistant_message || "I couldn’t apply that change.";
+      }
+
+      // // 🔥 APPLY CHART UPDATES
+      // setCharts(prev =>
+      //   prev.map(chart => {
+      //     const update = ai.updates.find(u => u.chart_id === chart.id);
+      //     if (!update) return chart;
+
+      //     const updated = { ...chart, ...update.updated_fields };
+      //     return normalizeStyle(updated);
+      //   })
+      // );
+      setCharts(prev => {
+        // 1️⃣ existing charts update
+        let updatedCharts = prev.map(chart => {
+          const update = ai.updates?.find(u => u.chart_id === chart.id);
+          if (!update) return chart;
+
+          return normalizeStyle({
+            ...chart,
+            ...update.updated_fields
+          });
+        });
+
+        // 2️⃣ new charts add
+        if (ai.new_charts?.length) {
+          updatedCharts = [
+            ...updatedCharts,
+            ...ai.new_charts.map((c: any, index: number) => ({
+              ...c,
+              id: Date.now().toString() + "_" + index,
+              rows: chartRows   
+            }))
+          ];
+        }
+
+        return updatedCharts;
+      });
+
+
+      return aiMessage;
+
+    } catch (e) {
+      console.error(e);
+      return "Something went wrong while updating the chart.";
+    }
+  };
+
+
 
 
   return (
@@ -428,11 +563,11 @@ export default function DataViewTable({
       {selectedTables.map((tableKey) => {
         const table = allData[tableKey];
         if (!table) return null;
-
         const columns =
           table.columns?.map((col: { column_name: string }) => ({
             column_name: col.column_name,
-            header: col.column_name.replace(/_/g, " ").toUpperCase(),
+            // header: col.column_name.replace(/_/g, " ").toUpperCase(),
+            header: columnRenames[col.column_name] || col.column_name.replace(/_/g, " ").toUpperCase(),
             sortable: false,
           })) || [];
         const groupByColumns = table.visualization?.group_by || [];
@@ -479,6 +614,7 @@ export default function DataViewTable({
                 <div className="flex items-center gap-3 flex-wrap">
                   {groupByColumns.length > 0 && (
                     <MultiSelect
+                      appendTo="self"
                       filter
                       showClear={false}
                       value={selectedGroupBy}
@@ -486,33 +622,13 @@ export default function DataViewTable({
                         label: col.replace(/_/g, " ").toUpperCase(),
                         value: col,
                       }))}
-                      // onChange={(e) => {
-                      //   setSelectedGroupBy(e.value);
 
-                      //   const groups = groupRows(
-                      //     filteredRows,
-                      //     e.value,
-                      //     aggregations,
-                      //     aggregationOrder
-                      //   );
-
-                      //   const collapsed = groups
-                      //     .filter(r => r.__isGroup)
-                      //     .reduce((acc: any, g: any) => {
-                      //       acc[g.__groupKey] = true;
-                      //       return acc;
-                      //     }, {});
-
-                      //   setCollapsedGroups(collapsed);
-                      // }}
                       onChange={(e) => {
                         const newGroups = e.value;
                         setSelectedGroupBy(newGroups);
-
-                        // 🔥 GROUP BY CLEARED
                         if (newGroups.length === 0) {
-                          setAggregations([]);          // ✅ clear footer aggregations
-                          setCollapsedGroups({});       // ✅ reset group state
+                          setAggregations([]);
+                          setCollapsedGroups({});
                           return;
                         }
 
@@ -538,14 +654,14 @@ export default function DataViewTable({
                       placeholder="Group By"
                       display="chip"
                       className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
-                      panelClassName="bg-gray-50 border border-gray-200 rounded-lg shadow-sm"
+                      panelClassName="fixed-multiselect-panel shadow-lg"
                       pt={{
                         filterContainer: {
-                          className: "pb-3"   // search নিচে space
+                          className: "multiselect-filter-fix",
                         },
                         list: {
-                          className: "mt-4"   // 🔥 search & options gap
-                        }
+                          className: "multiselect-list-fix",
+                        },
                       }}
                     />
                   )}
@@ -553,6 +669,7 @@ export default function DataViewTable({
 
                   {Object.keys(filters).length > 0 && (
                     <MultiSelect
+                      appendTo="self"
                       filter
                       value={selectedFilters.map(f => `${f.column}|${f.operator}`)}
                       options={Object.entries(filters).flatMap(([col, ops]) =>
@@ -568,7 +685,6 @@ export default function DataViewTable({
                         });
 
                         setSelectedFilters(parsed);
-                        console.log("FILTERS:", parsed);
 
                         // 🔥 future:
                         // open value input modal
@@ -576,26 +692,26 @@ export default function DataViewTable({
                       placeholder="Filter"
                       display="chip"
                       className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
-                      panelClassName="bg-gray-50 border border-gray-200 rounded-lg shadow-sm"
+                      panelClassName="fixed-multiselect-panel shadow-lg"
                       pt={{
                         filterContainer: {
-                          className: "pb-3"   // search নিচে space
+                          className: "multiselect-filter-fix",
                         },
                         list: {
-                          className: "mt-4"   // 🔥 search & options gap
-                        }
+                          className: "multiselect-list-fix",
+                        },
                       }}
                     />
                   )}
                   {/* ===== FILTER INPUTS ===== */}
                   {selectedFilters.length > 0 && (
- <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-3 flex-wrap">
 
-  {selectedFilters.map((f) => {
-    const key = `${f.column}|${f.operator}`;
-    const type = getColumnType(table, f.column);
+                      {selectedFilters.map((f) => {
+                        const key = `${f.column}|${f.operator}`;
+                        const type = getColumnType(table, f.column);
 
-    const inputBaseClass = `
+                        const inputBaseClass = `
       h-9
       border border-gray-300
       rounded-md
@@ -611,10 +727,10 @@ export default function DataViewTable({
       hover:border-gray-400
     `;
 
-    return (
-      <div
-        key={key}
-        className="
+                        return (
+                          <div
+                            key={key}
+                            className="
           flex items-center gap-2
           bg-gray-50
           border border-gray-200
@@ -624,64 +740,64 @@ export default function DataViewTable({
           hover:shadow-md
           transition
         "
-      >
-        {/* Label */}
-        <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
-          {f.column.replace(/_/g, " ").toUpperCase()}
-          <span className="mx-1 text-gray-400">{f.operator}</span>
-        </span>
+                          >
+                            {/* Label */}
+                            <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
+                              {f.column.replace(/_/g, " ").toUpperCase()}
+                              <span className="mx-1 text-gray-400">{f.operator}</span>
+                            </span>
 
-        {/* TEXT */}
-        {type === "text" && (
-          <input
-            type="text"
-            placeholder="Enter value"
-            className={`${inputBaseClass} w-40`}
-            value={filterValues[key] || ""}
-            onChange={(e) =>
-              setFilterValues({
-                ...filterValues,
-                [key]: e.target.value,
-              })
-            }
-          />
-        )}
+                            {/* TEXT */}
+                            {type === "text" && (
+                              <input
+                                type="text"
+                                placeholder="Enter value"
+                                className={`${inputBaseClass} w-40`}
+                                value={filterValues[key] || ""}
+                                onChange={(e) =>
+                                  setFilterValues({
+                                    ...filterValues,
+                                    [key]: e.target.value,
+                                  })
+                                }
+                              />
+                            )}
 
-        {/* NUMBER */}
-        {type === "number" && f.operator !== "between" && (
-          <input
-            type="number"
-            className={`${inputBaseClass} w-28`}
-            value={filterValues[key] ?? ""}
-            onChange={(e) =>
-              setFilterValues({
-                ...filterValues,
-                [key]: Number(e.target.value),
-              })
-            }
-          />
-        )}
+                            {/* NUMBER */}
+                            {type === "number" && f.operator !== "between" && (
+                              <input
+                                type="number"
+                                className={`${inputBaseClass} w-28`}
+                                value={filterValues[key] ?? ""}
+                                onChange={(e) =>
+                                  setFilterValues({
+                                    ...filterValues,
+                                    [key]: Number(e.target.value),
+                                  })
+                                }
+                              />
+                            )}
 
-        {/* DATE */}
-        {type === "date" && f.operator !== "between" && (
-          <input
-            type="date"
-            className={`${inputBaseClass} w-[150px]`}
-            value={filterValues[key] || ""}
-            onChange={(e) =>
-              setFilterValues({
-                ...filterValues,
-                [key]: e.target.value,
-              })
-            }
-          />
-        )}
-      </div>
-    );
-  })}
-</div>
+                            {/* DATE */}
+                            {type === "date" && f.operator !== "between" && (
+                              <input
+                                type="date"
+                                className={`${inputBaseClass} w-[150px]`}
+                                value={filterValues[key] || ""}
+                                onChange={(e) =>
+                                  setFilterValues({
+                                    ...filterValues,
+                                    [key]: e.target.value,
+                                  })
+                                }
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
 
-)}
+                  )}
 
 
 
@@ -711,7 +827,17 @@ export default function DataViewTable({
                     >
                       <BarChartRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
-
+                    {/* Chat */}
+                    <button
+                      onClick={() => {
+                        setShowChatSidebar(true);
+                        setShowChartSidebar(false);
+                      }}
+                      className={`px-2 py-2 ${showChatSidebar ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
+                    >
+                      <MdChat />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -720,9 +846,10 @@ export default function DataViewTable({
                 <div className="mb-6">
                   <RenderCharts
                     charts={chartsWithRows}
-
                     onRemoveChart={removeChart}
                     onReorderCharts={setCharts}
+                    onRenameChart={renameChart}
+
                   />
                 </div>
               )}
@@ -738,7 +865,7 @@ export default function DataViewTable({
                   columnAggregations={table.visualization?.aggregations}
                   aggregationMap={aggregationMap}
                   aggregationOrder={aggregationOrder}
-                  isGrouped={selectedGroupBy.length > 0}           // 🔥 NEW
+                  isGrouped={selectedGroupBy.length > 0}
                   onAggregationSelect={(column, agg) => {
                     setAggregations(prev => {
                       const exists = prev.find(
@@ -756,6 +883,12 @@ export default function DataViewTable({
                   enableRowGrouping={selectedGroupBy.length > 0}
                   collapsedGroups={collapsedGroups}        // ✅ NEW
                   onToggleGroup={toggleGroup}
+                  onColumnRename={(original, newName) => {
+                    setColumnRenames(prev => ({
+                      ...prev,
+                      [original]: newName
+                    }));
+                  }}
                 />
               )}
               {/* } */}
@@ -766,8 +899,8 @@ export default function DataViewTable({
                   columnTypes={chartColumnTypes}
                   selectedColumns={selectedChartColumns}
                   onSelectedColumnsChange={(cols) => {
-                    setSelectedChartColumns(cols);   // ✅ persist
-                    removeChartsByColumns(cols);     // ✅ auto-delete charts
+                    setSelectedChartColumns(cols);
+                    removeChartsByColumns(cols);
                   }}
                   // onChartSelect={(config) => {
                   //   setCharts(prev => [
@@ -800,15 +933,27 @@ export default function DataViewTable({
                     charts={chartsWithRows}
                     onRemoveChart={removeChart}
                     onReorderCharts={setCharts}
+                    onRenameChart={renameChart}
+
                   />
                 </div>
               )}
-
+              {showChatSidebar && (
+                <ReportDesignerChatSidebar
+                  onClose={() => setShowChatSidebar(false)}
+                  userName={JSON.parse(localStorage.getItem("ig_user"))?.full_name || "User"}
+                  charts={charts}
+                  onSend={handleChatSend}
+                  messages={chatHistory}
+                  setMessages={setChatHistory}
+                />
+              )}
 
             </div>
           </div>
         );
       })}
+
     </div>
   );
 }

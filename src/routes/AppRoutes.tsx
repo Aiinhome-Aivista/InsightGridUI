@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "../pages/Auth/AuthContext";
 import Upload_page from "../pages/Uploads/Upload_page";
 import Login from "../pages/Auth/Login";
-import LandingPage from "../pages/LandingPage/LandingPageParents";
+import LandingPage from "../pages/LandingPage/LandingPage";
 import ProtectedRoute from "./ProtectedRoute";
 import QueryDesigner from "../pages/query-designer/QueryDesignerParent";
 import ShowQuery from "../pages/query-designer/QueryDesignerManage";
@@ -15,12 +15,17 @@ import Settings from "../pages/Setting/Setting";
 import ManageCompanyUsers from "../pages/company-users/ManageCompanyUsers";
 import ManageSuperAdminDashboard from "../pages/Superadmin/ManageSuperAdminDashboard";
 import ManageCompanies from "../pages/Superadmin/ManageCompanies";
+import RegisterCompany from "../pages/Superadmin/RegisterCompany";
 function AppRoutes() {
   return (
     <AuthProvider>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<Login />} />
+        {/* <Route path="/login" element={<Login />} /> */}
+        <Route path="/login" element={<Navigate to="/login/user" replace />} />
+        <Route path="/login/super-admin" element={<Login />} />
+        <Route path="/login/company-admin" element={<Login />} />
+        <Route path="/login/user" element={<Login />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/layout" element={<AppLayout />}>
             <Route index element={<Navigate to="upload" replace />} />
@@ -35,7 +40,9 @@ function AppRoutes() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="manage-users" element={<ManageCompanyUsers />} />
             <Route path="super-dashboard" element={<ManageSuperAdminDashboard />} />
-            <Route path="companies" element={<ManageCompanies />} />
+            <Route path="manage-companies" element={<ManageCompanies />} />
+            <Route path="register-company" element={<RegisterCompany />} />
+            <Route path="register-company/:id" element={<RegisterCompany />} />
           </Route>
         </Route>
 

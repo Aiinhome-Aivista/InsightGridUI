@@ -1,7 +1,5 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import html2canvas from "html2canvas";
-
 
 const fetchImageAsBase64 = async (url: string): Promise<string> => {
   const res = await fetch(url);
@@ -16,9 +14,6 @@ const fetchImageAsBase64 = async (url: string): Promise<string> => {
   return await cropImageBase64(base64);
 };
 
-
-
-
 const cropImageBase64 = (base64: string): Promise<string> => {
   return new Promise((resolve) => {
     const img = new Image();
@@ -31,9 +26,17 @@ const cropImageBase64 = (base64: string): Promise<string> => {
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const { data, width, height } = ctx.getImageData(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
 
-      let minX = width, minY = height, maxX = 0, maxY = 0;
+      let minX = width,
+        minY = height,
+        maxX = 0,
+        maxY = 0;
 
       const isBackground = (r: number, g: number, b: number) =>
         (r + g + b) / 3 > 235;
@@ -68,23 +71,34 @@ const cropImageBase64 = (base64: string): Promise<string> => {
       croppedCanvas.width = cropW;
       croppedCanvas.height = cropH;
 
-      croppedCtx.drawImage(canvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+      croppedCtx.drawImage(
+        canvas,
+        minX,
+        minY,
+        cropW,
+        cropH,
+        0,
+        0,
+        cropW,
+        cropH
+      );
 
       resolve(croppedCanvas.toDataURL("image/png"));
     };
   });
 };
 
-
-
-
-export const generatePDF = async (data, mode = "download", fileName = "report", chartImages: string[] = []
+export const generatePDF = async (
+  data,
+  chartImageUrls,
+  mode = "download",
+  fileName = "report",
+  previewChartData
 ) => {
   if (!data || !data.rows || data.rows.length === 0) {
     console.warn("No data available for PDF");
     return;
   }
-
 
   const user = JSON.parse(localStorage.getItem("ig_user") || "{}");
 
@@ -93,18 +107,38 @@ export const generatePDF = async (data, mode = "download", fileName = "report", 
   const logoUrl = user?.company_logo_url || "";
   const createdDate = new Date().toLocaleDateString("en-GB");
 
+  const columnCount = data.columns.length;
 
+  let orientation: "p" | "l" = "p";
+let pageFormat: "a4" | "a3" = "a4";
 
-  const doc = new jsPDF("p", "pt", "a4");
+if (columnCount > 6 && columnCount <= 10) {
+  orientation = "l"; // A4 landscape
+} else if (columnCount > 10) {
+  orientation = "l";
+  pageFormat = "a3"; // A3 landscape
+}
+
+  const doc = new jsPDF({
+  orientation,
+  unit: "pt",
+  format: pageFormat,
+});
 
 
   const pageWidth = doc.internal.pageSize.getWidth();
-
 
   const rows = data.rows;
   const columns = data.columns.map((c) => c.column_name);
 
 
+  const formatHeader = (headerText: string) => {
+    if (!headerText) return "";
+    return headerText.replace(/_/g, " ").toUpperCase();
+  };
+  const headers = data.columns.map(
+    (c) => c.header || formatHeader(c.column_name)
+  );
   // ===== HEADER =====
   const headerStartY = 40;
 
@@ -117,7 +151,6 @@ export const generatePDF = async (data, mode = "download", fileName = "report", 
   if (logoUrl) {
     const logoBase64 = await fetchImageAsBase64(logoUrl);
     doc.addImage(logoBase64, "PNG", logoX, logoY, logoW, logoH);
-
   }
 
   // Row 1: Company name (VERTICALLY CENTERED with logo)
@@ -126,11 +159,9 @@ export const generatePDF = async (data, mode = "download", fileName = "report", 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(companyFontSize);
 
-  const companyNameY =
-    logoY + logoH / 2 + companyFontSize / 2 - 2; // perfectly centered
+  const companyNameY = logoY + logoH / 2 + companyFontSize / 2 - 2; // perfectly centered
 
   doc.text(companyName, logoX + logoW + 10, companyNameY);
-
 
   // Row 2: Address (limited width, not full row)
   doc.setFont("helvetica", "normal");
@@ -140,14 +171,9 @@ export const generatePDF = async (data, mode = "download", fileName = "report", 
   const addressY = logoY + logoH + 8;
   const addressWidth = pageWidth * 0.35;
 
-  const addressLines = doc.splitTextToSize(
-    companyAddress,
-    addressWidth
-  );
+  const addressLines = doc.splitTextToSize(companyAddress, addressWidth);
 
   doc.text(addressLines, addressX, addressY);
-
-
 
   // Row 3: Created date (below address)
   const lineHeight = 12;
@@ -163,106 +189,126 @@ export const generatePDF = async (data, mode = "download", fileName = "report", 
   const dividerY = addressY + addressHeight + 20;
   doc.line(40, dividerY, pageWidth - 40, dividerY);
 
+  const chartImages: string[] = [];
 
-
-
-  // ===== TABLE =====
-  // autoTable(doc, {
-  //   startY: 140,
-  //   head: [columns],
-  //   body: rows.map((r) => columns.map((col) => r[col] ?? "N/A")),
-
-  //   styles: {
-  //     fontSize: 9,
-  //     cellPadding: 6,
-  //     overflow: "linebreak",
-  //   },
-
-  //   headStyles: {
-  //     fillColor: [240, 240, 240],
-  //     textColor: 0,
-  //     fontStyle: "bold",
-  //   },
-
-  //   alternateRowStyles: {
-  //     fillColor: [248, 248, 248],
-  //   },
-
-  //   didDrawPage: (dataArg) => {
-  //     const pageCount = doc.getNumberOfPages();
-  //     doc.setFontSize(9);
-  //     doc.text(
-  //       `Page ${pageCount}`,
-  //       pageWidth / 2,
-  //       doc.internal.pageSize.getHeight() - 20,
-  //       { align: "center" }
-  //     );
-  //   },
-  // });
-  autoTable(doc, {
-    startY: 140,
-    head: [columns],
-    body: rows.map((r) => columns.map((col) => r[col] ?? "")),
-
-    styles: {
-      fontSize: 9,
-      cellPadding: 6,
-      textColor: [31, 41, 55]
-    },
-
-    headStyles: {
-      fillColor: [240, 240, 240],
-      fontStyle: "bold"
-    },
-
-    didParseCell(data) {
-      const rowIndex = data.row.index;
-      const row = rows[rowIndex];
-
-      if (row?.__isAggregation) {
-        data.cell.styles.fillColor = [243, 246, 250]; // light highlight
-        data.cell.styles.fontStyle = "bold";
-      }
-    },
-
-
-    didDrawPage() {
-      const pageCount = doc.getNumberOfPages();
-      doc.setFontSize(9);
-      doc.text(
-        `Page ${pageCount}`,
-        pageWidth / 2,
-        doc.internal.pageSize.getHeight() - 20,
-        { align: "center" }
-      );
-    }
-  });
+  // 🔥 previewChartData is actually IMAGE URL array now
+  for (const imgUrl of chartImageUrls || []) {
+    const base64 = await fetchImageAsBase64(imgUrl);
+    chartImages.push(base64);
+  }
 
   // ===== CHART IMAGES =====
-  let yPos = (doc as any).lastAutoTable.finalY + 30;
+  let yPos = dividerY + 30;
 
-  for (let i = 0; i < chartImages.length; i++) {
-    const img = chartImages[i];
+  const marginX = 40;
+  const gapX = 20;
+  const gapY = 30;
 
+  const usableWidth = pageWidth - marginX * 2;
+  const chartWidth = (usableWidth - gapX) / 2;
+  const chartHeight = (chartWidth * 9) / 16;
+
+  let xPos = marginX;
+
+  chartImages.forEach((img, index) => {
     const pageHeight = doc.internal.pageSize.getHeight();
-    const pageWidth = doc.internal.pageSize.getWidth();
 
-    const imgWidth = pageWidth - 80;
-    const imgHeight = (imgWidth * 9) / 16; // safe ratio
-
-    if (yPos + imgHeight > pageHeight) {
+    // Page break
+    if (yPos + chartHeight > pageHeight - 40) {
       doc.addPage();
       yPos = 40;
+      xPos = marginX;
     }
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.text(`Chart ${i + 1}`, 40, yPos - 10);
+    // doc.text(`Chart ${index + 1}`, xPos, yPos - 8);
 
-    doc.addImage(img, "PNG", 40, yPos, imgWidth, imgHeight);
+    // const chartTitle = previewChartData?.[index]?.customTitle;
+    // doc.text(chartTitle, xPos, yPos - 8);
 
-    yPos += imgHeight + 30;
+    doc.addImage(img, "PNG", xPos, yPos, chartWidth, chartHeight);
+    // Move position
+    if (index % 2 === 0) {
+      // first chart in row → move right
+      xPos += chartWidth + gapX;
+    } else {
+      // second chart → new row
+      xPos = marginX;
+      yPos += chartHeight + gapY;
+    }
+  });
+
+  /**
+   * 🔥 IMPORTANT FIX
+   * If last row has only ONE chart, move Y down
+   */
+  if (chartImages.length % 2 !== 0) {
+    yPos += chartHeight + gapY;
   }
+
+  const tableStartY = yPos + 20;
+autoTable(doc, {
+  startY: tableStartY,
+
+  head: [headers],
+  body: rows.map((r) => columns.map((col) => r[col] ?? "")),
+
+  theme: "grid", // 🔥 IMPORTANT
+
+  tableWidth: "auto",
+  horizontalPageBreak: true,
+  horizontalPageBreakRepeat: [0, 1], // repeat NEWS ID + TITLE
+
+  styles: {
+    fontSize: columnCount > 14 ? 7 : 9,
+    cellPadding: 5,
+    textColor: [31, 41, 55],
+    overflow: "linebreak",
+    valign: "middle",
+    lineColor: [209, 213, 219], // visible borders
+    lineWidth: 0.5,
+  },
+
+  // ✅ HEADER FIX
+  headStyles: {
+    fillColor:[240, 240, 240],
+// 🔥 visible red header
+  textColor: [31, 41, 55],
+    // white text
+    fontStyle: "bold",
+    halign: "center",              // horizontal align
+    valign: "middle",              // vertical align
+    minCellHeight: 28,             // 🔥 alignment fix
+  },
+
+  bodyStyles: {
+    halign: "left",
+    valign: "middle",
+  },
+
+  didParseCell(data) {
+    const row = rows[data.row.index];
+
+    // Highlight aggregation rows
+    if (row?.__isAggregation) {
+      data.cell.styles.fillColor = [243, 246, 250];
+      data.cell.styles.fontStyle = "bold";
+    }
+  },
+
+  didDrawPage() {
+    const pageCount = doc.getNumberOfPages();
+    doc.setFontSize(9);
+    doc.text(
+      `Page ${pageCount}`,
+      pageWidth / 2,
+      doc.internal.pageSize.getHeight() - 20,
+      { align: "center" }
+    );
+  },
+});
+
 
 
   // PREVIEW vs DOWNLOAD
@@ -270,9 +316,15 @@ export const generatePDF = async (data, mode = "download", fileName = "report", 
     const pdfUrl = doc.output("bloburl");
     window.open(pdfUrl); //  browser preview
   } else {
-    // doc.save("sales-report.pdf"); //  direct download
-    doc.save(`${fileName}.pdf`);
+    const today = new Date();
 
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); // month is 0-based
+    const yyyy = today.getFullYear();
+
+    const dateSuffix = `${dd}${mm}${yyyy}`;
+
+    //Final filename
+    doc.save(`${fileName}${dateSuffix}.pdf`);
   }
-
 };

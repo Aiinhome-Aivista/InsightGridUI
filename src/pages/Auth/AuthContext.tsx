@@ -5,6 +5,16 @@ interface TableData {
   rows: any[];
   columns: any[];
 }
+interface PreviewChartData {
+  charts: any[]; // you can replace `any` with ChartConfig later
+}
+
+interface ChatMessage {
+  role: "user" | "ai";
+  message: string;
+  chart_updates?: any[];
+  timestamp?: string;
+}
 interface AuthContextType {
   user: any;
   login: (userData: any) => void;
@@ -20,7 +30,15 @@ interface AuthContextType {
   setViewName: Dispatch<SetStateAction<string>>;
   confirmSave: () => void;
   setConfirmSaveAction: (action: () => void) => void;
+  previewChartData: any[] | null;
+  setPreviewChartData: Dispatch<SetStateAction<any[] | null>>;
+  downloadChartData: any[] | null;
+  setDownloadChartData: Dispatch<SetStateAction<any[] | null>>;
+  chatHistory: ChatMessage[];
+  setChatHistory: Dispatch<SetStateAction<ChatMessage[]>>;
 }
+
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(() => {
@@ -39,6 +57,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [viewName, setViewName] = useState("");
   const [downloadData, setDownloadData] = useState<TableData | null>(null);
   const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
+  const [previewChartData, setPreviewChartData] = useState<any[] | null>(null);
+  const [downloadChartData, setDownloadChartData] = useState<any[] | null>(null);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
     localStorage.setItem("ig_token", userData.token);
@@ -74,7 +96,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isLogoutModalOpen, setIsLogoutModalOpen,
       isConfirmSaveModalOpen, setIsConfirmSaveModalOpen,
       downloadData, setDownloadData,
-      viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction
+      viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction, previewChartData,
+      setPreviewChartData, downloadChartData, setDownloadChartData, chatHistory, setChatHistory
     }}>
       {children}
     </AuthContext.Provider>

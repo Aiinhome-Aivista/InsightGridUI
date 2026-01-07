@@ -30,7 +30,7 @@ interface ProductDataTableProps {
   >;
   aggregationOrder?: string[];
   isGrouped?: boolean;
-
+  onColumnRename?: (originalName: string, newName: string) => void;
 }
 export default function ProductDataTable({
   data,
@@ -44,7 +44,8 @@ export default function ProductDataTable({
   onToggleGroup,
   aggregationMap,
   aggregationOrder,
-  isGrouped = false
+  isGrouped = false,
+  onColumnRename
 }: ProductDataTableProps) {
   const uniqueColumns = columns.filter((col, index, self) =>
     index === self.findIndex((t) => t.column_name === col.column_name)
@@ -163,6 +164,7 @@ export default function ProductDataTable({
                   onAggregationSelect={onAggregationSelect}
                   openAggColumn={openAggColumn}
                   setOpenAggColumn={setOpenAggColumn}
+                  onRename={onColumnRename}
                 />
 
               }
@@ -215,9 +217,19 @@ export default function ProductDataTable({
                 if (rowData.__isGroupAgg) {
                   if (index === 0) {
                     return (
-                      <div className="text-xs font-semibold text-gray-700">
+                      <div className="text-xs font-semibold text-gray-700 aggregation-container">
+                        {/* {rowData.__aggregationOrder.map(a => (
+                          <div className="aggregation-row-item" key={a}>{a}</div>
+                        ))} */}
                         {rowData.__aggregationOrder.map(a => (
-                          <div key={a}>{a}</div>
+                          <div key={a} className="aggregation-row-item">
+                            <span className="font-semibold mr-2">{a}</span>
+                            <span>
+                              {rowData.__aggregationMap[col.column_name]?.[a] ??
+                                rowData.__count ??
+                                ""}
+                            </span>
+                          </div>
                         ))}
                       </div>
                     );
@@ -227,9 +239,9 @@ export default function ProductDataTable({
                   if (!colAgg) return null;
 
                   return (
-                    <div className="text-xs font-semibold text-right">
+                    <div className="text-xs font-semibold aggregation-container">
                       {rowData.__aggregationOrder.map(a => (
-                        <div key={a}>
+                        <div className="aggregation-row-item" key={a}>
                           {colAgg[a]?.toFixed?.(2) ?? ""}
                         </div>
                       ))}
@@ -244,16 +256,24 @@ export default function ProductDataTable({
                 !isGrouped && aggregationMap && aggregationOrder?.length ? (
                   index === 0 ? (
                     // 🔹 LEFT LABEL COLUMN
-                    <div className="flex flex-col gap-1 text-xs text-gray-700">
+                    <div className="flex flex-col gap-1 text-xs text-gray-700 font-semibold aggregation-container">
                       {aggregationOrder.map(a => (
-                        <div key={a}>{a}</div>
+                        <div className="aggregation-row-item font-semibold" key={a}>{a}</div>
                       ))}
                     </div>
                   ) : aggregationMap[col.column_name] ? (
                     // 🔹 VALUE COLUMN
-                    <div className="flex flex-col gap-1 text-xs text-gray-700 text-right">
-                      {aggregationOrder.map(a => (
-                        <div key={a}>
+
+                    // <div className="flex flex-col gap-1 text-xs text-gray-700 font-semibold aggregation-container">
+                    //   {aggregationOrder.map(a => (
+                    //     <div className="aggregation-row-item" key={a}>
+                    //       {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
+                    //     </div>
+                    //   ))}
+                    // </div>
+                    <div className="aggregation-container">
+                      {aggregationOrder.map((a) => (
+                        <div key={a} className="aggregation-row-item">
                           {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
                         </div>
                       ))}

@@ -6,7 +6,6 @@ import MixedChartGraph from "./mixed-chart-graph";
 import BubbleChartGraph from "./bubble-chart-graph";
 import WaterfallChartGraph from "./waterfall-chart-graph";
 import BoxPlotGraph from "./box-plot-graph";
-
 import {
   DragDropContext,
   Droppable,
@@ -14,24 +13,19 @@ import {
   DropResult
 } from "@hello-pangea/dnd";
 import LineChartGraph from "./line-chart-graph";
-
 interface RenderChartsProps {
   charts: ChartConfig[];
   onRemoveChart: (id: string) => void;
-  onReorderCharts: (charts: ChartConfig[]) => void; // 🔥 NEW
-
+  onReorderCharts: (charts: ChartConfig[]) => void;
+  onRenameChart?: (id: string, newName: string) => void;
 }
-
-export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }: RenderChartsProps) {
-
+export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, onRenameChart }: RenderChartsProps) {
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-
     const items = Array.from(charts);
     const [moved] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, moved);
-
-    onReorderCharts(items); // 🔥 update order
+    onReorderCharts(items);
   };
 
   const renderChart = (chart: ChartConfig) => {
@@ -90,7 +84,8 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }:
             {charts.map((chart, index) => (
               <Draggable key={chart.id} draggableId={chart.id} index={index}>
                 {(provided, snapshot) => (
-                  <div
+                  <div key={chart.id}
+                    id={`report-chart-${chart.id}`}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
@@ -98,14 +93,16 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts }:
                       }`}
                   >
                     <ChartCard
-                      title={`${chart.type.toUpperCase()} Chart`}
+                      title={chart.customTitle || `${chart.type.toUpperCase()} Chart`}
                       description={
                         chart.xAxis ? `Based on ${chart.xAxis}` : "Chart"
                       }
                       onRemove={() => onRemoveChart(chart.id)}
+                      onRename={(newName) => onRenameChart?.(chart.id, newName)}
                     >
                       {renderChart(chart)}
                     </ChartCard>
+
                   </div>
                 )}
               </Draggable>
