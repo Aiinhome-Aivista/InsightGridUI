@@ -273,7 +273,9 @@ export default function ProductDataTable({
                     // </div>
                     <div className="aggregation-container">
                       {aggregationOrder.map((a) => (
-                        <div key={a} className="aggregation-row-item"></div>
+                        <div key={a} className="aggregation-row-item">
+                          {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
+                        </div>
                       ))}
                     </div>
                   ) : null

@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "../pages/Auth/AuthContext";
 import Upload_page from "../pages/Uploads/Upload_page";
 import Login from "../pages/Auth/Login";
-import LandingPage from "../pages/LandingPage/LandingPageParents";
+import LandingPage from "../pages/LandingPage/LandingPage";
 import ProtectedRoute from "./ProtectedRoute";
 import QueryDesigner from "../pages/query-designer/QueryDesignerParent";
 import ShowQuery from "../pages/query-designer/QueryDesignerManage";

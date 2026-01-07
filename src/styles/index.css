@@ -6,7 +6,7 @@
 /* Custom base styles */
 @layer base {
   :root {
-    font-family: "Ballo Da 2", ;
+    font-family: "Ballo Da 2", sans-serif;
     --theme-background: #FBFBFB;
     --theme-secondary-bg: #EAEAEA;
     --theme-surface: #ffffff;
@@ -312,7 +312,7 @@
   }
 }
 
-* Footer with aggregations */
+/* Footer with aggregations */
 .p-datatable .p-datatable-tfoot>tr>td {
   padding: 0 !important;
   border: none !important;
@@ -337,4 +337,3 @@
 .aggregation-row-item:last-child {
   border-bottom: none;
 }
-
