@@ -143,6 +143,7 @@ export default function TableView() {
   }, [selectedTables]);
 
   const handleRunScript = async (sqlQuery: string) => {
+    setIsRefreshing(true);
     try {
       const payload = {
         session_id: userData?.session_id,
