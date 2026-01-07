@@ -218,8 +218,18 @@ export default function ProductDataTable({
                   if (index === 0) {
                     return (
                       <div className="text-xs font-semibold text-gray-700 aggregation-container">
-                        {rowData.__aggregationOrder.map(a => (
+                        {/* {rowData.__aggregationOrder.map(a => (
                           <div className="aggregation-row-item" key={a}>{a}</div>
+                        ))} */}
+                        {rowData.__aggregationOrder.map(a => (
+                          <div key={a} className="aggregation-row-item">
+                            <span className="font-semibold mr-2">{a}</span>
+                            <span>
+                              {rowData.__aggregationMap[col.column_name]?.[a] ??
+                                rowData.__count ??
+                                ""}
+                            </span>
+                          </div>
                         ))}
                       </div>
                     );
