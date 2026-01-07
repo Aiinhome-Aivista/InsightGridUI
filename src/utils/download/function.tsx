@@ -1,9 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-
-
-
 const fetchImageAsBase64 = async (url: string): Promise<string> => {
   const res = await fetch(url);
   const blob = await res.blob();
@@ -17,9 +14,6 @@ const fetchImageAsBase64 = async (url: string): Promise<string> => {
   return await cropImageBase64(base64);
 };
 
-
-
-
 const cropImageBase64 = (base64: string): Promise<string> => {
   return new Promise((resolve) => {
     const img = new Image();
@@ -32,9 +26,17 @@ const cropImageBase64 = (base64: string): Promise<string> => {
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const { data, width, height } = ctx.getImageData(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
 
-      let minX = width, minY = height, maxX = 0, maxY = 0;
+      let minX = width,
+        minY = height,
+        maxX = 0,
+        maxY = 0;
 
       const isBackground = (r: number, g: number, b: number) =>
         (r + g + b) / 3 > 235;
@@ -69,33 +71,34 @@ const cropImageBase64 = (base64: string): Promise<string> => {
       croppedCanvas.width = cropW;
       croppedCanvas.height = cropH;
 
-      croppedCtx.drawImage(canvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+      croppedCtx.drawImage(
+        canvas,
+        minX,
+        minY,
+        cropW,
+        cropH,
+        0,
+        0,
+        cropW,
+        cropH
+      );
 
       resolve(croppedCanvas.toDataURL("image/png"));
     };
   });
 };
 
-
-
-
-
-
-
-
-export const generatePDF = async (data, chartImageUrls, mode = "download", fileName = "report",previewChartData
+export const generatePDF = async (
+  data,
+  chartImageUrls,
+  mode = "download",
+  fileName = "report",
+  previewChartData
 ) => {
   if (!data || !data.rows || data.rows.length === 0) {
     console.warn("No data available for PDF");
     return;
   }
-
-
-
-
-
-
-
 
   const user = JSON.parse(localStorage.getItem("ig_user") || "{}");
 
@@ -104,16 +107,30 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
   const logoUrl = user?.company_logo_url || "";
   const createdDate = new Date().toLocaleDateString("en-GB");
 
+  const columnCount = data.columns.length;
 
+  let orientation: "p" | "l" = "p";
+let pageFormat: "a4" | "a3" = "a4";
 
-  const doc = new jsPDF("p", "pt", "a4");
+if (columnCount > 6 && columnCount <= 10) {
+  orientation = "l"; // A4 landscape
+} else if (columnCount > 10) {
+  orientation = "l";
+  pageFormat = "a3"; // A3 landscape
+}
+
+  const doc = new jsPDF({
+  orientation,
+  unit: "pt",
+  format: pageFormat,
+});
 
 
   const pageWidth = doc.internal.pageSize.getWidth();
 
-
   const rows = data.rows;
   const columns = data.columns.map((c) => c.column_name);
+
 
   const formatHeader = (headerText: string) => {
     if (!headerText) return "";
@@ -134,7 +151,6 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
   if (logoUrl) {
     const logoBase64 = await fetchImageAsBase64(logoUrl);
     doc.addImage(logoBase64, "PNG", logoX, logoY, logoW, logoH);
-
   }
 
   // Row 1: Company name (VERTICALLY CENTERED with logo)
@@ -143,11 +159,9 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
   doc.setFont("helvetica", "bold");
   doc.setFontSize(companyFontSize);
 
-  const companyNameY =
-    logoY + logoH / 2 + companyFontSize / 2 - 2; // perfectly centered
+  const companyNameY = logoY + logoH / 2 + companyFontSize / 2 - 2; // perfectly centered
 
   doc.text(companyName, logoX + logoW + 10, companyNameY);
-
 
   // Row 2: Address (limited width, not full row)
   doc.setFont("helvetica", "normal");
@@ -157,14 +171,9 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
   const addressY = logoY + logoH + 8;
   const addressWidth = pageWidth * 0.35;
 
-  const addressLines = doc.splitTextToSize(
-    companyAddress,
-    addressWidth
-  );
+  const addressLines = doc.splitTextToSize(companyAddress, addressWidth);
 
   doc.text(addressLines, addressX, addressY);
-
-
 
   // Row 3: Created date (below address)
   const lineHeight = 12;
@@ -176,12 +185,9 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
     addressY + addressHeight + 4
   );
 
-
   // Divider
   const dividerY = addressY + addressHeight + 20;
   doc.line(40, dividerY, pageWidth - 40, dividerY);
-
-
 
   const chartImages: string[] = [];
 
@@ -241,50 +247,67 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
     yPos += chartHeight + gapY;
   }
 
-
-
-
   const tableStartY = yPos + 20;
+autoTable(doc, {
+  startY: tableStartY,
 
+  head: [headers],
+  body: rows.map((r) => columns.map((col) => r[col] ?? "")),
 
-  autoTable(doc, {
-    startY: tableStartY,
-    head: [headers],
-    body: rows.map((r) => columns.map((col) => r[col] ?? "")),
+  theme: "grid", // 🔥 IMPORTANT
 
-    styles: {
-      fontSize: 9,
-      cellPadding: 6,
-      textColor: [31, 41, 55]
-    },
+  tableWidth: "auto",
+  horizontalPageBreak: true,
+  horizontalPageBreakRepeat: [0, 1], // repeat NEWS ID + TITLE
 
-    headStyles: {
-      fillColor: [240, 240, 240],
-      fontStyle: "bold"
-    },
+  styles: {
+    fontSize: columnCount > 14 ? 7 : 9,
+    cellPadding: 5,
+    textColor: [31, 41, 55],
+    overflow: "linebreak",
+    valign: "middle",
+    lineColor: [209, 213, 219], // visible borders
+    lineWidth: 0.5,
+  },
 
-    didParseCell(data) {
-      const rowIndex = data.row.index;
-      const row = rows[rowIndex];
+  // ✅ HEADER FIX
+  headStyles: {
+    fillColor:[240, 240, 240],
+// 🔥 visible red header
+  textColor: [31, 41, 55],
+    // white text
+    fontStyle: "bold",
+    halign: "center",              // horizontal align
+    valign: "middle",              // vertical align
+    minCellHeight: 28,             // 🔥 alignment fix
+  },
 
-      if (row?.__isAggregation) {
-        data.cell.styles.fillColor = [243, 246, 250]; // light highlight
-        data.cell.styles.fontStyle = "bold";
-      }
-    },
+  bodyStyles: {
+    halign: "left",
+    valign: "middle",
+  },
 
+  didParseCell(data) {
+    const row = rows[data.row.index];
 
-    didDrawPage() {
-      const pageCount = doc.getNumberOfPages();
-      doc.setFontSize(9);
-      doc.text(
-        `Page ${pageCount}`,
-        pageWidth / 2,
-        doc.internal.pageSize.getHeight() - 20,
-        { align: "center" }
-      );
+    // Highlight aggregation rows
+    if (row?.__isAggregation) {
+      data.cell.styles.fillColor = [243, 246, 250];
+      data.cell.styles.fontStyle = "bold";
     }
-  });
+  },
+
+  didDrawPage() {
+    const pageCount = doc.getNumberOfPages();
+    doc.setFontSize(9);
+    doc.text(
+      `Page ${pageCount}`,
+      pageWidth / 2,
+      doc.internal.pageSize.getHeight() - 20,
+      { align: "center" }
+    );
+  },
+});
 
 
 
@@ -303,9 +326,5 @@ export const generatePDF = async (data, chartImageUrls, mode = "download", fileN
 
     //Final filename
     doc.save(`${fileName}${dateSuffix}.pdf`);
-
   }
-
 };
-
-
