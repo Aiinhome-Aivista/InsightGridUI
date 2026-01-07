@@ -127,7 +127,7 @@ const QueryDesignerManage = () => {
       query_time,
       rows_effected,
       action: (
-        <div className="text-right">
+        <div className="">
           <button
             className="text-[#46BA2F] bg-[rgba(53,255,2,0.1)] px-4 py-1 rounded-full text-xs font-medium hover:bg-green-200"
             onClick={() => handleDetailsClick(query)}

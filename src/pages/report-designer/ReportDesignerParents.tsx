@@ -7,8 +7,10 @@ import { useLocation } from "react-router-dom";
 import { MdOutlineDescription } from "react-icons/md";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import html2canvas from "html2canvas";
+import { useAuth } from "../Auth/AuthContext";
 
 export default function TableView() {
+  const { chatHistory, setChatHistory } = useAuth();
   const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
   const [allData, setAllData] = useState<any>({});
@@ -75,7 +77,7 @@ export default function TableView() {
         }))
     );
     setColumnRenames(config.column_renames || {});
-
+    setChatHistory(config.chat_history || []);
   }, [report]);
 
   useEffect(() => {
@@ -223,19 +225,25 @@ export default function TableView() {
 
         selected_columns: selectedChartColumns,
 
+        // charts: charts.map((c, index) => ({
+        //   type: c.type,
+        //   xAxis: c.xAxis,
+        //   yAxis: c.yAxis,
+        //   value: c.value,
+        //   size: c.size,
+        //   label: c.label,
+        //   agg: c.agg,
+        //   id: c.id,
+        //   order: index + 1,
+        //   customTitle: c.customTitle,
+        // })),
         charts: charts.map((c, index) => ({
-          type: c.type,
-          xAxis: c.xAxis,
-          yAxis: c.yAxis,
-          value: c.value,
-          size: c.size,
-          label: c.label,
-          agg: c.agg,
-          id: c.id,
+          ...c,                // 🔥 FULL FINAL STATE
           order: index + 1,
-          customTitle: c.customTitle,
+          rows: undefined      // ❌ rows save করার দরকার নেই
         })),
         column_renames: columnRenames,
+        chat_history: chatHistory,
       };
 
       const chartImages = [];
