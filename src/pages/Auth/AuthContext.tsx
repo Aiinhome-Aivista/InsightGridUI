@@ -9,6 +9,12 @@ interface PreviewChartData {
   charts: any[]; // you can replace `any` with ChartConfig later
 }
 
+interface ChatMessage {
+  role: "user" | "ai";
+  message: string;
+  chart_updates?: any[];
+  timestamp?: string;
+}
 interface AuthContextType {
   user: any;
   login: (userData: any) => void;
@@ -28,7 +34,11 @@ interface AuthContextType {
   setPreviewChartData: Dispatch<SetStateAction<any[] | null>>;
   downloadChartData: any[] | null;
   setDownloadChartData: Dispatch<SetStateAction<any[] | null>>;
+  chatHistory: ChatMessage[];
+  setChatHistory: Dispatch<SetStateAction<ChatMessage[]>>;
 }
+
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(() => {
@@ -49,6 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
   const [previewChartData, setPreviewChartData] = useState<any[] | null>(null);
   const [downloadChartData, setDownloadChartData] = useState<any[] | null>(null);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
 
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
@@ -84,7 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isConfirmSaveModalOpen, setIsConfirmSaveModalOpen,
       downloadData, setDownloadData,
       viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction, previewChartData,
-      setPreviewChartData, downloadChartData, setDownloadChartData
+      setPreviewChartData, downloadChartData, setDownloadChartData, chatHistory, setChatHistory
     }}>
       {children}
     </AuthContext.Provider>

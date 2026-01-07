@@ -10,6 +10,7 @@ import RenderCharts from "./render-charts";
 import ReportDesignerChatSidebar from "./Report-chat-sidebar";
 import { MdChat } from "react-icons/md";
 import ApiServices from "../../../services/ApiServices";
+import { useAuth } from "../../Auth/AuthContext";
 
 
 interface DataViewTableProps {
@@ -177,6 +178,7 @@ export default function DataViewTable({
   const primaryTableKey = selectedTables[0];
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [showChatSidebar, setShowChatSidebar] = useState(false);
+  const { chatHistory, setChatHistory } = useAuth();
 
   useEffect(() => {
     if (!selectedGroupBy.length) return;
@@ -507,18 +509,45 @@ export default function DataViewTable({
         return ai?.assistant_message || "I couldn’t apply that change.";
       }
 
-      // 🔥 APPLY CHART UPDATES
-      setCharts(prev =>
-        prev.map(chart => {
-          const update = ai.updates.find(u => u.chart_id === chart.id);
+      // // 🔥 APPLY CHART UPDATES
+      // setCharts(prev =>
+      //   prev.map(chart => {
+      //     const update = ai.updates.find(u => u.chart_id === chart.id);
+      //     if (!update) return chart;
+
+      //     const updated = { ...chart, ...update.updated_fields };
+      //     return normalizeStyle(updated);
+      //   })
+      // );
+      setCharts(prev => {
+        // 1️⃣ existing charts update
+        let updatedCharts = prev.map(chart => {
+          const update = ai.updates?.find(u => u.chart_id === chart.id);
           if (!update) return chart;
 
-          const updated = { ...chart, ...update.updated_fields };
-          return normalizeStyle(updated);
-        })
-      );
+          return normalizeStyle({
+            ...chart,
+            ...update.updated_fields
+          });
+        });
 
-      return aiMessage || "Done ✔️";
+        // 2️⃣ new charts add
+        if (ai.new_charts?.length) {
+          updatedCharts = [
+            ...updatedCharts,
+            ...ai.new_charts.map((c: any, index: number) => ({
+              ...c,
+              id: Date.now().toString() + "_" + index,
+              rows: chartRows   
+            }))
+          ];
+        }
+
+        return updatedCharts;
+      });
+
+
+      return aiMessage;
 
     } catch (e) {
       console.error(e);
@@ -915,6 +944,8 @@ export default function DataViewTable({
                   userName={JSON.parse(localStorage.getItem("ig_user"))?.full_name || "User"}
                   charts={charts}
                   onSend={handleChatSend}
+                  messages={chatHistory}
+                  setMessages={setChatHistory}
                 />
               )}
 

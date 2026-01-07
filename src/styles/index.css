@@ -311,3 +311,29 @@
     /* Adjust color as needed */
   }
 }
+
+* Footer with aggregations */
+.p-datatable .p-datatable-tfoot>tr>td {
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* Aggregation container - removes default spacing */
+.aggregation-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Each aggregation row with full border */
+.aggregation-row-item {
+  padding: 8px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.aggregation-row-item:last-child {
+  border-bottom: none;
+}

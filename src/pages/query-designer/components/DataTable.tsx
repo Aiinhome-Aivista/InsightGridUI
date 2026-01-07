@@ -217,9 +217,9 @@ export default function ProductDataTable({
                 if (rowData.__isGroupAgg) {
                   if (index === 0) {
                     return (
-                      <div className="text-xs font-semibold text-gray-700">
+                      <div className="text-xs font-semibold text-gray-700 aggregation-container">
                         {rowData.__aggregationOrder.map(a => (
-                          <div key={a}>{a}</div>
+                          <div className="aggregation-row-item" key={a}>{a}</div>
                         ))}
                       </div>
                     );
@@ -229,9 +229,9 @@ export default function ProductDataTable({
                   if (!colAgg) return null;
 
                   return (
-                    <div className="text-xs font-semibold">
+                    <div className="text-xs font-semibold aggregation-container">
                       {rowData.__aggregationOrder.map(a => (
-                        <div key={a}>
+                        <div className="aggregation-row-item" key={a}>
                           {colAgg[a]?.toFixed?.(2) ?? ""}
                         </div>
                       ))}
@@ -246,19 +246,24 @@ export default function ProductDataTable({
                 !isGrouped && aggregationMap && aggregationOrder?.length ? (
                   index === 0 ? (
                     // 🔹 LEFT LABEL COLUMN
-                    <div className="flex flex-col gap-1 text-xs text-gray-700 font-semibold">
+                    <div className="flex flex-col gap-1 text-xs text-gray-700 font-semibold aggregation-container">
                       {aggregationOrder.map(a => (
-                        <div key={a}>{a}</div>
+                        <div className="aggregation-row-item font-semibold" key={a}>{a}</div>
                       ))}
                     </div>
                   ) : aggregationMap[col.column_name] ? (
                     // 🔹 VALUE COLUMN
 
-                    <div className="flex flex-col gap-1 text-xs text-gray-700 font-semibold">
-                      {aggregationOrder.map(a => (
-                        <div key={a}>
-                          {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
-                        </div>
+                    // <div className="flex flex-col gap-1 text-xs text-gray-700 font-semibold aggregation-container">
+                    //   {aggregationOrder.map(a => (
+                    //     <div className="aggregation-row-item" key={a}>
+                    //       {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
+                    //     </div>
+                    //   ))}
+                    // </div>
+                    <div className="aggregation-container">
+                      {aggregationOrder.map((a) => (
+                        <div key={a} className="aggregation-row-item"></div>
                       ))}
                     </div>
                   ) : null
