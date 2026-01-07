@@ -28,7 +28,7 @@ export default function Login() {
   });
   const [captchaCode, setCaptchaCode] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
-  
+
   const getLoginTypeFromPath = () => {
     if (location.pathname.includes("super-admin")) return "SUPER_ADMIN";
     if (location.pathname.includes("company-admin")) return "COMPANY_ADMIN";
@@ -157,6 +157,19 @@ export default function Login() {
   const handleCloseNotification = () =>
     setNotification((prev) => ({ ...prev, open: false }));
 
+  const loginTitleMap = {
+    SUPER_ADMIN: "Super Admin Login",
+    COMPANY_ADMIN: "Company Admin Login",
+    USER: "User Login",
+  };
+
+  const loginSubtitleMap = {
+    SUPER_ADMIN: "Restricted access for system administrators only",
+    COMPANY_ADMIN: "Login to manage your organization",
+    USER: "Login to access your workspace",
+  };
+
+
   return (
     <div
       className="w-full h-screen flex items-center justify-center 
@@ -202,14 +215,21 @@ export default function Login() {
       </div>
       <div className="flex flex-col items-center w-full h-full relative">
         <img src={view_quilt} alt="cross-pattern" className="w-12 mt-20" />
-        <div className="flex flex-col items-center">
+        {/* <div className="flex flex-col items-center">
           <h1 className="text-white text-3xl font-bold">InsightGrid</h1>
           <p className="text-white/80 text-sm mt-1">
             Customize Every View. Empower Every Decision.
           </p>
-        </div>
+        </div> */}
 
-      
+        <div className="flex flex-col items-center text-center">
+          <h1 className="text-white text-3xl font-bold">
+            {loginTitleMap[loginType]}
+          </h1>
+          <p className="text-white/80 text-sm mt-1">
+            {loginSubtitleMap[loginType]}
+          </p>
+        </div>
 
         <form
           onSubmit={handleLogin}
