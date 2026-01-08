@@ -281,16 +281,15 @@ const ReportDesignManage = () => {
       generatePDF(
         {
           rows: finalRows,
-          columns: api.columns.map((c: string) => ({ 
+          columns: api.columns.map((c: string) => ({
             column_name: c,
-            header: config.column_renames?.[c] || undefined 
+            header: config.column_renames?.[c] || undefined,
           })),
         },
         chartImages,
         "preview",
         cleanFileName,
         previewChartData
-
       );
     } catch (err) {
       console.error("Preview failed", err);
@@ -315,7 +314,7 @@ const ReportDesignManage = () => {
         config.group_by?.[0],
         config.aggregations
       );
-     
+
       const chartImages = (config.chart_images || []).map(
         (img: any) => img.url
       );
@@ -327,7 +326,7 @@ const ReportDesignManage = () => {
           rows: finalRows,
           columns: api.columns.map((c: string) => ({
             column_name: c,
-            header: config.column_renames?.[c] || undefined
+            header: config.column_renames?.[c] || undefined,
           })),
         },
         chartImages,
@@ -347,8 +346,8 @@ const ReportDesignManage = () => {
     await fetchReportList(true);
   };
   return (
-    <div className="mx-auto px-6 py-8">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+    <div className="mx-auto px-6 py-8 h-[calc(97vh-6rem)] flex flex-col overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8 shrink-0">
         <div className="flex items-center gap-8">
           <div>
             <h1 className="text-xl font-semibold text-gray-900 leading-tight">
@@ -402,15 +401,17 @@ const ReportDesignManage = () => {
               className={`
                           w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] 
                           bg-[#D9D9D9] hover:bg-[#D9D9D9] transition-all
-                          ${isRefreshing
-                  ? "opacity-70 cursor-wait"
-                  : "cursor-pointer"
-                }
+                          ${
+                            isRefreshing
+                              ? "opacity-70 cursor-wait"
+                              : "cursor-pointer"
+                          }
                         `}
             >
               <AutorenewRoundedIcon
-                className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""
-                  }`}
+                className={`w-5 h-5 text-gray-500 ${
+                  isRefreshing ? "animate-spin" : ""
+                }`}
                 fontSize="small"
               />
             </button>
@@ -422,83 +423,98 @@ const ReportDesignManage = () => {
           <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
         </div>
       ) : filteredReports.length > 0 ? (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-500 uppercase text-xs">
-              <tr>
-                <th className="px-5 py-3 text-left">Report Name</th>
-                <th className="px-5 py-3 text-left">Saving Date</th>
-                <th className="px-5 py-3 text-left">Saving Time</th>
-                <th className="px-5 py-3 text-left">Update Date</th>
-                <th className="px-5 py-3 text-left">Update Time</th>
-                <th className="px-5 py-3 text-left">Rows</th>
-                <th className="px-24 py-3 text-right">Action</th>
-              </tr>
-            </thead>
+        <div className="bg-white rounded-lg shadow-sm flex flex-col flex-1 min-h-0">
+          <div>
+            <table className="w-full text-[15px] table-fixed">
+              <thead className="bg-gray-100 text-[#3D5B81]">
+                <tr>
+                  <th className="px-5 py-3 bg-gray-100 text-left">
+                    Report Name
+                  </th>
+                  <th className="px-5 py-3 bg-gray-100 text-left">
+                    Saving Date
+                  </th>
+                  <th className="px-5 py-3 bg-gray-100 text-left">
+                    Saving Time
+                  </th>
+                  <th className="px-5 py-3 bg-gray-100 text-left">
+                    Update Date
+                  </th>
+                  <th className="px-5 py-3 bg-gray-100 text-left">
+                    Update Time
+                  </th>
+                  <th className="px-5 py-3 bg-gray-100 text-left">Rows</th>
+                  <th className="px-5 py-3 bg-gray-100">Action</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div className="overflow-y-auto flex-1 max-h-[65vh]">
+            <table className="w-full text-[15px] table-fixed">
+              <tbody className="divide-y divide-gray-100">
+                {filteredReports.map((item) => {
+                  return (
+                    <tr key={item.report_id} className="hover:bg-gray-50">
+                      <td className="px-6 py-3 text-xs">{item.report_name}</td>
 
-            <tbody className="divide-y divide-gray-100">
-              {filteredReports.map((item) => {
-                return (
-                  <tr key={item.report_id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 text-xs">{item.report_name}</td>
+                      <td className="px-6 py-3 text-xs text-gray-600">
+                        {item.actual_created_date}
+                      </td>
 
-                    <td className="px-6 py-3 text-xs text-gray-600">
-                      {item.actual_created_date}
-                    </td>
+                      <td className="px-6 py-3 text-xs text-gray-600">
+                        {timeAgo(
+                          item.actual_created_date,
+                          item.actual_created_at
+                        )}
+                      </td>
 
-                    <td className="px-6 py-3 text-xs text-gray-600">
-                      {timeAgo(
-                        item.actual_created_date,
-                        item.actual_created_at
-                      )}
-                    </td>
+                      <td className="px-6 py-3 text-xs text-gray-600">
+                        {item.actual_saved_date}
+                      </td>
 
-                    <td className="px-6 py-3 text-xs text-gray-600">
-                      {item.actual_saved_date}
-                    </td>
+                      <td className="px-6 py-3 text-xs text-gray-600">
+                        {timeAgo(item.actual_saved_date, item.actual_saved_at)}
+                      </td>
 
-                    <td className="px-6 py-3 text-xs text-gray-600">
-                      {timeAgo(item.actual_saved_date, item.actual_saved_at)}
-                    </td>
+                      <td className="px-6 py-3 text-xs text-gray-600">
+                        {item.row_affected}
+                      </td>
 
-                    <td className="px-6 py-3 text-xs text-gray-600">
-                      {item.row_affected}
-                    </td>
+                      <td className="px-6 py-3">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs"
+                            onClick={() => handlePreview(item)}
+                          >
+                            Preview
+                          </button>
 
-                    <td className="px-6 py-3">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs"
-                          onClick={() => handlePreview(item)}
-                        >
-                          Preview
-                        </button>
+                          <button
+                            className="text-purple-600 bg-purple-100 px-3 py-1 rounded-full text-xs"
+                            onClick={() => handleDownload(item)}
+                          >
+                            Download
+                          </button>
+                          <button
+                            className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"
+                            onClick={() => {
+                              console.log(" Edit Report Data:", item);
 
-                        <button
-                          className="text-purple-600 bg-purple-100 px-3 py-1 rounded-full text-xs"
-                          onClick={() => handleDownload(item)}
-                        >
-                          Download
-                        </button>
-                        <button
-                          className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"
-                          onClick={() => {
-                            console.log(" Edit Report Data:", item);
-
-                            navigate("/layout/report-designer-view", {
-                              state: { report: item },
-                            });
-                          }}
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                              navigate("/layout/report-designer-view", {
+                                state: { report: item },
+                              });
+                            }}
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-20rem)]">

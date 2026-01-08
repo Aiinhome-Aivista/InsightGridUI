@@ -254,37 +254,40 @@ autoTable(doc, {
   head: [headers],
   body: rows.map((r) => columns.map((col) => r[col] ?? "")),
 
-  theme: "grid", // 🔥 IMPORTANT
-
+  theme: "grid",
   tableWidth: "auto",
   horizontalPageBreak: true,
-  horizontalPageBreakRepeat: [0, 1], // repeat NEWS ID + TITLE
+  horizontalPageBreakRepeat: headers,
 
   styles: {
     fontSize: columnCount > 14 ? 7 : 9,
-    cellPadding: 5,
+    cellPadding: { top: 6, bottom: 6, left: 5, right: 5 },
+
+    halign: "center",          // 🔥 horizontal center (ALL CELLS)
+    valign: "middle",          // 🔥 vertical center (ALL CELLS)
+
     textColor: [31, 41, 55],
     overflow: "linebreak",
-    valign: "middle",
-    lineColor: [209, 213, 219], // visible borders
+
+    lineColor: [209, 213, 219],
     lineWidth: 0.5,
   },
 
-  // ✅ HEADER FIX
   headStyles: {
-    fillColor:[240, 240, 240],
-// 🔥 visible red header
-  textColor: [31, 41, 55],
-    // white text
+    fillColor: [240, 240, 240],
+    textColor: [31, 41, 55],
     fontStyle: "bold",
-    halign: "center",              // horizontal align
-    valign: "middle",              // vertical align
-    minCellHeight: 28,             // 🔥 alignment fix
+
+    halign: "center",          // 🔥 header horizontal center
+    valign: "middle",          // 🔥 header vertical center
+
+    minCellHeight: 32,         // 🔥 fixed header height
   },
 
   bodyStyles: {
-    halign: "left",
-    valign: "middle",
+    halign: "center",          // 🔥 body horizontal center
+    valign: "middle",          // 🔥 body vertical center
+    minCellHeight: 26,         // 🔥 uniform row height
   },
 
   didParseCell(data) {
@@ -308,6 +311,7 @@ autoTable(doc, {
     );
   },
 });
+
 
 
 
