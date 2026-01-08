@@ -110,20 +110,20 @@ export const generatePDF = async (
   const columnCount = data.columns.length;
 
   let orientation: "p" | "l" = "p";
-let pageFormat: "a4" | "a3" = "a4";
+  let pageFormat: "a4" | "a3" = "a4";
 
-if (columnCount > 6 && columnCount <= 10) {
-  orientation = "l"; // A4 landscape
-} else if (columnCount > 10) {
-  orientation = "l";
-  pageFormat = "a3"; // A3 landscape
-}
+  if (columnCount > 6 && columnCount <= 10) {
+    orientation = "l"; // A4 landscape
+  } else if (columnCount > 10) {
+    orientation = "l";
+    pageFormat = "a3"; // A3 landscape
+  }
 
   const doc = new jsPDF({
-  orientation,
-  unit: "pt",
-  format: pageFormat,
-});
+    orientation,
+    unit: "pt",
+    format: pageFormat,
+  });
 
 
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -248,69 +248,70 @@ if (columnCount > 6 && columnCount <= 10) {
   }
 
   const tableStartY = yPos + 20;
-autoTable(doc, {
-  startY: tableStartY,
+  autoTable(doc, {
+    startY: tableStartY,
 
-  head: [headers],
-  body: rows.map((r) => columns.map((col) => r[col] ?? "")),
+    head: [headers],
+    body: rows.map((r) => columns.map((col) => r[col] ?? "")),
 
-  theme: "grid",
-  tableWidth: "auto",
-  horizontalPageBreak: true,
-  horizontalPageBreakRepeat: headers,
+    theme: "grid",
+    tableWidth: "auto",
+    horizontalPageBreak: true,
+    horizontalPageBreakRepeat: headers,
 
-  styles: {
-    fontSize: columnCount > 14 ? 7 : 9,
-    cellPadding: { top: 6, bottom: 6, left: 5, right: 5 },
+    styles: {
+      fontSize: columnCount > 14 ? 7 : 9,
+      cellPadding: { top: 6, bottom: 6, left: 5, right: 5 },
 
-    halign: "center",          // 🔥 horizontal center (ALL CELLS)
-    valign: "middle",          // 🔥 vertical center (ALL CELLS)
+      halign: "center",          // 🔥 horizontal center (ALL CELLS)
+      valign: "middle",          // 🔥 vertical center (ALL CELLS)
 
-    textColor: [31, 41, 55],
-    overflow: "linebreak",
+      textColor: [31, 41, 55],
+      overflow: "linebreak",
 
-    lineColor: [209, 213, 219],
-    lineWidth: 0.5,
-  },
+      lineColor: [209, 213, 219],
+      lineWidth: 0.5,
+    },
 
-  headStyles: {
-    fillColor: [240, 240, 240],
-    textColor: [31, 41, 55],
-    fontStyle: "bold",
+    headStyles: {
+      fillColor: [243, 244, 246],
+      textColor: [61, 91, 129],
+      fontStyle: "bold",
 
-    halign: "center",          // 🔥 header horizontal center
-    valign: "middle",          // 🔥 header vertical center
+      halign: "center",          // 🔥 header horizontal center
+      valign: "middle",          // 🔥 header vertical center
 
-    minCellHeight: 32,         // 🔥 fixed header height
-  },
+      minCellHeight: 32,         // 🔥 fixed header height
+    },
 
-  bodyStyles: {
-    halign: "center",          // 🔥 body horizontal center
-    valign: "middle",          // 🔥 body vertical center
-    minCellHeight: 26,         // 🔥 uniform row height
-  },
+    bodyStyles: {
+      halign: "center",          // 🔥 body horizontal center
+      valign: "middle",          // 🔥 body vertical center
+      textColor: [61, 91, 129],
+      minCellHeight: 26,         // 🔥 uniform row height
+    },
 
-  didParseCell(data) {
-    const row = rows[data.row.index];
+    didParseCell(data) {
+      const row = rows[data.row.index];
 
-    // Highlight aggregation rows
-    if (row?.__isAggregation) {
-      data.cell.styles.fillColor = [243, 246, 250];
-      data.cell.styles.fontStyle = "bold";
-    }
-  },
+      // Highlight aggregation rows
+      if (row?.__isAggregation) {
+        data.cell.styles.fillColor = [243, 246, 250];
+        data.cell.styles.fontStyle = "bold";
+      }
+    },
 
-  didDrawPage() {
-    const pageCount = doc.getNumberOfPages();
-    doc.setFontSize(9);
-    doc.text(
-      `Page ${pageCount}`,
-      pageWidth / 2,
-      doc.internal.pageSize.getHeight() - 20,
-      { align: "center" }
-    );
-  },
-});
+    didDrawPage() {
+      const pageCount = doc.getNumberOfPages();
+      doc.setFontSize(9);
+      doc.text(
+        `Page ${pageCount}`,
+        pageWidth / 2,
+        doc.internal.pageSize.getHeight() - 20,
+        { align: "center" }
+      );
+    },
+  });
 
 
 

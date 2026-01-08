@@ -670,31 +670,31 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                     <div className="rounded-lg border border-gray-200 w-full">
 
                                         {/* ===== TABLE HEADER (FIXED) ===== */}
-                                        <div className="bg-gray-50 border-b border-gray-200 flex">
-                                            <div className="px-3 py-2 flex-1">
-                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        <div className="bg-gray-100 border-b border-gray-200 flex">
+                                            <div className="px-3 py-2.5 flex-1">
+                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
                                                     Column Name
                                                 </span>
                                             </div>
-                                            <div className="px-3 py-2 flex-1">
-                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            <div className="px-3 py-2.5 flex-1">
+                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
                                                     Data Type
                                                 </span>
                                             </div>
-                                            <div className="px-3 py-2 flex-1">
-                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            <div className="px-3 py-2.5 flex-1">
+                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
                                                     Length
                                                 </span>
                                             </div>
-                                            <div className="px-3 py-2 flex-1">
-                                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            <div className="px-3 py-2.5 flex-1">
+                                                <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
                                                     Primary Key
                                                 </span>
                                             </div>
 
                                             {createNewTable === "yes" && (
-                                                <div className="px-3 py-2 w-[110px] flex items-center gap-2">
-                                                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                <div className="px-3 py-2.5 w-[110px] flex items-center gap-2">
+                                                    <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
                                                         Action
                                                     </span>
                                                     <button
@@ -915,12 +915,12 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                             <div className="rounded-lg overflow-auto border border-gray-200 border-opacity-30">
                                                 <table className="min-w-full border-collapse">
                                                     {/* Header */}
-                                                    <thead className="bg-gray-50">
+                                                    <thead className="bg-gray-100">
                                                         <tr>
                                                             {columns.map((column) => (
                                                                 <th
                                                                     key={column.id}
-                                                                    className="px-3 py-2 text-left border-b border-r border-gray-200 border-opacity-30 last:border-r-0"
+                                                                    className="px-3 py-2.5 text-left border-b border-r border-gray-200 border-opacity-30 last:border-r-0"
                                                                     style={{ minWidth: 120 }}
                                                                 >
                                                                     <span className="text-xs font-semibold text-[#3D5B81] uppercase tracking-wider">
