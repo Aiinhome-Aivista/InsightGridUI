@@ -32,6 +32,7 @@ const RegisterCompany = () => {
   // };
 
   const formik = useFormik({
+    validateOnMount: false,
     initialValues: {
       id: null,
       created_by: "",
@@ -65,14 +66,15 @@ const RegisterCompany = () => {
       }
       if (!values.phone_number) {
         errors.phone_number = "Phone Number is required";
-      } else {
-        const phoneRegex = /^[6-9]\d{9}$/;
-        if (!phoneRegex.test(values.phone_number)) {
-          errors.phone_number =
-            "Phone number must be 10 digits and start with 6, 7, 8 or 9";
-        }
       }
-      if (!values.company_logo) errors.company_logo = "Company Logo required";
+      //  else {
+      //   const phoneRegex = /^[6-9]\d{9}$/;
+      //   if (!phoneRegex.test(values.phone_number)) {
+      //     errors.phone_number =
+      //       "Phone number must be 10 digits and start with 6, 7, 8 or 9";
+      //   }
+      // }
+      // if (!isEditMode && !values.company_logo) errors.company_logo = "Company Logo required";
 
       if (!values.area) errors.area = "Area is required";
       if (!values.city) errors.city = "City is required";
@@ -89,11 +91,15 @@ const RegisterCompany = () => {
       }
       if (!values.from_date) errors.from_date = "From date required";
       if (!values.to_date) errors.to_date = "To date required";
-      if (!values.company_logo) {
+      // ✅ FINAL CORRECT LOGO VALIDATION
+      if (!isEditMode && !values.company_logo) {
         errors.company_logo = "Company Logo is required";
-      } else {
+      }
+
+      if (values.company_logo) {
         const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-        const maxSize = 2 * 1024 * 1024; // 2MB
+        const maxSize = 2 * 1024 * 1024;
+
         if (!allowedTypes.includes(values.company_logo.type)) {
           errors.company_logo = "Only PNG, JPG or JPEG files are allowed";
         } else if (values.company_logo.size > maxSize) {
@@ -151,7 +157,15 @@ const RegisterCompany = () => {
     formData.append("company_name", values.company_name);
     formData.append("company_email", values.company_email);
     formData.append("phone_number", values.phone_number);
-    const address = `${values.area}, ${values.city}, ${values.district}, ${values.state}, ${values.country} - ${values.pin_code}`;
+    // const address = `${values.area}, ${values.city}, ${values.district}, ${values.state}, ${values.country} - ${values.pin_code}`;
+    const address = JSON.stringify({
+      area: values.area,
+      city: values.city,
+      district: values.district,
+      state: values.state,
+      country: values.country,
+      pin_code: values.pin_code,
+    });
     formData.append("address", address);
     formData.append("subscription_type", values.subscription_type);
     formData.append("from_date", values.from_date);
@@ -183,9 +197,23 @@ const RegisterCompany = () => {
     if (!isEditMode || !company) return;
     if (formik.values.company_name) return;
 
-    const address = company.address || "";
-    const parts = address.split(",");
-    const pin = address.split("-")[1]?.trim() || "";
+    // const address = company.address || "";
+    // const parts = address.split(",");
+    // const pin = address.split("-")[1]?.trim() || "";
+    let addr = {
+      area: "",
+      city: "",
+      district: "",
+      state: "",
+      country: "",
+      pin_code: "",
+    };
+
+    try {
+      addr = company.address ? JSON.parse(company.address) : addr;
+    } catch (e) {
+      console.warn("Invalid address JSON");
+    }
 
     formik.setValues({
       id: company.id,
@@ -196,12 +224,12 @@ const RegisterCompany = () => {
       phone_number: company.phone_number || "",
       company_logo: null,
 
-      area: parts[0]?.trim() || "",
-      city: parts[1]?.trim() || "",
-      district: parts[2]?.trim() || "",
-      state: parts[3]?.trim() || "",
-      country: parts[4]?.split("-")[0]?.trim() || "",
-      pin_code: pin,
+      area: addr.area || "",
+      city: addr.city || "",
+      district: addr.district || "",
+      state: addr.state || "",
+      country: addr.country || "",
+      pin_code: addr.pin_code || "",
 
       subscription_type: company.subscription_type || "FREE",
 
@@ -226,33 +254,35 @@ const RegisterCompany = () => {
             <h2 className="text-xl font-semibold text-[#1C1B1F]">
               Register a Company
             </h2>
-            <Tippy content="Reset" theme="gray">
-              <button
-                type="button"
-                onClick={handleResetForm}
-                disabled={isResetting}
-                className={`
+            {!isEditMode && (
+
+              <Tippy content="Reset" theme="gray">
+                <button
+                  type="button"
+                  onClick={handleResetForm}
+                  disabled={isResetting}
+                  className={`
       w-10 h-10 flex items-center justify-center rounded-lg
       border border-[#D9D9D9]
       bg-[#F3F3F3] hover:bg-[#E5E5E5]
       transition-all
       ${isResetting ? "cursor-wait opacity-70" : "cursor-pointer"}
     `}
-              >
-                <AutorenewRoundedIcon
-                  className={`w-5 h-5 text-gray-600 ${
-                    isResetting ? "animate-spin" : ""
-                  }`}
-                  fontSize="small"
-                />
-              </button>
-            </Tippy>
+                >
+                  <AutorenewRoundedIcon
+                    className={`w-5 h-5 text-gray-600 ${isResetting ? "animate-spin" : ""
+                      }`}
+                    fontSize="small"
+                  />
+                </button>
+              </Tippy>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium">
-                Company Name <span className="text-red-500">*</span>
+                Company Name {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Building2
@@ -275,7 +305,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                Company Email <span className="text-red-500">*</span>
+                Company Email {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Mail
@@ -298,7 +328,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                Phone Number <span className="text-red-500">*</span>
+                Phone Number {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Phone
@@ -321,7 +351,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                Area / Street <span className="text-red-500">*</span>
+                Area / Street {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <MapPin
@@ -344,7 +374,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                City <span className="text-red-500">*</span>
+                City {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Map
@@ -367,7 +397,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                District <span className="text-red-500">*</span>
+                District {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <input
                 name="district"
@@ -384,7 +414,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                State <span className="text-red-500">*</span>
+                State {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <input
                 name="state"
@@ -401,7 +431,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                Country <span className="text-red-500">*</span>
+                Country {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Globe2
@@ -424,7 +454,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                PIN Code <span className="text-red-500">*</span>
+                PIN Code {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Package
@@ -447,7 +477,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                Subscription Type <span className="text-red-500">*</span>
+                Subscription Type {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <select
                 name="subscription_type"
@@ -467,7 +497,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                From Date <span className="text-red-500">*</span>
+                From Date {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Calendar
@@ -492,7 +522,7 @@ const RegisterCompany = () => {
 
             <div>
               <label className="text-sm font-medium">
-                To Date <span className="text-red-500">*</span>
+                To Date {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Calendar
@@ -505,12 +535,12 @@ const RegisterCompany = () => {
                   min={
                     formik.values.from_date
                       ? new Date(
-                          new Date(formik.values.from_date).setFullYear(
-                            new Date(formik.values.from_date).getFullYear() + 1
-                          )
+                        new Date(formik.values.from_date).setFullYear(
+                          new Date(formik.values.from_date).getFullYear() + 1
                         )
-                          .toISOString()
-                          .split("T")[0]
+                      )
+                        .toISOString()
+                        .split("T")[0]
                       : undefined
                   }
                   disabled={!formik.values.from_date}
@@ -527,41 +557,9 @@ const RegisterCompany = () => {
             </div>
 
             {/* Logo */}
-            {/* <div className="md:col-span-2">
-                            <label className="text-sm font-medium">Company Logo <span className="text-red-500">*</span></label>
-                            <div className="flex items-center gap-4">
-                                <label className="cursor-pointer px-4 py-2 border rounded-lg flex items-center gap-2">
-                                    <Upload size={16} />
-                                    Upload Logo (PNG/JPG, max 2MB)
-
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={handleLogoChange}
-                                    />
-                                </label>
-
-                                {logoPreview && (
-                                    <img
-                                        src={logoPreview}
-                                        alt="logo preview"
-                                        className="w-16 h-16 object-cover rounded"
-                                    />
-                                )}
-
-                            </div>
-
-                        </div>
-                        {formik.touched.company_logo &&
-                            typeof formik.errors.company_logo === "string" && (
-                                <p className="mt-1 text-xs text-red-500">
-                                    {formik.errors.company_logo}
-                                </p>
-                            )} */}
             <div className="md:col-span-2">
               <label className="text-sm font-medium">
-                Company Logo <span className="text-red-500">*</span>
+                Company Logo {!isEditMode && <span className="text-red-500">*</span>}
               </label>
 
               <div className="flex items-center gap-4 mt-2">
