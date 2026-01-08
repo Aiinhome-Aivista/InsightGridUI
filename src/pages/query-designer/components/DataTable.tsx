@@ -255,33 +255,37 @@ export default function ProductDataTable({
               footer={
                 !isGrouped && aggregationMap && aggregationOrder?.length ? (
                   index === 0 ? (
-                    // 🔹 LEFT LABEL COLUMN
-                    <div className="flex flex-col gap-1 text-xs text-gray-700 font-semibold aggregation-container">
+                    <div className="aggregation-container text-xs text-gray-700 font-semibold">
                       {aggregationOrder.map(a => (
-                        <div className="aggregation-row-item font-semibold" key={a}>{a}</div>
-                      ))}
-                    </div>
-                  ) : aggregationMap[col.column_name] ? (
-                    // 🔹 VALUE COLUMN
-
-                    // <div className="flex flex-col gap-1 text-xs text-gray-700 font-semibold aggregation-container">
-                    //   {aggregationOrder.map(a => (
-                    //     <div className="aggregation-row-item" key={a}>
-                    //       {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
-                    //     </div>
-                    //   ))}
-                    // </div>
-                    <div className="aggregation-container">
-                      {aggregationOrder.map((a) => (
                         <div key={a} className="aggregation-row-item">
-                          {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
+                          <span className="mr-2">{a}</span>
+                          <span>
+                            {a === "COUNT"
+                              ? totalRecords
+                              : aggregationMap?.[col.column_name]?.[a]?.toFixed?.(2) ?? ""}
+                          </span>
                         </div>
                       ))}
                     </div>
-                  ) : null
+                  )
+                    : aggregationMap[col.column_name] ? (
+                      // 🔹 VALUE COLUMN
+                      <div className="aggregation-container">
+                        {aggregationOrder.map((a) => (
+                          <div key={a} className="aggregation-row-item text-xs text-gray-700 font-semibold">
+                            {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="aggregation-container">
+                        {aggregationOrder.map((a) => (
+                          <div key={a} className="aggregation-row-item"></div>
+                        ))}
+                      </div>
+                    )
                 ) : null
               }
-
 
 
 

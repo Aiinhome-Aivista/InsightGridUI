@@ -23,7 +23,7 @@ function ManageCompanies() {
   useEffect(() => {
     fetchCompanies();
   }, []);
-  const columns = [
+  const columnConfig = [
     {
       field: "company_name",
       header: "Company Name",
@@ -41,13 +41,27 @@ function ManageCompanies() {
     {
       field: "address",
       header: "Company Address",
-      body: (row: any) => (
-        <div className="max-w-[260px] truncate text-xs" title={row.address}>
-          {row.address}
-        </div>
-      ),
+      body: (row: any) => {
+        let addrText = "";
+
+        try {
+          const addr = row.address ? JSON.parse(row.address) : null;
+          if (addr) {
+            addrText = `${addr.area}, ${addr.city}, ${addr.district}, ${addr.state}, ${addr.country} - ${addr.pin_code}`;
+          }
+        } catch {
+          addrText = row.address;
+        }
+
+        return (
+          <div className="max-w-[260px] truncate" title={addrText}>
+            {addrText}
+          </div>
+        );
+      },
     },
   ];
+
 
 
   const fetchCompanies = async () => {
@@ -71,7 +85,7 @@ function ManageCompanies() {
   const actionBodyTemplate = (row: any) => (
     <div className="flex justify-end gap-2">
       <button
-        className="p-1 rounded hover:bg-blue-100 text-blue-600"
+        className="p-1 rounded hover:bg-blue-100 text-gray-600"
         onClick={() => {
           navigate(`/layout/register-company/${row.id}`, {
             state: { company: row }
@@ -82,7 +96,7 @@ function ManageCompanies() {
       </button>
 
       <button
-        className="p-1 rounded hover:bg-red-100 text-red-600"
+        className="p-1 rounded hover:bg-blue-100 text-gray-600"
         onClick={() => {
           if (window.confirm("Are you sure you want to delete this company?")) {
             deleteCompany(row.id);
@@ -196,17 +210,12 @@ function ManageCompanies() {
         paginator
         rows={5}
         filters={filters}
-        globalFilterFields={[
-          "company_name",
-          "company_email",
-          "phone_number",
-          "address",
-        ]}
+        globalFilterFields={columnConfig.map(c => c.field)}
         stripedRows
         emptyMessage="No companies found"
         className="custom-table"
       >
-        {columns.map((col) => (
+        {columnConfig.map((col) => (
           <Column
             key={col.field}
             field={col.field}
@@ -215,10 +224,12 @@ function ManageCompanies() {
             body={col.body}
           />
         ))}
+
         <Column
           header="Action"
+          align="center"
           body={actionBodyTemplate}
-          style={{ width: "120px", textAlign: "right" }}
+          style={{ width: "120px"}}
         />
       </DataTable>
 
