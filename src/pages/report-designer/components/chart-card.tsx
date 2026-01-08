@@ -45,7 +45,9 @@ import { useState, useRef, useEffect } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
-
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import "../../../styles/tippy-theme.css";
 // ==================== TYPES ====================
 interface ChartCardProps {
   title: string;
@@ -120,14 +122,16 @@ export default function ChartCard({ title, description, children, onRemove, onRe
                 {title}
               </h3>
               {onRename && (
-                <EditRoundedIcon
-                  sx={{ fontSize: 16, cursor: "pointer", opacity: 0, transition: "opacity 0.2s" }}
-                  className="text-gray-400 hover:text-blue-600 group-hover:opacity-100"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsEditing(true);
-                  }}
-                />
+                <Tippy content="Edit Name" theme="gray">
+                  <EditRoundedIcon
+                    sx={{ fontSize: 16, cursor: "pointer", opacity: 0, transition: "opacity 0.2s" }}
+                    className="text-gray-400 hover:text-blue-600 group-hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsEditing(true);
+                    }}
+                  />
+                </Tippy>
               )}
             </div>
           )}

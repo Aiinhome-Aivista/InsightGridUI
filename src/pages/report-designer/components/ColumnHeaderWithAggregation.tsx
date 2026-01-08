@@ -59,6 +59,9 @@ import { useState, useEffect, useRef } from "react";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import "../../../styles/tippy-theme.css";
 
 export default function ColumnHeaderWithAggregation({
     label,
@@ -135,14 +138,16 @@ export default function ColumnHeaderWithAggregation({
                 <>
                     <span className="truncate max-w-[150px]" title={label}>{label}</span>
                     {onRename && (
-                        <EditRoundedIcon
-                            sx={{ fontSize: 14, cursor: "pointer", opacity: 0, transition: "opacity 0.2s" }}
-                            className="text-gray-400 hover:text-blue-600 group-hover:opacity-100"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsEditing(true);
-                            }}
-                        />
+                        <Tippy content="Edit Name" theme="gray">
+                            <EditRoundedIcon
+                                sx={{ fontSize: 14, cursor: "pointer", opacity: 0, transition: "opacity 0.2s" }}
+                                className="text-gray-400 hover:text-blue-600 group-hover:opacity-100"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsEditing(true);
+                                }}
+                            />
+                        </Tippy>
                     )}
                 </>
             )}
