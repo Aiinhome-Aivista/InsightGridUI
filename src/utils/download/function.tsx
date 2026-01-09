@@ -99,6 +99,7 @@ export const generatePDF = async (
     console.warn("No data available for PDF");
     return;
   }
+  console.log("Generating PDF...",chartImageUrls);
 
   const user = JSON.parse(localStorage.getItem("ig_user") || "{}");
 

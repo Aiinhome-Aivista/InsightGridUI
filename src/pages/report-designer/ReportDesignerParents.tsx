@@ -206,6 +206,8 @@ export default function TableView() {
 
     return canvas.toDataURL("image/png");
   };
+
+  
   const handleSaveReport = async () => {
     try {
       if (!selectedTables.length) return;
@@ -252,7 +254,7 @@ export default function TableView() {
       for (let i = 0; i < charts.length; i++) {
         const chart = charts[i];
 
-        // RenderCharts এ দেওয়া id
+     
         const elementId = `report-chart-${chart.id}`;
 
         const imageBase64 = await captureChartAsImage(elementId);

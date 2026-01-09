@@ -53,12 +53,13 @@ interface ChartCardProps {
   title: string;
   description: string;
   children: React.ReactNode;
+  id: string;
   onRemove?: () => void;
   onRename?: (newTitle: string) => void;
 }
 
 // ==================== GLOBAL REUSABLE CHART CARD ====================
-export default function ChartCard({ title, description, children, onRemove, onRename }: ChartCardProps) {
+export default function ChartCard({ title, description, children, onRemove, onRename, id }: ChartCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempTitle, setTempTitle] = useState(title);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -90,14 +91,15 @@ export default function ChartCard({ title, description, children, onRemove, onRe
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 w-full max-w-md  flex-shrink-0" style={{
+    <div  id={`report-chart-${id}`} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 w-full max-w-md  flex-shrink-0" style={{
     height: "340px",     // 🔥 FIXED HEIGHT (IMPORTANT)
-    overflow: "visible"  // 🔥 NO CLIPPING
+    overflow: "visible",
+    position:"relative"  // 🔥 NO CLIPPING
   }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1 min-w-0 mr-2">
           {isEditing ? (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center ">
               <input
                 ref={inputRef}
                 type="text"
@@ -118,7 +120,7 @@ export default function ChartCard({ title, description, children, onRemove, onRe
             </div>
           ) : (
             <div className="group flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-gray-900 truncate" title={title}>
+              <h3 className="text-sm font-semibold text-gray-900 " title={title}>
                 {title}
               </h3>
               {onRename && (
