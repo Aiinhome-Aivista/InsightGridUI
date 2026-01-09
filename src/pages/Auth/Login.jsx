@@ -91,6 +91,8 @@ export default function Login() {
           company_code: companyCode,
           user_email,
           password,
+          login_type:
+          loginType === "COMPANY_ADMIN" ? "companyadmin" : "user",
         };
 
         response = await ApiServices.login(payload);
