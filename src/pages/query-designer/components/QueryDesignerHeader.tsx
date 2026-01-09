@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import Tippy from "@tippyjs/react";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
+import CancelIcon from "@mui/icons-material/Cancel";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
 import { Dropdown } from "primereact/dropdown";
@@ -44,6 +46,7 @@ export default function DashboardHeader({
   const [selectedView, setSelectedView] = useState(null);
   const [isChanging, setIsChanging] = useState(false);
   const dropdownRef = useRef<Dropdown>(null);
+  const [showBackConfirm, setShowBackConfirm] = useState(false);
   const navigate = useNavigate();
   const toggleOptions = [
     { label: "Meta Data", value: "metadata" },
@@ -120,7 +123,7 @@ export default function DashboardHeader({
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between h-auto md:h-20 py-2 md:py-0">
             <div className="flex items-center w-full md:w-auto">
               <button
-                onClick={() => navigate(-1)}
+                onClick={() => setShowBackConfirm(true)}
                 className="p-1 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
               >
                 <ArrowBackRoundedIcon fontSize="small" />
@@ -212,6 +215,61 @@ export default function DashboardHeader({
           </div>
         </div>
       </header>
+      {showBackConfirm && (
+        <div className="fixed inset-0 flex items-center justify-center z-[50] bg-black/30 backdrop-blur-sm">
+          <div
+            className="rounded-xl shadow-lg p-8 min-w-[420px] max-w-[420px] text-center relative flex flex-col items-center justify-center"
+            style={{ backgroundColor: theme.surface, color: theme.primaryText }}
+          >
+            <button
+              onClick={() => setShowBackConfirm(false)}
+              className="absolute top-2 right-2 transition"
+              aria-label="Close"
+              style={{ color: theme.accent }}
+            >
+              <CancelIcon className="w-7 h-7" />
+            </button>
+
+            <WarningRoundedIcon sx={{ color: theme.accent, fontSize: 48 }} />
+
+            <div className="my-4">
+              <p className="text-base md:text-lg font-semibold tracking-tight" style={{ color: theme.primaryText }}>
+                <span style={{ color: theme.primaryText }}>A</span>
+                <span style={{ color: theme.accent }} className="font-bold">ii</span>
+                <span style={{ color: theme.primaryText }}>nhome</span>
+                <span className="px-1" style={{ color: theme.secondaryText }}>|</span>
+                <span className="font-extrabold" style={{ color: theme.primaryText }}>IG</span>
+              </p>
+            </div>
+
+            <p className="mb-6 font-extrabold" style={{ color: theme.primaryText }}>
+              Are you sure you want to go back?
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                style={{ borderColor: theme.accent, color: theme.primaryText }}
+                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg hover:text-white transition"
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = theme.accent)}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                onClick={() => {
+                  setShowBackConfirm(false);
+                  navigate(-1);
+                }}
+              >
+                Yes
+              </button>
+              <button
+                style={{ backgroundColor: theme.accent, borderColor: theme.accent, color: theme.primaryText }}
+                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg transition"
+                onClick={() => setShowBackConfirm(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

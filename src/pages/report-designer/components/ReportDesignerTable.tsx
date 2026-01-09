@@ -12,7 +12,6 @@ import { MdChat } from "react-icons/md";
 import ApiServices from "../../../services/ApiServices";
 import { useAuth } from "../../Auth/AuthContext";
 
-
 interface DataViewTableProps {
   allData: { [key: string]: any };
   selectedTables: string[];
@@ -38,14 +37,24 @@ interface DataViewTableProps {
   charts: ChartConfig[];
   setCharts: React.Dispatch<React.SetStateAction<ChartConfig[]>>;
   columnRenames: Record<string, string>;
-  setColumnRenames: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  setColumnRenames: React.Dispatch<
+    React.SetStateAction<Record<string, string>>
+  >;
 }
 export interface ChartConfig {
   order: any;
   id: string;
-  type: "line" | "bar" | "pie" | "kpi" | "box" | "mixed" | "bubble" | "waterfall";
+  type:
+    | "line"
+    | "bar"
+    | "pie"
+    | "kpi"
+    | "box"
+    | "mixed"
+    | "bubble"
+    | "waterfall";
   xAxis?: string;
-  yAxis?: string | string[];   //  IMPORTANT
+  yAxis?: string | string[]; //  IMPORTANT
   value?: string;
   size?: string;
   label?: string;
@@ -53,7 +62,6 @@ export interface ChartConfig {
   rows: any[];
   style?: Record<string, any>;
   customTitle?: string;
-
 }
 
 const calculateAggregation = (
@@ -85,13 +93,13 @@ const calculateAggregation = (
 
       case "min":
         map[column]["MIN"] = Math.min(
-          ...rows.map(r => Number(r[column] || 0))
+          ...rows.map((r) => Number(r[column] || 0))
         );
         break;
 
       case "max":
         map[column]["MAX"] = Math.max(
-          ...rows.map(r => Number(r[column] || 0))
+          ...rows.map((r) => Number(r[column] || 0))
         );
         break;
     }
@@ -110,8 +118,8 @@ const groupRows = (
   const map: Record<string, any[]> = {};
   const finalRows: any[] = [];
 
-  rows.forEach(row => {
-    const key = groupCols.map(col => row[col]).join(" | ");
+  rows.forEach((row) => {
+    const key = groupCols.map((col) => row[col]).join(" | ");
     if (!map[key]) map[key] = [];
     map[key].push(row);
   });
@@ -126,7 +134,7 @@ const groupRows = (
     });
 
     // 🔹 CHILD ROWS
-    items.forEach(item =>
+    items.forEach((item) =>
       finalRows.push({
         ...item,
         __parentGroup: groupKey,
@@ -144,8 +152,6 @@ const groupRows = (
 
   return finalRows;
 };
-
-
 
 export default function DataViewTable({
   allData,
@@ -170,13 +176,15 @@ export default function DataViewTable({
   charts,
   setCharts,
   columnRenames,
-  setColumnRenames
+  setColumnRenames,
 }: DataViewTableProps) {
   const { theme } = useTheme();
   const [viewType, setViewType] = useState<"table" | "chart">("table");
   const [showChartSidebar, setShowChartSidebar] = useState(false);
   const primaryTableKey = selectedTables[0];
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [collapsedGroups, setCollapsedGroups] = useState<
+    Record<string, boolean>
+  >({});
   const [showChatSidebar, setShowChatSidebar] = useState(false);
   const { chatHistory, setChatHistory } = useAuth();
 
@@ -192,16 +200,13 @@ export default function DataViewTable({
 
     const collapsed: Record<string, boolean> = {};
 
-    rows.forEach(row => {
-      const key = selectedGroupBy.map(col => row[col]).join(" | ");
+    rows.forEach((row) => {
+      const key = selectedGroupBy.map((col) => row[col]).join(" | ");
       collapsed[key] = true; // 🔥 DEFAULT COLLAPSED
     });
 
     setCollapsedGroups(collapsed);
   }, [selectedGroupBy, allData]);
-
-
-
 
   const applyFilters = (rows: any[]) => {
     if (!selectedFilters.length) return rows;
@@ -222,7 +227,10 @@ export default function DataViewTable({
           if (f.operator === "equals") return cellStr === valStr;
           if (f.operator === "like") return cellStr.includes(valStr);
           if (f.operator === "in")
-            return valStr.split(",").map(v => v.trim()).includes(cellStr);
+            return valStr
+              .split(",")
+              .map((v) => v.trim())
+              .includes(cellStr);
         }
 
         // NUMBER filters
@@ -265,9 +273,7 @@ export default function DataViewTable({
       : [];
   const filteredRows = applyFilters(baseRows);
   const aggregationOrder = Array.from(
-    new Set(
-      aggregations.map(a => a.agg.toUpperCase())
-    )
+    new Set(aggregations.map((a) => a.agg.toUpperCase()))
   );
 
   const aggregationMap: Record<string, Record<string, number>> = {};
@@ -283,57 +289,44 @@ export default function DataViewTable({
         break;
 
       case "sum":
-        aggregationMap[column]["SUM"] =
-          filteredRows.reduce(
-            (acc, row) => acc + Number(row[column] || 0),
-            0
-          );
+        aggregationMap[column]["SUM"] = filteredRows.reduce(
+          (acc, row) => acc + Number(row[column] || 0),
+          0
+        );
         break;
 
       case "avg":
         aggregationMap[column]["AVG"] =
-          filteredRows.reduce(
-            (acc, row) => acc + Number(row[column] || 0),
-            0
-          ) / (filteredRows.length || 1);
+          filteredRows.reduce((acc, row) => acc + Number(row[column] || 0), 0) /
+          (filteredRows.length || 1);
         break;
 
       case "min":
         aggregationMap[column]["MIN"] = Math.min(
-          ...filteredRows.map(r => Number(r[column] || 0))
+          ...filteredRows.map((r) => Number(r[column] || 0))
         );
         break;
 
       case "max":
         aggregationMap[column]["MAX"] = Math.max(
-          ...filteredRows.map(r => Number(r[column] || 0))
+          ...filteredRows.map((r) => Number(r[column] || 0))
         );
         break;
     }
   });
 
-
   const grouped =
     selectedGroupBy.length > 0
-      ? groupRows(
-        filteredRows,
-        selectedGroupBy,
-        aggregations,
-        aggregationOrder
-      )
+      ? groupRows(filteredRows, selectedGroupBy, aggregations, aggregationOrder)
       : filteredRows;
 
-
-
-  const displayRows = grouped.filter(row => {
+  const displayRows = grouped.filter((row) => {
     if (row.__isGroup || row.__isGroupAgg) return true;
     return !collapsedGroups[row.__parentGroup];
   });
 
-
   // 🔥 Charts should NEVER use grouped rows
   const chartRows = filteredRows;
-
 
   const getColumnType = (table: any, column: string) => {
     const type = table?.visualization?.column_types?.[column];
@@ -348,8 +341,8 @@ export default function DataViewTable({
   };
 
   const removeChart = (id: string) => {
-    setCharts(prevCharts => {
-      const updatedCharts = prevCharts.filter(c => c.id !== id);
+    setCharts((prevCharts) => {
+      const updatedCharts = prevCharts.filter((c) => c.id !== id);
 
       // 🔥 recalc columns still in use
       const stillUsedColumns = getColumnsUsedByCharts(updatedCharts);
@@ -362,39 +355,41 @@ export default function DataViewTable({
   };
 
   const renameChart = (id: string, newName: string) => {
-    setCharts(prev => prev.map(c => c.id === id ? { ...c, customTitle: newName } : c));
+    setCharts((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, customTitle: newName } : c))
+    );
   };
 
   const toggleGroup = (key: string) => {
-    setCollapsedGroups(prev => ({
+    setCollapsedGroups((prev) => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: !prev[key],
     }));
   };
 
   const removeChartsByColumns = (activeColumns: string[]) => {
-    setCharts(prev =>
-      prev.filter(chart => {
+    setCharts((prev) =>
+      prev.filter((chart) => {
         const usedColumns = [
           chart.xAxis,
           ...(Array.isArray(chart.yAxis) ? chart.yAxis : [chart.yAxis]),
           chart.value,
           chart.size,
-          chart.label
+          chart.label,
         ].filter(Boolean) as string[];
 
-        return usedColumns.every(col => activeColumns.includes(col));
+        return usedColumns.every((col) => activeColumns.includes(col));
       })
     );
   };
   const getColumnsUsedByCharts = (charts: ChartConfig[]) => {
     const cols = new Set<string>();
 
-    charts.forEach(chart => {
+    charts.forEach((chart) => {
       if (chart.xAxis) cols.add(chart.xAxis);
 
       if (Array.isArray(chart.yAxis)) {
-        chart.yAxis.forEach(c => cols.add(c));
+        chart.yAxis.forEach((c) => cols.add(c));
       } else if (chart.yAxis) {
         cols.add(chart.yAxis);
       }
@@ -408,8 +403,7 @@ export default function DataViewTable({
   };
 
   const isSameChart = (a: ChartConfig, b: Partial<ChartConfig>) => {
-    const normalize = (v: any) =>
-      Array.isArray(v) ? v.join("|") : v ?? "";
+    const normalize = (v: any) => (Array.isArray(v) ? v.join("|") : v ?? "");
 
     return (
       a.type === b.type &&
@@ -428,10 +422,9 @@ export default function DataViewTable({
 
     return table.columns.map((col: any) => ({
       name: col.column_name,
-      type: table.visualization?.column_types?.[col.column_name] || "text"
+      type: table.visualization?.column_types?.[col.column_name] || "text",
     }));
   };
-
 
   const normalizeStyle = (chart: ChartConfig) => {
     if (!chart.style) return chart;
@@ -439,14 +432,14 @@ export default function DataViewTable({
     if (chart.type === "bar" && chart.style.color) {
       return {
         ...chart,
-        style: { ...chart.style, barColor: chart.style.color }
+        style: { ...chart.style, barColor: chart.style.color },
       };
     }
 
     if (chart.type === "line" && chart.style.color) {
       return {
         ...chart,
-        style: { ...chart.style, lineColor: chart.style.color }
+        style: { ...chart.style, lineColor: chart.style.color },
       };
     }
 
@@ -457,14 +450,13 @@ export default function DataViewTable({
           ...chart.style,
           colors:
             chart.style.colors ||
-              chart.style.pieColor ||   // 🔥 ADD THIS
-              chart.style.color
+            chart.style.pieColor || // 🔥 ADD THIS
+            chart.style.color
               ? [chart.style.color]
-              : undefined
-        }
+              : undefined,
+        },
       };
     }
-
 
     return chart;
   };
@@ -474,7 +466,7 @@ export default function DataViewTable({
 
     const values = new Set<string>();
 
-    chartRows.forEach(row => {
+    chartRows.forEach((row) => {
       const v = row[chart.xAxis!];
       if (v !== undefined && v !== null) {
         values.add(String(v));
@@ -487,17 +479,17 @@ export default function DataViewTable({
   const handleChatSend = async (message: string) => {
     try {
       const payload = {
-        charts: charts.map(c => ({
+        charts: charts.map((c) => ({
           id: c.id,
           type: c.type,
           xAxis: c.xAxis,
           yAxis: c.yAxis,
           agg: c.agg,
           style: c.style || {},
-          xAxis_values: getXAxisValues(c)
+          xAxis_values: getXAxisValues(c),
         })),
         available_columns: buildAvailableColumns(),
-        user_message: message
+        user_message: message,
       };
 
       const res = await ApiServices.modifyChart(payload);
@@ -519,15 +511,15 @@ export default function DataViewTable({
       //     return normalizeStyle(updated);
       //   })
       // );
-      setCharts(prev => {
+      setCharts((prev) => {
         // 1️⃣ existing charts update
-        let updatedCharts = prev.map(chart => {
-          const update = ai.updates?.find(u => u.chart_id === chart.id);
+        let updatedCharts = prev.map((chart) => {
+          const update = ai.updates?.find((u) => u.chart_id === chart.id);
           if (!update) return chart;
 
           return normalizeStyle({
             ...chart,
-            ...update.updated_fields
+            ...update.updated_fields,
           });
         });
 
@@ -538,25 +530,20 @@ export default function DataViewTable({
             ...ai.new_charts.map((c: any, index: number) => ({
               ...c,
               id: Date.now().toString() + "_" + index,
-              rows: chartRows   
-            }))
+              rows: chartRows,
+            })),
           ];
         }
 
         return updatedCharts;
       });
 
-
       return aiMessage;
-
     } catch (e) {
       console.error(e);
       return "Something went wrong while updating the chart.";
     }
   };
-
-
-
 
   return (
     <div>
@@ -567,26 +554,25 @@ export default function DataViewTable({
           table.columns?.map((col: { column_name: string }) => ({
             column_name: col.column_name,
             // header: col.column_name.replace(/_/g, " ").toUpperCase(),
-            header: columnRenames[col.column_name] || col.column_name.replace(/_/g, " ").toUpperCase(),
+            header:
+              columnRenames[col.column_name] ||
+              col.column_name.replace(/_/g, " ").toUpperCase(),
             sortable: false,
           })) || [];
         const groupByColumns = table.visualization?.group_by || [];
         const filters = table.visualization?.filters || {};
         const chartColumns =
           table.columns?.map((col: { column_name: string }) => ({
-            column_name: col.column_name,                  // ✅ SAME KEY
+            column_name: col.column_name, // ✅ SAME KEY
             label: col.column_name.replace(/_/g, " ").toUpperCase(),
           })) || [];
 
-        const chartColumnTypes =
-          table.visualization?.column_types || {};
+        const chartColumnTypes = table.visualization?.column_types || {};
 
-
-        const chartsWithRows = charts.map(c => ({
+        const chartsWithRows = charts.map((c) => ({
           ...c,
-          rows: chartRows
+          rows: chartRows,
         }));
-
 
         return (
           <div key={tableKey} className="px-4 pb-6">
@@ -622,7 +608,6 @@ export default function DataViewTable({
                         label: col.replace(/_/g, " ").toUpperCase(),
                         value: col,
                       }))}
-
                       onChange={(e) => {
                         const newGroups = e.value;
                         setSelectedGroupBy(newGroups);
@@ -641,7 +626,7 @@ export default function DataViewTable({
                         );
 
                         const collapsed = groups
-                          .filter(r => r.__isGroup)
+                          .filter((r) => r.__isGroup)
                           .reduce((acc: any, g: any) => {
                             acc[g.__groupKey] = true;
                             return acc;
@@ -649,8 +634,6 @@ export default function DataViewTable({
 
                         setCollapsedGroups(collapsed);
                       }}
-
-
                       placeholder="Group By"
                       display="chip"
                       className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
@@ -666,12 +649,13 @@ export default function DataViewTable({
                     />
                   )}
 
-
                   {Object.keys(filters).length > 0 && (
                     <MultiSelect
                       appendTo="self"
                       filter
-                      value={selectedFilters.map(f => `${f.column}|${f.operator}`)}
+                      value={selectedFilters.map(
+                        (f) => `${f.column}|${f.operator}`
+                      )}
                       options={Object.entries(filters).flatMap(([col, ops]) =>
                         (ops as string[]).map((op) => ({
                           label: `${col.toUpperCase()} ${op}`,
@@ -706,7 +690,6 @@ export default function DataViewTable({
                   {/* ===== FILTER INPUTS ===== */}
                   {selectedFilters.length > 0 && (
                     <div className="flex items-center gap-3 flex-wrap">
-
                       {selectedFilters.map((f) => {
                         const key = `${f.column}|${f.operator}`;
                         const type = getColumnType(table, f.column);
@@ -744,7 +727,9 @@ export default function DataViewTable({
                             {/* Label */}
                             <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
                               {f.column.replace(/_/g, " ").toUpperCase()}
-                              <span className="mx-1 text-gray-400">{f.operator}</span>
+                              <span className="mx-1 text-gray-400">
+                                {f.operator}
+                              </span>
                             </span>
 
                             {/* TEXT */}
@@ -796,10 +781,7 @@ export default function DataViewTable({
                         );
                       })}
                     </div>
-
                   )}
-
-
 
                   {/* View Toggle */}
                   <div className="flex border rounded-lg overflow-hidden">
@@ -808,10 +790,11 @@ export default function DataViewTable({
                         setViewType("table");
                         setShowChartSidebar(false); // ✅ ADD THIS
                       }}
-                      className={`px-2 py-2 ${viewType === "table"
-                        ? "bg-gray-100"
-                        : "hover:bg-gray-50"
-                        }`}
+                      className={`px-2 py-2 ${
+                        viewType === "table"
+                          ? "bg-gray-100"
+                          : "hover:bg-gray-50"
+                      }`}
                     >
                       <TableRowsRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
@@ -820,10 +803,11 @@ export default function DataViewTable({
                         setViewType("chart");
                         setShowChartSidebar(true);
                       }}
-                      className={`px-2 py-1 ${viewType === "chart"
-                        ? "bg-gray-100"
-                        : "hover:bg-gray-50"
-                        }`}
+                      className={`px-2 py-1 ${
+                        viewType === "chart"
+                          ? "bg-gray-100"
+                          : "hover:bg-gray-50"
+                      }`}
                     >
                       <BarChartRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
@@ -833,8 +817,9 @@ export default function DataViewTable({
                         setShowChatSidebar(true);
                         setShowChartSidebar(false);
                       }}
-                      className={`px-2 py-2 ${showChatSidebar ? "bg-gray-100" : "hover:bg-gray-50"
-                        }`}
+                      className={`px-2 py-2 ${
+                        showChatSidebar ? "bg-gray-100" : "hover:bg-gray-50"
+                      }`}
                     >
                       <MdChat />
                     </button>
@@ -849,14 +834,12 @@ export default function DataViewTable({
                     onRemoveChart={removeChart}
                     onReorderCharts={setCharts}
                     onRenameChart={renameChart}
-
                   />
                 </div>
               )}
 
               {/* {viewType === "table" && */}
               {!(showChartSidebar && charts.length > 0) && (
-
                 <ProductDataTable
                   data={displayRows}
                   globalFilter={globalFilter}
@@ -867,9 +850,9 @@ export default function DataViewTable({
                   aggregationOrder={aggregationOrder}
                   isGrouped={selectedGroupBy.length > 0}
                   onAggregationSelect={(column, agg) => {
-                    setAggregations(prev => {
+                    setAggregations((prev) => {
                       const exists = prev.find(
-                        a => a.column === column && a.agg === agg
+                        (a) => a.column === column && a.agg === agg
                       );
 
                       // already selected → ignore
@@ -879,14 +862,13 @@ export default function DataViewTable({
                       return [...prev, { column, agg }];
                     });
                   }}
-
                   enableRowGrouping={selectedGroupBy.length > 0}
-                  collapsedGroups={collapsedGroups}        // ✅ NEW
+                  collapsedGroups={collapsedGroups} // ✅ NEW
                   onToggleGroup={toggleGroup}
                   onColumnRename={(original, newName) => {
-                    setColumnRenames(prev => ({
+                    setColumnRenames((prev) => ({
                       ...prev,
-                      [original]: newName
+                      [original]: newName,
                     }));
                   }}
                 />
@@ -909,8 +891,10 @@ export default function DataViewTable({
                   //   ]);
                   // }}
                   onChartSelect={(config) => {
-                    setCharts(prev => {
-                      const exists = prev.some(chart => isSameChart(chart, config));
+                    setCharts((prev) => {
+                      const exists = prev.some((chart) =>
+                        isSameChart(chart, config)
+                      );
 
                       if (exists) {
                         return prev; // 🚫 already exists
@@ -918,11 +902,10 @@ export default function DataViewTable({
 
                       return [
                         ...prev,
-                        { ...config, id: Date.now().toString() }
+                        { ...config, id: Date.now().toString() },
                       ];
                     });
                   }}
-
                   onClose={() => setShowChartSidebar(false)}
                 />
               )}
@@ -934,26 +917,26 @@ export default function DataViewTable({
                     onRemoveChart={removeChart}
                     onReorderCharts={setCharts}
                     onRenameChart={renameChart}
-
                   />
                 </div>
               )}
               {showChatSidebar && (
                 <ReportDesignerChatSidebar
                   onClose={() => setShowChatSidebar(false)}
-                  userName={JSON.parse(localStorage.getItem("ig_user"))?.full_name || "User"}
+                  userName={
+                    JSON.parse(localStorage.getItem("ig_user"))?.full_name ||
+                    "User"
+                  }
                   charts={charts}
                   onSend={handleChatSend}
                   messages={chatHistory}
                   setMessages={setChatHistory}
                 />
               )}
-
             </div>
           </div>
         );
       })}
-
     </div>
   );
 }
