@@ -206,6 +206,7 @@ export default function TableView() {
 
     return canvas.toDataURL("image/png");
   };
+  
   const handleSaveReport = async () => {
     try {
       if (!selectedTables.length) return;
