@@ -401,17 +401,15 @@ const ReportDesignManage = () => {
               className={`
                           w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] 
                           bg-[#D9D9D9] hover:bg-[#D9D9D9] transition-all
-                          ${
-                            isRefreshing
-                              ? "opacity-70 cursor-wait"
-                              : "cursor-pointer"
-                          }
+                          ${isRefreshing
+                  ? "opacity-70 cursor-wait"
+                  : "cursor-pointer"
+                }
                         `}
             >
               <AutorenewRoundedIcon
-                className={`w-5 h-5 text-gray-500 ${
-                  isRefreshing ? "animate-spin" : ""
-                }`}
+                className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""
+                  }`}
                 fontSize="small"
               />
             </button>
@@ -428,23 +426,23 @@ const ReportDesignManage = () => {
             <table className="w-full text-[15px] table-fixed">
               <thead className="bg-gray-100 text-[#3D5B81]">
                 <tr>
-                  <th className="px-5 py-3 bg-gray-100 text-left">
+                  <th className="px-5 py-2.5 bg-gray-100 text-left">
                     Report Name
                   </th>
-                  <th className="px-5 py-3 bg-gray-100 text-left">
+                  <th className="px-5 py-2.5 bg-gray-100 text-left">
                     Saving Date
                   </th>
-                  <th className="px-5 py-3 bg-gray-100 text-left">
+                  <th className="px-5 py-2.5 bg-gray-100 text-left">
                     Saving Time
                   </th>
-                  <th className="px-5 py-3 bg-gray-100 text-left">
+                  <th className="px-5 py-2.5 bg-gray-100 text-left">
                     Update Date
                   </th>
-                  <th className="px-5 py-3 bg-gray-100 text-left">
+                  <th className="px-5 py-2.5 bg-gray-100 text-left">
                     Update Time
                   </th>
-                  <th className="px-5 py-3 bg-gray-100 text-left">Rows</th>
-                  <th className="px-5 py-3 bg-gray-100">Action</th>
+                  <th className="px-5 py-2.5 bg-gray-100 text-left">Rows</th>
+                  <th className="px-5 py-2.5 bg-gray-100">Action</th>
                 </tr>
               </thead>
             </table>
@@ -455,32 +453,32 @@ const ReportDesignManage = () => {
                 {filteredReports.map((item) => {
                   return (
                     <tr key={item.report_id} className="hover:bg-gray-50">
-                      <td className="px-6 py-3 text-xs">{item.report_name}</td>
+                      <td className="px-6 py-2.5 text-xs">{item.report_name}</td>
 
-                      <td className="px-6 py-3 text-xs text-gray-600">
+                      <td className="px-6 py-2.5 text-xs text-gray-600">
                         {item.actual_created_date}
                       </td>
 
-                      <td className="px-6 py-3 text-xs text-gray-600">
+                      <td className="px-6 py-2.5 text-xs text-gray-600">
                         {timeAgo(
                           item.actual_created_date,
                           item.actual_created_at
                         )}
                       </td>
 
-                      <td className="px-6 py-3 text-xs text-gray-600">
+                      <td className="px-6 py-2.5 text-xs text-gray-600">
                         {item.actual_saved_date}
                       </td>
 
-                      <td className="px-6 py-3 text-xs text-gray-600">
+                      <td className="px-6 py-2.5 text-xs text-gray-600">
                         {timeAgo(item.actual_saved_date, item.actual_saved_at)}
                       </td>
 
-                      <td className="px-6 py-3 text-xs text-gray-600">
+                      <td className="px-6 py-2.5 text-xs text-gray-600">
                         {item.row_affected}
                       </td>
 
-                      <td className="px-6 py-3">
+                      <td className="px-6 py-2.5">
                         <div className="flex justify-end gap-2">
                           <button
                             className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs"
