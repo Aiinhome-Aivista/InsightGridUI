@@ -63,8 +63,7 @@ const QueryDesignerManage = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const payload = { session_id: user?.session_id, created_by: user?.user_id };
-      const response = await ApiServices.getSavedQueryResponse(payload);
+      const response = await ApiServices.getSavedQueryResponse({});
       if (response.data.isSuccess) {
         setQueries(response.data.data.queries || []);
         setQueriesFetched(true);
@@ -83,7 +82,7 @@ const QueryDesignerManage = () => {
   };
 
   useEffect(() => {
-    if (user?.session_id && user?.user_id) {
+    if (user) {
       fetchSavedQueries();
     } else {
       setIsLoading(false);
@@ -234,7 +233,7 @@ const QueryDesignerManage = () => {
         </div>
       </div>
       {isLoading ? (
-       <div className="flex justify-center py-24 text-gray-500">
+        <div className="flex justify-center py-24 text-gray-500">
           <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
         </div>
       ) : error ? (

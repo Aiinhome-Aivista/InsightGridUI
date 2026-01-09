@@ -41,19 +41,7 @@ const ReportSchedulerManage = () => {
     try {
       setLoading(true);
 
-      const user = getStoredUser();
-
-      if (!user?.session_id || !user?.user_id) {
-        console.error("Session or User ID missing");
-        return;
-      }
-
-      const payload = {
-        session_id: user.session_id,
-        created_by: user.user_id,
-      };
-
-      const response = await ApiServices.getReportList(payload);
+      const response = await ApiServices.getReportList({});
 
       console.log("📥 Full API Response:", response);
       console.log("📥 Response Data:", response?.data);
@@ -197,9 +185,9 @@ const ReportSchedulerManage = () => {
 
                     <td className="px-6 py-3">
                       <div className="flex justify-end gap-2">
-                      
 
-                      
+
+
 
                         {/* <button
                           className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"

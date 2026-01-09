@@ -85,16 +85,7 @@ const ReportDesignManage = () => {
     isFetching.current = true;
     try {
       setLoading(true);
-      const user = getStoredUser();
-      if (!user?.session_id || !user?.user_id) {
-        console.error("Session or User ID missing");
-        return;
-      }
-      const payload = {
-        session_id: user.session_id,
-        created_by: user.user_id,
-      };
-      const response = await ApiServices.getReportList(payload);
+      const response = await ApiServices.getReportList({});
       setReports(response?.data?.data?.["Report list"] || []);
       setReportsFetched(true);
     } catch (error) {
@@ -240,7 +231,6 @@ const ReportDesignManage = () => {
 
       const execRes = await ApiServices.executeSql({
         sql_query: aiResponse,
-        session_id: userData?.session_id,
       });
 
       const api = execRes.data.data;
@@ -281,9 +271,9 @@ const ReportDesignManage = () => {
       generatePDF(
         {
           rows: finalRows,
-          columns: api.columns.map((c: string) => ({ 
+          columns: api.columns.map((c: string) => ({
             column_name: c,
-            header: config.column_renames?.[c] || undefined 
+            header: config.column_renames?.[c] || undefined
           })),
         },
         chartImages,
@@ -302,7 +292,6 @@ const ReportDesignManage = () => {
       if (!aiResponse) return;
       const execRes = await ApiServices.executeSql({
         sql_query: aiResponse,
-        session_id: userData?.session_id,
       });
       const api = execRes.data.data;
       const config =
@@ -315,7 +304,7 @@ const ReportDesignManage = () => {
         config.group_by?.[0],
         config.aggregations
       );
-     
+
       const chartImages = (config.chart_images || []).map(
         (img: any) => img.url
       );

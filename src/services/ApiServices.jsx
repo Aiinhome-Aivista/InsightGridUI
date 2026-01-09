@@ -21,20 +21,12 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      const msg = error.response?.data?.message || "";
+      // Clear ALL auth data on any 401
+      localStorage.removeItem("ig_user");
+      localStorage.removeItem("ig_token");
 
-      // ✅ Token expired or invalid
-      if (
-        msg.toLowerCase().includes("expired") ||
-        msg.toLowerCase().includes("invalid")
-      ) {
-        // 🔥 clear auth data
-        localStorage.removeItem("ig_user");
-        localStorage.removeItem("ig_token");
-
-        // 🔥 force redirect to login
-        window.location.href = "/";
-      }
+      // Force redirect to login
+      window.location.href = "/";
     }
 
     return Promise.reject(error);

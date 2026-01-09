@@ -3,22 +3,18 @@ import ApiService from "../../../services/ApiServices";
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const isInitialMount = useRef(true);
-  const userData = JSON.parse(localStorage.getItem("ig_user"));
-  const createdBy = userData?.user_id || "";
-  const sessionId = userData?.session_id || "";
 
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       fetchDashboardData();
     }
-  }, [createdBy, sessionId]);
+  }, []);
 
   async function fetchDashboardData() {
     try {
-      const payload = { created_by: createdBy, session_id: sessionId };
       const response = await ApiService.getDashboardData();
-      
+
       if (response.data.isSuccess) {
         setDashboardData(response.data.data);
       }
@@ -26,34 +22,34 @@ export default function Dashboard() {
       console.error('Error fetching dashboard data:', error);
     }
   }
-const formatApiDateTime = (dateStr) => {
-  if (!dateStr) return "";
+  const formatApiDateTime = (dateStr) => {
+    if (!dateStr) return "";
 
-  // Remove GMT so browser won't convert timezone
-  const cleanDate = dateStr.replace(" GMT", "");
+    // Remove GMT so browser won't convert timezone
+    const cleanDate = dateStr.replace(" GMT", "");
 
-  const date = new Date(cleanDate + " UTC");
+    const date = new Date(cleanDate + " UTC");
 
-  return date.toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: "UTC", // 👈 force same time as API
-  });
-};
+    return date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "UTC", // 👈 force same time as API
+    });
+  };
 
 
 
   const stats = dashboardData
     ? {
-        totalUploaded: dashboardData.total_uploaded_files || 0,
-        totalExtracted: dashboardData.total_extracted_files || 0,
-        totalQueries: dashboardData.total_queries || 0,
-        totalReports: dashboardData.total_reports_generated || 0,
-      }
+      totalUploaded: dashboardData.total_uploaded_files || 0,
+      totalExtracted: dashboardData.total_extracted_files || 0,
+      totalQueries: dashboardData.total_queries || 0,
+      totalReports: dashboardData.total_reports_generated || 0,
+    }
     : { totalUploaded: 0, totalExtracted: 0, totalQueries: 0, totalReports: 0 };
 
   return (
@@ -90,7 +86,7 @@ const formatApiDateTime = (dateStr) => {
                   <tr>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">File Name</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Table Name</th>
-                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Rows Affected</th>
+                    <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Rows Affected</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Table Extract Status</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Column Extract Status</th>
                     <th className="text-left py-2 px-2 font-semibold text-gray-700 border border-gray-400">Data Insert  Status</th>
@@ -102,14 +98,14 @@ const formatApiDateTime = (dateStr) => {
                   <tr>
                     <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.file_name}</td>
                     <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.table_name}</td>
-                      <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.last_inserted_rows}</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.last_inserted_rows}</td>
                     <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.table_extraction_status}</td>
                     <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.column_extraction_status}</td>
                     <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.data_insert_status}</td>
                     <td className="py-2 px-2 text-gray-800 border border-gray-400">{dashboardData.latest_file.file_size_mb}</td>
-   <td className="py-2 px-2 text-gray-800 border border-gray-400">
-  {formatApiDateTime(dashboardData.latest_file.updated_at)}
-</td>
+                    <td className="py-2 px-2 text-gray-800 border border-gray-400">
+                      {formatApiDateTime(dashboardData.latest_file.updated_at)}
+                    </td>
                   </tr>
                 </tbody>
               </table>

@@ -53,10 +53,7 @@ export default function Dashboard_page() {
     setIsFetching(true);
     const user = getStoredUser();
 
-    const payload = {
-      created_by: user?.user_id || "",
-      session_id: user?.session_id || "",
-    };
+    const payload = {};
     console.log(" Payload Sent to API:", payload);
     try {
       const response = await ApiServices.getTableData(payload);

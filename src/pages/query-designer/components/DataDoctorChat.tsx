@@ -354,8 +354,6 @@ export default function Chat({
 
     try {
       const payload = {
-        session_id: chat.session_id,
-        // created_by: userData?.user_id || "unknown",
         user_query: inputValue,
       };
 
@@ -435,7 +433,6 @@ export default function Chat({
     setIsExecuting(true);
     try {
       const payload = {
-        session_id: userData?.session_id,
         sql_query: executableQuery,
       };
       console.log("Executing SQL Payload:", payload);
@@ -606,8 +603,6 @@ export default function Chat({
     // 2Build FULL payload
     const payload = {
       session_id: chat.session_id,
-      created_by: userData?.user_id || "unknown",
-      query_title: viewName,
       parent_query_id: parentQueryId,
       messages: messagesToSend.map(msg => ({
         query_id: msg.query_id,
@@ -659,7 +654,7 @@ export default function Chat({
   //   setSaveModalConfig({});
   //   setIsConfirmSaveModalOpen(true);
   // };
-  
+
   const handleSaveClick = () => {
     const existingTitles = (location.state as any)?.existingTitles || [];
 

@@ -89,11 +89,7 @@ export default function TableView() {
     try {
       setLoading(true);
       // const userData = JSON.parse(localStorage.getItem("ig_user"));
-      const payload = {
-        created_by: userData?.user_id,
-        session_id: userData?.session_id,
-      };
-      const response = await ApiServices.getSavedQueryResponse(payload);
+      const response = await ApiServices.getSavedQueryResponse({});
       const apiData = response.data.data;
       const dropdown = apiData.queries?.flatMap((q) => {
         if (!q.messages || q.messages.length === 0) return [];
@@ -146,7 +142,6 @@ export default function TableView() {
     setIsRefreshing(true);
     try {
       const payload = {
-        session_id: userData?.session_id,
         sql_query: sqlQuery,
       };
       const response = await ApiServices.executeSql(payload);
@@ -274,8 +269,6 @@ export default function TableView() {
 
 
       const payload = {
-        session_id: user.session_id,
-        created_by: user.user_id,
         report_id: editReport?.report_id ?? `report_${Date.now()}`,
         report_name: reportName,
         query_history_id: selectedQuery.id,

@@ -15,9 +15,7 @@ export default function UploadPage() {
   const [processingFileName, setProcessingFileName] = useState("");
   const isInitialMount = useRef(true);
   const uploadInProgress = useRef(false);
-  const createdBy = user?.user_id || "";
   const [noFileMessage, setNoFileMessage] = useState("");
-  const sessionId = user?.session_id || "";
 
   // ADD THESE TWO LINES
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,12 +31,11 @@ export default function UploadPage() {
       isInitialMount.current = false;
       trackFiles();
     }
-  }, [createdBy, sessionId]);
+  }, []);
 
 
 
   async function trackFiles() {
-    const payload = { created_by: createdBy, session_id: sessionId };
     try {
       const response = await ApiService.tracker();
       if (response.data.isSuccess) {

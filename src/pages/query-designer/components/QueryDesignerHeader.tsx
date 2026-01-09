@@ -77,8 +77,6 @@ export default function DashboardHeader({
 
     if (user && selectedTable) {
       const payload = {
-        session_id: user.session_id,
-        created_by: user.user_id,
         table_name: selectedTable,
       };
 
