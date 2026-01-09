@@ -709,7 +709,7 @@ const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData
                                         </div>
 
                                         {/* ===== SCROLLABLE BODY ===== */}
-                                        <div className="overflow-y-auto max-h-[320px]">
+                                        <div className="overflow-y-auto max-h-[261px]">
                                             {columns.map((column) => (
                                                 <div
                                                     key={column.id}
