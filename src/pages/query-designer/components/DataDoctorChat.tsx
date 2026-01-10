@@ -661,24 +661,27 @@ export default function Chat({
   //   setIsConfirmSaveModalOpen(true);
   // };
   
-  const handleSaveClick = () => {
+ const handleSaveClick = () => {
     const existingTitles = (location.state as any)?.existingTitles || [];
+    const currentName = viewName.trim().toLowerCase();
+    const originalName = passedData?.query_title?.trim().toLowerCase();
 
     const isDuplicate = existingTitles.some(
       (title: string) =>
-        title.trim().toLowerCase() === viewName.trim().toLowerCase()
+        title.trim().toLowerCase() === currentName
     );
 
     if (isDuplicate) {
-      setSaveModalConfig({
-        customMessage: "Query name already exists. Please choose a different name.",
-        showConfirmButton: false, // ❌ no confirm
-      });
-      setIsConfirmSaveModalOpen(true);
-      return;
+      if (passedData?.query_title && currentName === originalName) {
+      } else {
+        setSaveModalConfig({
+          customMessage: "Query name already exists. Please choose a different name.",
+          showConfirmButton: false, 
+        });
+        setIsConfirmSaveModalOpen(true);
+        return;
+      }
     }
-
-    // ✅ unique → normal save confirm
     setSaveModalConfig({});
     setIsConfirmSaveModalOpen(true);
   };

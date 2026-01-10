@@ -830,6 +830,7 @@ export default function DataViewTable({
               {showChartSidebar && charts.length > 0 && (
                 <div className="mb-6">
                   <RenderCharts
+                    exportMode={true}
                     charts={chartsWithRows}
                     onRemoveChart={removeChart}
                     onReorderCharts={setCharts}

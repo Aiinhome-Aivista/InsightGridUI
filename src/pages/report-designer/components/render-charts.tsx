@@ -18,8 +18,9 @@ interface RenderChartsProps {
   onRemoveChart: (id: string) => void;
   onReorderCharts: (charts: ChartConfig[]) => void;
   onRenameChart?: (id: string, newName: string) => void;
+    exportMode?:true
 }
-export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, onRenameChart }: RenderChartsProps) {
+export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, onRenameChart,exportMode }: RenderChartsProps) {
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
     const items = Array.from(charts);
@@ -31,7 +32,7 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, o
   const renderChart = (chart: ChartConfig) => {
     switch (chart.type) {
       case "bar":
-        return <BarChartGraph config={chart} />;
+        return <BarChartGraph config={chart} exportMode={exportMode} />;
 
       case "pie":
         return <PieChartGraph config={chart} />;
@@ -85,7 +86,7 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, o
               <Draggable key={chart.id} draggableId={chart.id} index={index}>
                 {(provided, snapshot) => (
                   <div key={chart.id}
-                    id={`report-chart-${chart.id}`}
+                   
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
@@ -93,6 +94,7 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, o
                       }`}
                   >
                     <ChartCard
+                      id ={chart.id}
                       title={chart.customTitle || `${chart.type.toUpperCase()} Chart`}
                       description={
                         chart.xAxis ? `Based on ${chart.xAxis}` : "Chart"
