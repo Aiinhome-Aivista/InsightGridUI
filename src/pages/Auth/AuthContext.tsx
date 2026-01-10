@@ -63,40 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
 
-  useEffect(() => {
-    if (!user) return;
 
-    const expiry = Number(localStorage.getItem("ig_token_expiry"));
-    let lastActivity = Date.now();
-
-    const MAX_INACTIVE = 20 * 60 * 1000; // 20 min
-
-    const updateActivity = () => {
-      lastActivity = Date.now();
-    };
-
-    const events = ["mousemove", "keydown", "click", "scroll"];
-    events.forEach(e => window.addEventListener(e, updateActivity));
-
-    const interval = setInterval(() => {
-      const now = Date.now();
-
-      // 🔴 1. JWT expiry (backend rule)
-      if (now / 1000 > expiry) {
-        autoLogout();
-      }
-
-      // 🔴 2. Inactivity rule (UI rule)
-      if (now - lastActivity > MAX_INACTIVE) {
-        autoLogout();
-      }
-    }, 60000); // check every 1 min
-
-    return () => {
-      clearInterval(interval);
-      events.forEach(e => window.removeEventListener(e, updateActivity));
-    };
-  }, [user]);
 
   const autoLogout = () => {
     localStorage.removeItem("ig_user");
@@ -125,6 +92,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     localStorage.removeItem("ig_user");
+    localStorage.removeItem("ig_token");
+    localStorage.removeItem("ig_token_expiry");
+
     setIsLogoutModalOpen(false);
     setUser(null);
     navigate("/", { replace: true });
@@ -137,7 +107,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsConfirmSaveModalOpen(false);
   };
 
+
+  useEffect(() => {
+    if (!user) return;
+
+    let lastActivity = Date.now();
+    const MAX_INACTIVE = 20 * 60 * 1000; // 20 min
+
+    const updateActivity = () => {
+      lastActivity = Date.now();
+    };
+
+    const events = ["mousemove", "keydown", "click", "scroll"];
+    events.forEach(e => window.addEventListener(e, updateActivity));
+
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const expiry = Number(localStorage.getItem("ig_token_expiry"));
+
+      // 🔐 single exit point
+      if (
+        (expiry && now / 1000 > expiry) ||
+        now - lastActivity > MAX_INACTIVE
+      ) {
+        clearInterval(interval);      // 🛑 stop further checks
+        autoLogout();                 // 🚪 logout once
+      }
+    }, 60000); // check every 1 min
+
+    return () => {
+      clearInterval(interval);
+      events.forEach(e => window.removeEventListener(e, updateActivity));
+    };
+  }, [user]);
   const isAuthenticated = !!user;
+
 
   return (
     <AuthContext.Provider value={{
