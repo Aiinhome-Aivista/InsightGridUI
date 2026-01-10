@@ -61,9 +61,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [downloadChartData, setDownloadChartData] = useState<any[] | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
 
+
+
+  useEffect(() => {
+    if (!user) return;
+
+    const expiry = Number(localStorage.getItem("ig_token_expiry"));
+    let lastActivity = Date.now();
+
+    const MAX_INACTIVE = 20 * 60 * 1000; // 20 min
+
+    const updateActivity = () => {
+      lastActivity = Date.now();
+    };
+
+    const events = ["mousemove", "keydown", "click", "scroll"];
+    events.forEach(e => window.addEventListener(e, updateActivity));
+
+    const interval = setInterval(() => {
+      const now = Date.now();
+
+      // 🔴 1. JWT expiry (backend rule)
+      if (now / 1000 > expiry) {
+        autoLogout();
+      }
+
+      // 🔴 2. Inactivity rule (UI rule)
+      if (now - lastActivity > MAX_INACTIVE) {
+        autoLogout();
+      }
+    }, 60000); // check every 1 min
+
+    return () => {
+      clearInterval(interval);
+      events.forEach(e => window.removeEventListener(e, updateActivity));
+    };
+  }, [user]);
+
+  const autoLogout = () => {
+    localStorage.removeItem("ig_user");
+    localStorage.removeItem("ig_token");
+    localStorage.removeItem("ig_token_expiry");
+
+    setUser(null);
+    navigate("/", { replace: true });
+  };
+
+
+
   const login = (userData: any) => {
     localStorage.setItem("ig_user", JSON.stringify(userData));
     localStorage.setItem("ig_token", userData.token);
+    localStorage.setItem("ig_token_expiry", userData.token_expiry.toString());
 
     setUser(userData);
     // navigate("/layout/dashboard", { replace: true });
