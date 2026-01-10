@@ -25,14 +25,14 @@ interface StoredMessage {
 
 interface StoredChatData {
   created_by: string;
-  session_id: string;
+  // session_id: string;
   messages: StoredMessage[];
 }
 
 interface ChatSession {
   id: number;
-  session_id: string;
-  session_name: string;
+  // session_id: string;
+  // session_name: string;
   file_name: string;
   question: string;
   query: string;
@@ -63,14 +63,14 @@ interface TableData {
 
 const CHAT_STORE_KEY = "data_doctor_chat_store";
 
-const getChatStore = (createdBy: string, sessionId: string): StoredChatData => {
+const getChatStore = (createdBy: string): StoredChatData => {
   try {
     const raw = localStorage.getItem(CHAT_STORE_KEY);
 
     if (!raw) {
       return {
         created_by: createdBy,
-        session_id: sessionId,
+        // session_id: sessionId,
         messages: [],
       };
     }
@@ -79,7 +79,7 @@ const getChatStore = (createdBy: string, sessionId: string): StoredChatData => {
   } catch {
     return {
       created_by: createdBy,
-      session_id: sessionId,
+      // session_id: sessionId,
       messages: [],
     };
   }
@@ -118,8 +118,8 @@ export default function Chat({
   const isSessionDataMissing = !defaultSession.session_id;
   const [chat, setChat] = useState<ChatSession>({
     id: 1,
-    session_id: defaultSession.session_id,
-    session_name: defaultSession.session_name,
+    // session_id: defaultSession.session_id,
+    // session_name: defaultSession.session_name,
     question: isSessionDataMissing
       ? "FATAL ERROR: Session ID Missing."
       : "How can I assist you right now?",
@@ -217,7 +217,7 @@ export default function Chat({
 
   const storedMessages = getChatStore(
     userData?.user_id || "unknown",
-    chat.session_id
+    // chat.session_id
   ).messages;
 
   useEffect(() => {
@@ -286,7 +286,7 @@ export default function Chat({
     const patchedMessages = mapMessagesToChatStore(passedData.messages);
     saveChatStore({
       created_by: userData?.user_id || "unknown",
-      session_id: chat.session_id,
+      // session_id: chat.session_id,
       messages: patchedMessages,
     });
     setDisplayedLogs([]);
@@ -309,20 +309,21 @@ export default function Chat({
   }, [passedData]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
+    console.log('is function call ')
     e.preventDefault();
     if (!inputValue.trim() || !chat) return;
     setIsScriptGenerated(false);
     setInputError(null);
 
-    if (!chat.session_id || !chat.session_name) {
-      return;
-    }
+    // if (!chat.session_id || !chat.session_name) {
+    //   return;
+    // }
 
     const queryId = Date.now();
 
     const chatStore = getChatStore(
       userData?.user_id || "unknown",
-      chat.session_id
+      // chat.session_id
     );
 
     chatStore.messages.push({
@@ -354,7 +355,7 @@ export default function Chat({
 
     try {
       const payload = {
-        session_id: chat.session_id,
+        // session_id: chat.session_id,
         // created_by: userData?.user_id || "unknown",
         user_query: inputValue,
       };
@@ -363,7 +364,7 @@ export default function Chat({
       const result = response.data?.data || {};
       const updatedStore = getChatStore(
         userData?.user_id || "unknown",
-        chat.session_id
+        // chat.session_id
       );
 
       const currentMsg = updatedStore.messages.find(
@@ -425,7 +426,7 @@ export default function Chat({
     }
 
     const executableQuery = extractSqlQuery(chat.query?.trim() || "");
-    if (!executableQuery || !chat.session_id) {
+    if (!executableQuery) {
       setDisplayedLogs(["No script to run."]);
       setTableData(null);
       setIsScriptRunSuccess(false);
@@ -435,7 +436,7 @@ export default function Chat({
     setIsExecuting(true);
     try {
       const payload = {
-        session_id: userData?.session_id,
+        // session_id: userData?.session_id,
         sql_query: executableQuery,
       };
       console.log("Executing SQL Payload:", payload);
@@ -465,7 +466,7 @@ export default function Chat({
         setIsScriptRunSuccess(true);
         const store = getChatStore(
           userData?.user_id || "unknown",
-          chat.session_id
+          // chat.session_id
         );
         const lastMsg = [...store.messages]
           .reverse()
@@ -491,7 +492,7 @@ export default function Chat({
       console.error("Execute SQL API Error:", error);
       const store = getChatStore(
         userData?.user_id || "unknown",
-        chat.session_id
+        // chat.session_id
       );
 
       const lastMsg = [...store.messages]
@@ -592,7 +593,7 @@ export default function Chat({
     if (!chat || !viewName.trim()) return;
     const store = getChatStore(
       userData?.user_id || "unknown",
-      chat.session_id
+      // chat.session_id
     );
     // const messagesToSend = parentQueryId
     //   ? store.messages.slice(1)   
@@ -605,8 +606,8 @@ export default function Chat({
 
     // 2Build FULL payload
     const payload = {
-      session_id: chat.session_id,
-      created_by: userData?.user_id || "unknown",
+      // session_id: chat.session_id,
+      // created_by: userData?.user_id || "unknown",
       query_title: viewName,
       parent_query_id: parentQueryId,
       messages: messagesToSend.map(msg => ({
@@ -684,14 +685,14 @@ export default function Chat({
 
   return (
     <div className="w-full min-h-screen px-5 mt-5">
-      {isSessionDataMissing && (
+      {/* {isSessionDataMissing && (
         <div
           className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg shadow-md"
           role="alert"
         >
           <p className="font-bold">Session Data Missing</p>
         </div>
-      )}
+      )} */}
       <div className="pb-5 bg-[#D9D9D91A] rounded-xl">
         <div className="px-5 pt-4">
           <h1 className="text-lg font-semibold text-gray-800">
@@ -749,13 +750,13 @@ export default function Chat({
                 ? "Ask a query to generate a script"
                 : "Ask a query to generate a script"
             }
-            disabled={isSessionDataMissing || isSending}
+            disabled={ isSending}
             className="w-full h-full bg-transparent px-3 outline-none text-sm text-gray-800"
           />
           <button
             type="submit"
-            disabled={isSessionDataMissing || isSending}
-            className={`p-2 rounded-full hover:bg-gray-100 ${isSessionDataMissing || isSending
+            disabled={isSending}
+            className={`p-2 rounded-full hover:bg-gray-100 ${isSending
               ? "opacity-50 cursor-not-allowed"
               : ""
               }`}
@@ -866,9 +867,9 @@ export default function Chat({
               onClick={handleRunScript}
               // disabled={isSessionDataMissing || isExecuting}
               disabled={
-                isSessionDataMissing || isExecuting || !isScriptGenerated
+                 isExecuting || !isScriptGenerated
               }
-              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${isSessionDataMissing || isExecuting || !isScriptGenerated
+              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${ isExecuting || !isScriptGenerated
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-gray-300"
                 }`}

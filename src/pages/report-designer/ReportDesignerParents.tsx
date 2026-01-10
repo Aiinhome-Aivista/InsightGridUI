@@ -275,8 +275,8 @@ export default function TableView() {
 
 
       const payload = {
-        session_id: user.session_id,
-        created_by: user.user_id,
+        // session_id: user.session_id,
+        // created_by: user.user_id,
         report_id: editReport?.report_id ?? `report_${Date.now()}`,
         report_name: reportName,
         query_history_id: selectedQuery.id,

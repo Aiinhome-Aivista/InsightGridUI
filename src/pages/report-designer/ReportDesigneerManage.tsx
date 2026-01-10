@@ -85,16 +85,16 @@ const ReportDesignManage = () => {
     isFetching.current = true;
     try {
       setLoading(true);
-      const user = getStoredUser();
-      if (!user?.session_id || !user?.user_id) {
-        console.error("Session or User ID missing");
-        return;
-      }
-      const payload = {
-        session_id: user.session_id,
-        created_by: user.user_id,
-      };
-      const response = await ApiServices.getReportList(payload);
+      // const user = getStoredUser();
+      // if (!user?.session_id || !user?.user_id) {
+      //   console.error("Session or User ID missing");
+      //   return;
+      // }
+      // const payload = {
+      //   session_id: user.session_id,
+      //   created_by: user.user_id,
+      // };
+      const response = await ApiServices.getReportList();
       setReports(response?.data?.data?.["Report list"] || []);
       setReportsFetched(true);
     } catch (error) {

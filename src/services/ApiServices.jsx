@@ -93,15 +93,15 @@ class ApiServices {
     return axios.post(POST_APIS.get_chat_history, body);
   }
 
-  getSavedQueryResponse(body) {
-    return axios.post(POST_APIS.get_saved_query_response, body);
+  getSavedQueryResponse() {
+    return axios.post(POST_APIS.get_saved_query_response, {});
   }
 
   getTableData(body) {
     return axios.post(POST_APIS.get_table_data, body);
   }
-  getReportList(body) {
-    return axios.post(POST_APIS.get_report_list, body);
+  getReportList() {
+    return axios.post(POST_APIS.get_report_list, {});
   }
 
   report_save(body) {
@@ -127,6 +127,11 @@ class ApiServices {
   }
   modifyChart(body) {
     return axios.post(POST_APIS.modify_chart, body);
+  }
+  adminCompanyRegister(formData) {
+    return axios.post(POST_APIS.admin_company_register, formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
   }
 }
 

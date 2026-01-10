@@ -64,7 +64,7 @@ const QueryDesignerManage = () => {
     setError(null);
     try {
       const payload = { session_id: user?.session_id, created_by: user?.user_id };
-      const response = await ApiServices.getSavedQueryResponse(payload);
+      const response = await ApiServices.getSavedQueryResponse();
       if (response.data.isSuccess) {
         setQueries(response.data.data.queries || []);
         setQueriesFetched(true);
@@ -83,7 +83,7 @@ const QueryDesignerManage = () => {
   };
 
   useEffect(() => {
-    if (user?.session_id && user?.user_id) {
+    if ( user?.user_id) {
       fetchSavedQueries();
     } else {
       setIsLoading(false);

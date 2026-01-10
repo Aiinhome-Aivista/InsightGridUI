@@ -16,7 +16,7 @@ import Tippy from "@tippyjs/react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { useNavigate } from "react-router-dom";
 import { useParams, useLocation } from "react-router-dom";
-
+import ApiServices from "../../services/ApiServices";
 const RegisterCompany = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [isResetting, setIsResetting] = useState(false);
@@ -170,18 +170,19 @@ const RegisterCompany = () => {
     formData.append("subscription_type", values.subscription_type);
     formData.append("from_date", values.from_date);
     formData.append("to_date", values.to_date);
-    formData.append(
-      "created_by",
-      JSON.parse(localStorage.getItem("ig_user"))?.user_id
-    );
+    // formData.append(
+    //   "created_by",
+    //   JSON.parse(localStorage.getItem("ig_user"))?.user_id
+    // );
 
     if (values.company_logo) {
       formData.append("company_logo", values.company_logo);
     }
-    await fetch("http://127.0.0.1:3008/admin/company_register", {
-      method: "POST",
-      body: formData,
-    });
+    // await fetch("http://127.0.0.1:3008/admin/company_register", {
+    //   method: "POST",
+    //   body: formData,
+    // });
+    await ApiServices.adminCompanyRegister(formData);
 
     navigate("/layout/manage-companies");
   };
@@ -195,11 +196,7 @@ const RegisterCompany = () => {
   };
   useEffect(() => {
     if (!isEditMode || !company) return;
-    if (formik.values.company_name) return;
 
-    // const address = company.address || "";
-    // const parts = address.split(",");
-    // const pin = address.split("-")[1]?.trim() || "";
     let addr = {
       area: "",
       city: "",
@@ -211,14 +208,13 @@ const RegisterCompany = () => {
 
     try {
       addr = company.address ? JSON.parse(company.address) : addr;
-    } catch (e) {
+    } catch {
       console.warn("Invalid address JSON");
     }
 
     formik.setValues({
       id: company.id,
       created_by: company.created_by || "",
-
       company_name: company.company_name || "",
       company_email: company.company_email || "",
       phone_number: company.phone_number || "",
@@ -232,7 +228,6 @@ const RegisterCompany = () => {
       pin_code: addr.pin_code || "",
 
       subscription_type: company.subscription_type || "FREE",
-
       from_date: company.from_date
         ? new Date(company.from_date).toISOString().slice(0, 10)
         : "",
@@ -242,9 +237,10 @@ const RegisterCompany = () => {
     });
 
     if (company.company_logo) {
-      setLogoPreview(`http://127.0.0.1:3008${company.company_logo}`);
+      setLogoPreview(company.company_logo_url);
     }
-  }, [isEditMode, company]);
+  }, [company, isEditMode]);
+
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-6">

@@ -25,4 +25,5 @@ export const POST_APIS = {
   super_admin_login: `${BASE_URL}superadmin/login`,
   admin_company_delete: `${BASE_URL}admin/company_delete`,
   modify_chart: `${BASE_URL}modify_chart`,
+  admin_company_register: `${BASE_URL}admin/company_register`,
 };

@@ -142,8 +142,8 @@ export default function DataProcessing({ files, onRefresh }: Props) {
   const handleDeleteFile = async (file: any) => {
     try {
       const payload = {
-        session_id: user?.session_id,
-        created_by: user?.user_id,
+        // session_id: user?.session_id,
+        // created_by: user?.user_id,
         file_name: file.name || file.file_name,
       };
 
