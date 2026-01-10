@@ -11,6 +11,7 @@ import ReportDesignerManage from "../pages/report-designer/ReportDesigneerManage
 import Dashboard from "../pages/Dashboard/Components/Dashboard";
 import ReportDesignerParents from "../pages/report-designer/ReportDesignerParents";
 import ReportSchedulerManage from "../pages/report-scheduler/ReportSchedulerManage";
+import ReportSchedulerForm from "../pages/report-scheduler/report-scheduler-form";
 import Settings from "../pages/Setting/Setting";
 import ManageCompanyUsers from "../pages/company-users/ManageCompanyUsers";
 import ManageSuperAdminDashboard from "../pages/Superadmin/ManageSuperAdminDashboard";
@@ -37,6 +38,7 @@ function AppRoutes() {
             <Route path="query-list" element={<ShowQuery />} />
             <Route path="report-designer" element={<ReportDesignerManage />} />
             <Route path="report-scheduler" element={<ReportSchedulerManage />} />
+            <Route path="report-scheduler-form" element={<ReportSchedulerForm />} />
             <Route path="report-designer-view" element={<ReportDesignerParents />} />
             <Route path="query-designer" element={<QueryDesigner />} />
             <Route path="Settings" element={<Settings />} />
