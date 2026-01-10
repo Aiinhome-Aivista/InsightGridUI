@@ -104,7 +104,7 @@ const ReportSchedulerManage = () => {
           <button
             className="bg-blue-400 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
             style={{ width: "108px", height: "45px" }}
-            onClick={() => navigate("/layout/report-designer-view")}
+            onClick={() => navigate("/layout/report-scheduler-form")}
           >
             Create Schedule
           </button>
@@ -197,9 +197,9 @@ const ReportSchedulerManage = () => {
 
                     <td className="px-6 py-3">
                       <div className="flex justify-end gap-2">
-                      
 
-                      
+
+
 
                         {/* <button
                           className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"
