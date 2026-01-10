@@ -24,16 +24,40 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
   const [isSaving, setIsSaving] = useState(false);
   console.log("User Data in ProfileSettings:", userData);
 
-  const address = userData?.company_address || '';
-  const zipCodeMatch = address.match(/\b\d{6}\b/);
-  const extractedZipCode = zipCodeMatch ? zipCodeMatch[0] : '';
+  let parsedAddress = {
+    area: "",
+    city: "",
+    district: "",
+    state: "",
+    country: "",
+    pin_code: ""
+  };
 
+  try {
+    if (userData?.company_address) {
+      parsedAddress =
+        typeof userData.company_address === "string"
+          ? JSON.parse(userData.company_address)
+          : userData.company_address;
+    }
+  } catch (e) {
+    console.warn("Invalid company_address JSON");
+  }
+  const formattedAddress = [
+    parsedAddress.area,
+    parsedAddress.city,
+    parsedAddress.district,
+    parsedAddress.state,
+    parsedAddress.country
+  ]
+    .filter(Boolean)
+    .join(", ");
   const formik = useFormik({
     initialValues: {
       companyName: userData?.company_name || '',
       companyCode: userData?.company_code || '',
-      address: userData?.company_address || '',
-      zipCode: extractedZipCode,
+      address: formattedAddress,
+      zipCode: parsedAddress.pin_code || '',
       email: userData?.company_email || '',
       phoneNumber: userData?.company_phone || '',
     },
