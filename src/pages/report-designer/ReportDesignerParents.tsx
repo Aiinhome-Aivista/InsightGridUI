@@ -17,6 +17,7 @@ export default function TableView() {
   const [tableOptions, setTableOptions] = useState<any[]>([]);
   const [selectedTables, setSelectedTables] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [reportName, setReportName] = useState("");
   const [editReport, setEditReport] = useState<any>(null);
@@ -209,6 +210,7 @@ export default function TableView() {
   
   const handleSaveReport = async () => {
     try {
+      setIsSaving(true);
       if (!selectedTables.length) return;
 
       const user = JSON.parse(localStorage.getItem("ig_user"));
@@ -286,6 +288,9 @@ export default function TableView() {
       await ApiServices.report_save(payload);
     } catch (err) {
       console.error(" Save report error", err);
+      throw err;
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -309,6 +314,7 @@ export default function TableView() {
         onSaveReport={handleSaveReport}
         editReport={editReport}
         setIsRefreshing={setIsRefreshing}
+        isSaving={isSaving}
       />
       {loading || isRefreshing ? (
         <div className="flex flex-col items-center justify-center w-full h-96">
