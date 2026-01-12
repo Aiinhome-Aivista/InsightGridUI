@@ -38,6 +38,12 @@ export default function LandingPage() {
               >
                 Pricing
               </a>
+               <a
+                className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
+                onClick={() => navigate("/faq")}
+              >
+                FAQ
+              </a>
               <a
                 className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
                 onClick={() => navigate("/resources")}

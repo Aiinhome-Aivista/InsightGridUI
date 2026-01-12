@@ -19,6 +19,7 @@ import ManageCompanies from "../pages/Superadmin/ManageCompanies";
 import RegisterCompany from "../pages/Superadmin/RegisterCompany";
 import Pricing from "../pages/LandingPage/components/Pricing";
 import Resources from "../pages/LandingPage/components/Resources";
+import Faq from "../pages/LandingPage/components/Faq";
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -30,6 +31,7 @@ function AppRoutes() {
         <Route path="/login/company-admin" element={<Login />} />
         <Route path="/login/user" element={<Login />} />
         <Route path="/pricing" element={<Pricing />} />
+          <Route path="/faq" element={<Faq />} />
         <Route path="/resources" element={<Resources />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/layout" element={<AppLayout />}>
