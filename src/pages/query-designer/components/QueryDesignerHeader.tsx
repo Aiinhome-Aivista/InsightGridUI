@@ -38,7 +38,6 @@ export default function DashboardHeader({
   passedData,
   onTableLoading,
   onFetchTables,
-
 }: HeaderProps) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -110,9 +109,14 @@ export default function DashboardHeader({
   const handleDropdownHide = () => {
     window.removeEventListener("scroll", handleScroll, true);
   };
-  const handleScroll = () => {
+  const handleScroll = (e: Event) => {
+    const target = e.target as HTMLElement
+    if (target.closest(".p-dropdown-panel")) {
+      return;
+    }
     dropdownRef.current?.hide();
   };
+
   return (
     <>
       <header
@@ -152,7 +156,6 @@ export default function DashboardHeader({
                 onShow={handleDropdownShow}
                 onHide={handleDropdownHide}
                 onMouseDown={() => onFetchTables?.()}
-
                 className="
                   w-72 h-10
                   border border-gray-200 
@@ -164,17 +167,23 @@ export default function DashboardHeader({
                   bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
                 "
                 pt={{
-                  root: { className: 'cursor-pointer' },
-                  input: { className: 'text-sm font-medium text-gray-700 px-3 py-0' },
-                  trigger: { className: 'w-8 flex items-center justify-center text-gray-400' },
-                  list: { className: 'p-1' },
+                  root: { className: "cursor-pointer" },
+                  input: {
+                    className: "text-sm font-medium text-gray-700 px-3 py-0",
+                  },
+                  trigger: {
+                    className:
+                      "w-8 flex items-center justify-center text-gray-400",
+                  },
+                  list: { className: "p-1" },
                   item: ({ context }: any) => ({
-                    className: `px-3 py-2 rounded-md text-gray-700 cursor-pointer transition-colors mb-0.5 ${context.selected
-                      ? 'bg-gray-100 hover:bg-gray-200 font-semibold'
-                      : 'hover:bg-gray-50'
-                      }`
+                    className: `px-3 py-2 rounded-md text-gray-700 cursor-pointer transition-colors mb-0.5 ${
+                      context.selected
+                        ? "bg-gray-100 hover:bg-gray-200 font-semibold"
+                        : "hover:bg-gray-50"
+                    }`,
                   }),
-                  itemLabel: { className: 'font-medium' }
+                  itemLabel: { className: "font-medium" },
                 }}
               />
               <AnimatedToggleButton
@@ -189,10 +198,9 @@ export default function DashboardHeader({
               <Tippy content="Refresh" theme="gray">
                 <div
                   onClick={handleRefresh}
-                  className={`relative text-center bg-[#D9D9D9] border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
-                    ? "cursor-not-allowed"
-                    : "cursor-pointer"
-                    }`}
+                  className={`relative text-center bg-[#D9D9D9] border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
+                    isRefreshing ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
                   style={{ borderColor: theme.border }}
                 >
                   {isRefreshing ? (
@@ -233,16 +241,31 @@ export default function DashboardHeader({
             <WarningRoundedIcon sx={{ color: theme.accent, fontSize: 48 }} />
 
             <div className="my-4">
-              <p className="text-base md:text-lg font-semibold tracking-tight" style={{ color: theme.primaryText }}>
+              <p
+                className="text-base md:text-lg font-semibold tracking-tight"
+                style={{ color: theme.primaryText }}
+              >
                 <span style={{ color: theme.primaryText }}>A</span>
-                <span style={{ color: theme.accent }} className="font-bold">ii</span>
+                <span style={{ color: theme.accent }} className="font-bold">
+                  ii
+                </span>
                 <span style={{ color: theme.primaryText }}>nhome</span>
-                <span className="px-1" style={{ color: theme.secondaryText }}>|</span>
-                <span className="font-extrabold" style={{ color: theme.primaryText }}>IG</span>
+                <span className="px-1" style={{ color: theme.secondaryText }}>
+                  |
+                </span>
+                <span
+                  className="font-extrabold"
+                  style={{ color: theme.primaryText }}
+                >
+                  IG
+                </span>
               </p>
             </div>
 
-            <p className="mb-6 font-extrabold" style={{ color: theme.primaryText }}>
+            <p
+              className="mb-6 font-extrabold"
+              style={{ color: theme.primaryText }}
+            >
               Are you sure you want to go back?
             </p>
 
@@ -250,8 +273,12 @@ export default function DashboardHeader({
               <button
                 style={{ borderColor: theme.accent, color: theme.primaryText }}
                 className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg hover:text-white transition"
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = theme.accent)}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.backgroundColor = theme.accent)
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
                 onClick={() => {
                   setShowBackConfirm(false);
                   navigate(-1);
@@ -260,7 +287,11 @@ export default function DashboardHeader({
                 Yes
               </button>
               <button
-                style={{ backgroundColor: theme.accent, borderColor: theme.accent, color: theme.primaryText }}
+                style={{
+                  backgroundColor: theme.accent,
+                  borderColor: theme.accent,
+                  color: theme.primaryText,
+                }}
                 className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg transition"
                 onClick={() => setShowBackConfirm(false)}
               >

@@ -29,7 +29,7 @@ const menuItems = [
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload", roles: ["companyadmin", "user"] },
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list", roles: ["companyadmin", "user"] },
   { name: "Report Designer", icon: SummarizeOutlinedIcon, path: "report-designer", roles: ["companyadmin", "user"] },
-  { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" , roles: ["companyadmin", "user"] },
+  // { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" , roles: ["companyadmin", "user"] },
   { name: "Settings", icon: SettingsRoundedIcon, path: "Settings", roles: ["companyadmin", "user"] },
   //  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
 
