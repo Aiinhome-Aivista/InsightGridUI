@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const GET_APIS = {
   get_all_companies: `${BASE_URL}admin/get_companies`,
@@ -25,4 +25,5 @@ export const POST_APIS = {
   super_admin_login: `${BASE_URL}superadmin/login`,
   admin_company_delete: `${BASE_URL}admin/company_delete`,
   modify_chart: `${BASE_URL}modify_chart`,
+  company_register: `${BASE_URL}admin/company_register`,
 };
