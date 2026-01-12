@@ -19,6 +19,8 @@ const ReportDesignManage = () => {
   const [reportsFetched, setReportsFetched] = useState(false);
   const isFetching = useRef(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [previewingId, setPreviewingId] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const userData = JSON.parse(localStorage.getItem("ig_user"));
   const {
     previewChartData,
@@ -234,6 +236,7 @@ const ReportDesignManage = () => {
   };
 
   const handlePreview = async (report: any) => {
+    setPreviewingId(report.report_id);
     try {
       const aiResponse = report?.query?.ai_responce;
       if (!aiResponse) return;
@@ -278,7 +281,7 @@ const ReportDesignManage = () => {
       const cleanFileName = report.report_name
         .replace(/\s*report$/i, "")
         .trim();
-      generatePDF(
+      await generatePDF(
         {
           rows: finalRows,
           columns: api.columns.map((c: string) => ({
@@ -289,13 +292,16 @@ const ReportDesignManage = () => {
         chartImages,
         "preview",
         cleanFileName,
-        previewChartData
+        chartsForPreview
       );
     } catch (err) {
       console.error("Preview failed", err);
+    } finally {
+      setPreviewingId(null);
     }
   };
   const handleDownload = async (report: any) => {
+    setDownloadingId(report.report_id);
     try {
       const aiResponse = report?.query?.ai_responce;
       if (!aiResponse) return;
@@ -315,13 +321,18 @@ const ReportDesignManage = () => {
         config.aggregations
       );
 
+      const chartsForDownload = (config.charts || []).map((c: any) => ({
+        ...c,
+        rows: api.rows,
+      }));
+
       const chartImages = (config.chart_images || []).map(
         (img: any) => img.url
       );
       const cleanFileName = report.report_name
         .replace(/\s*report$/i, "")
         .trim();
-      generatePDF(
+      await generatePDF(
         {
           rows: finalRows,
           columns: api.columns.map((c: string) => ({
@@ -332,10 +343,12 @@ const ReportDesignManage = () => {
         chartImages,
         "download",
         cleanFileName,
-        previewChartData
+        chartsForDownload
       );
     } catch (err) {
       console.error("Download failed", err);
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -481,17 +494,27 @@ const ReportDesignManage = () => {
                       <td className="px-6 py-2.5">
                         <div className="flex justify-end gap-2">
                           <button
-                            className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs"
+                            className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-xs w-[60px] flex items-center justify-center"
                             onClick={() => handlePreview(item)}
+                            disabled={previewingId !== null}
                           >
-                            Preview
+                            {previewingId === item.report_id ? (
+                              <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
+                            ) : (
+                              "Preview"
+                            )}
                           </button>
 
                           <button
-                            className="text-purple-600 bg-purple-100 px-3 py-1 rounded-full text-xs"
+                            className="text-purple-600 bg-purple-100 px-3 py-1 rounded-full text-xs w-[80px] flex items-center justify-center"
                             onClick={() => handleDownload(item)}
+                            disabled={downloadingId !== null}
                           >
-                            Download
+                            {downloadingId === item.report_id ? (
+                              <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
+                            ) : (
+                              "Download"
+                            )}
                           </button>
                           <button
                             className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"

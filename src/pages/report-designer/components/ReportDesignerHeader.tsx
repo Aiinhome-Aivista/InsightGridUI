@@ -3,6 +3,7 @@ import { Dropdown } from "primereact/dropdown";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import "../../../styles/tippy-theme.css";
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
@@ -26,11 +27,13 @@ export default function DataViewHeader({
   onSaveReport,
   editReport,
   setIsRefreshing,
+  isSaving,
 }) {
   const navigate = useNavigate();
   const { setIsConfirmSaveModalOpen, setViewName, setConfirmSaveAction } =
     useAuth();
   const dropdownRef = useRef<Dropdown>(null);
+  const [loading, setLoading] = useState(false);
   const [showBackConfirm, setShowBackConfirm] = useState(false);
   const { theme } = useTheme();
   const itemTemplate = (option) => {
@@ -86,13 +89,17 @@ export default function DataViewHeader({
   const handleScroll = () => {
     dropdownRef.current?.hide();
   };
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     setViewName(reportName);
-    setConfirmSaveAction(() => async () => {
+    try {
+      setLoading(true);
       await onSaveReport();
       navigate("/layout/report-designer");
-    });
-    setIsConfirmSaveModalOpen(true);
+    } catch (error) {
+      console.error("Error saving report:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -191,15 +198,19 @@ export default function DataViewHeader({
           />
           <button
             onClick={handleSaveClick}
-            disabled={!reportName}
+            disabled={!reportName || isSaving || loading}
             className={`rounded-xl text-sm font-medium transition-all flex items-center h-10 justify-center ${
-              !reportName
+              !reportName || isSaving || loading
                 ? "bg-gray-300 cursor-not-allowed text-white"
                 : "bg-blue-400 hover:bg-blue-700 text-white"
             }`}
             style={{ width: "108px", height: "40px" }}
           >
-            Save Report
+            {isSaving || loading ? (
+              <AutorenewRoundedIcon className="animate-spin" sx={{ fontSize: 20 }} />
+            ) : (
+              "Save Report"
+            )}
           </button>
         </div>
       </div>
