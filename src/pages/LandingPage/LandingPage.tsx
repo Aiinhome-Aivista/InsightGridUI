@@ -35,13 +35,13 @@ export default function LandingPage() {
               <a className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors" href="#">Resources</a>
             </nav>
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={() => navigate("/login/user")}
                 className="flex items-center justify-center rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
               >
                 Log in
               </button>
-              <button 
+              <button
                 onClick={() => navigate("/login/user")}
                 className="flex items-center justify-center rounded-lg h-10 px-4 bg-[#137fec] text-white text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-[#137fec]/20"
               >
@@ -71,10 +71,10 @@ export default function LandingPage() {
               Connect your spreadsheets, clean your data, and build stunning interactive dashboards in minutes. No coding required.
             </p>
             <div className="pt-4">
-              <img 
-                alt="Dashboard interface showing charts and graphs" 
-                className="rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full h-auto object-cover aspect-[16/9]" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDff29x-TS0_lYF0CNs0yFtrzRokMY7u05nsCXZXNeuQ14tpBK5qZgeVOEHZh51veUKoCG__c96QtN3AO-L6PzGMAMBVajGgF5Psq41ecqUrLopLvUj2jCSNz0KWpwFYFy_QYHn6cdmaRgA0JJi-uR7y9LfoVB2j25GlD5tYiweXchNSKWEWOc5D3WPzOy-OqbDNMbF0Lp2jjPSli4kT9BoGCtukt6RFrrU_GiWewPlQzw6lh4SdM3M0gHg7x0wma0gBzn61Q9o04U" 
+              <img
+                alt="Dashboard interface showing charts and graphs"
+                className="rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full h-auto object-cover aspect-[16/9]"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDff29x-TS0_lYF0CNs0yFtrzRokMY7u05nsCXZXNeuQ14tpBK5qZgeVOEHZh51veUKoCG__c96QtN3AO-L6PzGMAMBVajGgF5Psq41ecqUrLopLvUj2jCSNz0KWpwFYFy_QYHn6cdmaRgA0JJi-uR7y9LfoVB2j25GlD5tYiweXchNSKWEWOc5D3WPzOy-OqbDNMbF0Lp2jjPSli4kT9BoGCtukt6RFrrU_GiWewPlQzw6lh4SdM3M0gHg7x0wma0gBzn61Q9o04U"
               />
             </div>
           </div>
@@ -122,13 +122,13 @@ export default function LandingPage() {
                   <div className="md:hidden inline-flex size-8 rounded-full bg-[#137fec] text-white items-center justify-center font-bold mb-3">1</div>
                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Connect Your Source</h3>
                   <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
-                    Upload CSVs, Excel files, or connect directly to Google Sheets and databases. We automatically detect types and formats.
+                    Upload your raw CSVs. We automatically detect types and formats.
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
                     <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-xs font-semibold">CSV</span>
-                    <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-xs font-semibold">Excel</span>
+                    {/* <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-xs font-semibold">Excel</span>
                     <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-xs font-semibold">JSON</span>
-                    <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-xs font-semibold">PostgreSQL</span>
+                    <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-xs font-semibold">PostgreSQL</span>*/}
                   </div>
                 </div>
               </div>
@@ -137,7 +137,7 @@ export default function LandingPage() {
               <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-center mb-16 group">
                 <div className="flex-1 order-3 md:order-1 text-center md:text-right pt-0 md:pt-8">
                   <div className="md:hidden inline-flex size-8 rounded-full bg-[#137fec] text-white items-center justify-center font-bold mb-3">2</div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Explore & Clean</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Explore, Clean & Transform</h3>
                   <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
                     View your data instantly in a smart table. Filter, sort, and group columns without writing a single line of SQL.
                   </p>
@@ -208,7 +208,7 @@ export default function LandingPage() {
                   <div className="md:hidden inline-flex size-8 rounded-full bg-[#137fec] text-white items-center justify-center font-bold mb-3">3</div>
                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Visualize Instantly</h3>
                   <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
-                    Drag and drop columns to create bar charts, line graphs, and KPIs. Customize colors and labels with ease.
+                    Choose columns from smart dropdowns to create bar charts, line graphs, and KPIs. Customize colors and labels with ease & chat to analyze, modify, and reshape your graph view in seconds..
                   </p>
                 </div>
               </div>
@@ -217,10 +217,12 @@ export default function LandingPage() {
               <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-center group">
                 <div className="flex-1 order-3 md:order-1 text-center md:text-right pt-0 md:pt-8">
                   <div className="md:hidden inline-flex size-8 rounded-full bg-[#137fec] text-white items-center justify-center font-bold mb-3">4</div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Share with the World</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Share with the Team</h3>
                   <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
-                    Send a public link or embed your dashboard into your own website. Collaborate with your team in real-time.
-                  </p>
+                    Deliver to: marketing@team.com,
+                    sales@team.com etc.
+                    Reports will be sent automatically
+                    based on your schedule.</p>
                 </div>
                 {/* Timeline Line */}
                 <div className="hidden md:flex flex-col items-center self-stretch order-1 md:order-2 w-12 relative">
@@ -239,7 +241,7 @@ export default function LandingPage() {
                         <LinkIcon className="text-slate-400 text-sm" fontSize="small" />
                         <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
                       </div>
-                      <button className="w-full bg-[#137fec] text-white text-xs font-bold py-2 rounded">Copy Public Link</button>
+                      <button className="w-full bg-[#137fec] text-white text-xs font-bold py-2 rounded">Schedule to Share</button>
                     </div>
                     <div className="text-slate-400 dark:text-slate-500 flex items-center gap-2 text-sm">
                       <PublicIcon className="text-lg" fontSize="small" />
@@ -263,7 +265,7 @@ export default function LandingPage() {
                 Join thousands of users turning data into decisions today. Start your free trial and explore all features.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <button 
+                <button
                   onClick={() => navigate("/login/user")}
                   className="flex items-center justify-center rounded-lg h-12 px-8 bg-[#137fec] text-white text-base font-bold shadow-xl shadow-[#137fec]/30 hover:bg-blue-600 transition-all hover:-translate-y-0.5"
                 >
@@ -289,7 +291,7 @@ export default function LandingPage() {
                 <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the technical overhead.
                 </p>
-                <p className="text-slate-400 dark:text-slate-600 text-sm mt-4">© 2023 InsightGrid Inc.</p>
+                <p className="text-slate-400 dark:text-slate-600 text-sm mt-4">© 2026 InsightGrid Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">

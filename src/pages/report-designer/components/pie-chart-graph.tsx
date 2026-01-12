@@ -81,9 +81,12 @@ import {
 } from "recharts";
 
 export default function PieChartGraph({ config }: { config: any }) {
+
+  const MAX_LEGEND_ITEMS = 10;
+
   if (!config?.rows || !config?.xAxis) return null;
 
-  // 1️⃣ GROUP DATA
+  //  GROUP DATA
   const grouped: Record<string, number> = {};
 
   config.rows.forEach((r: any) => {
@@ -91,7 +94,7 @@ export default function PieChartGraph({ config }: { config: any }) {
     grouped[key] = (grouped[key] || 0) + 1;
   });
 
-  // 2️⃣ APPLY RESPONSE ORDER (🔥 MOST IMPORTANT)
+  // APPLY RESPONSE ORDER (MOST IMPORTANT)
   const order: string[] =
     Array.isArray(config.xAxis_values) && config.xAxis_values.length > 0
       ? config.xAxis_values
@@ -132,7 +135,7 @@ export default function PieChartGraph({ config }: { config: any }) {
             innerRadius="45%"
             outerRadius="80%"
             label={renderLabel}
-            labelLine={false}   // 🔥 remove ugly lines
+            labelLine={false}   
           >
             {data.map((_, i) => (
               <Cell
@@ -144,13 +147,54 @@ export default function PieChartGraph({ config }: { config: any }) {
 
           <Tooltip formatter={(v: number) => [`${v}`, "Count"]} />
 
-          {/* 🔥 LEGEND RIGHT SIDE */}
+          {/*  LEGEND RIGHT SIDE */}
+          {/* <Legend
+            layout="vertical"
+            verticalAlign="middle"
+            align="right"
+            iconType="circle"
+          /> */}
+
           <Legend
             layout="vertical"
             verticalAlign="middle"
             align="right"
             iconType="circle"
+            content={({ payload }) => {
+              if (!payload) return null;
+
+              return (
+                <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                  {payload.slice(0, MAX_LEGEND_ITEMS).map((entry, index) => (
+                    <li
+                      key={`item-${index}`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 8,
+                        fontSize: 12,
+                        color: "#333"
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: "50%",
+                          backgroundColor: entry.color,
+                          display: "inline-block",
+                          marginRight: 8
+                        }}
+                      />
+                      {entry.value}
+                    </li>
+                  ))}
+                </ul>
+              );
+            }}
           />
+
+
         </PieChart>
       </ResponsiveContainer>
     </div>

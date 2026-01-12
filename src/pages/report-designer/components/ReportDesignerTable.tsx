@@ -45,14 +45,14 @@ export interface ChartConfig {
   order: any;
   id: string;
   type:
-    | "line"
-    | "bar"
-    | "pie"
-    | "kpi"
-    | "box"
-    | "mixed"
-    | "bubble"
-    | "waterfall";
+  | "line"
+  | "bar"
+  | "pie"
+  | "kpi"
+  | "box"
+  | "mixed"
+  | "bubble"
+  | "waterfall";
   xAxis?: string;
   yAxis?: string | string[]; //  IMPORTANT
   value?: string;
@@ -450,8 +450,8 @@ export default function DataViewTable({
           ...chart.style,
           colors:
             chart.style.colors ||
-            chart.style.pieColor || // 🔥 ADD THIS
-            chart.style.color
+              chart.style.pieColor || // 🔥 ADD THIS
+              chart.style.color
               ? [chart.style.color]
               : undefined,
         },
@@ -790,11 +790,10 @@ export default function DataViewTable({
                         setViewType("table");
                         setShowChartSidebar(false); // ✅ ADD THIS
                       }}
-                      className={`px-2 py-2 ${
-                        viewType === "table"
+                      className={`px-2 py-2 ${viewType === "table"
                           ? "bg-gray-100"
                           : "hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       <TableRowsRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
@@ -803,11 +802,10 @@ export default function DataViewTable({
                         setViewType("chart");
                         setShowChartSidebar(true);
                       }}
-                      className={`px-2 py-1 ${
-                        viewType === "chart"
+                      className={`px-2 py-1 ${viewType === "chart"
                           ? "bg-gray-100"
                           : "hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       <BarChartRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
@@ -817,9 +815,8 @@ export default function DataViewTable({
                         setShowChatSidebar(true);
                         setShowChartSidebar(false);
                       }}
-                      className={`px-2 py-2 ${
-                        showChatSidebar ? "bg-gray-100" : "hover:bg-gray-50"
-                      }`}
+                      className={`px-2 py-2 ${showChatSidebar ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
                     >
                       <MdChat />
                     </button>
@@ -850,19 +847,37 @@ export default function DataViewTable({
                   aggregationMap={aggregationMap}
                   aggregationOrder={aggregationOrder}
                   isGrouped={selectedGroupBy.length > 0}
+                  // onAggregationSelect={(column, agg) => {
+                  //   setAggregations((prev) => {
+                  //     const exists = prev.find(
+                  //       (a) => a.column === column && a.agg === agg
+                  //     );
+
+                  //     // already selected → ignore
+                  //     if (exists) return prev;
+
+                  //     // allow multiple aggregation for same column
+                  //     return [...prev, { column, agg }];
+                  //   });
+                  // }}
                   onAggregationSelect={(column, agg) => {
                     setAggregations((prev) => {
-                      const exists = prev.find(
+                      const exists = prev.some(
                         (a) => a.column === column && a.agg === agg
                       );
 
-                      // already selected → ignore
-                      if (exists) return prev;
+                      // 🔁 TOGGLE OFF (remove)
+                      if (exists) {
+                        return prev.filter(
+                          (a) => !(a.column === column && a.agg === agg)
+                        );
+                      }
 
-                      // allow multiple aggregation for same column
+                      // ➕ TOGGLE ON (add)
                       return [...prev, { column, agg }];
                     });
                   }}
+
                   enableRowGrouping={selectedGroupBy.length > 0}
                   collapsedGroups={collapsedGroups} // ✅ NEW
                   onToggleGroup={toggleGroup}
