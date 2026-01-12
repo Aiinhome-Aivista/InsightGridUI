@@ -1,17 +1,16 @@
-
 import { useNavigate } from "react-router-dom";
-import AnalyticsIcon from '@mui/icons-material/Analytics';
-import MenuIcon from '@mui/icons-material/Menu';
-import BoltIcon from '@mui/icons-material/Bolt';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import TableViewIcon from '@mui/icons-material/TableView';
-import DescriptionIcon from '@mui/icons-material/Description';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import LinkIcon from '@mui/icons-material/Link';
-import PublicIcon from '@mui/icons-material/Public';
-import CreditCardOffIcon from '@mui/icons-material/CreditCardOff';
+import AnalyticsIcon from "@mui/icons-material/Analytics";
+import MenuIcon from "@mui/icons-material/Menu";
+import BoltIcon from "@mui/icons-material/Bolt";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import TableViewIcon from "@mui/icons-material/TableView";
+import DescriptionIcon from "@mui/icons-material/Description";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import LinkIcon from "@mui/icons-material/Link";
+import PublicIcon from "@mui/icons-material/Public";
+import CreditCardOffIcon from "@mui/icons-material/CreditCardOff";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -25,14 +24,33 @@ export default function LandingPage() {
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
               <AnalyticsIcon className="text-2xl" />
             </div>
-            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">InsightGrid</h2>
+            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">
+              InsightGrid
+            </h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
               {/* <a className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors" href="#">Product</a>
               <a className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors" href="#">Solutions</a> */}
-              <a className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors" href="#">Pricing</a>
-              <a className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors" href="#">Resources</a>
+              <a
+                className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
+                onClick={() => navigate("/resources")}
+              >
+                Resources
+              </a>
+              <a
+                className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
+                onClick={() => navigate("/pricing")}
+              >
+                Pricing
+              </a>
+              <a
+                className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
+                onClick={() => navigate("/faq")}
+              >
+                FAQ
+              </a>
+
             </nav>
             <div className="flex gap-3">
               <button
@@ -65,10 +83,14 @@ export default function LandingPage() {
               <span>New Feature: AI Insights</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1]">
-              Data visualization <br className="hidden md:block" /> made <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#137fec] to-blue-400">effortless</span>
+              Data visualization <br className="hidden md:block" /> made{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#137fec] to-blue-400">
+                effortless
+              </span>
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl">
-              Connect your spreadsheets, clean your data, and build stunning interactive dashboards in minutes. No coding required.
+              Connect your spreadsheets, clean your data, and build stunning
+              interactive dashboards in minutes. No coding required.
             </p>
             <div className="pt-4">
               <img
@@ -79,8 +101,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
-        {/* Section Header */}
         <section className="py-12 bg-[#f6f7f8] dark:bg-[#101922]">
           <div className="px-4 md:px-10 lg:px-40 flex justify-center">
             <div className="w-full max-w-[960px] text-center">
@@ -88,7 +108,8 @@ export default function LandingPage() {
                 Turn Data into Insights in 4 Steps
               </h2>
               <p className="text-slate-600 dark:text-slate-400 text-lg max-w-xl mx-auto">
-                Skip the complex setup. Our streamlined pipeline takes you from raw files to publishable reports in minutes.
+                Skip the complex setup. Our streamlined pipeline takes you from
+                raw files to publishable reports in minutes.
               </p>
             </div>
           </div>
@@ -104,11 +125,20 @@ export default function LandingPage() {
                   <div className="relative w-full max-w-md aspect-[4/3] bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]">
                     <div className="absolute inset-0 bg-gradient-to-br from-[#137fec]/5 to-transparent"></div>
                     <div className="flex flex-col items-center gap-3 z-10">
-                      <CloudUploadIcon className="text-6xl text-[#137fec] animate-bounce" style={{ fontSize: '60px' }} />
+                      <CloudUploadIcon
+                        className="text-6xl text-[#137fec] animate-bounce"
+                        style={{ fontSize: "60px" }}
+                      />
                       <div className="flex gap-2 mt-2">
-                        <div className="h-8 w-8 rounded bg-green-100 flex items-center justify-center text-green-600"><TableViewIcon fontSize="small" /></div>
-                        <div className="h-8 w-8 rounded bg-blue-100 flex items-center justify-center text-blue-600"><DescriptionIcon fontSize="small" /></div>
-                        <div className="h-8 w-8 rounded bg-orange-100 flex items-center justify-center text-orange-600"><ViewModuleIcon fontSize="small" /></div>
+                        <div className="h-8 w-8 rounded bg-green-100 flex items-center justify-center text-green-600">
+                          <TableViewIcon fontSize="small" />
+                        </div>
+                        <div className="h-8 w-8 rounded bg-blue-100 flex items-center justify-center text-blue-600">
+                          <DescriptionIcon fontSize="small" />
+                        </div>
+                        <div className="h-8 w-8 rounded bg-orange-100 flex items-center justify-center text-orange-600">
+                          <ViewModuleIcon fontSize="small" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -116,11 +146,17 @@ export default function LandingPage() {
                 {/* Timeline Line */}
                 <div className="hidden md:flex flex-col items-center self-stretch order-1 md:order-2 w-12 relative">
                   <div className="h-full w-0.5 bg-slate-200 dark:bg-slate-700 absolute top-0 bottom-0 left-1/2 -translate-x-1/2 z-0"></div>
-                  <div className="size-10 rounded-full bg-[#137fec] text-white flex items-center justify-center font-bold z-10 mt-8 shadow-[0_0_0_8px_rgba(19,127,236,0.1)]">1</div>
+                  <div className="size-10 rounded-full bg-[#137fec] text-white flex items-center justify-center font-bold z-10 mt-8 shadow-[0_0_0_8px_rgba(19,127,236,0.1)]">
+                    1
+                  </div>
                 </div>
                 <div className="flex-1 order-3 md:order-3 text-center md:text-left pt-0 md:pt-8">
-                  <div className="md:hidden inline-flex size-8 rounded-full bg-[#137fec] text-white items-center justify-center font-bold mb-3">1</div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Connect Your Source</h3>
+                  <div className="md:hidden inline-flex size-8 rounded-full bg-[#137fec] text-white items-center justify-center font-bold mb-3">
+                    1
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                    Connect Your Source
+                  </h3>
                   <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
                     Upload your raw CSVs. We automatically detect types and formats.
                   </p>
@@ -139,21 +175,32 @@ export default function LandingPage() {
                   <div className="md:hidden inline-flex size-8 rounded-full bg-[#137fec] text-white items-center justify-center font-bold mb-3">2</div>
                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Explore, Clean & Transform</h3>
                   <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
-                    View your data instantly in a smart table. Filter, sort, and group columns without writing a single line of SQL.
+                    View your data instantly in a smart table. Filter, sort, and
+                    group columns without writing a single line of SQL.
                   </p>
                   <ul className="mt-4 space-y-2 inline-block text-left">
                     <li className="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-sm">
-                      <CheckCircleIcon className="text-[#137fec] text-base" fontSize="small" /> Auto-detect headers
+                      <CheckCircleIcon
+                        className="text-[#137fec] text-base"
+                        fontSize="small"
+                      />{" "}
+                      Auto-detect headers
                     </li>
                     <li className="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-sm">
-                      <CheckCircleIcon className="text-[#137fec] text-base" fontSize="small" /> One-click filtering
+                      <CheckCircleIcon
+                        className="text-[#137fec] text-base"
+                        fontSize="small"
+                      />{" "}
+                      One-click filtering
                     </li>
                   </ul>
                 </div>
                 {/* Timeline Line */}
                 <div className="hidden md:flex flex-col items-center self-stretch order-1 md:order-2 w-12 relative">
                   <div className="h-full w-0.5 bg-slate-200 dark:bg-slate-700 absolute top-0 bottom-0 left-1/2 -translate-x-1/2 z-0"></div>
-                  <div className="size-10 rounded-full bg-white dark:bg-slate-800 border-2 border-[#137fec] text-[#137fec] flex items-center justify-center font-bold z-10 mt-8">2</div>
+                  <div className="size-10 rounded-full bg-white dark:bg-slate-800 border-2 border-[#137fec] text-[#137fec] flex items-center justify-center font-bold z-10 mt-8">
+                    2
+                  </div>
                 </div>
                 <div className="flex-1 order-2 md:order-3">
                   <div className="relative w-full max-w-md aspect-[4/3] bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 flex flex-col gap-3 overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]">
@@ -169,7 +216,9 @@ export default function LandingPage() {
                     </div>
                     <div className="absolute inset-x-4 top-1/2 bg-white dark:bg-slate-700 p-3 rounded shadow-xl border border-[#137fec]/20 flex gap-3 items-center z-10 transform -translate-y-1/2">
                       <FilterAltIcon className="text-[#137fec]" />
-                      <div className="text-xs font-mono text-slate-500 dark:text-slate-300">WHERE revenue &gt; 5000</div>
+                      <div className="text-xs font-mono text-slate-500 dark:text-slate-300">
+                        WHERE revenue &gt; 5000
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -191,8 +240,18 @@ export default function LandingPage() {
                       </div>
                       <div className="col-span-2 bg-slate-50 dark:bg-slate-700/30 rounded-lg p-3">
                         <div className="w-full h-full border-l border-b border-slate-300 dark:border-slate-600 relative">
-                          <svg className="absolute bottom-0 left-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 50">
-                            <path className="text-green-500" d="M0,50 L20,30 L40,40 L60,10 L80,25 L100,5" fill="none" stroke="currentColor" strokeWidth="2"></path>
+                          <svg
+                            className="absolute bottom-0 left-0 w-full h-full"
+                            preserveAspectRatio="none"
+                            viewBox="0 0 100 50"
+                          >
+                            <path
+                              className="text-green-500"
+                              d="M0,50 L20,30 L40,40 L60,10 L80,25 L100,5"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            ></path>
                           </svg>
                         </div>
                       </div>
@@ -202,11 +261,17 @@ export default function LandingPage() {
                 {/* Timeline Line */}
                 <div className="hidden md:flex flex-col items-center self-stretch order-1 md:order-2 w-12 relative">
                   <div className="h-full w-0.5 bg-slate-200 dark:bg-slate-700 absolute top-0 bottom-0 left-1/2 -translate-x-1/2 z-0"></div>
-                  <div className="size-10 rounded-full bg-white dark:bg-slate-800 border-2 border-[#137fec] text-[#137fec] flex items-center justify-center font-bold z-10 mt-8">3</div>
+                  <div className="size-10 rounded-full bg-white dark:bg-slate-800 border-2 border-[#137fec] text-[#137fec] flex items-center justify-center font-bold z-10 mt-8">
+                    3
+                  </div>
                 </div>
                 <div className="flex-1 order-3 md:order-3 text-center md:text-left pt-0 md:pt-8">
-                  <div className="md:hidden inline-flex size-8 rounded-full bg-[#137fec] text-white items-center justify-center font-bold mb-3">3</div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Visualize Instantly</h3>
+                  <div className="md:hidden inline-flex size-8 rounded-full bg-[#137fec] text-white items-center justify-center font-bold mb-3">
+                    3
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                    Visualize Instantly
+                  </h3>
                   <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
                     Choose columns from smart dropdowns to create bar charts, line graphs, and KPIs. Customize colors and labels with ease & chat to analyze, modify, and reshape your graph view in seconds..
                   </p>
@@ -227,18 +292,25 @@ export default function LandingPage() {
                 {/* Timeline Line */}
                 <div className="hidden md:flex flex-col items-center self-stretch order-1 md:order-2 w-12 relative">
                   <div className="h-1/2 w-0.5 bg-gradient-to-b from-slate-200 to-transparent dark:from-slate-700 absolute top-0 left-1/2 -translate-x-1/2 z-0"></div>
-                  <div className="size-10 rounded-full bg-white dark:bg-slate-800 border-2 border-[#137fec] text-[#137fec] flex items-center justify-center font-bold z-10 mt-8">4</div>
+                  <div className="size-10 rounded-full bg-white dark:bg-slate-800 border-2 border-[#137fec] text-[#137fec] flex items-center justify-center font-bold z-10 mt-8">
+                    4
+                  </div>
                 </div>
                 <div className="flex-1 order-2 md:order-3">
                   <div className="relative w-full max-w-md aspect-[4/3] bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 flex flex-col items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]">
                     <div className="absolute top-4 right-4 flex gap-1">
                       <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600 border-2 border-white dark:border-slate-800 z-0"></div>
                       <div className="w-8 h-8 rounded-full bg-slate-300 dark:bg-slate-500 border-2 border-white dark:border-slate-800 -ml-3 z-10"></div>
-                      <div className="w-8 h-8 rounded-full bg-[#137fec] border-2 border-white dark:border-slate-800 -ml-3 z-20 flex items-center justify-center text-white text-[10px] font-bold">+5</div>
+                      <div className="w-8 h-8 rounded-full bg-[#137fec] border-2 border-white dark:border-slate-800 -ml-3 z-20 flex items-center justify-center text-white text-[10px] font-bold">
+                        +5
+                      </div>
                     </div>
                     <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-700 w-full max-w-[240px] shadow-sm mb-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <LinkIcon className="text-slate-400 text-sm" fontSize="small" />
+                        <LinkIcon
+                          className="text-slate-400 text-sm"
+                          fontSize="small"
+                        />
                         <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
                       </div>
                       <button className="w-full bg-[#137fec] text-white text-xs font-bold py-2 rounded">Schedule to Share</button>
@@ -262,7 +334,8 @@ export default function LandingPage() {
                 Ready to build your first dashboard?
               </h2>
               <p className="text-slate-600 dark:text-slate-400 text-lg mb-8 max-w-2xl mx-auto">
-                Join thousands of users turning data into decisions today. Start your free trial and explore all features.
+                Join thousands of users turning data into decisions today. Start
+                your free trial and explore all features.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <button
@@ -272,7 +345,8 @@ export default function LandingPage() {
                   Start Building Now
                 </button>
                 <span className="text-sm text-slate-500 dark:text-slate-500 flex items-center gap-1">
-                  <CreditCardOffIcon className="text-base" fontSize="small" /> No credit card required
+                  <CreditCardOffIcon className="text-base" fontSize="small" />{" "}
+                  No credit card required
                 </span>
               </div>
             </div>
@@ -289,28 +363,80 @@ export default function LandingPage() {
                   <span className="font-bold text-lg">InsightGrid</span>
                 </div>
                 <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs">
-                  Empowering teams to make data-driven decisions without the technical overhead.
+                  Empowering teams to make data-driven decisions without the
+                  technical overhead.
                 </p>
                 <p className="text-slate-400 dark:text-slate-600 text-sm mt-4">© 2026 InsightGrid Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Product</h4>
-                  <a className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm" href="#">Features</a>
-                  <a className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm" href="#">Integrations</a>
-                  <a className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm" href="#">Pricing</a>
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                    Product
+                  </h4>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Features
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Integrations
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Pricing
+                  </a>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Company</h4>
-                  <a className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm" href="#">About</a>
-                  <a className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm" href="#">Blog</a>
-                  <a className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm" href="#">Careers</a>
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                    Company
+                  </h4>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    About
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Blog
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Careers
+                  </a>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Support</h4>
-                  <a className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm" href="#">Help Center</a>
-                  <a className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm" href="#">Privacy Policy</a>
-                  <a className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm" href="#">Terms of Service</a>
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                    Support
+                  </h4>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Help Center
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Privacy Policy
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Terms of Service
+                  </a>
                 </div>
               </div>
             </div>

@@ -11,11 +11,15 @@ import ReportDesignerManage from "../pages/report-designer/ReportDesigneerManage
 import Dashboard from "../pages/Dashboard/Components/Dashboard";
 import ReportDesignerParents from "../pages/report-designer/ReportDesignerParents";
 import ReportSchedulerManage from "../pages/report-scheduler/ReportSchedulerManage";
+import ReportSchedulerForm from "../pages/report-scheduler/report-scheduler-form";
 import Settings from "../pages/Setting/Setting";
 import ManageCompanyUsers from "../pages/company-users/ManageCompanyUsers";
 import ManageSuperAdminDashboard from "../pages/Superadmin/ManageSuperAdminDashboard";
 import ManageCompanies from "../pages/Superadmin/ManageCompanies";
 import RegisterCompany from "../pages/Superadmin/RegisterCompany";
+import Pricing from "../pages/LandingPage/components/Pricing";
+import Resources from "../pages/LandingPage/components/Resources";
+import Faq from "../pages/LandingPage/components/Faq";
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -26,6 +30,9 @@ function AppRoutes() {
         <Route path="/login/super-admin" element={<Login />} />
         <Route path="/login/company-admin" element={<Login />} />
         <Route path="/login/user" element={<Login />} />
+        <Route path="/pricing" element={<Pricing />} />
+          <Route path="/faq" element={<Faq />} />
+        <Route path="/resources" element={<Resources />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/layout" element={<AppLayout />}>
             <Route index element={<Navigate to="upload" replace />} />
@@ -33,6 +40,7 @@ function AppRoutes() {
             <Route path="query-list" element={<ShowQuery />} />
             <Route path="report-designer" element={<ReportDesignerManage />} />
             <Route path="report-scheduler" element={<ReportSchedulerManage />} />
+            <Route path="report-scheduler-form" element={<ReportSchedulerForm />} />
             <Route path="report-designer-view" element={<ReportDesignerParents />} />
             <Route path="query-designer" element={<QueryDesigner />} />
             <Route path="Settings" element={<Settings />} />
