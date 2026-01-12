@@ -852,14 +852,18 @@ export default function DataViewTable({
                   isGrouped={selectedGroupBy.length > 0}
                   onAggregationSelect={(column, agg) => {
                     setAggregations((prev) => {
-                      const exists = prev.find(
+                      const exists = prev.some(
                         (a) => a.column === column && a.agg === agg
                       );
 
-                      // already selected → ignore
-                      if (exists) return prev;
+                      // 🔁 TOGGLE OFF (remove)
+                      if (exists) {
+                        return prev.filter(
+                          (a) => !(a.column === column && a.agg === agg)
+                        );
+                      }
 
-                      // allow multiple aggregation for same column
+                      // ➕ TOGGLE ON (add)
                       return [...prev, { column, agg }];
                     });
                   }}

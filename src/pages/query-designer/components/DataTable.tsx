@@ -58,7 +58,7 @@ export default function ProductDataTable({
   const [first, setFirst] = useState(0);
   // const rows = 5;
   const rows = enableRowGrouping
-    ? data.length        // 🔥 group mode → exact rows
+    ? data.length        //  group mode → exact rows
     : 5;                 // normal mode
 
   // const totalRecords = data.length;
@@ -87,6 +87,25 @@ export default function ProductDataTable({
     setFirst(0);
     setPageWindowStart(1);
   }, [globalFilter]);
+
+  const getColumnAggOrder = (column: string) => {
+    if (!aggregationMap?.[column]) return [];
+    return Object.keys(aggregationMap[column]);
+  };
+
+  const getGlobalAggOrder = () => {
+    if (!aggregationMap) return [];
+    return Array.from(
+      new Set(
+        Object.values(aggregationMap).flatMap(colAgg =>
+          Object.keys(colAgg)
+        )
+      )
+    );
+  };
+
+
+
   const formatHeader = (headerText: string) => {
     if (!headerText) return '';
     return headerText
@@ -168,8 +187,6 @@ export default function ProductDataTable({
                 />
 
               }
-
-
               sortable={isSortable}
               headerStyle={{
                 fontSize: '15px',
@@ -214,81 +231,193 @@ export default function ProductDataTable({
 
 
                 // 🔹 GROUP AGGREGATION ROW
+                // if (rowData.__isGroupAgg) {
+                //   if (index === 0) {
+                //     return (
+                //       <div className="text-xs font-semibold text-gray-700 aggregation-container">
+                //         {/* {rowData.__aggregationOrder.map(a => (
+                //           <div className="aggregation-row-item" key={a}>{a}</div>
+                //         ))} */}
+                //         {rowData.__aggregationOrder.map(a => (
+                //           <div key={a} className="aggregation-row-item">
+                //             <span className="font-semibold mr-2">{a}</span>
+                //             <span>
+                //               rowData.__aggregationMap[col.column_name]?.[a] ?? ""
+                //             </span>
+                //           </div>
+                //         ))}
+                //         {/* {Object.keys(rowData.__aggregationMap[col.column_name] || {}).map(a => (
+                //           <div key={a} className="aggregation-row-item">
+                //             <span className="font-semibold mr-2">{a}</span>
+                //             <span>
+                //               {rowData.__aggregationMap[col.column_name]?.[a]}
+                //             </span>
+                //           </div>
+                //         ))} */}
+
+                //       </div>
+                //     );
+                //   }
+
+                //   const colAgg = rowData.__aggregationMap[col.column_name];
+                //   if (!colAgg) return null;
+
+                //   return (
+                //     <div className="text-xs font-semibold aggregation-container">
+                //       {rowData.__aggregationOrder.map(a => (
+                //         <div className="aggregation-row-item" key={a}>
+                //           {colAgg[a]?.toFixed?.(2) ?? ""}
+                //         </div>
+                //       ))}
+                //     </div>
+                //   );
+                // }
                 if (rowData.__isGroupAgg) {
+                  const globalAggs = Object.keys(
+                    rowData.__aggregationMap || {}
+                  ).flatMap(col =>
+                    Object.keys(rowData.__aggregationMap[col] || {})
+                  );
+
+                  const uniqueAggs = Array.from(new Set(globalAggs));
+
+                  // FIRST COLUMN → HEADER + VALUE (if exists)
                   if (index === 0) {
                     return (
-                      <div className="text-xs font-semibold text-gray-700 aggregation-container">
-                        {/* {rowData.__aggregationOrder.map(a => (
-                          <div className="aggregation-row-item" key={a}>{a}</div>
-                        ))} */}
-                        {rowData.__aggregationOrder.map(a => (
-                          <div key={a} className="aggregation-row-item">
-                            <span className="font-semibold mr-2">{a}</span>
-                            <span>
-                              {rowData.__aggregationMap[col.column_name]?.[a] ??
-                                rowData.__count ??
-                                ""}
-                            </span>
-                          </div>
-                        ))}
+                      <div className="aggregation-container text-xs font-semibold text-gray-700">
+                        {uniqueAggs.map(a => {
+                          const value =
+                            rowData.__aggregationMap[col.column_name]?.[a];
+
+                          return (
+                            <div
+                              key={a}
+                              className="aggregation-row-item flex justify-between gap-2"
+                            >
+                              <span>{a}</span>
+                              {value !== undefined && (
+                                <span>{value.toFixed?.(2)}</span>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     );
                   }
 
+                  // OTHER COLUMNS → VALUE ONLY IF SELECTED
                   const colAgg = rowData.__aggregationMap[col.column_name];
                   if (!colAgg) return null;
 
                   return (
-                    <div className="text-xs font-semibold aggregation-container">
-                      {rowData.__aggregationOrder.map(a => (
-                        <div className="aggregation-row-item" key={a}>
-                          {colAgg[a]?.toFixed?.(2) ?? ""}
+                    <div className="aggregation-container text-xs font-semibold">
+                      {Object.keys(colAgg).map(a => (
+                        <div key={a} className="aggregation-row-item">
+                          {colAgg[a]?.toFixed?.(2)}
                         </div>
                       ))}
                     </div>
                   );
                 }
 
+
+
                 // 🔹 NORMAL ROW
                 return rowData[col.column_name];
               }}
+              // footer={
+              //   !isGrouped && aggregationMap && aggregationOrder?.length ? (
+              //     index === 0 ? (
+              //       <div className="aggregation-container text-xs text-gray-700 font-semibold">
+              //         {aggregationOrder.map(a => (
+              //           <div key={a} className="aggregation-row-item">
+              //             <span className="mr-2">{a}</span>
+              //             <span>
+              //               {a === "COUNT"
+              //                 ? totalRecords
+              //                 : aggregationMap?.[col.column_name]?.[a]?.toFixed?.(2) ?? ""}
+              //             </span>
+              //           </div>
+              //         ))}
+              //       </div>
+              //     )
+              //       : aggregationMap[col.column_name] ? (
+              //         // 🔹 VALUE COLUMN
+              //         <div className="aggregation-container">
+              //           {aggregationOrder.map((a) => (
+              //             <div key={a} className="aggregation-row-item text-xs text-gray-700 font-semibold">
+              //               {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
+              //             </div>
+              //           ))}
+              //         </div>
+              //       ) : (
+              //         <div className="aggregation-container">
+              //           {aggregationOrder.map((a) => (
+              //             <div key={a} className="aggregation-row-item"></div>
+              //           ))}
+              //         </div>
+              //       )
+              //   ) : null
+              // }
               footer={
-                !isGrouped && aggregationMap && aggregationOrder?.length ? (
-                  index === 0 ? (
-                    <div className="aggregation-container text-xs text-gray-700 font-semibold">
-                      {aggregationOrder.map(a => (
-                        <div key={a} className="aggregation-row-item">
-                          <span className="mr-2">{a}</span>
-                          <span>
-                            {a === "COUNT"
-                              ? totalRecords
-                              : aggregationMap?.[col.column_name]?.[a]?.toFixed?.(2) ?? ""}
-                          </span>
+                !isGrouped && aggregationMap ? (() => {
+                  const columnAggs = getColumnAggOrder(col.column_name);
+                  const globalAggs = getGlobalAggOrder();
+
+                  // RULE 4: no aggregation anywhere → no footer
+                  if (!globalAggs.length) return null;
+
+                  // FIRST COLUMN → HEADER ALWAYS
+                  if (index === 0) {
+                    return (
+                      <div className="aggregation-container text-xs font-semibold text-gray-700">
+                        {globalAggs.map(a => {
+                          const value =
+                            aggregationMap[col.column_name]?.[a];
+
+                          return (
+                            <div
+                              key={a}
+                              className="aggregation-row-item flex gap-2"
+                            >
+                              <span>{a}</span>
+
+                              {/* RULE 2 & 3 */}
+                              {value !== undefined && (
+                                <span>{value.toFixed?.(2)}</span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  }
+
+                  // OTHER COLUMNS → show value only if selected
+                  if (!columnAggs.length) {
+                    return (
+                      <div className="aggregation-container">
+                        {globalAggs.map(a => (
+                          <div key={a} className="aggregation-row-item" />
+                        ))}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="aggregation-container">
+                      {columnAggs.map(a => (
+                        <div
+                          key={a}
+                          className="aggregation-row-item text-xs font-semibold text-gray-700"
+                        >
+                          {aggregationMap[col.column_name][a]?.toFixed?.(2)}
                         </div>
                       ))}
                     </div>
-                  )
-                    : aggregationMap[col.column_name] ? (
-                      // 🔹 VALUE COLUMN
-                      <div className="aggregation-container">
-                        {aggregationOrder.map((a) => (
-                          <div key={a} className="aggregation-row-item text-xs text-gray-700 font-semibold">
-                            {aggregationMap[col.column_name][a]?.toFixed?.(2) ?? ""}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="aggregation-container">
-                        {aggregationOrder.map((a) => (
-                          <div key={a} className="aggregation-row-item"></div>
-                        ))}
-                      </div>
-                    )
-                ) : null
+                  );
+                })() : null
               }
-
-
-
 
 
 
@@ -296,8 +425,6 @@ export default function ProductDataTable({
           );
         })}
       </DataTable>
-
-
       {showPagination && (
         <div className="flex items-center justify-between px-4 py-1 bg-white border-t border-gray-200 rounded-b-xl">
           <div className="text-sm text-gray-600">
