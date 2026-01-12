@@ -16,6 +16,7 @@ import Tippy from "@tippyjs/react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { useNavigate } from "react-router-dom";
 import { useParams, useLocation } from "react-router-dom";
+import { POST_APIS, BASE_URL } from "../../../connection";
 
 const RegisterCompany = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -178,7 +179,7 @@ const RegisterCompany = () => {
     if (values.company_logo) {
       formData.append("company_logo", values.company_logo);
     }
-    await fetch("http://127.0.0.1:3008/admin/company_register", {
+    await fetch(POST_APIS.company_register, {
       method: "POST",
       body: formData,
     });
@@ -242,7 +243,7 @@ const RegisterCompany = () => {
     });
 
     if (company.company_logo) {
-      setLogoPreview(`http://127.0.0.1:3008${company.company_logo}`);
+      setLogoPreview(`${BASE_URL}${company.company_logo}`);
     }
   }, [isEditMode, company]);
 
