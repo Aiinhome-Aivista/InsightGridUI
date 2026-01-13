@@ -127,11 +127,94 @@ export default function FAQ() {
       </main>
 
       {/* --- FOOTER --- */}
-      <footer className="py-12 bg-slate-50 dark:bg-[#0d141b] border-t border-slate-200 dark:border-slate-800">
-         <div className="px-4 md:px-10 lg:px-40 text-center md:text-left">
-            <p className="text-slate-400 dark:text-slate-600 text-sm">© 2026 SahajInsights Inc.</p>
-         </div>
-      </footer>
+    <footer className="py-12 bg-slate-50 dark:bg-[#0d141b] border-t border-slate-200 dark:border-slate-800">
+          <div className="px-4 md:px-10 lg:px-40 flex justify-center">
+            <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                  <AnalyticsIcon className="text-[#137fec]" />
+                  <span className="font-bold text-lg">SahajInsights</span>
+                </div>
+                <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs">
+                  Empowering teams to make data-driven decisions without the
+                  technical overhead.
+                </p>
+                <p className="text-slate-400 dark:text-slate-600 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+              </div>
+              <div className="flex flex-wrap gap-12 md:gap-20">
+                <div className="flex flex-col gap-3">
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                    Product
+                  </h4>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Features
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Integrations
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Pricing
+                  </a>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                    Company
+                  </h4>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    About
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Blog
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Careers
+                  </a>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                    Support
+                  </h4>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Help Center
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Privacy Policy
+                  </a>
+                  <a
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
+                    href="#"
+                  >
+                    Terms of Service
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
     </div>
   );
 }
