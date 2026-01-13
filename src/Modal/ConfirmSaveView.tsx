@@ -6,7 +6,7 @@ interface ConfirmSaveViewProps {
   customTitle?: string;
   customMessage?: string;
   customOnCancel?: () => void;
-  customOnConfirm?: () => void;
+  customOnConfirm?: () => void | Promise<void>;
   showConfirmButton?: boolean;
 }
 
@@ -19,9 +19,28 @@ export default function ConfirmSaveView({
   showConfirmButton = true,
 }: ConfirmSaveViewProps) {
   const { isConfirmSaveModalOpen, setIsConfirmSaveModalOpen, viewName, confirmSave, isSaving } = useAuth();
+  const [localActionLoading, setLocalActionLoading] = React.useState(false);
 
   const onCancel = customOnCancel || (() => setIsConfirmSaveModalOpen(false));
-  const onConfirm = customOnConfirm || confirmSave;
+
+  const handleConfirm = async () => {
+    if (customOnConfirm) {
+      try {
+        setLocalActionLoading(true);
+        const res = customOnConfirm();
+        if (res && (res as Promise<void>).then) {
+          await res;
+        }
+      } finally {
+        setLocalActionLoading(false);
+      }
+      return;
+    }
+
+    confirmSave();
+  };
+
+  const isActionLoading = customOnConfirm ? localActionLoading : isSaving;
   const displayTitle = customTitle || viewName;
   const displayMessage = customMessage || `Do you want to save the ${type.toLowerCase()}?`;
   const isDuplicateMessage =
@@ -52,28 +71,22 @@ export default function ConfirmSaveView({
               <button
                 className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 bg-white hover:bg-[#7ca1f3] hover:text-white transition disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={onCancel}
-                disabled={isSaving}
+                disabled={isActionLoading}
               >
-                {/* {isSaving ? (
-                  <svg className="animate-spin inline-block h-4 w-4 mr-2" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                  </svg>
-                ) : null} */}
                 Cancel
               </button>
               <button
                 className="px-6 py-2 rounded-lg bg-[#7ca1f3] text-white hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
-                onClick={onConfirm}
-                disabled={isSaving}
+                onClick={handleConfirm}
+                disabled={isActionLoading}
               >
-                {isSaving ? (
+                {isActionLoading ? (
                   <>
                     <svg className="animate-spin inline-block h-4 w-4 mr-2" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
                     </svg>
-                    Saving...
+                    {customOnConfirm ? "Deleting..." : "Saving..."}
                   </>
                 ) : (
                   "Confirm"
