@@ -301,7 +301,7 @@ export default function ChartSidebar({
   };
   return (
     <div className="fixed top-0 right-0 w-80 bg-white shadow-lg h-screen border-l overflow-y-auto z-50">
-      <div className="sticky top-0 bg-white z-10 p-4 border-b">
+      <div className="sticky top-0 bg-white z-10 p-4">
         <div className="flex justify-between items-center mb-2">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
