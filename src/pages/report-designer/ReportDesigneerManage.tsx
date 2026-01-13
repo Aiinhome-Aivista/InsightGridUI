@@ -372,7 +372,7 @@ const ReportDesignManage = () => {
           </div>
 
           <button
-            className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
+            className="bg-[#7CA1F3] hover:bg-blue-500 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
             style={{ width: "108px" }}
             onClick={() => navigate("/layout/report-designer-view")}
           >

@@ -26,6 +26,8 @@ interface AuthContextType {
   downloadData: { rows: any[]; columns: any[] } | null;
   setDownloadData: Dispatch<TableData | null>;
   setIsConfirmSaveModalOpen: Dispatch<SetStateAction<boolean>>;
+  isSaving: boolean;
+  setIsSaving: Dispatch<SetStateAction<boolean>>;
   viewName: string;
   setViewName: Dispatch<SetStateAction<string>>;
   confirmSave: () => void;
@@ -54,6 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [viewName, setViewName] = useState("");
   const [downloadData, setDownloadData] = useState<TableData | null>(null);
   const [confirmSaveAction, setConfirmSaveAction] = useState<() => void>(() => () => { });
@@ -83,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (confirmSaveAction) {
       confirmSaveAction();
     }
-    setIsConfirmSaveModalOpen(false);
+    // Keep the modal open until the confirm action decides to close it (so a loader can be shown)
   };
 
   const isAuthenticated = !!user;
@@ -93,6 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user, login, logout, isAuthenticated,
       isLogoutModalOpen, setIsLogoutModalOpen,
       isConfirmSaveModalOpen, setIsConfirmSaveModalOpen,
+      isSaving, setIsSaving,
       downloadData, setDownloadData,
       viewName, setViewName, confirmSave, setConfirmSaveAction: setConfirmSaveAction, previewChartData,
       setPreviewChartData, downloadChartData, setDownloadChartData, chatHistory, setChatHistory

@@ -164,7 +164,7 @@ export default function DataViewHeader({
             onShow={handleDropdownShow}
             onHide={handleDropdownHide}
             className="
-    w-96 h-10
+    w-80 h-10
     border border-gray-200 
   rounded-xl
     flex items-center justify-between
@@ -202,7 +202,7 @@ export default function DataViewHeader({
             className={`rounded-xl text-sm font-medium transition-all flex items-center h-10 justify-center ${
               !reportName || isSaving || loading
                 ? "bg-gray-300 cursor-not-allowed text-white"
-                : "bg-blue-400 hover:bg-blue-700 text-white"
+                : "bg-[#7CA1F3] hover:bg-blue-500 text-white"
             }`}
             style={{ width: "108px", height: "40px" }}
           >

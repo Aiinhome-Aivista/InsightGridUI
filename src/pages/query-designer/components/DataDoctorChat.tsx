@@ -163,6 +163,8 @@ export default function Chat({
     viewName,
     setViewName,
     setConfirmSaveAction,
+    isSaving,
+    setIsSaving,
   } = useAuth();
 
   // useEffect(() => {
@@ -624,6 +626,7 @@ export default function Chat({
     console.log("Full session save payload:", payload);
 
     try {
+      setIsSaving?.(true);
       const response = await ApiService.saveChat(payload);
       if (response.data.isSuccess) {
         localStorage.removeItem("data_doctor_chat_store");
@@ -633,6 +636,7 @@ export default function Chat({
     } catch (error) {
       console.error("Save API error:", error);
     } finally {
+      setIsSaving?.(false);
       setIsConfirmSaveModalOpen(false);
       setViewName("");
       navigate("/layout/query-list");
@@ -828,19 +832,29 @@ export default function Chat({
             </Tippy>
             <button
               onClick={handleSaveClick}
-              disabled={!isScriptRunSuccess || !viewName.trim()}
+              disabled={!isScriptRunSuccess || !viewName.trim() || isSaving}
               className={`
       h-[36px] px-3 text-sm
       border border-gray-300 rounded-md
       bg-gray-100 text-gray-600
       transition
-      ${!isScriptRunSuccess || !viewName.trim()
+      ${!isScriptRunSuccess || !viewName.trim() || isSaving
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:bg-gray-200"
                 }
     `}
             >
-              Save
+              {isSaving ? (
+                <>
+                  <svg className="animate-spin inline-block h-4 w-4 mr-2" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
             </button>
           </div>
         </div>
