@@ -212,7 +212,13 @@ export default function LineChartGraph({ config }: { config: any }) {
     "#06B6D4"
   ];
 
-  const lineStyle = config.style?.lineColor || config.style?.color;
+  const lineStyle =
+    config.style?.lineColor ??
+    config.style?.color ??
+    config.style?.barColor ??
+    config.style?.colors ??
+    null;
+
   const isSingleColor = typeof lineStyle === "string";
   const isMapping =
     !isSingleColor &&
@@ -221,12 +227,15 @@ export default function LineChartGraph({ config }: { config: any }) {
   const isGradient =
     lineStyle?.gradient?.from && lineStyle?.gradient?.to;
 
+  // allow an array palette coming from style
+  const palette = Array.isArray(lineStyle) ? lineStyle : DEFAULT_PALETTE;
+
   // 🔵 Dot
   const ColoredDot = ({ cx, cy, payload, index }: any) => {
     if (cx == null || cy == null) return null;
     const color =
       (isMapping && lineStyle.mapping[payload.name]) ||
-      DEFAULT_PALETTE[index % DEFAULT_PALETTE.length];
+      palette[index % palette.length];
 
     return (
       <circle cx={cx} cy={cy} r={4} fill={color} stroke="#fff" strokeWidth={2} />
@@ -238,7 +247,7 @@ export default function LineChartGraph({ config }: { config: any }) {
     if (cx == null || cy == null) return null;
     const color =
       (isMapping && lineStyle.mapping[payload.name]) ||
-      DEFAULT_PALETTE[index % DEFAULT_PALETTE.length];
+      palette[index % palette.length];
 
     return (
       <circle cx={cx} cy={cy} r={7} fill={color} stroke="#fff" strokeWidth={2} />

@@ -110,8 +110,8 @@ export default function PieChartGraph({ config }: { config: any }) {
   // 3️⃣ TOTAL (for percentage)
   const total = data.reduce((sum, d) => sum + d.value, 0);
 
-  // 4️⃣ COLORS (same as image style)
-  const COLORS = [
+  // 4️⃣ COLORS (support style config: mapping | array | string)
+  const defaultColors = [
     "#0B2C6F", // dark blue
     "#0E6EF7",
     "#5B8FF9",
@@ -119,6 +119,33 @@ export default function PieChartGraph({ config }: { config: any }) {
     "#D6DEE8",
     "#081F4D"
   ];
+
+  const colorsConfig =
+    config.style?.colors ??
+    config.style?.pieColor ??
+    config.style?.color ??
+    config.style?.barColor;
+
+  const getColor = (name: string, index: number) => {
+    // mapping object (either shape: { mapping: { name: color } } or direct mapping)
+    if (colorsConfig && typeof colorsConfig === "object" && !Array.isArray(colorsConfig)) {
+      return (
+        (colorsConfig.mapping && colorsConfig.mapping[name]) ||
+        (colorsConfig[name] as string) ||
+        defaultColors[index % defaultColors.length]
+      );
+    }
+
+    // array of colors
+    if (Array.isArray(colorsConfig) && colorsConfig.length > 0) {
+      return colorsConfig[index % colorsConfig.length];
+    }
+
+    // single string color
+    if (typeof colorsConfig === "string") return colorsConfig;
+
+    return defaultColors[index % defaultColors.length];
+  };
 
   // 5️⃣ PERCENT LABEL (inside slice)
   const renderLabel = ({ value }: any) =>
@@ -137,10 +164,10 @@ export default function PieChartGraph({ config }: { config: any }) {
             label={renderLabel}
             labelLine={false}   
           >
-            {data.map((_, i) => (
+            {data.map((entry, i) => (
               <Cell
                 key={i}
-                fill={COLORS[i % COLORS.length]}
+                fill={getColor(entry.name, i)}
               />
             ))}
           </Pie>

@@ -79,7 +79,7 @@ export default function ReportDesignerChatSidebar({
   return (
     <div className="fixed right-0 top-0 h-full w-[360px] bg-white border-l shadow-lg flex flex-col z-50">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b">
+      <div className="flex items-center justify-between px-4 py-4 border-b">
         <h3 className="text-sm font-semibold">Report Designer Analysis</h3>
         <button onClick={onClose} className="text-gray-500 hover:text-black">
           ✕
@@ -117,7 +117,7 @@ export default function ReportDesignerChatSidebar({
       </div>
 
       {/* Input */}
-      <div className="border-t p-3 flex items-center gap-2 bg-white">
+      <div className="border-t p-2 flex items-center gap-2 bg-white">
         <input
           value={input}
           disabled={!hasCharts}
@@ -126,7 +126,6 @@ export default function ReportDesignerChatSidebar({
           className="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
         />
-
         <button
           onClick={handleSend}
           className="w-9 h-9 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
