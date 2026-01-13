@@ -167,7 +167,7 @@
   height: 36px;
   padding-left: 56px; 
   padding-right: 32px; 
-  border-radius: 8px;
+  border-radius: 0.75rem;
   border: 1px solid #d1d5db;
   font-size: 13px;
 }
@@ -240,6 +240,7 @@
 .p-multiselect-panel {
   border-radius: 12px !important;
   padding-top: 6px !important;
+  max-width: 100px !important;
 }
 
 .p-multiselect-items-wrapper {
@@ -278,20 +279,20 @@
 /* Custom component styles */
 @layer components {
   .btn-primary {
-    @apply font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply font-medium py-2 px-4 rounded-xl transition-colors duration-200;
     background-color: var(--theme-accent);
     color: var(--theme-background);
   }
 
   .btn-secondary {
-    @apply font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply font-medium py-2 px-4 rounded-xl transition-colors duration-200;
     background-color: var(--theme-surface);
     color: var(--theme-primary-text);
     border: 1px solid var(--theme-border);
   }
 
   .input-field {
-    @apply w-full px-4 py-2 rounded-lg outline-none transition-all duration-200;
+    @apply w-full px-4 py-2 rounded-xl outline-none transition-all duration-200;
     background-color: var(--theme-surface);
     color: var(--theme-primary-text);
     border: 1px solid var(--theme-border);

@@ -150,7 +150,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Company name"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.companyName && formik.errors.companyName ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.companyName && formik.errors.companyName ? 'border-red-300' : 'border-gray-300'
                     }`}
                 />
               </div>
@@ -173,7 +173,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Company Code"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.companyCode && formik.errors.companyCode ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.companyCode && formik.errors.companyCode ? 'border-red-300' : 'border-gray-300'
                     }`}
                 />
               </div>
@@ -196,7 +196,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Address"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.address && formik.errors.address ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.address && formik.errors.address ? 'border-red-300' : 'border-gray-300'
                     }`}
                 />
               </div>
@@ -219,7 +219,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Zip Code"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.zipCode && formik.errors.zipCode ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.zipCode && formik.errors.zipCode ? 'border-red-300' : 'border-gray-300'
                     }`}
                 />
               </div>
@@ -242,7 +242,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Email"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.email && formik.errors.email ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.email && formik.errors.email ? 'border-red-300' : 'border-gray-300'
                     }`}
                 />
               </div>
@@ -265,7 +265,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Phone Number"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.phoneNumber && formik.errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.phoneNumber && formik.errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
                     }`}
                 />
               </div>

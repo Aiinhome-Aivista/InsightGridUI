@@ -315,7 +315,7 @@ export default function ChartSidebar({
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1 hover:bg-gray-100 rounded-md transition"
+              className="p-1 hover:bg-gray-100 rounded-xl transition"
               aria-label="Close sidebar"
             >
               <CloseIcon
@@ -338,7 +338,7 @@ export default function ChartSidebar({
           pt={{
             root: {
               className:
-                "w-full bg-gray-50 border border-gray-200 rounded-2xl min-h-[46px] flex items-center hover:border-gray-300 focus-within:border-indigo-500",
+                "w-full bg-gray-50 border border-gray-200 rounded-xl min-h-[46px] flex items-center hover:border-gray-300 focus-within:border-indigo-500",
             },
 
             label: {
@@ -350,7 +350,7 @@ export default function ChartSidebar({
             },
             panel: {
               className:
-                "rounded-2xl border border-gray-200 shadow-lg mt-2 bg-white",
+                "rounded-xl border border-gray-200 shadow-lg mt-2 bg-white",
             },
 
             filterContainer: {
@@ -360,7 +360,7 @@ export default function ChartSidebar({
 
             filterInput: {
               className:
-                "w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 text-sm " +
+                "w-full pl-9 pr-3 py-2 rounded-xl border border-gray-300 text-sm " +
                 "focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500",
             },
             list: {
@@ -369,12 +369,12 @@ export default function ChartSidebar({
 
             item: {
               className:
-                "flex items-center gap-2 text-sm px-4 py-2 cursor-pointer hover:bg-gray-200 rounded-md",
+                "flex items-center gap-2 text-sm px-4 py-2 cursor-pointer hover:bg-gray-200 rounded-xl",
             },
 
             token: {
               className:
-                "bg-indigo-50 text-indigo-700 rounded-lg text-xs px-2 py-1",
+                "bg-indigo-50 text-indigo-700 rounded-xl text-xs px-2 py-1",
             },
           }}
         />
@@ -388,13 +388,13 @@ export default function ChartSidebar({
                 key={chart.id}
                 disabled={disabled}
                 onClick={() => handleChartClick(chart.id)}
-                className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg border transition text-left
+                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl border transition text-left
           ${disabled
                     ? "opacity-40 cursor-not-allowed bg-gray-50"
                     : "bg-white hover:bg-blue-50 hover:border-blue-500"
                   }`}
               >
-                <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-md">
+                <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-xl">
                   {chart.icon}
                 </div>
                 <div className="flex flex-col">

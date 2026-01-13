@@ -187,7 +187,7 @@ export default function DataViewHeader({
               },
               list: { className: "p-1" },
               item: ({ context }: any) => ({
-                className: `px-3 py-2 rounded-md text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${
+                className: `px-3 py-2 rounded-xl text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${
                   context.selected
                     ? "bg-gray-100 font-semibold"
                     : "hover:bg-gray-50"
@@ -249,7 +249,7 @@ export default function DataViewHeader({
             <div className="flex justify-center gap-4">
               <button
                 style={{ borderColor: theme.accent, color: theme.primaryText }}
-                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg hover:text-white transition"
+                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-xl hover:text-white transition"
                 onMouseOver={(e) => (e.currentTarget.style.backgroundColor = theme.accent)}
                 onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                 onClick={() => {
@@ -261,7 +261,7 @@ export default function DataViewHeader({
               </button>
               <button
                 style={{ backgroundColor: theme.accent, borderColor: theme.accent, color: theme.primaryText }}
-                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg transition"
+                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-xl transition"
                 onClick={() => setShowBackConfirm(false)}
               >
                 No

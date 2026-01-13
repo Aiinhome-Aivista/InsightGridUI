@@ -69,14 +69,14 @@ export default function ConfirmSaveView({
           {showConfirmButton ? (
             <>
               <button
-                className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 bg-white hover:bg-[#7ca1f3] hover:text-white transition disabled:opacity-60 disabled:cursor-not-allowed"
+                className="px-6 py-2 rounded-xl border border-gray-400 text-gray-700 bg-white hover:bg-[#7ca1f3] hover:text-white transition disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={onCancel}
                 disabled={isActionLoading}
               >
                 Cancel
               </button>
               <button
-                className="px-6 py-2 rounded-lg bg-[#7ca1f3] text-white hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
+                className="px-6 py-2 rounded-xl bg-[#7ca1f3] text-white hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
                 onClick={handleConfirm}
                 disabled={isActionLoading}
               >
@@ -95,7 +95,7 @@ export default function ConfirmSaveView({
             </>
           ) : (
             <button
-              className="px-6 py-2 rounded-lg bg-[#7ca1f3] text-white hover:opacity-90 transition"
+              className="px-6 py-2 rounded-xl bg-[#7ca1f3] text-white hover:opacity-90 transition"
               onClick={onCancel}
             >
               OK

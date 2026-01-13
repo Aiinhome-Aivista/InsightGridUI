@@ -693,7 +693,7 @@ export default function Chat({
     <div className="w-full min-h-screen px-5 mt-5">
       {isSessionDataMissing && (
         <div
-          className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg shadow-md"
+          className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-xl shadow-md"
           role="alert"
         >
           <p className="font-bold">Session Data Missing</p>
@@ -823,7 +823,7 @@ export default function Chat({
                 className={`
         w-[360px] h-[36px]
       px-3 text-sm text-gray-700
-        border border-gray-300 rounded-lg
+        border border-gray-300 rounded-xl
         bg-white
         focus:outline-none focus:ring-1 focus:ring-[#5433FF]
         disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed
@@ -835,7 +835,7 @@ export default function Chat({
               disabled={!isScriptRunSuccess || !viewName.trim() || isSaving}
               className={`
       h-[36px] px-3 text-sm
-      border border-gray-300 rounded-md
+      border border-gray-300 rounded-xl
       bg-gray-100 text-gray-600
       transition
       ${!isScriptRunSuccess || !viewName.trim() || isSaving

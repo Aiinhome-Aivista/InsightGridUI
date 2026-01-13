@@ -231,7 +231,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
       {/* Global Column Headers */}
       <div className="mb-3 overflow-x-auto">
-        <div className="flex items-center justify-between gap-4 px-4 py-2 rounded-lg" style={{ backgroundColor: theme.border + '20' }}>
+        <div className="flex items-center justify-between gap-4 px-4 py-2 rounded-xl" style={{ backgroundColor: theme.border + '20' }}>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
               File Name
@@ -311,7 +311,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             <div
               key={index}
               onClick={() => handleRowClick(file)}
-              className="rounded-lg p-4 w-full mb-3 bg-gray-200 hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
+              className="rounded-xl p-4 w-full mb-3 bg-gray-200 hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
             >
               <div className="flex items-center justify-between gap-4">
                 {/* File Name */}
@@ -466,7 +466,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           <button
             onClick={() => setCurrentPage(p => p - 1)}
             disabled={currentPage === 1}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === 1
+            className={`px-3 py-1.5 text-sm font-medium rounded-xl transition-all ${currentPage === 1
               ? 'text-gray-400 cursor-not-allowed'
               : 'text-gray-700 hover:bg-gray-100'
               }`}
@@ -479,7 +479,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${currentPage === page
+              className={`min-w-[32px] h-[32px] text-sm font-medium rounded-xl transition-all ${currentPage === page
                 ? 'bg-gray-200 text-gray-900'
                 : 'text-gray-700 hover:bg-gray-50'
                 }`}
@@ -492,7 +492,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
           <button
             onClick={() => setCurrentPage(p => p + 1)}
             disabled={currentPage === totalPages}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === totalPages
+            className={`px-3 py-1.5 text-sm font-medium rounded-xl transition-all ${currentPage === totalPages
               ? 'text-gray-400 cursor-not-allowed'
               : 'text-gray-700 hover:bg-gray-100'
               }`}
@@ -536,14 +536,14 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
               {/* File Info */}
               <div className="mb-5 grid grid-cols-2 gap-4 text-xs">
-                <div className="bg-gray-50 rounded-lg p-3">
+                <div className="bg-gray-50 rounded-xl p-3">
                   <div className="text-gray-500 mb-1">File Name</div>
                   <div className="font-medium text-gray-800">
                     {selectedRowDetails.file_name}
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-3">
+                <div className="bg-gray-50 rounded-xl p-3">
                   <div className="text-gray-500 mb-1">Table Name</div>
                   <div className="font-medium text-gray-800">
                     {selectedRowDetails.table_name}
@@ -567,7 +567,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     {selectedRowDetails.query_titles.map((q: string, i: number) => (
                       <div
                         key={i}
-                        className="flex items-start gap-2 p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+                        className="flex items-start gap-2 p-3 rounded-xl bg-gray-100 hover:bg-gray-200 transition"
                       >
                         <span className="mt-0.5 text-xs text-blue-600 font-semibold">
                           Q{i + 1}
@@ -620,7 +620,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             <div className="px-5 py-3 border-t flex justify-end">
               <button
                 onClick={() => setIsDetailsModalOpen(false)}
-                className="px-4 py-1.5 text-xs font-medium rounded-md
+                className="px-4 py-1.5 text-xs font-medium rounded-xl
                      bg-gray-200 hover:bg-gray-300 text-gray-700"
               >
                 Close

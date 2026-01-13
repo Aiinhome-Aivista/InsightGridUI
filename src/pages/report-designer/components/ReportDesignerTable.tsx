@@ -636,7 +636,7 @@ export default function DataViewTable({
                       }}
                       placeholder="Group By"
                       display="chip"
-                      className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
+                      className="w-64 bg-gray-50 border border-gray-300 rounded-xl text-sm min-h-[40px] flex items-center ps-2"
                       panelClassName="fixed-multiselect-panel shadow-lg"
                       pt={{
                         filterContainer: {
@@ -675,7 +675,7 @@ export default function DataViewTable({
                       }}
                       placeholder="Filter"
                       display="chip"
-                      className="w-64 bg-gray-50 border border-gray-300 rounded-lg text-sm min-h-[40px] flex items-center ps-2"
+                      className="w-64 bg-gray-50 border border-gray-300 rounded-xl text-sm min-h-[40px] flex items-center ps-2"
                       panelClassName="fixed-multiselect-panel shadow-lg"
                       pt={{
                         filterContainer: {
@@ -697,7 +697,7 @@ export default function DataViewTable({
                         const inputBaseClass = `
       h-9
       border border-gray-300
-      rounded-md
+      rounded-xl
       px-3
       text-sm
       text-gray-700
@@ -717,7 +717,7 @@ export default function DataViewTable({
           flex items-center gap-2
           bg-gray-50
           border border-gray-200
-          rounded-lg
+          rounded-xl
           px-3 py-1.5
           shadow-sm
           hover:shadow-md
@@ -784,7 +784,7 @@ export default function DataViewTable({
                   )}
 
                   {/* View Toggle */}
-                  <div className="flex border rounded-lg overflow-hidden">
+                  <div className="flex border rounded-xl overflow-hidden">
                     <button
                       onClick={() => {
                         setViewType("table");

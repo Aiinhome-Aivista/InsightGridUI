@@ -159,7 +159,7 @@ export default function DashboardHeader({
                 className="
                   w-72 h-10
                   border border-gray-200 
-                  rounded-lg 
+                  rounded-xl 
                   flex items-center justify-between
                   transition-all duration-200
                 "
@@ -177,7 +177,7 @@ export default function DashboardHeader({
                   },
                   list: { className: "p-1" },
                   item: ({ context }: any) => ({
-                    className: `px-3 py-2 rounded-md text-gray-700 cursor-pointer transition-colors mb-0.5 ${
+                    className: `px-3 py-2 rounded-xl text-gray-700 cursor-pointer transition-colors mb-0.5 ${
                       context.selected
                         ? "bg-gray-100 hover:bg-gray-200 font-semibold"
                         : "hover:bg-gray-50"
@@ -272,7 +272,7 @@ export default function DashboardHeader({
             <div className="flex justify-center gap-4">
               <button
                 style={{ borderColor: theme.accent, color: theme.primaryText }}
-                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg hover:text-white transition"
+                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-xl hover:text-white transition"
                 onMouseOver={(e) =>
                   (e.currentTarget.style.backgroundColor = theme.accent)
                 }
@@ -292,7 +292,7 @@ export default function DashboardHeader({
                   borderColor: theme.accent,
                   color: theme.primaryText,
                 }}
-                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg transition"
+                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-xl transition"
                 onClick={() => setShowBackConfirm(false)}
               >
                 No

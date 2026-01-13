@@ -115,7 +115,7 @@ export default function UploadPage() {
     }
   }
   return (
-    <div className="w-full rounded-lg p-8">
+    <div className="w-full rounded-xl p-8">
       <h2
         className="text-center text-xl font-semibold"
         style={{ color: theme.primaryText }}

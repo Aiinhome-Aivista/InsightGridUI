@@ -307,7 +307,7 @@ export default function ProductDataTable({
             <button
               onClick={onPrevious}
               disabled={currentPage === 1}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === 1
+              className={`px-3 py-1.5 text-sm font-medium rounded-xl transition-all ${currentPage === 1
                 ? 'text-gray-400 cursor-not-allowed'
                 : 'text-gray-700 hover:bg-gray-100'
                 }`}
@@ -318,7 +318,7 @@ export default function ProductDataTable({
               <button
                 key={page}
                 onClick={() => onPageChange(page)}
-                className={`min-w-[32px] h-[32px] text-sm font-medium rounded-md transition-all ${currentPage === page
+                className={`min-w-[32px] h-[32px] text-sm font-medium rounded-xl transition-all ${currentPage === page
                   ? 'bg-gray-200 text-gray-900'
                   : 'text-gray-700 hover:bg-gray-50'
                   }`}
@@ -329,7 +329,7 @@ export default function ProductDataTable({
             <button
               onClick={onNext}
               disabled={currentPage === totalPages}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${currentPage === totalPages
+              className={`px-3 py-1.5 text-sm font-medium rounded-xl transition-all ${currentPage === totalPages
                 ? 'text-gray-400 cursor-not-allowed'
                 : 'text-gray-700 hover:bg-gray-100'
                 }`}

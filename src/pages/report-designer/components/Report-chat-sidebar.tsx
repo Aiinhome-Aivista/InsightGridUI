@@ -85,8 +85,6 @@ export default function ReportDesignerChatSidebar({
           ✕
         </button>
       </div>
-
-      {/* Messages */}
       <div className="flex-1 overflow-auto p-4 space-y-3 bg-gray-50">
         {messages.map((m, i) => (
           <div
@@ -94,7 +92,7 @@ export default function ReportDesignerChatSidebar({
             className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[75%] px-3 py-2 rounded-lg text-sm whitespace-pre-line
+              className={`max-w-[75%] px-3 py-2 rounded-xl text-sm whitespace-pre-line
                 ${m.role === "user"
                   ? "bg-blue-600 text-white rounded-br-none"
                   : "bg-white text-gray-700 border rounded-bl-none"
@@ -107,7 +105,7 @@ export default function ReportDesignerChatSidebar({
 
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-white border rounded-lg px-3 py-2 flex items-center gap-1">
+            <div className="bg-white border rounded-xl px-3 py-2 flex items-center gap-1">
               <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
               <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:150ms]" />
               <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:300ms]" />
