@@ -77,9 +77,9 @@ export default function ReportDesignerChatSidebar({
   };
 
   return (
-    <div className="fixed right-0 top-0 h-full w-[360px] bg-white border-l shadow-lg flex flex-col z-50">
+    <div className="fixed right-0 top-0 h-full w-80 bg-white border-l shadow-lg flex flex-col z-50">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b">
+      <div className="flex items-center justify-between px-4 h-14 border-b">
         <h3 className="text-sm font-semibold">Report Designer Analysis</h3>
         <button onClick={onClose} className="text-gray-500 hover:text-black">
           ✕
@@ -115,7 +115,7 @@ export default function ReportDesignerChatSidebar({
       </div>
 
       {/* Input */}
-      <div className="border-t p-2 flex items-center gap-2 bg-white">
+      <div className="border-t h-14  flex items-center gap-2 p-2 bg-white">
         <input
           value={input}
           disabled={!hasCharts}
@@ -126,7 +126,7 @@ export default function ReportDesignerChatSidebar({
         />
         <button
           onClick={handleSend}
-          className="w-9 h-9 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
+          className="w-9 h-9 flex items-center justify-center bg-[#7CA1F3] text-white rounded-full hover:bg-blue-500 transition"
         >
           <SendRoundedIcon sx={{ fontSize: 18 }} />
         </button>
