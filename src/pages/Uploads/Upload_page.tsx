@@ -24,6 +24,7 @@ export default function UploadPage() {
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [uploadResponseData, setUploadResponseData] = useState<any>(null);
   const [resetKey, setResetKey] = useState(0);
+  const [isLoadingFiles, setIsLoadingFiles] = useState(false);
 
 
   
@@ -39,6 +40,7 @@ export default function UploadPage() {
 
   async function trackFiles() {
     const payload = { created_by: createdBy, session_id: sessionId };
+    setIsLoadingFiles(true);
     try {
       const response = await ApiService.tracker(payload);
       if (response.data.isSuccess) {
@@ -59,6 +61,8 @@ export default function UploadPage() {
         error.response?.data?.message || error.message || "An unknown error occurred";
       setProcessedFiles([]);
       setNoFileMessage(message);
+    } finally {
+      setIsLoadingFiles(false);
     }
   }
 
@@ -148,14 +152,23 @@ export default function UploadPage() {
         </div>
       )}
 
-      {processedFiles.length > 0 ? (
+      {isLoadingFiles ? (
+        <div className="flex justify-center items-center mt-20">
+          <div className="flex items-center gap-2">
+            <div
+              className="animate-spin rounded-full h-6 w-6 border-b-2"
+              style={{ borderColor: theme.accent }}
+            />
+            <p className="text-sm" style={{ color: theme.secondaryText }}>
+              Loading files...
+            </p>
+          </div>
+        </div>
+      ) : processedFiles.length > 0 ? (
         <DataProcessing files={processedFiles} onRefresh={trackFiles} />
       ) : (
         <div className="flex justify-center mt-40">
-          <p
-            className="text-center text-sm"
-            style={{ color: theme.secondaryText }}
-          >
+          <p className="text-center text-sm" style={{ color: theme.secondaryText }}>
             {noFileMessage}
           </p>
         </div>
