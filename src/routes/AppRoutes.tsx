@@ -24,10 +24,11 @@ import AddCompanyUser from "../pages/company-users/Components/AddCompanyUser";
 import ManageCompanyAdmin from "../pages/Superadmin/ManageCompanyAdmin";
 import AddCompanyAdmin from "../pages/Superadmin/AddCompanyAdmin";
 import About from "../pages/LandingPage/components/About";
-import Blog from "../pages/LandingPage/components/Blog";
+import Blog from "../pages/LandingPage/components/ContactPage";
 import HelpCenter from "../pages/LandingPage/components/HelpCenter";
 import PrivacyPolicy from "../pages/LandingPage/components/PrivacyPolicy";
 import TermsOfService from "../pages/LandingPage/components/TermsOfService";
+import ContactPage from "../pages/LandingPage/components/ContactPage";
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -42,7 +43,7 @@ function AppRoutes() {
         <Route path="/faq" element={<Faq />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/about" element={<About />} />
-        <Route path="/blog" element={<Blog />} />
+        <Route path="/Contact" element={<ContactPage />} />
         <Route path="/help-center" element={<HelpCenter />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
