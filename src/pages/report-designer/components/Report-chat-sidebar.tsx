@@ -80,7 +80,7 @@ export default function ReportDesignerChatSidebar({
     <div className="fixed right-0 top-0 h-full w-80 bg-white border-l shadow-lg flex flex-col z-50">
       {/* Header */}
       <div className="flex items-center justify-between px-4 h-14 border-b">
-        <h3 className="text-sm font-semibold">Report Designer Analysis</h3>
+        <h3 className="text-lg font-semibold text-gray-900">Report Designer Analysis</h3>
         <button onClick={onClose} className="text-gray-500 hover:text-black">
           ✕
         </button>
