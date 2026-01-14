@@ -410,9 +410,9 @@ export default function LandingPage() {
                   </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/careers")}
+                    onClick={() => navigate("/contact")}
                   >
-                    Careers
+                    Contact us
                   </a>
                 </div>
                 <div className="flex flex-col gap-3">

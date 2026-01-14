@@ -12,7 +12,7 @@ export default function TermsOfServiceVariant2() {
     {
       id: "1",
       title: "Acceptance of Terms",
-      content: "By accessing or using InsightGrid ('the Service'), you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service."
+      content: "By accessing or using Sahajinsights ('the Service'), you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service."
     },
     {
       id: "2",
@@ -22,7 +22,7 @@ export default function TermsOfServiceVariant2() {
     {
       id: "3",
       title: "Intellectual Property",
-      content: "The Service and its original content (excluding Content provided by users), features and functionality are and will remain the exclusive property of InsightGrid and its licensors."
+      content: "The Service and its original content (excluding Content provided by users), features and functionality are and will remain the exclusive property ofSahajinsights and its licensors."
     },
     {
       id: "4",
@@ -32,7 +32,7 @@ export default function TermsOfServiceVariant2() {
     {
       id: "5",
       title: "Limitation of Liability",
-      content: "In no event shall InsightGrid be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses."
+      content: "In no event shallSahajinsights be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses."
     },
     {
       id: "6",
@@ -84,15 +84,6 @@ export default function TermsOfServiceVariant2() {
                     Effective Date: January 14, 2026
                   </p>
                 </div>
-
-                <div className="flex gap-4">
-                  <button className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-[#137fec] transition-colors">
-                    <PrintIcon fontSize="small" /> Print
-                  </button>
-                  <button className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-[#137fec] transition-colors">
-                    <ShareIcon fontSize="small" /> Share
-                  </button>
-                </div>
                 
                 <hr className="border-slate-200 dark:border-slate-800" />
 
@@ -121,7 +112,7 @@ export default function TermsOfServiceVariant2() {
             <div className="lg:col-span-8 lg:border-l lg:border-slate-100 lg:dark:border-slate-800 lg:pl-12">
               <div className="prose prose-lg dark:prose-invert max-w-none">
                 <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed mb-12">
-                  Welcome to InsightGrid. Please read these terms carefully. By using our services, you agree to be bound by these terms, which establish a contractual relationship between you and InsightGrid Inc.
+                  Welcome to Sahajinsights. Please read these terms carefully. By using our services, you agree to be bound by these terms, which establish a contractual relationship between you andSahajinsights Inc.
                 </p>
 
                 <div className="space-y-16">
@@ -145,16 +136,14 @@ export default function TermsOfServiceVariant2() {
                     </div>
                   ))}
                 </div>
-
+{/* 
                 <div className="mt-20 p-8 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Questions regarding legal matters?</h3>
                   <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm">
                     We are happy to answer any questions you have regarding our Terms of Service or Privacy Policy.
                   </p>
-                  <button className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
-                    Contact Legal Team
-                  </button>
-                </div>
+                
+                </div> */}
 
               </div>
             </div>
