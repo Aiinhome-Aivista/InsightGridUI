@@ -88,7 +88,7 @@ class ApiServices {
     return axios.post(POST_APIS.modify_chart, body);
   }
   getAllCompanyAdmins() {
-    return axios.get(POST_APIS.get_all_company_admins);
+    return axios.get(GET_APIS.get_all_company_admins);
   }
   companyRegister(formData) {
     return axios.post(POST_APIS.company_register, formData, {
@@ -102,7 +102,13 @@ class ApiServices {
     return axios.post(POST_APIS.company_admin_register, body);
   }
   company_code_dropdown() {
-    return axios.get(POST_APIS.company_code_dropdown);
+    return axios.get(GET_APIS.company_code_dropdown);
+  }
+  getCompanyUsers(body) {
+    return axios.post(POST_APIS.company_get_users, body);
+  }
+  companyUserRegister(body) {
+    return axios.post(POST_APIS.company_user_register, body);
   }
 }
 
