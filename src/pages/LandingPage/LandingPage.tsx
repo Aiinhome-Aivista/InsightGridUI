@@ -374,20 +374,20 @@ export default function LandingPage() {
                     Product
                   </h4>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/features")}
                   >
                     Features
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/integrations")}
                   >
                     Integrations
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/pricing")}
                   >
                     Pricing
                   </a>
@@ -397,20 +397,20 @@ export default function LandingPage() {
                     Company
                   </h4>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/about")}
                   >
                     About
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/blog")}
                   >
                     Blog
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/careers")}
                   >
                     Careers
                   </a>
@@ -420,20 +420,20 @@ export default function LandingPage() {
                     Support
                   </h4>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/help-center")}
                   >
                     Help Center
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/privacy-policy")}
                   >
                     Privacy Policy
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/terms-of-service")}
                   >
                     Terms of Service
                   </a>
