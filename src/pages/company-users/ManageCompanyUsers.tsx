@@ -10,6 +10,7 @@ import Tippy from '@tippyjs/react';
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 
 function ManageCompanyUsers() {
+  const igUser = JSON.parse(localStorage.getItem("ig_user") || "{}");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,49 +25,93 @@ function ManageCompanyUsers() {
   }, []);
   const columnConfig = [
     {
-      field: "",
+      field: "full_name",
       header: "Full Name",
       sortable: true,
     },
     {
-      field: "",
+      field: "email",
       header: "Email",
       sortable: true,
     },
     {
-      field: "",
-      header: "Company Name",
+      field: "phone_number",
+      header: "Phone Number",
       sortable: true,
+    },
+    {
+      field: "address",
+      header: "Address",
+      sortable: true,
+      body: (row: any) => {
+        if (!row.address) return null;   // 🔴 nothing shown
+
+        let addrText = "";
+
+        try {
+          const addr = JSON.parse(row.address);
+          addrText = [
+            addr.area,
+            addr.city,
+            addr.district,
+            addr.state,
+            addr.country,
+            addr.pin_code ? `- ${addr.pin_code}` : ""
+          ]
+            .filter(Boolean)
+            .join(", ");
+        } catch {
+          addrText = row.address; // plain string
+        }
+
+        return (
+          <div
+            className="max-w-[280px] truncate"
+            title={addrText}
+          >
+            {addrText}
+          </div>
+        );
+      },
     }
   ];
-
 
 
   const fetchCompanyUsers = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await ApiServices.getAllCompanies();
+
+
+      const payload = {
+        session_id: igUser.session_id,
+        created_by: igUser.user_id,
+        company_code: igUser.company_code,
+      };
+
+      const response = await ApiServices.getCompanyUsers(payload);
+
       if (response?.data?.isSuccess) {
-        setCompanyUsers(response.data.data);
+        setCompanyUsers(response.data.data || []);
       } else {
-        setError(response?.data?.message || "Failed to fetch companies");
+        setError(response?.data?.message || "Failed to fetch users");
       }
     } catch (e) {
       console.error(e);
-      setError("Failed to fetch companies");
+      setError("Failed to fetch users");
     } finally {
       setIsLoading(false);
     }
   };
+
   const actionBodyTemplate = (row: any) => (
     <div className="flex justify-end gap-2">
       <Tippy content="Edit" theme="gray">
         <button
           className="p-1 rounded hover:bg-blue-100 text-gray-600"
           onClick={() => {
-            navigate(`/layout/add-company-admin/${row.id}`, {
-              state: { company: row }
+            navigate(`/layout/add-company-user/${row.id}`, {
+              state: { user: row }
             });
           }}
         >
@@ -74,7 +119,7 @@ function ManageCompanyUsers() {
         </button>
       </Tippy>
 
-      <Tippy content="Delete" theme="gray">
+      {/* <Tippy content="Delete" theme="gray">
         <button
           className="p-1 rounded hover:bg-red-100 text-gray-600"
           onClick={() => {
@@ -85,7 +130,7 @@ function ManageCompanyUsers() {
         >
           <DeleteOutlineOutlinedIcon fontSize="small" />
         </button>
-      </Tippy>
+      </Tippy> */}
     </div>
   );
 
@@ -103,13 +148,15 @@ function ManageCompanyUsers() {
       console.error("Delete failed", err);
     }
   };
-
-
   const handleRefresh = async () => {
     if (isRefreshing) return;
 
     setIsRefreshing(true);
-    setGlobalFilter("");
+
+    // ✅ RESET FILTER PROPERLY
+    setFilters({
+      global: { value: "", matchMode: FilterMatchMode.CONTAINS },
+    });
 
     await fetchCompanyUsers();
 
@@ -132,7 +179,7 @@ function ManageCompanyUsers() {
               width: '138px',
               height: '45px',
             }}
-            onClick={() => navigate("/layout/add-company-admin")}
+            onClick={() => navigate("/layout/add-company-user")}
 
           >
             Add Company User

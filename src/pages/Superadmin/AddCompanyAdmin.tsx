@@ -270,7 +270,8 @@ function AddCompanyAdmin() {
               onChange={formik.handleChange}
               className={`w-full px-4 py-2 border rounded-lg mt-1 
     ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
-  `} placeholder="Enter Admin Name"
+  `}
+              placeholder="Enter Admin Name"
             />
             {formik.touched.admin_name && formik.errors.admin_name && (
               <p className="text-xs text-red-500 mt-1">

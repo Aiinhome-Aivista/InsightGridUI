@@ -1,34 +1,31 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useFormik } from "formik";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { POST_APIS, BASE_URL } from "../../../../connection";
-import { Dropdown } from 'primereact/dropdown';
 import Tippy from "@tippyjs/react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+import ApiServices from "../../../services/ApiServices";
+
 function AddCompanyUser() {
   const [isResetting, setIsResetting] = useState(false);
   const navigate = useNavigate();
-  const isEditMode = false
-  // Boolean(id && company);
-  const countries = [
-    { name: 'Australia', code: 'AU' },
-    { name: 'Brazil', code: 'BR' },
-    { name: 'China', code: 'CN' },
-    { name: 'Egypt', code: 'EG' },
-    { name: 'France', code: 'FR' },
-    { name: 'Germany', code: 'DE' },
-    { name: 'India', code: 'IN' },
-    { name: 'Japan', code: 'JP' },
-    { name: 'Spain', code: 'ES' },
-    { name: 'United States', code: 'US' }
-  ];
+  const { id } = useParams();
+  const location = useLocation();
+  const user = location.state?.user;
+  const isEditMode = Boolean(id && user);
 
+  const companyCodeFromLS =
+    JSON.parse(localStorage.getItem("ig_user") || "{}")?.company_code || "";
+  const [errorModal, setErrorModal] = useState({
+    open: false,
+    message: "",
+  });
   const formik = useFormik({
     initialValues: {
-      company_code: "",
-      admin_name: "",
-      admin_email: "",
-      admin_password: "",
+      company_code: companyCodeFromLS,
+      user_name: "",
+      user_email: "",
+      user_password: "",
 
       phone_number: "",
       area: "",
@@ -41,28 +38,25 @@ function AddCompanyUser() {
 
     validate: (values) => {
       const errors: Record<string, string> = {};
-
-      if (!values.company_code) {
-        errors.company_code = "Company Code is required";
+      if (!isEditMode && !values.user_name) {
+        errors.user_name = "User Name is required";
       }
 
-      if (!values.admin_name) {
-        errors.admin_name = "Admin Name is required";
-      }
-
-      if (!values.admin_email) {
-        errors.admin_email = "Admin Email is required";
+      if (!values.user_email) {
+        errors.user_email = "User Email is required";
       } else {
         const emailRegex = /^[^\s@]+@[^\s@]+\.com$/i;
-        if (!emailRegex.test(values.admin_email)) {
-          errors.admin_email = "Enter a valid email ending with .com";
+        if (!emailRegex.test(values.user_email)) {
+          errors.user_email = "Enter a valid email ending with .com";
         }
       }
 
-      if (!values.admin_password) {
-        errors.admin_password = "Password is required";
-      } else if (values.admin_password.length < 6) {
-        errors.admin_password = "Password must be at least 6 characters";
+      if (!isEditMode) {
+        if (!values.user_password) {
+          errors.user_password = "Password is required";
+        } else if (values.user_password.length < 6) {
+          errors.user_password = "Password must be at least 6 characters";
+        }
       }
 
 
@@ -90,10 +84,11 @@ function AddCompanyUser() {
   });
   const submitCompanyAdmin = async (values: any) => {
     const payload = {
+      id: null,
       company_code: values.company_code,
-      admin_name: values.admin_name,
-      admin_email: values.admin_email,
-      admin_password: values.admin_password,
+      user_name: values.user_name,
+      user_email: values.user_email,
+      user_password: values.user_password,
       created_by: JSON.parse(localStorage.getItem("ig_user") || "{}")?.user_id,
 
       phone_number: values.phone_number,
@@ -107,15 +102,28 @@ function AddCompanyUser() {
       },
     };
 
-    console.log("FINAL PAYLOAD =>", payload);
+    if (isEditMode && user?.id) {
+      payload.id = user.id;
+    }
+    try {
+      const res = await ApiServices.companyUserRegister(payload);
 
-    // 🔜 later API
-    // await fetch(POST_APIS.add_company_admin, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(payload),
-    // });
+      if (res?.data?.isSuccess) {
+        navigate(-1); // back to list
+      } else {
+        alert(res?.data?.message || "Failed to create admin");
+      }
+    } catch (err) {
+      console.error(err);
+      const msg =
+        err?.response?.data?.message ||
+        "Server error while creating company admin";
 
+      setErrorModal({
+        open: true,
+        message: msg,
+      });
+    }
     navigate(-1);
   };
 
@@ -126,58 +134,39 @@ function AddCompanyUser() {
       setIsResetting(false);
     }, 400);
   };
-  // useEffect(() => {
-  //   if (!isEditMode || !company) return;
-  //   if (formik.values.company_name) return;
+  useEffect(() => {
+    if (!isEditMode || !user) return;
 
-  //   // const address = company.address || "";
-  //   // const parts = address.split(",");
-  //   // const pin = address.split("-")[1]?.trim() || "";
-  //   let addr = {
-  //     area: "",
-  //     city: "",
-  //     district: "",
-  //     state: "",
-  //     country: "",
-  //     pin_code: "",
-  //   };
+    let addr = {
+      area: "",
+      city: "",
+      district: "",
+      state: "",
+      country: "",
+      pin_code: "",
+    };
 
-  //   try {
-  //     addr = company.address ? JSON.parse(company.address) : addr;
-  //   } catch (e) {
-  //     console.warn("Invalid address JSON");
-  //   }
+    try {
+      addr = user.address ? JSON.parse(user.address) : addr;
+    } catch (e) {
+      console.warn("Invalid address JSON");
+    }
 
-  //   formik.setValues({
-  //     id: company.id,
-  //     created_by: company.created_by || "",
+    formik.setValues({
+      company_code: companyCodeFromLS,
+      user_name: user.user_name || user.full_name || "",
+      user_email: user.user_email || user.email || "",
+      user_password: "", // ❌ edit mode এ blank
+      phone_number: user.phone_number || "",
 
-  //     company_name: company.company_name || "",
-  //     company_email: company.company_email || "",
-  //     phone_number: company.phone_number || "",
-  //     company_logo: null,
-
-  //     area: addr.area || "",
-  //     city: addr.city || "",
-  //     district: addr.district || "",
-  //     state: addr.state || "",
-  //     country: addr.country || "",
-  //     pin_code: addr.pin_code || "",
-
-  //     subscription_type: company.subscription_type || "FREE",
-
-  //     from_date: company.from_date
-  //       ? new Date(company.from_date).toISOString().slice(0, 10)
-  //       : "",
-  //     to_date: company.to_date
-  //       ? new Date(company.to_date).toISOString().slice(0, 10)
-  //       : "",
-  //   });
-
-  //   if (company.company_logo) {
-  //     setLogoPreview(`${BASE_URL}${company.company_logo}`);
-  //   }
-  // }, [isEditMode, company]);
+      area: addr.area || "",
+      city: addr.city || "",
+      district: addr.district || "",
+      state: addr.state || "",
+      country: addr.country || "",
+      pin_code: addr.pin_code || "",
+    });
+  }, [isEditMode, user]);
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-6">
@@ -187,7 +176,7 @@ function AddCompanyUser() {
           </h2>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold mb-6">
-              Add Company Admin
+              Add User
             </h2>
             {!isEditMode && (
 
@@ -211,94 +200,92 @@ function AddCompanyUser() {
           {/* Company Code */}
           <div className="mb-4">
             <label className="text-sm font-medium">
-              Company Code <span className="text-red-500">*</span>
+              Company Code
             </label>
 
-            <Dropdown
+            <input
+              type="text"
+              name="company_code"
               value={formik.values.company_code}
-              options={countries}
-              optionLabel="code"
-              optionValue="code"
-              placeholder="Select Company Code"
-              filter
-              onChange={(e) =>
-                formik.setFieldValue("company_code", e.value)
-              }
-              className={`w-full mt-1 border rounded-lg h-[42px] flex items-centerbg-white`}
-              panelClassName="rounded-lg bg-white"
-            />
+              
+              onChange={formik.handleChange}
+              className="w-full px-4 py-2 border rounded-lg mt-1 cursor-not-allowed"
+              disabled={true}
 
-            {formik.touched.company_code && formik.errors.company_code && (
-              <p className="text-xs text-red-500 mt-1">
-                {formik.errors.company_code}
-              </p>
-            )}
+            />
           </div>
 
 
           {/* Admin Name */}
           <div className="mb-4">
             <label className="text-sm font-medium">
-              Admin Name <span className="text-red-500">*</span>
+              User Name {!isEditMode && <span className="text-red-500">*</span>}
             </label>
             <input
               type="text"
-              name="admin_name"
-              value={formik.values.admin_name}
+              name="user_name"
+              value={formik.values.user_name}
+              disabled={isEditMode}
               onChange={formik.handleChange}
-              className="w-full px-4 py-2 border rounded-lg mt-1"
-              placeholder="Enter Admin Name"
+              placeholder="Enter User Name"
+              className={`w-full px-4 py-2 border rounded-lg mt-1 
+    ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
+  `}
             />
-            {formik.touched.admin_name && formik.errors.admin_name && (
+            {formik.touched.user_name && formik.errors.user_name && (
               <p className="text-xs text-red-500 mt-1">
-                {formik.errors.admin_name}
+                {formik.errors.user_name}
               </p>
             )}
           </div>
 
-          {/* Admin Email */}
+          {/* User Email */}
           <div className="mb-4">
             <label className="text-sm font-medium">
-              Admin Email <span className="text-red-500">*</span>
+              User Email {!isEditMode && <span className="text-red-500">*</span>}
             </label>
             <input
               type="email"
-              name="admin_email"
-              value={formik.values.admin_email}
+              name="user_email"
+              value={formik.values.user_email}
+              disabled={isEditMode}
               onChange={formik.handleChange}
-              className="w-full px-4 py-2 border rounded-lg mt-1"
-              placeholder="admin@company.com"
+              className={`w-full px-4 py-2 border rounded-lg mt-1 
+    ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
+  `} placeholder="admin@company.com"
             />
-            {formik.touched.admin_email && formik.errors.admin_email && (
+            {formik.touched.user_email && formik.errors.user_email && (
               <p className="text-xs text-red-500 mt-1">
-                {formik.errors.admin_email}
+                {formik.errors.user_email}
               </p>
             )}
           </div>
 
-          {/* Admin Password */}
-          <div className="mb-6">
-            <label className="text-sm font-medium">
-              Password <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="password"
-              name="admin_password"
-              value={formik.values.admin_password}
-              onChange={formik.handleChange}
-              className="w-full px-4 py-2 border rounded-lg mt-1"
-              placeholder="Enter Password"
-            />
-            {formik.touched.admin_password &&
-              formik.errors.admin_password && (
-                <p className="text-xs text-red-500 mt-1">
-                  {formik.errors.admin_password}
-                </p>
-              )}
-          </div>
+          {/* User Password */}
+          {!isEditMode && (
+            <div className="mb-6">
+              <label className="text-sm font-medium">
+                Password {!isEditMode && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type="password"
+                name="user_password"
+                value={formik.values.user_password}
+                onChange={formik.handleChange}
+                className="w-full px-4 py-2 border rounded-lg mt-1"
+                placeholder="Enter Password"
+              />
+              {formik.touched.user_password &&
+                formik.errors.user_password && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {formik.errors.user_password}
+                  </p>
+                )}
+            </div>
+          )}
           <div className="mb-4">
             <label className="text-sm font-medium">
-              Phone Number <span className="text-red-500">*</span>
+              Phone Number {!isEditMode && <span className="text-red-500">*</span>}
             </label>
             <input
               type="text"
@@ -317,7 +304,7 @@ function AddCompanyUser() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium">
-                Area <span className="text-red-500">*</span>
+                Area {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <input
                 name="area"
@@ -330,7 +317,7 @@ function AddCompanyUser() {
 
             <div>
               <label className="text-sm font-medium">
-                City <span className="text-red-500">*</span>
+                City {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <input
                 name="city"
@@ -343,7 +330,7 @@ function AddCompanyUser() {
 
             <div>
               <label className="text-sm font-medium">
-                District <span className="text-red-500">*</span>
+                District {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <input
                 name="district"
@@ -356,7 +343,7 @@ function AddCompanyUser() {
 
             <div>
               <label className="text-sm font-medium">
-                State <span className="text-red-500">*</span>
+                State {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <input
                 name="state"
@@ -369,7 +356,7 @@ function AddCompanyUser() {
 
             <div>
               <label className="text-sm font-medium">
-                Country <span className="text-red-500">*</span>
+                Country {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <input
                 name="country"
@@ -382,7 +369,7 @@ function AddCompanyUser() {
 
             <div>
               <label className="text-sm font-medium">
-                PIN Code <span className="text-red-500">*</span>
+                PIN Code {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <input
                 name="pin_code"
@@ -407,7 +394,7 @@ function AddCompanyUser() {
               type="submit"
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              {isEditMode ? "Update Admin" : " Create Admin"}
+              {isEditMode ? "Update User" : " Create User"}
             </button>
           </div>
 

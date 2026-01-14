@@ -2,6 +2,9 @@ export const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const GET_APIS = {
   get_all_companies: `${BASE_URL}admin/get_companies`,
+  get_all_company_admins: `${BASE_URL}admin/get_all_company_admins`,
+  company_code_dropdown: `${BASE_URL}admin/company_code_dropdown`,
+
 };
 
 export const POST_APIS = {
@@ -26,7 +29,8 @@ export const POST_APIS = {
   admin_company_delete: `${BASE_URL}admin/company_delete`,
   modify_chart: `${BASE_URL}modify_chart`,
   company_register: `${BASE_URL}admin/company_register`,
-  get_all_company_admins: `${BASE_URL}admin/get_all_company_admins`,
   company_admin_register: `${BASE_URL}admin/company/admin_register`,
-  company_code_dropdown: `${BASE_URL}admin/company_code_dropdown`,
+  company_get_users: `${BASE_URL}/admin/company_get_users`,
+  company_user_register: `${BASE_URL}admin/company/user_register`,
+
 };
