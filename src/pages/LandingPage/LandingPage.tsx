@@ -385,12 +385,12 @@ export default function LandingPage() {
                   >
                     Integrations
                   </a>
-                  <a
+                  {/* <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/pricing")}
                   >
                     Pricing
-                  </a>
+                  </a> */}
                 </div>
                 <div className="flex flex-col gap-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
@@ -402,12 +402,12 @@ export default function LandingPage() {
                   >
                     About
                   </a>
-                  <a
+                  {/* <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/blog")}
                   >
                     Blog
-                  </a>
+                  </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/careers")}
@@ -419,12 +419,12 @@ export default function LandingPage() {
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                     Support
                   </h4>
-                  <a
+                  {/* <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/help-center")}
                   >
                     Help Center
-                  </a>
+                  </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/privacy-policy")}
