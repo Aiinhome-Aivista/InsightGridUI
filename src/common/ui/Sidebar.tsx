@@ -72,7 +72,7 @@ export default function Sidebar() {
   return (
     <aside
       className={`${collapsed ? "w-20" : "w-60"} 
-  h-full border-r shrink-0 transition-all duration-200`}
+  h-full border-r shrink-0 transition-all duration-200 flex flex-col`}
       style={{ backgroundColor: theme.surface, borderColor: theme.border, color: theme.primaryText }}
     >
       <div
@@ -168,7 +168,7 @@ export default function Sidebar() {
           })}
         </nav>
       </div>
-      <div className={`py-4 ${collapsed ? 'px-4' : 'px-3'}`} style={{ borderColor: theme.border }}>
+      <div className={`mt-auto py-4 ${collapsed ? 'px-4' : 'px-3'}`} style={{ borderColor: theme.border }}>
         <Tippy
           content="Logout"
           placement="right"
