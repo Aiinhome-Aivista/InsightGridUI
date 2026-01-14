@@ -184,7 +184,7 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f6f7f8] dark:bg-[#101922] text-slate-900 dark:text-white font-sans flex flex-col">
+    <div className="min-h-screen font-sans flex flex-col">
       {/* Page Transition Overlay */}
       {isTransitioning && (
         <div
@@ -204,8 +204,7 @@ const ContactPage = () => {
             `}</style>
 
       <Toast ref={toast} position="top-right" className="custom-toast" />
-
-      <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+  <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
@@ -228,7 +227,7 @@ const ContactPage = () => {
         </div>
       </header>
 
-      <main className="flex-grow">
+      <main className="flex-grow mt-10">
         {/* Hero Section */}
         <section className="relative py-16 px-6 md:px-12 bg-white dark:bg-[#101922] border-b border-slate-100 dark:border-slate-800">
           <div className="max-w-[900px] mx-auto text-center relative z-10">

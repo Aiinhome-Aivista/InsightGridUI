@@ -74,7 +74,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="flex flex-col min-h-screen pt-16">
+      <main className="flex flex-col min-h-screen pt-10">
         {/* Hero Section */}
         <section className="relative py-16 px-4 md:px-10 lg:px-40 flex justify-center bg-white dark:bg-[#101922]">
           <div className="w-full max-w-[960px] flex flex-col items-center text-center gap-6">

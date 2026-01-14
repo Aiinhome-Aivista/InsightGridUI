@@ -42,10 +42,9 @@ export default function TermsOfServiceVariant2() {
   ];
 
   return (
-    <div className="bg-white dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
+    <div className="bg-white overflow-x-hidden min-h-screen flex flex-col">
       
-      {/* --- HEADER (Consistent) --- */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+  <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
@@ -55,7 +54,8 @@ export default function TermsOfServiceVariant2() {
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
-              <a onClick={() => navigate("/resources")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
+              <a onClick={() => navigate("/Terms of Service")} className="text-[#137fec] text-sm font-bold transition-colors cursor-pointer">Terms of Service</a>
+              <a onClick={() => navigate("/Resources")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
               <a onClick={() => navigate("/pricing")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Pricing</a>
               <a onClick={() => navigate("/faq")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">FAQ</a>
             </nav>
@@ -68,7 +68,7 @@ export default function TermsOfServiceVariant2() {
         </div>
       </header>
 
-      <main className="flex-grow">
+      <main className="flex-grow mt-10">
         <div className="max-w-7xl mx-auto px-4 md:px-10 lg:px-20 py-16">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">

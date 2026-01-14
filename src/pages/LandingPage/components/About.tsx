@@ -51,10 +51,10 @@ export default function About() {
   ];
 
   return (
-    <div className="bg-[#f6f7f8] dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
+    <div className="bg-[#f6f7f8] overflow-x-hidden min-h-screen flex flex-col">
       
       {/* --- HEADER --- */}
-       <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+       <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md">
              <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between"></div>
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
@@ -79,7 +79,7 @@ export default function About() {
         </div>
       </header>
 
-      <main className="flex-grow">
+      <main className="flex-grow mt-10">
         
         {/* Hero Section */}
         <section className="py-20 px-4 md:px-10 lg:px-40 bg-white dark:bg-[#101922] border-b border-slate-100 dark:border-slate-800">
@@ -93,7 +93,7 @@ export default function About() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#137fec] to-blue-400">accessible to everyone.</span>
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              InsightGrid was born from a simple frustration: Data analysis was too hard, too slow, and too expensive. We're here to change that.
+              Sahajinsights was born from a simple frustration: Data analysis was too hard, too slow, and too expensive. We're here to change that.
             </p>
           </div>
         </section>
@@ -104,7 +104,7 @@ export default function About() {
             <div className="flex-1 space-y-6">
               <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Our Story</h2>
               <p className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
-                Founded in 2024, InsightGrid started as an internal tool for a marketing agency. The team was tired of waiting days for engineering to run SQL queries just to answer simple questions about campaign performance.
+                Founded in 2024, Sahajinsights started as an internal tool for a marketing agency. The team was tired of waiting days for engineering to run SQL queries just to answer simple questions about campaign performance.
               </p>
               <p className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
                 We realized that if we could build a drag-and-drop interface that sat on top of raw data, we could unlock the potential of the entire team. Today, we help thousands of companies visualize their future.
@@ -181,7 +181,7 @@ export default function About() {
               Start your free 14-day trial today.
             </p>
             <button 
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate("/login")}
               className="bg-white text-[#137fec] px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-xl"
             >
               Get Started for Free
