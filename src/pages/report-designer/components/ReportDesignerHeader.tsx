@@ -119,7 +119,7 @@ export default function DataViewHeader({
             value={reportName}
             onChange={(e) => setReportName(e.target.value)}
             placeholder="Write a report name(required)"
-            className=" px-4 w-full md:w-80  h-10 border border-[#E5E5E5] rounded-xl text-gray-600 text-sm flex flex-wrap content-center items-center bg-white shadow-sm hover:border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#5433FF] gap-1 pr-10"
+            className=" px-4 w-full md:w-80 text-sm h-10 rounded-xl border focus:outline-none focus:ring-1 focus:ring-[#5433FF]"
           />
         </div>
         <div className="flex items-start md:items-center justify-center gap-2">
@@ -145,14 +145,12 @@ export default function DataViewHeader({
             onShow={handleDropdownShow}
             onHide={handleDropdownHide}
             className="
-    w-80 h-10
-    border border-gray-200 
+    w-80 h-10 text-sm
   rounded-xl
     flex items-center justify-between
     transition-all duration-200
     bg-white
-    focus:ring-2 focus:ring-[#5433FF]
-  "
+    border focus:outline-none focus:ring-1 focus:ring-[#5433FF]"
             panelClassName="
     bg-white rounded-xl border border-gray-100 overflow-hidden text-sm max-w-96
   "
@@ -168,11 +166,10 @@ export default function DataViewHeader({
               },
               list: { className: "p-1" },
               item: ({ context }: any) => ({
-                className: `px-3 py-2 rounded-xl text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${
-                  context.selected
+                className: `px-3 py-2 rounded-xl text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${context.selected
                     ? "bg-gray-100 font-semibold"
                     : "hover:bg-gray-50"
-                }`,
+                  }`,
               }),
               itemLabel: { className: "font-medium" },
             }}
@@ -180,11 +177,10 @@ export default function DataViewHeader({
           <button
             onClick={handleSaveClick}
             disabled={!reportName || isSaving || loading}
-            className={`rounded-xl text-sm font-medium transition-all flex items-center h-10 justify-center ${
-              !reportName || isSaving || loading
+            className={`rounded-xl text-sm font-medium transition-all flex items-center h-10 justify-center ${!reportName || isSaving || loading
                 ? "bg-gray-300 cursor-not-allowed text-white"
                 : "bg-[#7CA1F3] hover:bg-blue-500 text-white"
-            }`}
+              }`}
             style={{ width: "108px", height: "40px" }}
           >
             {isSaving || loading ? (

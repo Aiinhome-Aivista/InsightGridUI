@@ -125,7 +125,7 @@ const groupRows = (
   });
 
   Object.entries(map).forEach(([groupKey, items]) => {
-    // 🔹 GROUP HEADER
+    //  GROUP HEADER
     finalRows.push({
       __isGroup: true,
       __groupKey: groupKey,
@@ -133,7 +133,7 @@ const groupRows = (
       __count: items.length,
     });
 
-    // 🔹 CHILD ROWS
+    //  CHILD ROWS
     items.forEach((item) =>
       finalRows.push({
         ...item,
@@ -141,7 +141,7 @@ const groupRows = (
       })
     );
 
-    // 🔹 GROUP AGGREGATION ROW
+    //  GROUP AGGREGATION ROW
     finalRows.push({
       __isGroupAgg: true,
       __parentGroup: groupKey,
@@ -325,7 +325,7 @@ export default function DataViewTable({
     return !collapsedGroups[row.__parentGroup];
   });
 
-  // 🔥 Charts should NEVER use grouped rows
+  //  Charts should NEVER use grouped rows
   const chartRows = filteredRows;
 
   const getColumnType = (table: any, column: string) => {
@@ -344,10 +344,10 @@ export default function DataViewTable({
     setCharts((prevCharts) => {
       const updatedCharts = prevCharts.filter((c) => c.id !== id);
 
-      // 🔥 recalc columns still in use
+      //  recalc columns still in use
       const stillUsedColumns = getColumnsUsedByCharts(updatedCharts);
 
-      // 🔥 update selected columns accordingly
+      //  update selected columns accordingly
       setSelectedChartColumns(stillUsedColumns);
 
       return updatedCharts;
@@ -450,7 +450,7 @@ export default function DataViewTable({
           ...chart.style,
           colors:
             chart.style.colors ||
-              chart.style.pieColor || // 🔥 ADD THIS
+              chart.style.pieColor || 
               chart.style.color
               ? [chart.style.color]
               : undefined,
@@ -460,7 +460,7 @@ export default function DataViewTable({
 
     return chart;
   };
-  // 📦 build payload & call backend
+  //  build payload & call backend
   const getXAxisValues = (chart: ChartConfig) => {
     if (!chart.xAxis) return [];
 
@@ -495,24 +495,14 @@ export default function DataViewTable({
       const res = await ApiServices.modifyChart(payload);
 
       const ai = res.data?.data;
-      const aiMessage = res.data?.message; // 🔥 THIS IS WHAT YOU WANT
+      const aiMessage = res.data?.message; 
 
       if (!ai || ai.blocked) {
         return ai?.assistant_message || "I couldn’t apply that change.";
       }
 
-      // // 🔥 APPLY CHART UPDATES
-      // setCharts(prev =>
-      //   prev.map(chart => {
-      //     const update = ai.updates.find(u => u.chart_id === chart.id);
-      //     if (!update) return chart;
-
-      //     const updated = { ...chart, ...update.updated_fields };
-      //     return normalizeStyle(updated);
-      //   })
-      // );
       setCharts((prev) => {
-        // 1️⃣ existing charts update
+        // existing charts update
         let updatedCharts = prev.map((chart) => {
           const update = ai.updates?.find((u) => u.chart_id === chart.id);
           if (!update) return chart;
@@ -523,7 +513,7 @@ export default function DataViewTable({
           });
         });
 
-        // 2️⃣ new charts add
+        // new charts add
         if (ai.new_charts?.length) {
           updatedCharts = [
             ...updatedCharts,
@@ -634,7 +624,7 @@ const columns =
                       }}
                       placeholder="Group By"
                       display="chip"
-                      className="w-64 bg-gray-50 border border-gray-300 rounded-xl text-sm min-h-[40px] flex items-center ps-2"
+                      className="w-64 border border-gray-300 rounded-xl text-sm min-h-[40px] flex items-center ps-2"
                       panelClassName="fixed-multiselect-panel shadow-lg"
                       pt={{
                         filterContainer: {
@@ -670,7 +660,7 @@ const columns =
                       }}
                       placeholder="Filter"
                       display="chip"
-                      className="w-64 bg-gray-50 border border-gray-300 rounded-xl text-sm min-h-[40px] flex items-center ps-2"
+                      className="w-64 border border-gray-300 rounded-xl text-sm min-h-[40px] flex items-center ps-2"
                       panelClassName="fixed-multiselect-panel shadow-lg"
                       pt={{
                         filterContainer: {
@@ -829,26 +819,13 @@ const columns =
                   aggregationMap={aggregationMap}
                   aggregationOrder={aggregationOrder}
                   isGrouped={selectedGroupBy.length > 0}
-                  // onAggregationSelect={(column, agg) => {
-                  //   setAggregations((prev) => {
-                  //     const exists = prev.find(
-                  //       (a) => a.column === column && a.agg === agg
-                  //     );
-
-                  //     // already selected → ignore
-                  //     if (exists) return prev;
-
-                  //     // allow multiple aggregation for same column
-                  //     return [...prev, { column, agg }];
-                  //   });
-                  // }}
                   onAggregationSelect={(column, agg) => {
                     setAggregations((prev) => {
                       const exists = prev.some(
                         (a) => a.column === column && a.agg === agg
                       );
 
-                      // 🔁 TOGGLE OFF (remove)
+                      // TOGGLE OFF (remove)
                       if (exists) {
                         return prev.filter(
                           (a) => !(a.column === column && a.agg === agg)
