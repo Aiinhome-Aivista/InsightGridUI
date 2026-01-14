@@ -17,6 +17,7 @@ import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { useNavigate } from "react-router-dom";
 import { useParams, useLocation } from "react-router-dom";
 import { POST_APIS, BASE_URL } from "../../../connection";
+import ApiServices from "../../services/ApiServices";
 
 const RegisterCompany = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -27,10 +28,6 @@ const RegisterCompany = () => {
   const company = location.state?.company;
   console.log("company", company);
   const isEditMode = Boolean(id && company);
-
-  // const isEditMode = () => {
-  //     return Boolean(id);
-  // };
 
   const formik = useFormik({
     validateOnMount: false,
@@ -68,15 +65,6 @@ const RegisterCompany = () => {
       if (!values.phone_number) {
         errors.phone_number = "Phone Number is required";
       }
-      //  else {
-      //   const phoneRegex = /^[6-9]\d{9}$/;
-      //   if (!phoneRegex.test(values.phone_number)) {
-      //     errors.phone_number =
-      //       "Phone number must be 10 digits and start with 6, 7, 8 or 9";
-      //   }
-      // }
-      // if (!isEditMode && !values.company_logo) errors.company_logo = "Company Logo required";
-
       if (!values.area) errors.area = "Area is required";
       if (!values.city) errors.city = "City is required";
       if (!values.district) errors.district = "District is required";
@@ -110,55 +98,18 @@ const RegisterCompany = () => {
 
       return errors;
     },
-    // onSubmit: async (values) => {
-    //     const formData = new FormData();
-
-    //     // 🔹 ID (null for create, number for edit)
-    //     // if (values.id !== null) {
-    //     //     formData.append("id", String(values.id));
-    //     // }
-    //     formData.append("id", values.id);
-
-    //     // 🔹 CORE FIELDS
-    //     formData.append("company_name", values.company_name);
-    //     formData.append("company_email", values.company_email);
-    //     formData.append("phone_number", values.phone_number);
-
-    //     // 🔹 ADDRESS (combined)
-    //     const address = `${values.area}, ${values.city}, ${values.district}, ${values.state}, ${values.country} - ${values.pin_code}`;
-    //     formData.append("address", address);
-
-    //     // 🔹 SUBSCRIPTION
-    //     formData.append("subscription_type", values.subscription_type);
-    //     formData.append("from_date", values.from_date);
-    //     formData.append("to_date", values.to_date);
-
-    //     // 🔹 AUDIT FIELDS
-    //     formData.append("created_by", JSON.parse(localStorage.getItem("ig_user"))?.user_id);
-
-    //     // 🔹 LOGO
-    //     if (values.company_logo) {
-    //         formData.append("company_logo", values.company_logo);
-    //     }
-
-    //     await fetch("http://127.0.0.1:3008/admin/company_register", {
-    //         method: "POST",
-    //         body: formData,
-    //     });
-    // }
     onSubmit: async (values) => {
       await submitCompany(values);
     },
   });
   const submitCompany = async (values: any) => {
     const formData = new FormData();
-    // if (isEditMode()) {
-    formData.append("id", id);
-    // }
+    if (isEditMode && id) {
+      formData.append("id", id);
+    }
     formData.append("company_name", values.company_name);
     formData.append("company_email", values.company_email);
     formData.append("phone_number", values.phone_number);
-    // const address = `${values.area}, ${values.city}, ${values.district}, ${values.state}, ${values.country} - ${values.pin_code}`;
     const address = JSON.stringify({
       area: values.area,
       city: values.city,
@@ -179,10 +130,7 @@ const RegisterCompany = () => {
     if (values.company_logo) {
       formData.append("company_logo", values.company_logo);
     }
-    await fetch(POST_APIS.company_register, {
-      method: "POST",
-      body: formData,
-    });
+    await ApiServices.companyRegister(formData);
 
     navigate("/layout/manage-companies");
   };
@@ -295,7 +243,7 @@ const RegisterCompany = () => {
                   value={formik.values.company_name}
                   onChange={formik.handleChange}
                   className="w-full pl-10 py-2 border rounded-lg"
-                  placeholder="Zenith Tech Solutions Pvt Ltd"
+                  placeholder="Enter Company Name"
                 />
               </div>
               {formik.touched.company_name && formik.errors.company_name && (
@@ -318,7 +266,7 @@ const RegisterCompany = () => {
                   value={formik.values.company_email}
                   onChange={formik.handleChange}
                   className="w-full pl-10 py-2 border rounded-lg"
-                  placeholder="support@company.com"
+                  placeholder="Enter Company Email"
                 />
               </div>
               {formik.touched.company_email && formik.errors.company_email && (
@@ -341,7 +289,7 @@ const RegisterCompany = () => {
                   value={formik.values.phone_number}
                   onChange={formik.handleChange}
                   className="w-full pl-10 py-2 border rounded-lg"
-                  placeholder="+91 22 4000 1234"
+                  placeholder="Enter Phone Number"
                 />
               </div>
               {formik.touched.phone_number && formik.errors.phone_number && (
@@ -364,7 +312,7 @@ const RegisterCompany = () => {
                   value={formik.values.area}
                   onChange={formik.handleChange}
                   className="w-full pl-10 py-2 border rounded-lg"
-                  placeholder="EM Block, Sector V"
+                  placeholder="Ex: Salt Lake"
                 />
               </div>
               {formik.touched.area && formik.errors.area && (
@@ -387,7 +335,7 @@ const RegisterCompany = () => {
                   value={formik.values.city}
                   onChange={formik.handleChange}
                   className="w-full pl-10 py-2 border rounded-lg"
-                  placeholder="Kolkata"
+                  placeholder="Ex: Kolkata"
                 />
               </div>
               {formik.touched.city && formik.errors.city && (
@@ -405,7 +353,7 @@ const RegisterCompany = () => {
                 value={formik.values.district}
                 onChange={formik.handleChange}
                 className="w-full px-4 py-2 border rounded-lg"
-                placeholder="North 24 Parganas"
+                placeholder="Ex: North 24 Parganas"
               />
               {formik.touched.district && formik.errors.district && (
                 <p className="mt-1 text-xs text-red-500">
@@ -422,7 +370,7 @@ const RegisterCompany = () => {
                 value={formik.values.state}
                 onChange={formik.handleChange}
                 className="w-full px-4 py-2 border rounded-lg"
-                placeholder="West Bengal"
+                placeholder="Ex: West Bengal"
               />
               {formik.touched.state && formik.errors.state && (
                 <p className="mt-1 text-xs text-red-500">
@@ -444,7 +392,7 @@ const RegisterCompany = () => {
                   value={formik.values.country}
                   onChange={formik.handleChange}
                   className="w-full pl-10 py-2 border rounded-lg"
-                  placeholder="India"
+                  placeholder="Ender Country"
                 />
               </div>
               {formik.touched.country && formik.errors.country && (
@@ -467,7 +415,7 @@ const RegisterCompany = () => {
                   value={formik.values.pin_code}
                   onChange={formik.handleChange}
                   className="w-full pl-10 py-2 border rounded-lg"
-                  placeholder="700091"
+                  placeholder="Ex: 700091"
                 />
               </div>
               {formik.touched.pin_code && formik.errors.pin_code && (
@@ -508,7 +456,12 @@ const RegisterCompany = () => {
                 <input
                   type="date"
                   name="from_date"
-                  min={new Date().toISOString().split("T")[0]}
+                  // min={new Date().toISOString().split("T")[0]}
+                  min={
+                    isEditMode
+                      ? undefined
+                      : new Date().toISOString().split("T")[0]
+                  }
                   value={formik.values.from_date}
                   onChange={formik.handleChange}
                   className="w-full pl-10 py-2 border rounded-lg"
@@ -535,13 +488,7 @@ const RegisterCompany = () => {
                   name="to_date"
                   min={
                     formik.values.from_date
-                      ? new Date(
-                        new Date(formik.values.from_date).setFullYear(
-                          new Date(formik.values.from_date).getFullYear() + 1
-                        )
-                      )
-                        .toISOString()
-                        .split("T")[0]
+                      ? formik.values.from_date
                       : undefined
                   }
                   disabled={!formik.values.from_date}

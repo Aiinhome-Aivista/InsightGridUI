@@ -87,6 +87,23 @@ class ApiServices {
   modifyChart(body) {
     return axios.post(POST_APIS.modify_chart, body);
   }
+  getAllCompanyAdmins() {
+    return axios.get(POST_APIS.get_all_company_admins);
+  }
+  companyRegister(formData) {
+    return axios.post(POST_APIS.company_register, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
+
+  company_admin_register(body) {
+    return axios.post(POST_APIS.company_admin_register, body);
+  }
+  company_code_dropdown() {
+    return axios.get(POST_APIS.company_code_dropdown);
+  }
 }
 
 export default new ApiServices();

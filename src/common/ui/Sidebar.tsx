@@ -21,6 +21,7 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import person_add from '@mui/icons-material/PersonAdd';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
+import admin_panel_settings from '@mui/icons-material/AdminPanelSettings';
 const menuItems = [
   { name: "Super Dashboard", icon: SpaceDashboardIcon, path: "super-dashboard", roles: ["superadmin"], },
   { name: "Company", icon: ApartmentIcon, path: "manage-companies", roles: ["superadmin"], },
@@ -32,7 +33,7 @@ const menuItems = [
   // { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" , roles: ["companyadmin", "user"] },
   { name: "Settings", icon: SettingsRoundedIcon, path: "Settings", roles: ["companyadmin", "user"] },
   //  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
-  { name: "Company Admin", icon: LogoutRoundedIcon, path: "manage-company-admin", roles: ["superadmin"] },
+  { name: "Company Admin", icon: admin_panel_settings, path: "manage-company-admin", roles: ["superadmin"] },
   
 
 ];

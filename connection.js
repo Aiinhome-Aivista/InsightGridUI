@@ -26,4 +26,7 @@ export const POST_APIS = {
   admin_company_delete: `${BASE_URL}admin/company_delete`,
   modify_chart: `${BASE_URL}modify_chart`,
   company_register: `${BASE_URL}admin/company_register`,
+  get_all_company_admins: `${BASE_URL}admin/get_all_company_admins`,
+  company_admin_register: `${BASE_URL}admin/company/admin_register`,
+  company_code_dropdown: `${BASE_URL}admin/company_code_dropdown`,
 };
