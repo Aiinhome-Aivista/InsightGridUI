@@ -125,7 +125,7 @@ const groupRows = (
   });
 
   Object.entries(map).forEach(([groupKey, items]) => {
-    // 🔹 GROUP HEADER
+    //  GROUP HEADER
     finalRows.push({
       __isGroup: true,
       __groupKey: groupKey,
@@ -133,7 +133,7 @@ const groupRows = (
       __count: items.length,
     });
 
-    // 🔹 CHILD ROWS
+    //  CHILD ROWS
     items.forEach((item) =>
       finalRows.push({
         ...item,
@@ -141,7 +141,7 @@ const groupRows = (
       })
     );
 
-    // 🔹 GROUP AGGREGATION ROW
+    //  GROUP AGGREGATION ROW
     finalRows.push({
       __isGroupAgg: true,
       __parentGroup: groupKey,
@@ -325,7 +325,7 @@ export default function DataViewTable({
     return !collapsedGroups[row.__parentGroup];
   });
 
-  // 🔥 Charts should NEVER use grouped rows
+  //  Charts should NEVER use grouped rows
   const chartRows = filteredRows;
 
   const getColumnType = (table: any, column: string) => {
@@ -344,10 +344,10 @@ export default function DataViewTable({
     setCharts((prevCharts) => {
       const updatedCharts = prevCharts.filter((c) => c.id !== id);
 
-      // 🔥 recalc columns still in use
+      //  recalc columns still in use
       const stillUsedColumns = getColumnsUsedByCharts(updatedCharts);
 
-      // 🔥 update selected columns accordingly
+      //  update selected columns accordingly
       setSelectedChartColumns(stillUsedColumns);
 
       return updatedCharts;
@@ -450,7 +450,7 @@ export default function DataViewTable({
           ...chart.style,
           colors:
             chart.style.colors ||
-              chart.style.pieColor || // 🔥 ADD THIS
+              chart.style.pieColor || 
               chart.style.color
               ? [chart.style.color]
               : undefined,
@@ -460,7 +460,7 @@ export default function DataViewTable({
 
     return chart;
   };
-  // 📦 build payload & call backend
+  //  build payload & call backend
   const getXAxisValues = (chart: ChartConfig) => {
     if (!chart.xAxis) return [];
 
@@ -495,24 +495,14 @@ export default function DataViewTable({
       const res = await ApiServices.modifyChart(payload);
 
       const ai = res.data?.data;
-      const aiMessage = res.data?.message; // 🔥 THIS IS WHAT YOU WANT
+      const aiMessage = res.data?.message; 
 
       if (!ai || ai.blocked) {
         return ai?.assistant_message || "I couldn’t apply that change.";
       }
 
-      // // 🔥 APPLY CHART UPDATES
-      // setCharts(prev =>
-      //   prev.map(chart => {
-      //     const update = ai.updates.find(u => u.chart_id === chart.id);
-      //     if (!update) return chart;
-
-      //     const updated = { ...chart, ...update.updated_fields };
-      //     return normalizeStyle(updated);
-      //   })
-      // );
       setCharts((prev) => {
-        // 1️⃣ existing charts update
+        // existing charts update
         let updatedCharts = prev.map((chart) => {
           const update = ai.updates?.find((u) => u.chart_id === chart.id);
           if (!update) return chart;
@@ -523,7 +513,7 @@ export default function DataViewTable({
           });
         });
 
-        // 2️⃣ new charts add
+        // new charts add
         if (ai.new_charts?.length) {
           updatedCharts = [
             ...updatedCharts,
@@ -553,7 +543,6 @@ export default function DataViewTable({
         const columns =
           table.columns?.map((col: { column_name: string }) => ({
             column_name: col.column_name,
-            // header: col.column_name.replace(/_/g, " ").toUpperCase(),
             header:
               columnRenames[col.column_name] ||
               col.column_name.replace(/_/g, " ").toUpperCase(),
@@ -563,7 +552,7 @@ export default function DataViewTable({
         const filters = table.visualization?.filters || {};
         const chartColumns =
           table.columns?.map((col: { column_name: string }) => ({
-            column_name: col.column_name, // ✅ SAME KEY
+            column_name: col.column_name, 
             label: col.column_name.replace(/_/g, " ").toUpperCase(),
           })) || [];
 
@@ -636,7 +625,7 @@ export default function DataViewTable({
                       }}
                       placeholder="Group By"
                       display="chip"
-                      className="w-64 bg-gray-50 border border-gray-300 rounded-xl text-sm min-h-[40px] flex items-center ps-2"
+                      className="w-64 border border-gray-300 rounded-xl text-sm min-h-[40px] flex items-center ps-2"
                       panelClassName="fixed-multiselect-panel shadow-lg"
                       pt={{
                         filterContainer: {
@@ -669,13 +658,10 @@ export default function DataViewTable({
                         });
 
                         setSelectedFilters(parsed);
-
-                        // 🔥 future:
-                        // open value input modal
                       }}
                       placeholder="Filter"
                       display="chip"
-                      className="w-64 bg-gray-50 border border-gray-300 rounded-xl text-sm min-h-[40px] flex items-center ps-2"
+                      className="w-64 border border-gray-300 rounded-xl text-sm min-h-[40px] flex items-center ps-2"
                       panelClassName="fixed-multiselect-panel shadow-lg"
                       pt={{
                         filterContainer: {
@@ -788,7 +774,7 @@ export default function DataViewTable({
                     <button
                       onClick={() => {
                         setViewType("table");
-                        setShowChartSidebar(false); // ✅ ADD THIS
+                        setShowChartSidebar(false);
                       }}
                       className={`px-2 py-2 ${viewType === "table"
                           ? "bg-gray-100"
@@ -823,7 +809,7 @@ export default function DataViewTable({
                   </div>
                 </div>
               </div>
-              {/* 🔥 CHARTS ABOVE TABLE WHEN SIDEBAR OPEN */}
+              {/*  CHARTS ABOVE TABLE WHEN SIDEBAR OPEN */}
               {showChartSidebar && charts.length > 0 && (
                 <div className="mb-6">
                   <RenderCharts
@@ -847,39 +833,26 @@ export default function DataViewTable({
                   aggregationMap={aggregationMap}
                   aggregationOrder={aggregationOrder}
                   isGrouped={selectedGroupBy.length > 0}
-                  // onAggregationSelect={(column, agg) => {
-                  //   setAggregations((prev) => {
-                  //     const exists = prev.find(
-                  //       (a) => a.column === column && a.agg === agg
-                  //     );
-
-                  //     // already selected → ignore
-                  //     if (exists) return prev;
-
-                  //     // allow multiple aggregation for same column
-                  //     return [...prev, { column, agg }];
-                  //   });
-                  // }}
                   onAggregationSelect={(column, agg) => {
                     setAggregations((prev) => {
                       const exists = prev.some(
                         (a) => a.column === column && a.agg === agg
                       );
 
-                      // 🔁 TOGGLE OFF (remove)
+                      // TOGGLE OFF (remove)
                       if (exists) {
                         return prev.filter(
                           (a) => !(a.column === column && a.agg === agg)
                         );
                       }
 
-                      // ➕ TOGGLE ON (add)
+                      //  TOGGLE ON (add)
                       return [...prev, { column, agg }];
                     });
                   }}
 
                   enableRowGrouping={selectedGroupBy.length > 0}
-                  collapsedGroups={collapsedGroups} // ✅ NEW
+                  collapsedGroups={collapsedGroups} 
                   onToggleGroup={toggleGroup}
                   onColumnRename={(original, newName) => {
                     setColumnRenames((prev) => ({
@@ -900,12 +873,6 @@ export default function DataViewTable({
                     setSelectedChartColumns(cols);
                     removeChartsByColumns(cols);
                   }}
-                  // onChartSelect={(config) => {
-                  //   setCharts(prev => [
-                  //     ...prev,
-                  //     { ...config, id: Date.now().toString() }
-                  //   ]);
-                  // }}
                   onChartSelect={(config) => {
                     setCharts((prev) => {
                       const exists = prev.some((chart) =>
@@ -913,7 +880,7 @@ export default function DataViewTable({
                       );
 
                       if (exists) {
-                        return prev; // 🚫 already exists
+                        return prev; 
                       }
 
                       return [
