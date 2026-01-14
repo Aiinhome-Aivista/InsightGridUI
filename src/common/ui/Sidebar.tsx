@@ -25,13 +25,15 @@ const menuItems = [
   { name: "Super Dashboard", icon: SpaceDashboardIcon, path: "super-dashboard", roles: ["superadmin"], },
   { name: "Company", icon: ApartmentIcon, path: "manage-companies", roles: ["superadmin"], },
   { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard", roles: ["companyadmin", "user"] },
-  { name: "User", icon: person_add, path: "manage-users", roles: ["companyadmin"] },
+  { name: "User", icon: person_add, path: "manage-company-users", roles: ["companyadmin"] },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload", roles: ["companyadmin", "user"] },
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list", roles: ["companyadmin", "user"] },
   { name: "Report Designer", icon: SummarizeOutlinedIcon, path: "report-designer", roles: ["companyadmin", "user"] },
   // { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" , roles: ["companyadmin", "user"] },
   { name: "Settings", icon: SettingsRoundedIcon, path: "Settings", roles: ["companyadmin", "user"] },
   //  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
+  { name: "Company Admin", icon: LogoutRoundedIcon, path: "manage-company-admin", roles: ["superadmin"] },
+  
 
 ];
 
