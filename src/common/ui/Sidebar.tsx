@@ -70,8 +70,8 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`${collapsed ? "w-20" : "w-60"
-        } h-screen border-r flex flex-col transition-all duration-200`}
+      className={`${collapsed ? "w-20" : "w-60"} 
+  h-full border-r shrink-0 transition-all duration-200`}
       style={{ backgroundColor: theme.surface, borderColor: theme.border, color: theme.primaryText }}
     >
       <div

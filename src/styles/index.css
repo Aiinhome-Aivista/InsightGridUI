@@ -3,6 +3,14 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+
 /* Custom base styles */
 @layer base {
   :root {
@@ -39,18 +47,22 @@
 
 /* Chip spacing */
 .p-multiselect-token {
-  padding-right: 2px; /* overall chip breathing space */
+  padding-right: 2px;
+  /* overall chip breathing space */
 }
 
 /* Gap between text and cross icon */
 .p-multiselect-token-icon {
-  margin-left: 4px;              /* 🔥 GAP */
-  transition: color 0.2s ease;   /* smooth hover */
+  margin-left: 4px;
+  /* 🔥 GAP */
+  transition: color 0.2s ease;
+  /* smooth hover */
 }
 
 /* Hover effect – red cross */
 .p-multiselect-token-icon:hover {
-  color: #ef4444; /* Tailwind red-500 */
+  color: #ef4444;
+  /* Tailwind red-500 */
 }
 
 
@@ -69,7 +81,8 @@
   height: 32px;
   width: 32px;
   margin-left: auto;
-  transform: translateY(-7px); /* 🔥 move slightly up */
+  transform: translateY(-7px);
+  /* 🔥 move slightly up */
   border-radius: 8px;
   color: #6b7280;
   transition: all 0.2s ease;
@@ -160,13 +173,14 @@
 .p-multiselect-filter-container {
   position: relative;
   display: flex;
-  align-items: center; /* 🔥 vertical centering */
+  align-items: center;
+  /* 🔥 vertical centering */
 }
 
 .p-multiselect-filter {
   height: 36px;
-  padding-left: 56px; 
-  padding-right: 32px; 
+  padding-left: 56px;
+  padding-right: 32px;
   border-radius: 0.75rem;
   border: 1px solid #d1d5db;
   font-size: 13px;
@@ -187,7 +201,8 @@
   position: absolute;
   right: 15px;
   top: 60%;
-  transform: translateY(-50%); /* 🔥 perfect vertical center */
+  transform: translateY(-50%);
+  /* 🔥 perfect vertical center */
   color: #9ca3af;
   transition: color 0.2s ease, background-color 0.2s ease;
   border-radius: 6px;
@@ -204,8 +219,10 @@
 /* Right-side clear (X) icon */
 .p-multiselect-clear-icon {
   position: absolute;
-  right: 10px;              /* adjust horizontal spacing */
-  top: 50%;                 /* 🔥 vertical center */
+  right: 10px;
+  /* adjust horizontal spacing */
+  top: 50%;
+  /* 🔥 vertical center */
   transform: translateY(-50%);
   display: flex;
   align-items: center;
@@ -219,18 +236,24 @@
 
 /* Hover effect */
 .p-multiselect-clear-icon:hover {
-  color: #ef4444;           /* red */
+  color: #ef4444;
+  /* red */
   background-color: #fee2e2;
 }
 
 /* Hover effect for clear icon */
 .p-multiselect-clear-icon:hover {
-  color: #ef4444;           /* red-500 */
-  background-color: #fee2e2; /* red-100 */
+  color: #ef4444;
+  /* red-500 */
+  background-color: #fee2e2;
+  /* red-100 */
 }
+
 .p-multiselect-filter {
-  padding-right: 36px;  /* space for clear icon */
+  padding-right: 36px;
+  /* space for clear icon */
 }
+
 /* Chip spacing fix */
 .p-multiselect-token {
   margin-right: 8px !important;
