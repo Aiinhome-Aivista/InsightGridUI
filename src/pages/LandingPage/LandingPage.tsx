@@ -18,7 +18,7 @@ export default function LandingPage() {
   return (
     <div className="bg-[#f6f7f8] dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
       {/* Top Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+      <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-xl bg-[#137fec]/10">
@@ -74,7 +74,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="flex flex-col min-h-screen">
+      <main className="flex flex-col min-h-screen pt-16">
         {/* Hero Section */}
         <section className="relative py-16 px-4 md:px-10 lg:px-40 flex justify-center bg-white dark:bg-[#101922]">
           <div className="w-full max-w-[960px] flex flex-col items-center text-center gap-6">
