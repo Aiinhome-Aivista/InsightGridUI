@@ -23,11 +23,8 @@ import Faq from "../pages/LandingPage/components/Faq";
 import AddCompanyUser from "../pages/company-users/Components/AddCompanyUser";
 import ManageCompanyAdmin from "../pages/Superadmin/ManageCompanyAdmin";
 import AddCompanyAdmin from "../pages/Superadmin/AddCompanyAdmin";
-import Features from "../pages/LandingPage/components/Features";
-import Integrations from "../pages/LandingPage/components/Integrations";
 import About from "../pages/LandingPage/components/About";
 import Blog from "../pages/LandingPage/components/Blog";
-import Careers from "../pages/LandingPage/components/Careers";
 import HelpCenter from "../pages/LandingPage/components/HelpCenter";
 import PrivacyPolicy from "../pages/LandingPage/components/PrivacyPolicy";
 import TermsOfService from "../pages/LandingPage/components/TermsOfService";
@@ -44,11 +41,8 @@ function AppRoutes() {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/faq" element={<Faq />} />
         <Route path="/resources" element={<Resources />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/integrations" element={<Integrations />} />
         <Route path="/about" element={<About />} />
         <Route path="/blog" element={<Blog />} />
-        <Route path="/careers" element={<Careers />} />
         <Route path="/help-center" element={<HelpCenter />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />

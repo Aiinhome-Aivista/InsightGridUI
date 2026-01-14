@@ -371,29 +371,6 @@ export default function LandingPage() {
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
-                    Product
-                  </h4>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/features")}
-                  >
-                    Features
-                  </a>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/integrations")}
-                  >
-                    Integrations
-                  </a>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/pricing")}
-                  >
-                    Pricing
-                  </a> */}
-                </div>
-                <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                     Company
                   </h4>
                   <a
@@ -402,12 +379,6 @@ export default function LandingPage() {
                   >
                     About
                   </a>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/blog")}
-                  >
-                    Blog
-                  </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/careers")}
@@ -419,12 +390,6 @@ export default function LandingPage() {
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                     Support
                   </h4>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/help-center")}
-                  >
-                    Help Center
-                  </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/privacy-policy")}
