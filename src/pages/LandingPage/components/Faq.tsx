@@ -85,7 +85,7 @@ export default function FAQ() {
         </div>
       </header>
 
-      <main className="flex-grow flex flex-col items-center py-20 px-4 mt-14">
+      <main className="flex-grow flex flex-col items-center py-20 px-4 mt-10">
         {/* Header Section */}
         <div className="text-center max-w-2xl mb-12">
             <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-6">

@@ -54,7 +54,8 @@ export default function About() {
     <div className="bg-[#f6f7f8] dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
       
       {/* --- HEADER --- */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+       <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+             <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between"></div>
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
@@ -206,29 +207,6 @@ export default function About() {
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
-                    Product
-                  </h4>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/features")}
-                  >
-                    Features
-                  </a>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/integrations")}
-                  >
-                    Integrations
-                  </a>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/pricing")}
-                  >
-                    Pricing
-                  </a> */}
-                </div>
-                <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                     Company
                   </h4>
                   <a
@@ -237,29 +215,17 @@ export default function About() {
                   >
                     About
                   </a>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/blog")}
-                  >
-                    Blog
-                  </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/careers")}
+                    onClick={() => navigate("/contact")}
                   >
-                    Careers
+                    Contact us
                   </a>
                 </div>
                 <div className="flex flex-col gap-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                     Support
                   </h4>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/help-center")}
-                  >
-                    Help Center
-                  </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/privacy-policy")}
