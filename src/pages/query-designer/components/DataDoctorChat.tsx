@@ -519,27 +519,32 @@ export default function Chat({
   //   localStorage.setItem("chat_history", JSON.stringify(updatedHistory));
   // };
 
-  useEffect(() => {
+useEffect(() => {
     const query = chat?.query || "";
-    setTypedQuery("");
+    setTypedQuery(""); // Clear previous text
     const scriptContainerRef = document.getElementById("script-container");
+    
     if (!query) return;
-    let i = 0;
-    if (query.length > 0) {
-      setTypedQuery(query.charAt(0));
-      i = 1;
-    }
+
+    let i = 0; // Start from the very first character
 
     const typingInterval = setInterval(() => {
       if (i < query.length) {
-        setTypedQuery((prev) => prev + query.charAt(i));
-        i++;
+        // Retrieve the character at the current index 'i'
+        const char = query.charAt(i);
+        
+        // Append it to the state
+        setTypedQuery((prev) => prev + char);
+        
+        i++; // Increment index
+        
+        // Scroll to bottom
+        if (scriptContainerRef) {
+          scriptContainerRef.scrollTop = scriptContainerRef.scrollHeight;
+        }
       } else {
         clearInterval(typingInterval);
         setIsScriptGenerated(true);
-      }
-      if (scriptContainerRef) {
-        scriptContainerRef.scrollTop = scriptContainerRef.scrollHeight;
       }
     }, 10);
 
@@ -885,7 +890,7 @@ export default function Chat({
               disabled={
                 isSessionDataMissing || isExecuting || !isScriptGenerated
               }
-              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded transition-colors flex-shrink-0 ${isSessionDataMissing || isExecuting || !isScriptGenerated
+              className={`px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded-lg transition-colors flex-shrink-0 ${isSessionDataMissing || isExecuting || !isScriptGenerated
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-gray-300"
                 }`}
