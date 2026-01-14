@@ -164,7 +164,7 @@ export default function DataViewHeader({
             onShow={handleDropdownShow}
             onHide={handleDropdownHide}
             className="
-    w-96 h-10
+    w-80 h-10
     border border-gray-200 
   rounded-xl
     flex items-center justify-between
@@ -187,7 +187,7 @@ export default function DataViewHeader({
               },
               list: { className: "p-1" },
               item: ({ context }: any) => ({
-                className: `px-3 py-2 rounded-md text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${
+                className: `px-3 py-2 rounded-xl text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${
                   context.selected
                     ? "bg-gray-100 font-semibold"
                     : "hover:bg-gray-50"
@@ -202,7 +202,7 @@ export default function DataViewHeader({
             className={`rounded-xl text-sm font-medium transition-all flex items-center h-10 justify-center ${
               !reportName || isSaving || loading
                 ? "bg-gray-300 cursor-not-allowed text-white"
-                : "bg-blue-400 hover:bg-blue-700 text-white"
+                : "bg-[#7CA1F3] hover:bg-blue-500 text-white"
             }`}
             style={{ width: "108px", height: "40px" }}
           >
@@ -249,7 +249,7 @@ export default function DataViewHeader({
             <div className="flex justify-center gap-4">
               <button
                 style={{ borderColor: theme.accent, color: theme.primaryText }}
-                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg hover:text-white transition"
+                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-xl hover:text-white transition"
                 onMouseOver={(e) => (e.currentTarget.style.backgroundColor = theme.accent)}
                 onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                 onClick={() => {
@@ -261,7 +261,7 @@ export default function DataViewHeader({
               </button>
               <button
                 style={{ backgroundColor: theme.accent, borderColor: theme.accent, color: theme.primaryText }}
-                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg transition"
+                className="h-8 w-15 border font-extrabold text-xs px-5 rounded-xl transition"
                 onClick={() => setShowBackConfirm(false)}
               >
                 No

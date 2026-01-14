@@ -6,7 +6,7 @@ interface ConfirmSaveViewProps {
   customTitle?: string;
   customMessage?: string;
   customOnCancel?: () => void;
-  customOnConfirm?: () => void;
+  customOnConfirm?: () => void | Promise<void>;
   showConfirmButton?: boolean;
 }
 
@@ -18,10 +18,29 @@ export default function ConfirmSaveView({
   customOnConfirm,
   showConfirmButton = true,
 }: ConfirmSaveViewProps) {
-  const { isConfirmSaveModalOpen, setIsConfirmSaveModalOpen, viewName, confirmSave } = useAuth();
+  const { isConfirmSaveModalOpen, setIsConfirmSaveModalOpen, viewName, confirmSave, isSaving } = useAuth();
+  const [localActionLoading, setLocalActionLoading] = React.useState(false);
 
   const onCancel = customOnCancel || (() => setIsConfirmSaveModalOpen(false));
-  const onConfirm = customOnConfirm || confirmSave;
+
+  const handleConfirm = async () => {
+    if (customOnConfirm) {
+      try {
+        setLocalActionLoading(true);
+        const res = customOnConfirm();
+        if (res && (res as Promise<void>).then) {
+          await res;
+        }
+      } finally {
+        setLocalActionLoading(false);
+      }
+      return;
+    }
+
+    confirmSave();
+  };
+
+  const isActionLoading = customOnConfirm ? localActionLoading : isSaving;
   const displayTitle = customTitle || viewName;
   const displayMessage = customMessage || `Do you want to save the ${type.toLowerCase()}?`;
   const isDuplicateMessage =
@@ -38,11 +57,6 @@ export default function ConfirmSaveView({
           <p className="text-gray-600 text-lg">{customTitle ? "File Name" : `${type} Name`}</p>
           <h2 className="text-2xl font-semibold text-gray-700">{displayTitle}</h2>
         </div>
-
-        {/* <p className="text-gray-600 text-xl whitespace-pre-line text-center">
-          {displayMessage}
-        </p> */}
-
         <p
           className={`text-xl whitespace-pre-line text-center ${isDuplicateMessage ? "text-red-600 font-medium" : "text-gray-600"
             }`}
@@ -55,21 +69,33 @@ export default function ConfirmSaveView({
           {showConfirmButton ? (
             <>
               <button
-                className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 bg-white hover:bg-[#4B1AE7] hover:text-white transition"
+                className="px-6 py-2 rounded-xl border border-gray-400 text-gray-700 bg-white hover:bg-[#7ca1f3] hover:text-white transition disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={onCancel}
+                disabled={isActionLoading}
               >
                 Cancel
               </button>
               <button
-                className="px-6 py-2 rounded-lg bg-[#4B1AE7] text-white hover:opacity-90 transition"
-                onClick={onConfirm}
+                className="px-6 py-2 rounded-xl bg-[#7ca1f3] text-white hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
+                onClick={handleConfirm}
+                disabled={isActionLoading}
               >
-                Confirm
+                {isActionLoading ? (
+                  <>
+                    <svg className="animate-spin inline-block h-4 w-4 mr-2" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                    </svg>
+                    {customOnConfirm ? "Deleting..." : "Saving..."}
+                  </>
+                ) : (
+                  "Confirm"
+                )}
               </button>
             </>
           ) : (
             <button
-              className="px-6 py-2 rounded-lg bg-[#4B1AE7] text-white hover:opacity-90 transition"
+              className="px-6 py-2 rounded-xl bg-[#7ca1f3] text-white hover:opacity-90 transition"
               onClick={onCancel}
             >
               OK

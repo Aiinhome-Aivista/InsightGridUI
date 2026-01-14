@@ -77,16 +77,14 @@ export default function ReportDesignerChatSidebar({
   };
 
   return (
-    <div className="fixed right-0 top-0 h-full w-[360px] bg-white border-l shadow-lg flex flex-col z-50">
+    <div className="fixed right-0 top-0 h-full w-80 bg-white border-l shadow-lg flex flex-col z-50">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b">
+      <div className="flex items-center justify-between px-4 h-14 border-b">
         <h3 className="text-sm font-semibold">Report Designer Analysis</h3>
         <button onClick={onClose} className="text-gray-500 hover:text-black">
           ✕
         </button>
       </div>
-
-      {/* Messages */}
       <div className="flex-1 overflow-auto p-4 space-y-3 bg-gray-50">
         {messages.map((m, i) => (
           <div
@@ -94,7 +92,7 @@ export default function ReportDesignerChatSidebar({
             className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[75%] px-3 py-2 rounded-lg text-sm whitespace-pre-line
+              className={`max-w-[75%] px-3 py-2 rounded-xl text-sm whitespace-pre-line
                 ${m.role === "user"
                   ? "bg-blue-600 text-white rounded-br-none"
                   : "bg-white text-gray-700 border rounded-bl-none"
@@ -107,7 +105,7 @@ export default function ReportDesignerChatSidebar({
 
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-white border rounded-lg px-3 py-2 flex items-center gap-1">
+            <div className="bg-white border rounded-xl px-3 py-2 flex items-center gap-1">
               <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
               <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:150ms]" />
               <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:300ms]" />
@@ -117,7 +115,7 @@ export default function ReportDesignerChatSidebar({
       </div>
 
       {/* Input */}
-      <div className="border-t p-2 flex items-center gap-2 bg-white">
+      <div className="border-t h-14  flex items-center gap-2 p-2 bg-white">
         <input
           value={input}
           disabled={!hasCharts}
@@ -128,7 +126,7 @@ export default function ReportDesignerChatSidebar({
         />
         <button
           onClick={handleSend}
-          className="w-9 h-9 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
+          className="w-9 h-9 flex items-center justify-center bg-[#7CA1F3] text-white rounded-full hover:bg-blue-500 transition"
         >
           <SendRoundedIcon sx={{ fontSize: 18 }} />
         </button>

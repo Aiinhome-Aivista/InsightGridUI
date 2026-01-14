@@ -186,7 +186,7 @@ const QueryDesignerManage = () => {
               const existingTitles = queries.map((q: any) => q.query_title);
               navigate("/layout/query-designer", { state: { existingTitles } });
             }}
-            className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
+            className="bg-[#7CA1F3] hover:bg-blue-500 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
             style={{
               width: '108px',
             }}
@@ -211,7 +211,7 @@ const QueryDesignerManage = () => {
               placeholder="Global Search"
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-[#D9D9D9] rounded-lg h-10 text-sm bg-gray-50 focus:bg-white focus:ring-1 focus:ring-[#5433FF] focus:border-transparent outline-none transition-all"
+              className="pl-10 pr-4 py-2 border border-[#D9D9D9] rounded-xl h-10 text-sm bg-gray-50 focus:bg-white focus:ring-1 focus:ring-[#5433FF] focus:border-transparent outline-none transition-all"
               style={{ width: '568px' }}
             />
           </div>
@@ -220,7 +220,7 @@ const QueryDesignerManage = () => {
               onClick={handleRefresh}
               disabled={isRefreshing}
               className={`
-                w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] 
+                w-10 h-10 flex items-center justify-center rounded-xl border border-[#D9D9D9] 
                 bg-[#D9D9D9] hover:bg-[#D9D9D9] transition-all
                 ${isRefreshing ? "opacity-70 cursor-wait" : "cursor-pointer"}
               `}

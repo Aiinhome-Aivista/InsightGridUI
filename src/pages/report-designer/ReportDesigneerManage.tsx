@@ -372,7 +372,7 @@ const ReportDesignManage = () => {
           </div>
 
           <button
-            className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
+            className="bg-[#7CA1F3] hover:bg-blue-500 h-10 text-white rounded-xl text-sm font-medium transition-all flex items-center justify-center"
             style={{ width: "108px" }}
             onClick={() => navigate("/layout/report-designer-view")}
           >
@@ -402,7 +402,7 @@ const ReportDesignManage = () => {
               placeholder="Global Search"
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 h-10
+              className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm bg-gray-50 h-10
                          focus:bg-white focus:ring-1 focus:ring-[#5433FF] outline-none transition-all"
               style={{ width: "568px" }}
             />
@@ -412,7 +412,7 @@ const ReportDesignManage = () => {
               onClick={handleRefresh}
               disabled={isRefreshing}
               className={`
-                          w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] 
+                          w-10 h-10 flex items-center justify-center rounded-xl border border-[#D9D9D9] 
                           bg-[#D9D9D9] hover:bg-[#D9D9D9] transition-all
                           ${isRefreshing
                   ? "opacity-70 cursor-wait"
@@ -434,7 +434,7 @@ const ReportDesignManage = () => {
           <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
         </div>
       ) : filteredReports.length > 0 ? (
-        <div className="bg-white rounded-lg shadow-sm flex flex-col flex-1 min-h-0">
+        <div className="bg-white rounded-xl shadow-sm flex flex-col flex-1 min-h-0">
           <div>
             <table className="w-full text-[15px] table-fixed">
               <thead className="bg-gray-100 text-[#3D5B81]">

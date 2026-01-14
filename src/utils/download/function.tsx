@@ -104,7 +104,19 @@ export const generatePDF = async (
   const user = JSON.parse(localStorage.getItem("ig_user") || "{}");
 
   const companyName = user?.company_name || "";
-  const companyAddress = user?.company_address || "";
+  // const companyAddress = user?.company_address || "";
+  let companyAddress = "";
+
+  try {
+    const raw = user?.company_address || "";
+    const parsed = raw.startsWith("{") ? JSON.parse(raw) : null;
+
+    companyAddress = parsed
+      ? `${parsed.area}, ${parsed.city}, ${parsed.state}, ${parsed.country} - ${parsed.pin_code}`
+      : raw;
+  } catch {
+    companyAddress = user?.company_address || "";
+  }
   const logoUrl = user?.company_logo_url || "";
   const createdDate = new Date().toLocaleDateString("en-GB");
 

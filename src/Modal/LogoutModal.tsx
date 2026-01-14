@@ -45,7 +45,7 @@ export default function LogoutModal() {
         <div className="flex justify-center gap-4">
           <button
             style={{ borderColor: theme.accent, color: theme.primaryText }}
-            className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg hover:text-white transition"
+            className="h-8 w-15 border font-extrabold text-xs px-5 rounded-xl hover:text-white transition"
             onMouseOver={(e) => e.currentTarget.style.backgroundColor = theme.accent}
             onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             onClick={async () => {
@@ -57,7 +57,7 @@ export default function LogoutModal() {
           </button>
           <button
             style={{ backgroundColor: theme.accent, borderColor: theme.accent, color: theme.primaryText }}
-            className="h-8 w-15 border font-extrabold text-xs px-5 rounded-lg transition"
+            className="h-8 w-15 border font-extrabold text-xs px-5 rounded-xl transition"
             onClick={onClose}
           >
             No

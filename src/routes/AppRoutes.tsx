@@ -20,6 +20,9 @@ import RegisterCompany from "../pages/Superadmin/RegisterCompany";
 import Pricing from "../pages/LandingPage/components/Pricing";
 import Resources from "../pages/LandingPage/components/Resources";
 import Faq from "../pages/LandingPage/components/Faq";
+import AddCompanyUser from "../pages/company-users/Components/AddCompanyUser";
+import ManageCompanyAdmin from "../pages/Superadmin/ManageCompanyAdmin";
+import AddCompanyAdmin from "../pages/Superadmin/AddCompanyAdmin";
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -31,7 +34,7 @@ function AppRoutes() {
         <Route path="/login/company-admin" element={<Login />} />
         <Route path="/login/user" element={<Login />} />
         <Route path="/pricing" element={<Pricing />} />
-          <Route path="/faq" element={<Faq />} />
+        <Route path="/faq" element={<Faq />} />
         <Route path="/resources" element={<Resources />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/layout" element={<AppLayout />}>
@@ -46,11 +49,18 @@ function AppRoutes() {
             <Route path="Settings" element={<Settings />} />
             {/* <Route path="customize" element={<Customize_page />} /> */}
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="manage-users" element={<ManageCompanyUsers />} />
+            <Route path="manage-company-users" element={<ManageCompanyUsers />} />
+            <Route path="add-company-user" element={<AddCompanyUser />} />
+            <Route path="add-company-user:id" element={<AddCompanyUser />} />
+
+            {/* super admin routes */}
             <Route path="super-dashboard" element={<ManageSuperAdminDashboard />} />
             <Route path="manage-companies" element={<ManageCompanies />} />
             <Route path="register-company" element={<RegisterCompany />} />
             <Route path="register-company/:id" element={<RegisterCompany />} />
+            <Route path="manage-company-admin" element={<ManageCompanyAdmin />} />
+            <Route path="add-company-admin" element={<AddCompanyAdmin />} />
+            <Route path="add-company-admin/:id" element={<AddCompanyAdmin />} />
           </Route>
         </Route>
 

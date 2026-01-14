@@ -65,25 +65,25 @@ const formatApiDateTime = (dateStr) => {
       <div className="flex-1 flex flex-col gap-4 overflow-hidden min-h-0 p-4">
         <div className="flex gap-4 flex-1">
           <div className="w-[40%] grid grid-cols-2 gap-4">
-            <div className="bg-[#D9D9D9] rounded-lg p-3 flex flex-col items-center justify-center">
+            <div className="bg-[#D9D9D9] rounded-xl p-3 flex flex-col items-center justify-center">
               <p className="text-2xl font-bold text-gray-800">{stats.totalUploaded}</p>
               <p className="text-xs text-gray-600 mt-1">Total Uploaded Files</p>
             </div>
-            <div className="bg-[#D9D9D9] rounded-lg p-3 flex flex-col items-center justify-center">
+            <div className="bg-[#D9D9D9] rounded-xl p-3 flex flex-col items-center justify-center">
               <p className="text-2xl font-bold text-gray-800">{stats.totalExtracted}</p>
               <p className="text-xs text-gray-600 mt-1">Total Extracted Files</p>
             </div>
-            <div className="bg-[#D9D9D9] rounded-lg p-3 flex flex-col items-center justify-center">
+            <div className="bg-[#D9D9D9] rounded-xl p-3 flex flex-col items-center justify-center">
               <p className="text-2xl font-bold text-gray-800">{stats.totalQueries}</p>
               <p className="text-xs text-gray-600 mt-1">Total Queries</p>
             </div>
-            <div className="bg-[#D9D9D9] rounded-lg p-3 flex flex-col items-center justify-center">
+            <div className="bg-[#D9D9D9] rounded-xl p-3 flex flex-col items-center justify-center">
               <p className="text-2xl font-bold text-gray-800">{stats.totalReports}</p>
               <p className="text-xs text-gray-600 mt-1">Total Reports Generated</p>
             </div>
           </div>
 
-          <div className="w-[60%] bg-[#D9D9D9] rounded-lg p-3 overflow-auto">
+          <div className="w-[60%] bg-[#D9D9D9] rounded-xl p-3 overflow-auto">
             {dashboardData?.latest_file ? (
               <table className="w-full text-sm border-collapse border border-gray-400">
                 <thead>
@@ -121,26 +121,26 @@ const formatApiDateTime = (dateStr) => {
           </div>
         </div>
         <div className="flex gap-4 flex-1">
-          <div className="w-[20%] bg-[#D9D9D9] rounded-lg p-3">
+          <div className="w-[20%] bg-[#D9D9D9] rounded-xl p-3">
           </div>
-          <div className="w-[50%] bg-[#D9D9D9] rounded-lg p-3">
+          <div className="w-[50%] bg-[#D9D9D9] rounded-xl p-3">
           </div>
-          <div className="w-[30%] bg-[#D9D9D9] rounded-lg p-3">
+          <div className="w-[30%] bg-[#D9D9D9] rounded-xl p-3">
           </div>
         </div>
         <div className="flex gap-4 flex-1">
-          <div className="w-[30%] bg-[#D9D9D9] rounded-lg p-3">
+          <div className="w-[30%] bg-[#D9D9D9] rounded-xl p-3">
           </div>
-          <div className="w-[20%] bg-[#D9D9D9] rounded-lg p-3">
+          <div className="w-[20%] bg-[#D9D9D9] rounded-xl p-3">
           </div>
           <div className="w-[50%] flex flex-col gap-4">
-            <div className="flex-1 bg-[#D9D9D9] rounded-lg p-2">
+            <div className="flex-1 bg-[#D9D9D9] rounded-xl p-2">
             </div>
-            <div className="flex-1 bg-[#D9D9D9] rounded-lg p-2">
+            <div className="flex-1 bg-[#D9D9D9] rounded-xl p-2">
             </div>
-            <div className="flex-1 bg-[#D9D9D9] rounded-lg p-2">
+            <div className="flex-1 bg-[#D9D9D9] rounded-xl p-2">
             </div>
-            <div className="flex-1 bg-[#D9D9D9] rounded-lg p-2">
+            <div className="flex-1 bg-[#D9D9D9] rounded-xl p-2">
             </div>
           </div>
         </div>
