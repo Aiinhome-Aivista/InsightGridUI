@@ -61,25 +61,6 @@ export default function DataViewHeader({
     }
   }, [isEditMode, editReport, tableOptions]);
 
-  // useEffect(() => {
-  //   if (editReport && tableOptions.length > 0) {
-  //     // Try matching by ID first (query_history_id)
-  //     let matchedOption = tableOptions.find(
-  //       (opt) => opt.value.id === editReport.query_history_id
-  //     );
-
-  //     // Fallback: Try matching by name
-  //     if (!matchedOption) {
-  //       const queryName = editReport.query_name || editReport.query?.query_name || editReport.query_title;
-  //       matchedOption = tableOptions.find((opt) => opt.label === queryName);
-  //     }
-
-  //     if (matchedOption) {
-  //       setSelectedTables([matchedOption]);
-  //     }
-  //   }
-  // }, [editReport, tableOptions]);
-
   const handleDropdownShow = () => {
     window.addEventListener("scroll", handleScroll, true);
   };
@@ -128,7 +109,7 @@ export default function DataViewHeader({
           <InputText
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-10 w-full h-10 rounded-xl border focus:outline-none focus:ring-1 focus:ring-[#5433FF]"
+            className="pl-10 w-full text-sm h-10 rounded-xl border focus:outline-none focus:ring-1 focus:ring-[#5433FF]"
             placeholder="Global Search"
           />
         </div>
