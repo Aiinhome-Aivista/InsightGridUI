@@ -259,72 +259,59 @@ export const generatePDF = async (
   if (chartImages.length % 2 !== 0) {
     yPos += chartHeight + gapY;
   }
+const getFontSize = (colCount: number) => {
+  const maxFont = 10;   // minimum columns
+  const minFont = 5;    // extreme columns
+  const maxCols = 20;   // after this, stay min
+
+  if (colCount <= 5) return maxFont;
+  if (colCount >= maxCols) return minFont;
+
+  // linear scale
+  return (
+    maxFont -
+    ((colCount - 5) * (maxFont - minFont)) / (maxCols - 5)
+  );
+};
+
 
   const tableStartY = yPos + 20;
-  autoTable(doc, {
-    startY: tableStartY,
+ const dynamicFontSize = getFontSize(columnCount);
 
-    head: [headers],
-    body: rows.map((r) => columns.map((col) => r[col] ?? "")),
+autoTable(doc, {
+  startY: tableStartY,
 
-    theme: "grid",
-    tableWidth: "auto",
-    horizontalPageBreak: true,
-    horizontalPageBreakRepeat: headers,
+  head: [headers],
+  body: rows.map((r) => columns.map((col) => r[col] ?? "")),
 
-    styles: {
-      fontSize: columnCount > 14 ? 7 : 9,
-      cellPadding: { top: 6, bottom: 6, left: 5, right: 5 },
+  theme: "grid",
 
-      halign: "center",          // 🔥 horizontal center (ALL CELLS)
-      valign: "middle",          // 🔥 vertical center (ALL CELLS)
-
+  styles: {
+    fontSize: dynamicFontSize,
+    cellPadding: {
+      top: 4,
+      bottom: 4,
+      left: 3,
+      right: 3,
+    },
+    halign: "center",
+    valign: "middle",
       textColor: [31, 41, 55],
-      overflow: "linebreak",
+    overflow: "linebreak",
+  },
+headStyles: {
+  fontSize: dynamicFontSize + 1,
+  minCellHeight: 24,
+  fillColor: [243, 244, 246],
+  textColor: [61, 91, 129],
+  fontStyle: "bold",
+  overflow: "ellipsize",
+},
 
-      lineColor: [209, 213, 219],
-      lineWidth: 0.5,
-    },
-
-    headStyles: {
-      fillColor: [243, 244, 246],
-      textColor: [61, 91, 129],
-      fontStyle: "bold",
-
-      halign: "center",          // 🔥 header horizontal center
-      valign: "middle",          // 🔥 header vertical center
-
-      minCellHeight: 32,         // 🔥 fixed header height
-    },
-
-    bodyStyles: {
-      halign: "center",          // 🔥 body horizontal center
-      valign: "middle",          // 🔥 body vertical center
-      textColor: [61, 91, 129],
-      minCellHeight: 26,         // 🔥 uniform row height
-    },
-
-    didParseCell(data) {
-      const row = rows[data.row.index];
-
-      // Highlight aggregation rows
-      if (row?.__isAggregation) {
-        data.cell.styles.fillColor = [243, 246, 250];
-        data.cell.styles.fontStyle = "bold";
-      }
-    },
-
-    didDrawPage() {
-      const pageCount = doc.getNumberOfPages();
-      doc.setFontSize(9);
-      doc.text(
-        `Page ${pageCount}`,
-        pageWidth / 2,
-        doc.internal.pageSize.getHeight() - 20,
-        { align: "center" }
-      );
-    },
-  });
+  bodyStyles: {
+    minCellHeight: 20,
+  },
+});
 
 
 

@@ -71,8 +71,8 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`${collapsed ? "w-20" : "w-60"
-        } h-screen border-r flex flex-col transition-all duration-200`}
+      className={`${collapsed ? "w-20" : "w-60"} 
+  h-full border-r shrink-0 transition-all duration-200`}
       style={{ backgroundColor: theme.surface, borderColor: theme.border, color: theme.primaryText }}
     >
       <div
@@ -132,7 +132,7 @@ export default function Sidebar() {
                 <Link to={item.path} className="no-underline" onClick={() => handleTabClick(item)}>
                   <div
                     className={`flex items-center ${collapsed ? 'justify-center w-12 h-12' : 'justify-start h-12 px-3'
-                      } cursor-pointer rounded-lg transition-colors duration-200 ${isActive ? '' : ''
+                      } cursor-pointer rounded-xl transition-colors duration-200 ${isActive ? '' : ''
                       } `}
                     style={{
                       backgroundColor: isActive ? theme.accent : undefined,
@@ -177,7 +177,7 @@ export default function Sidebar() {
         >
           <div
             onClick={handleLogout}
-            className={`flex items-center cursor-pointer rounded-lg transition-colors duration-200 ${collapsed ? 'justify-center w-12 h-12' : 'justify-start h-12 px-3'}`}
+            className={`flex items-center cursor-pointer rounded-xl transition-colors duration-200 ${collapsed ? 'justify-center w-12 h-12' : 'justify-start h-12 px-3'}`}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = `${theme.accent}33`;
             }}
