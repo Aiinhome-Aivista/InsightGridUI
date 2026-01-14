@@ -156,7 +156,7 @@ export default function PrivacyPolicy() {
 
       </main>
 
-       <footer className="py-12 bg-slate-50 dark:bg-[#0d141b] border-t border-slate-200 dark:border-slate-800">
+     <footer className="py-12 bg-slate-50 dark:bg-[#0d141b] border-t border-slate-200 dark:border-slate-800">
           <div className="px-4 md:px-10 lg:px-40 flex justify-center">
             <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
               <div className="flex flex-col gap-4">
@@ -173,29 +173,6 @@ export default function PrivacyPolicy() {
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
-                    Product
-                  </h4>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/features")}
-                  >
-                    Features
-                  </a>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/integrations")}
-                  >
-                    Integrations
-                  </a>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/pricing")}
-                  >
-                    Pricing
-                  </a> */}
-                </div>
-                <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                     Company
                   </h4>
                   <a
@@ -204,29 +181,17 @@ export default function PrivacyPolicy() {
                   >
                     About
                   </a>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/blog")}
-                  >
-                    Blog
-                  </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/careers")}
+                    onClick={() => navigate("/contact")}
                   >
-                    Careers
+                    Contact us
                   </a>
                 </div>
                 <div className="flex flex-col gap-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                     Support
                   </h4>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/help-center")}
-                  >
-                    Help Center
-                  </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/privacy-policy")}

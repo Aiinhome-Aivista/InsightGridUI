@@ -129,10 +129,6 @@ export default function TermsOfServiceVariant2() {
                       <p className="text-slate-600 dark:text-slate-400 leading-7">
                         {section.content}
                       </p>
-                      {/* Decorative link for interactivity */}
-                      <a href="#" className="inline-flex items-center gap-1 text-[#137fec] text-sm font-bold mt-4 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-0 group-hover:translate-x-1">
-                        Read full policy <ArrowRightAltIcon fontSize="small" />
-                      </a>
                     </div>
                   ))}
                 </div>
@@ -150,7 +146,8 @@ export default function TermsOfServiceVariant2() {
           </div>
         </div>
       </main>
- <footer className="py-12 bg-slate-50 dark:bg-[#0d141b] border-t border-slate-200 dark:border-slate-800">
+ 
+     <footer className="py-12 bg-slate-50 dark:bg-[#0d141b] border-t border-slate-200 dark:border-slate-800">
           <div className="px-4 md:px-10 lg:px-40 flex justify-center">
             <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
               <div className="flex flex-col gap-4">
@@ -167,29 +164,6 @@ export default function TermsOfServiceVariant2() {
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
-                    Product
-                  </h4>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/features")}
-                  >
-                    Features
-                  </a>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/integrations")}
-                  >
-                    Integrations
-                  </a>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/pricing")}
-                  >
-                    Pricing
-                  </a> */}
-                </div>
-                <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                     Company
                   </h4>
                   <a
@@ -198,29 +172,17 @@ export default function TermsOfServiceVariant2() {
                   >
                     About
                   </a>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/blog")}
-                  >
-                    Blog
-                  </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/careers")}
+                    onClick={() => navigate("/contact")}
                   >
-                    Careers
+                    Contact us
                   </a>
                 </div>
                 <div className="flex flex-col gap-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                     Support
                   </h4>
-                  {/* <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/help-center")}
-                  >
-                    Help Center
-                  </a> */}
                   <a
                     className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/privacy-policy")}
