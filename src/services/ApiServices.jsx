@@ -110,6 +110,9 @@ class ApiServices {
   companyUserRegister(body) {
     return axios.post(POST_APIS.company_user_register, body);
   }
+  contactUs(body) {
+  return axios.post(POST_APIS.contact_us, body);
+  }
 }
 
 export default new ApiServices();
