@@ -79,28 +79,29 @@ export default function Resources() {
 
   return (
     <div className="bg-[#f6f7f8] dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
-      <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
-             <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
-               <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
-                 <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
-                   <AnalyticsIcon className="text-2xl" />
-                 </div>
-                 <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">SahajInsights</h2>
-               </div>
-               <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
-                 <nav className="flex items-center gap-8">
-                   <a onClick={() => navigate("/resources")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
-                   <a onClick={() => navigate("/pricing")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Pricing</a>
-                   <a onClick={() => navigate("/faq")} className="text-[#137fec] text-sm font-bold transition-colors cursor-pointer">FAQ</a>
-                 </nav>
-                 <div className="flex gap-3">
-                    <button onClick={() => navigate("/login")} className="rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Log in</button>
-                    <button onClick={() => navigate("/signup")} className="rounded-lg h-10 px-4 bg-[#137fec] text-white text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-[#137fec]/20">Start for free</button>
-                 </div>
-               </div>
-               <button className="md:hidden text-slate-900 dark:text-white"><MenuIcon /></button>
-             </div>
-           </header>
+       {/* --- HEADER --- */}
+       <header className="sticky top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+        <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
+            <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
+              <AnalyticsIcon className="text-2xl" />
+            </div>
+            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">InsightGrid</h2>
+          </div>
+          <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
+            <nav className="flex items-center gap-8">
+              <a onClick={() => navigate("/resources")} className="text-[#137fec] text-sm font-bold transition-colors cursor-pointer">Resources</a>
+              <a onClick={() => navigate("/pricing")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Pricing</a>
+              <a onClick={() => navigate("/faq")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">FAQ</a>
+            </nav>
+            <div className="flex gap-3">
+               <button onClick={() => navigate("/login")} className="rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Log in</button>
+               <button onClick={() => navigate("/signup")} className="rounded-lg h-10 px-4 bg-[#137fec] text-white text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-[#137fec]/20">Start for free</button>
+            </div>
+          </div>
+          <button className="md:hidden text-slate-900 dark:text-white"><MenuIcon /></button>
+        </div>
+      </header>
 
       <main className="flex-grow px-4 md:px-10 lg:px-40 py-16">
         <div className="w-full max-w-[1200px] mx-auto">
