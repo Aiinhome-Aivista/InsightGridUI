@@ -126,7 +126,7 @@ export default function ProductDataTable({
 
 
   return (
-    <div style={{ maxWidth: "89vw" }}>
+    <div style={{ maxWidth: "92vw" }}>
       <DataTable
         value={data}
         paginator={!enableRowGrouping}

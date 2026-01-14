@@ -540,19 +540,24 @@ export default function DataViewTable({
       {selectedTables.map((tableKey) => {
         const table = allData[tableKey];
         if (!table) return null;
-        const columns =
-          table.columns?.map((col: { column_name: string }) => ({
-            column_name: col.column_name,
-            header:
-              columnRenames[col.column_name] ||
-              col.column_name.replace(/_/g, " ").toUpperCase(),
-            sortable: false,
-          })) || [];
+const columns =
+  table.columns?.map((col: { column_name: string }) => ({
+    column_name: col.column_name,
+    header:
+      columnRenames[col.column_name] ||
+      col.column_name
+        .replace(/_/g, " ")
+        .toLowerCase()     
+        .split(" ")        
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),       
+    sortable: false,
+  })) || [];
         const groupByColumns = table.visualization?.group_by || [];
         const filters = table.visualization?.filters || {};
         const chartColumns =
           table.columns?.map((col: { column_name: string }) => ({
-            column_name: col.column_name, 
+            column_name: col.column_name,
             label: col.column_name.replace(/_/g, " ").toUpperCase(),
           })) || [];
 
@@ -566,9 +571,7 @@ export default function DataViewTable({
         return (
           <div key={tableKey} className="px-4 pb-6">
             <div className="rounded-xl shadow-xs p-4 bg-white">
-              {/* ===== HEADER ===== */}
               <div className="flex items-start justify-between mb-4">
-                {/* Left */}
                 <div>
                   <h2
                     className="text-sm font-semibold flex items-center gap-2"
@@ -584,8 +587,6 @@ export default function DataViewTable({
                     This displays {table.title.toLowerCase()} details.
                   </p>
                 </div>
-
-                {/* Right Controls (HARDCODED) */}
                 <div className="flex items-center gap-3 flex-wrap">
                   {groupByColumns.length > 0 && (
                     <MultiSelect
@@ -605,8 +606,6 @@ export default function DataViewTable({
                           setCollapsedGroups({});
                           return;
                         }
-
-                        // 🔹 GROUP BY APPLIED
                         const groups = groupRows(
                           filteredRows,
                           newGroups,
@@ -673,7 +672,6 @@ export default function DataViewTable({
                       }}
                     />
                   )}
-                  {/* ===== FILTER INPUTS ===== */}
                   {selectedFilters.length > 0 && (
                     <div className="flex items-center gap-3 flex-wrap">
                       {selectedFilters.map((f) => {
@@ -710,15 +708,12 @@ export default function DataViewTable({
           transition
         "
                           >
-                            {/* Label */}
                             <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
                               {f.column.replace(/_/g, " ").toUpperCase()}
                               <span className="mx-1 text-gray-400">
                                 {f.operator}
                               </span>
                             </span>
-
-                            {/* TEXT */}
                             {type === "text" && (
                               <input
                                 type="text"
@@ -733,8 +728,6 @@ export default function DataViewTable({
                                 }
                               />
                             )}
-
-                            {/* NUMBER */}
                             {type === "number" && f.operator !== "between" && (
                               <input
                                 type="number"
@@ -748,8 +741,6 @@ export default function DataViewTable({
                                 }
                               />
                             )}
-
-                            {/* DATE */}
                             {type === "date" && f.operator !== "between" && (
                               <input
                                 type="date"
@@ -768,8 +759,6 @@ export default function DataViewTable({
                       })}
                     </div>
                   )}
-
-                  {/* View Toggle */}
                   <div className="flex border rounded-xl overflow-hidden">
                     <button
                       onClick={() => {
@@ -809,7 +798,6 @@ export default function DataViewTable({
                   </div>
                 </div>
               </div>
-              {/*  CHARTS ABOVE TABLE WHEN SIDEBAR OPEN */}
               {showChartSidebar && charts.length > 0 && (
                 <div className="mb-6">
                   <RenderCharts
@@ -821,8 +809,6 @@ export default function DataViewTable({
                   />
                 </div>
               )}
-
-              {/* {viewType === "table" && */}
               {!(showChartSidebar && charts.length > 0) && (
                 <ProductDataTable
                   data={displayRows}
@@ -845,14 +831,12 @@ export default function DataViewTable({
                           (a) => !(a.column === column && a.agg === agg)
                         );
                       }
-
-                      //  TOGGLE ON (add)
                       return [...prev, { column, agg }];
                     });
                   }}
 
                   enableRowGrouping={selectedGroupBy.length > 0}
-                  collapsedGroups={collapsedGroups} 
+                  collapsedGroups={collapsedGroups}
                   onToggleGroup={toggleGroup}
                   onColumnRename={(original, newName) => {
                     setColumnRenames((prev) => ({
@@ -862,7 +846,6 @@ export default function DataViewTable({
                   }}
                 />
               )}
-              {/* } */}
               {showChartSidebar && (
                 <ChartSidebar
                   columns={chartColumns}
@@ -880,7 +863,7 @@ export default function DataViewTable({
                       );
 
                       if (exists) {
-                        return prev; 
+                        return prev;
                       }
 
                       return [

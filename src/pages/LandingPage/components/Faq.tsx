@@ -60,9 +60,9 @@ export default function FAQ() {
   };
 
   return (
-    <div className="bg-[#f6f7f8] dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
+    <div className=" dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
        {/* --- HEADER --- */}
-       <header className="sticky top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+       <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
@@ -85,7 +85,7 @@ export default function FAQ() {
         </div>
       </header>
 
-      <main className="flex-grow flex flex-col items-center py-20 px-4">
+      <main className="flex-grow flex flex-col items-center py-20 px-4 mt-14">
         {/* Header Section */}
         <div className="text-center max-w-2xl mb-12">
             <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-6">

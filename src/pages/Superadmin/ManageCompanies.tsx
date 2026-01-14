@@ -1,8 +1,6 @@
 import Tippy from '@tippyjs/react'
 import React, { useEffect, useState } from 'react'
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import { MdOutlineHourglassEmpty } from "react-icons/md";
-import ProductDataTable from '../query-designer/components/DataTable';
 import { useNavigate } from "react-router-dom";
 import ApiServices from "../../services/ApiServices";
 import { DataTable } from "primereact/datatable";
@@ -15,7 +13,6 @@ function ManageCompanies() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [companies, setCompanies] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState("");
   const [filters, setFilters] = useState({
     global: { value: "", matchMode: FilterMatchMode.CONTAINS },
   });
@@ -82,31 +79,61 @@ function ManageCompanies() {
     }
   };
 
+  // const actionBodyTemplate = (row: any) => (
+  //   <div className="flex justify-end gap-2">
+  //     <button
+  //       className="p-1 rounded hover:bg-blue-100 text-gray-600"
+  //       onClick={() => {
+  //         navigate(`/layout/register-company/${row.id}`, {
+  //           state: { company: row }
+  //         });
+  //       }}
+  //     >
+  //       <EditOutlinedIcon fontSize="small" />
+  //     </button>
+
+  //     <button
+  //       className="p-1 rounded hover:bg-blue-100 text-gray-600"
+  //       onClick={() => {
+  //         if (window.confirm("Are you sure you want to delete this company?")) {
+  //           deleteCompany(row.id);
+  //         }
+  //       }}
+  //     >
+  //       <DeleteOutlineOutlinedIcon fontSize="small" />
+  //     </button>
+  //   </div>
+  // );
   const actionBodyTemplate = (row: any) => (
     <div className="flex justify-end gap-2">
-      <button
-        className="p-1 rounded hover:bg-blue-100 text-gray-600"
-        onClick={() => {
-          navigate(`/layout/register-company/${row.id}`, {
-            state: { company: row }
-          });
-        }}
-      >
-        <EditOutlinedIcon fontSize="small" />
-      </button>
+      <Tippy content="Edit" theme="gray">
+        <button
+          className="p-1 rounded hover:bg-blue-100 text-gray-600"
+          onClick={() => {
+            navigate(`/layout/register-company/${row.id}`, {
+              state: { company: row }
+            });
+          }}
+        >
+          <EditOutlinedIcon fontSize="small" />
+        </button>
+      </Tippy>
 
-      <button
-        className="p-1 rounded hover:bg-blue-100 text-gray-600"
-        onClick={() => {
-          if (window.confirm("Are you sure you want to delete this company?")) {
-            deleteCompany(row.id);
-          }
-        }}
-      >
-        <DeleteOutlineOutlinedIcon fontSize="small" />
-      </button>
+      <Tippy content="Delete" theme="gray">
+        <button
+          className="p-1 rounded hover:bg-red-100 text-gray-600"
+          onClick={() => {
+            if (window.confirm("Are you sure you want to delete this company?")) {
+              deleteCompany(row.id);
+            }
+          }}
+        >
+          <DeleteOutlineOutlinedIcon fontSize="small" />
+        </button>
+      </Tippy>
     </div>
   );
+
   const deleteCompany = async (companyId: number) => {
     console.log('delete call')
     try {
@@ -127,12 +154,17 @@ function ManageCompanies() {
     if (isRefreshing) return;
 
     setIsRefreshing(true);
-    setGlobalFilter("");
+
+    // ✅ RESET FILTER PROPERLY
+    setFilters({
+      global: { value: "", matchMode: FilterMatchMode.CONTAINS },
+    });
 
     await fetchCompanies();
 
     setIsRefreshing(false);
   };
+
   return (
     <div className="mx-auto px-6 py-8">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
@@ -229,7 +261,7 @@ function ManageCompanies() {
           header="Action"
           align="center"
           body={actionBodyTemplate}
-          style={{ width: "120px"}}
+          style={{ width: "120px" }}
         />
       </DataTable>
 
