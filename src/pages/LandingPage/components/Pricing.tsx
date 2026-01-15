@@ -59,7 +59,7 @@ export default function Pricing() {
   ];
 
   return (
-    <div className="bg-[#f6f7f8] dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-full flex flex-col">
+    <div className="bg-[#f6f7f8] font-sans text-slate-900 overflow-x-hidden min-h-full flex flex-col">
       {/* --- HEADER (Same as Landing) --- */}
   <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
@@ -67,32 +67,32 @@ export default function Pricing() {
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
               <AnalyticsIcon className="text-2xl" />
             </div>
-            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">
+            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">
               Sahajinsights
             </h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
-              <a onClick={() => navigate("/resources")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
+              <a onClick={() => navigate("/resources")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
               <a onClick={() => navigate("/pricing")} className="text-[#137fec] text-sm font-bold transition-colors cursor-pointer">Pricing</a>
-              <a onClick={() => navigate("/faq")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">FAQ</a>
+              <a onClick={() => navigate("/faq")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">FAQ</a>
             </nav>
             <div className="flex gap-3">
-               <button onClick={() => navigate("/login")} className="rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Log in</button>
+               <button onClick={() => navigate("/login")} className="rounded-lg h-10 px-4 bg-slate-100 text-slate-900 text-sm font-bold hover:bg-slate-200 transition-colors">Log in</button>
                <button onClick={() => navigate("/signup")} className="rounded-lg h-10 px-4 bg-[#137fec] text-white text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-[#137fec]/20">Start for free</button>
             </div>
           </div>
-          <button className="md:hidden text-slate-900 dark:text-white"><MenuIcon /></button>
+          <button className="md:hidden text-slate-900"><MenuIcon /></button>
         </div>
       </header>
 
       <main className="flex-grow mt-10">
         {/* Pricing Hero */}
         <section className="py-16 px-4 md:px-10 lg:px-40 text-center">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-6">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-6">
             Simple, transparent <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#137fec] to-blue-400">pricing</span>
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Start for free, upgrade as you grow. No hidden fees or surprise charges.
           </p>
         </section>
@@ -103,10 +103,10 @@ export default function Pricing() {
             {tiers.map((tier, index) => (
               <div 
                 key={index}
-                className={`relative bg-white dark:bg-slate-800 rounded-2xl p-8 border transition-all duration-300 hover:-translate-y-1
+                className={`relative bg-white rounded-2xl p-8 border transition-all duration-300 hover:-translate-y-1
                   ${tier.highlight 
                     ? "border-[#137fec] shadow-2xl shadow-[#137fec]/10 ring-1 ring-[#137fec] z-10 scale-105" 
-                    : "border-slate-200 dark:border-slate-700 shadow-xl"
+                    : "border-slate-200 shadow-xl"
                   }`}
               >
                 {tier.highlight && (
@@ -114,26 +114,26 @@ export default function Pricing() {
                      Most Popular
                    </div>
                 )}
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{tier.name}</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">{tier.name}</h3>
                 <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-4xl font-black text-slate-900 dark:text-white">{tier.price}</span>
+                  <span className="text-4xl font-black text-slate-900">{tier.price}</span>
                   {tier.period && <span className="text-slate-500 font-medium">{tier.period}</span>}
                 </div>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mb-8 min-h-[40px]">{tier.desc}</p>
+                <p className="text-slate-500 text-sm mb-8 min-h-[40px]">{tier.desc}</p>
                 
                 <button 
                   onClick={() => tier.name === "Starter" && navigate("/login")}
                   className={`w-full h-12 rounded-lg font-bold text-sm mb-8 transition-colors
                   ${tier.highlight 
                     ? "bg-[#137fec] text-white hover:bg-blue-600 shadow-lg shadow-[#137fec]/20" 
-                    : "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-600"
+                    : "bg-slate-100 text-slate-900 hover:bg-slate-200"
                   }`}>
                   {tier.cta}
                 </button>
 
                 <ul className="space-y-4">
                   {tier.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
+                    <li key={idx} className="flex items-start gap-3 text-sm text-slate-600">
                       <CheckCircleIcon className={`text-lg ${tier.highlight ? "text-[#137fec]" : "text-slate-400"}`} />
                       <span>{feature}</span>
                     </li>
@@ -144,50 +144,50 @@ export default function Pricing() {
           </div>
         </section>
       </main>
-       <footer className="py-12 bg-slate-50 dark:bg-[#0d141b] border-t border-slate-200 dark:border-slate-800">
+       <footer className="py-12 bg-slate-50 border-t border-slate-200">
           <div className="px-4 md:px-10 lg:px-40 flex justify-center">
             <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
               <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <div className="flex items-center gap-2 text-slate-900">
                   <AnalyticsIcon className="text-[#137fec]" />
                   <span className="font-bold text-lg">SahajInsights</span>
                 </div>
-                <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs">
+                <p className="text-slate-500 text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
-                <p className="text-slate-400 dark:text-slate-600 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+                <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                  <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
                     Company
                   </h4>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/about")}
                   >
                     About
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/contact")}
                   >
                     Contact us
                   </a>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                  <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
                     Support
                   </h4>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/privacy-policy")}
                   >
                     Privacy Policy
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/terms-of-service")}
                   >
                     Terms of Service
