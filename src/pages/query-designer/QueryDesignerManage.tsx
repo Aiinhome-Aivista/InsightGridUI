@@ -176,7 +176,7 @@ const QueryDesignerManage = () => {
         <div className="flex items-center gap-8">
           <div>
             <h1 className="text-xl font-semibold text-[#1C1B1F] leading-tight">Query Designer</h1>
-            <p className="text-[12px] text-[#888585] mt-1 whitespace-nowrap">
+            <p className="text-sm text-gray-500 mt-1 whitespace-nowrap">
               Start by creating your first query using Query Designer.
 
             </p>
@@ -211,7 +211,7 @@ const QueryDesignerManage = () => {
               placeholder="Global Search"
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-[#D9D9D9] rounded-xl h-10 text-sm bg-gray-50 focus:bg-white focus:ring-1 focus:ring-[#5433FF] focus:border-transparent outline-none transition-all"
+              className="pl-10 pr-4 py-2 border border-[#D9D9D9] w-full text-sm h-10 rounded-xl ber focus:outordline-none focus:ring-1 focus:ring-[#5433FF]"
               style={{ width: '568px' }}
             />
           </div>

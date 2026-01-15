@@ -7,8 +7,6 @@ import { AuthProvider, useAuth } from "../Auth/AuthContext";
 import ApiServices from "../../services/ApiServices";
 import { generatePDF } from "../../utils/download/function";
 import Tippy from "@tippyjs/react";
-// import html2canvas from "html2canvas";
-// import RenderCharts from "./components/render-charts";
 
 const ReportDesignManage = () => {
   const navigate = useNavigate();
@@ -28,8 +26,7 @@ const ReportDesignManage = () => {
     downloadChartData,
     setDownloadChartData,
   } = useAuth();
-  // const chartContainerRef = useRef<HTMLDivElement>(null);
-
+  
   const timeAgo = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return "";
     try {
@@ -162,7 +159,7 @@ const ReportDesignManage = () => {
             break;
           }
           case "count":
-            val = values.length.toString(); // count integer থাকলেই ঠিক
+            val = values.length.toString(); 
             break;
         }
 
@@ -218,7 +215,7 @@ const ReportDesignManage = () => {
             break;
           }
           case "count":
-            val = values.length.toString(); // count integer
+            val = values.length.toString(); 
             break;
         }
 
@@ -265,16 +262,6 @@ const ReportDesignManage = () => {
       setPreviewChartData(chartsForPreview);
       await new Promise((res) => setTimeout(res, 500));
 
-      // let chartImages: string[] = [];
-
-      // if (chartContainerRef.current) {
-      //   const canvas = await html2canvas(chartContainerRef.current, {
-      //     scale: 2,
-      //     backgroundColor: "#ffffff",
-      //     useCORS: true,
-      //   });
-      //   chartImages.push(canvas.toDataURL("image/png"));
-      // }
       const chartImages = (config.chart_images || []).map(
         (img: any) => img.url
       );
@@ -542,13 +529,6 @@ const ReportDesignManage = () => {
           <p className="text-gray-500 mt-2">Empty Report List</p>
         </div>
       )}
-      {/* <div ref={chartContainerRef} style={{ background: "#fff" }}>
-        <RenderCharts
-          charts={downloadChartData || previewChartData || []}
-          onRemoveChart={() => { }}
-          onReorderCharts={() => { }}
-        />
-      </div> */}
     </div>
   );
 };

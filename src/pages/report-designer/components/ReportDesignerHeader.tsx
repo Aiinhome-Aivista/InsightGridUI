@@ -109,7 +109,7 @@ export default function DataViewHeader({
           <InputText
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-10 w-full text-sm h-10 rounded-xl border focus:outline-none focus:ring-1 focus:ring-[#5433FF]"
+            className="pl-10 w-full text-sm h-10 rounded-xl ber focus:outordline-none focus:ring-1 focus:ring-[#5433FF]"
             placeholder="Global Search"
           />
         </div>
