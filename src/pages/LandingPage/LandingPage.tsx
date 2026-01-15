@@ -322,7 +322,7 @@ export default function LandingPage() {
                     </div>
                     <div className="text-slate-400  flex items-center gap-2 text-sm">
                       <PublicIcon className="text-lg" fontSize="small" />
-                      <span>Live on SahajInsights.io/u/josh</span>
+                      <span>Live on Sahajinsights.io/u/josh</span>
                     </div>
                   </div>
                 </div>
