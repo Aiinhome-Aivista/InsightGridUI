@@ -24,7 +24,7 @@ export default function PrivacyPolicy() {
             className="w-6 h-6"
           />
             </div>
-            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">SahajInsights</h2>
+            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">Sahajinsights</h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
