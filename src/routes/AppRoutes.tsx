@@ -42,7 +42,6 @@ function AppRoutes() {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/faq" element={<Faq />} />
         <Route path="/resources" element={<Resources />} />
-        <Route path="/about" element={<About />} />
         <Route path="/Contact" element={<ContactPage />} />
         <Route path="/help-center" element={<HelpCenter />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />

@@ -143,23 +143,6 @@ export default function FAQ() {
                   <div className="flex flex-wrap gap-12 md:gap-20">
                     <div className="flex flex-col gap-3">
                       <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
-                        Company
-                      </h4>
-                      <a
-                        className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
-                        onClick={() => navigate("/about")}
-                      >
-                        About
-                      </a>
-                      <a
-                        className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
-                        onClick={() => navigate("/contact")}
-                      >
-                        Contact us
-                      </a>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
                         Support
                       </h4>
                       <a
@@ -174,6 +157,12 @@ export default function FAQ() {
                       >
                         Terms of Service
                       </a>
+                        <a
+                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/contact")}
+                  >
+                    Contact Us
+                  </a>
                     </div>
                   </div>
                 </div>

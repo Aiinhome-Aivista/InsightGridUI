@@ -65,7 +65,6 @@ export default function About() {
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
-              <a onClick={() => navigate("/about")} className="text-[#137fec] text-sm font-bold transition-colors cursor-pointer">About</a>
               <a onClick={() => navigate("/resources")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
               <a onClick={() => navigate("/pricing")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Pricing</a>
               <a onClick={() => navigate("/faq")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">FAQ</a>
