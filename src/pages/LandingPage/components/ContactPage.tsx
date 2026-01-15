@@ -175,7 +175,7 @@ const ContactPage = () => {
       x: rect.left + rect.width / 2,
       y: rect.top + rect.height / 2,
     });
-    setTransitionColor("bg-[#f6f7f8] dark:bg-[#101922]");
+    setTransitionColor("bg-[#f6f7f8]");
     setIsTransitioning(true);
 
     setTimeout(() => {
@@ -210,17 +210,17 @@ const ContactPage = () => {
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
               <AnalyticsIcon className="text-2xl" />
             </div>
-            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">SahajInsights</h2>
+            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">SahajInsights</h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
                             <a onClick={() => navigate("/Contact us")} className="text-[#137fec] text-sm font-bold transition-colors cursor-pointer">Contact us</a>
-              <a onClick={() => navigate("/resources")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
-              <a onClick={() => navigate("/pricing")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Pricing</a>
-              <a onClick={() => navigate("/faq")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">FAQ</a>
+              <a onClick={() => navigate("/resources")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
+              <a onClick={() => navigate("/pricing")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Pricing</a>
+              <a onClick={() => navigate("/faq")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">FAQ</a>
             </nav>
             <div className="flex gap-3">
-               <button onClick={() => navigate("/login")} className="rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Log in</button>
+               <button onClick={() => navigate("/login")} className="rounded-lg h-10 px-4 bg-slate-100 text-slate-900 text-sm font-bold hover:bg-slate-200 transition-colors">Log in</button>
                <button onClick={() => navigate("/signup")} className="rounded-lg h-10 px-4 bg-[#137fec] text-white text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-[#137fec]/20">Start for free</button>
             </div>
           </div>
@@ -230,7 +230,7 @@ const ContactPage = () => {
 
       <main className="flex-grow mt-10">
         {/* Hero Section */}
-        <section className="relative py-16 px-6 md:px-12 bg-white dark:bg-[#101922] border-b border-slate-100 dark:border-slate-800">
+        <section className="relative py-16 px-6 md:px-12 bg-white border-b border-slate-100">
           <div className="max-w-[900px] mx-auto text-center relative z-10">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#137fec]/10 text-[#137fec] mb-6">
               <WavingHandIcon fontSize="small" />
@@ -238,13 +238,13 @@ const ContactPage = () => {
                 We're Here For You
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-slate-900 dark:text-white mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-slate-900 mb-6">
               Contact{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#137fec] to-blue-400">
                 Us
               </span>
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
               Have questions, feedback, or just want to say hello? We'd love to
               hear from you.
             </p>
@@ -252,18 +252,18 @@ const ContactPage = () => {
         </section>
 
         {/* Contact Methods */}
-        <section className="py-12 px-6 md:px-12 bg-[#f6f7f8] dark:bg-[#0d141b]">
+        <section className="py-12 px-6 md:px-12 bg-[#f6f7f8]">
           <div className="max-w-[1100px] mx-auto">
             <div className="grid md:grid-cols-3 gap-6 mb-12">
               {contactMethods.map((method, index) => (
                 <div
                   key={index}
-                  className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-[#137fec] dark:hover:border-[#137fec] transition-all duration-300 text-center shadow-sm hover:shadow-lg"
+                  className="bg-white rounded-2xl p-6 border border-slate-200 hover:border-[#137fec] transition-all duration-300 text-center shadow-sm hover:shadow-lg"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-slate-900 flex items-center justify-center mx-auto mb-4 text-[#137fec]">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4 text-[#137fec]">
                     {method.icon}
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
+                  <h3 className="text-lg font-bold text-slate-900 mb-1">
                     {method.title}
                   </h3>
                   <p className="text-slate-500 text-sm mb-2">
@@ -277,7 +277,7 @@ const ContactPage = () => {
                       {method.value}
                     </a>
                   ) : (
-                    <span className="text-slate-900 dark:text-white font-bold">
+                    <span className="text-slate-900 font-bold">
                       {method.value}
                     </span>
                   )}
@@ -287,13 +287,13 @@ const ContactPage = () => {
 
             <div className="grid lg:grid-cols-2 gap-12">
               {/* Contact Form */}
-              <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+              <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6">
                   Send Us a Message
                 </h2>
                 <form className="space-y-5" onSubmit={handleSubmit}>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
                       Your Name
                     </label>
                     <input
@@ -302,12 +302,12 @@ const ContactPage = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
                       placeholder="Enter your name"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
                       Email Address
                     </label>
                     <input
@@ -316,12 +316,12 @@ const ContactPage = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
                       placeholder="Enter your email"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
                       Subject
                     </label>
                     <select
@@ -329,7 +329,7 @@ const ContactPage = () => {
                       value={formData.subject}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
                     >
                       <option value="">Select a topic</option>
                       <option value="general">General Inquiry</option>
@@ -340,7 +340,7 @@ const ContactPage = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
                       Your Message
                     </label>
                     <textarea
@@ -349,7 +349,7 @@ const ContactPage = () => {
                       onChange={handleChange}
                       required
                       rows={5}
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all resize-none"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all resize-none"
                       placeholder="How can we help you?"
                     />
                   </div>
@@ -375,23 +375,23 @@ const ContactPage = () => {
 
               {/* FAQ Section */}
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6">
                   Frequently Asked
                 </h2>
                 <div className="space-y-4">
                   {faqs.map((faq, index) => (
                     <div
                       key={index}
-                      className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700"
+                      className="bg-white rounded-2xl p-6 border border-slate-200"
                     >
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-start gap-3">
+                      <h3 className="text-lg font-bold text-slate-900 mb-2 flex items-start gap-3">
                         <HelpOutlineIcon
                           className="text-[#137fec] mt-0.5"
                           fontSize="small"
                         />
                         {faq.question}
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-400 leading-relaxed pl-9 text-sm">
+                      <p className="text-slate-600 leading-relaxed pl-9 text-sm">
                         {faq.answer}
                       </p>
                     </div>
@@ -399,17 +399,17 @@ const ContactPage = () => {
                 </div>
 
                 {/* Additional Help */}
-                <div className="mt-8 p-6 bg-blue-50 dark:bg-slate-800/50 rounded-2xl border border-blue-100 dark:border-slate-700">
+                <div className="mt-8 p-6 bg-blue-50 rounded-2xl border border-blue-100">
                   <div className="flex items-start gap-4">
                     <LightbulbIcon
                       className="text-[#137fec]"
                       fontSize="large"
                     />
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+                      <h3 className="text-lg font-bold text-slate-900 mb-2">
                         Looking for more answers?
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
+                      <p className="text-slate-600 text-sm mb-4">
                         Check out our comprehensive help center for guides,
                         tutorials, and troubleshooting tips.
                       </p>
@@ -426,50 +426,50 @@ const ContactPage = () => {
         </section>
       </main>
       
-     <footer className="py-12 bg-slate-50 dark:bg-[#0d141b] border-t border-slate-200 dark:border-slate-800">
+     <footer className="py-12 bg-slate-50 border-t border-slate-200">
           <div className="px-4 md:px-10 lg:px-40 flex justify-center">
             <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
               <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <div className="flex items-center gap-2 text-slate-900">
                   <AnalyticsIcon className="text-[#137fec]" />
                   <span className="font-bold text-lg">SahajInsights</span>
                 </div>
-                <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs">
+                <p className="text-slate-500 text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
-                <p className="text-slate-400 dark:text-slate-600 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+                <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                  <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
                     Company
                   </h4>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/about")}
                   >
                     About
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/contact")}
                   >
                     Contact us
                   </a>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                  <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
                     Support
                   </h4>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/privacy-policy")}
                   >
                     Privacy Policy
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/terms-of-service")}
                   >
                     Terms of Service

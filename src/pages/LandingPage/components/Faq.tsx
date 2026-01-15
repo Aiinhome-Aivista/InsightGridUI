@@ -60,38 +60,38 @@ export default function FAQ() {
   };
 
   return (
-    <div className=" dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
+    <div className="font-sans text-slate-900 overflow-x-hidden min-h-screen flex flex-col">
        {/* --- HEADER --- */}
-       <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+       <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] bg-white/80 backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
               <AnalyticsIcon className="text-2xl" />
             </div>
-            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">SahajInsights</h2>
+            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">SahajInsights</h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
-              <a onClick={() => navigate("/resources")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
-              <a onClick={() => navigate("/pricing")} className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Pricing</a>
+              <a onClick={() => navigate("/resources")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
+              <a onClick={() => navigate("/pricing")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Pricing</a>
               <a onClick={() => navigate("/faq")} className="text-[#137fec] text-sm font-bold transition-colors cursor-pointer">FAQ</a>
             </nav>
             <div className="flex gap-3">
-               <button onClick={() => navigate("/login")} className="rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Log in</button>
+               <button onClick={() => navigate("/login")} className="rounded-lg h-10 px-4 bg-slate-100 text-slate-900 text-sm font-bold hover:bg-slate-200 transition-colors">Log in</button>
                <button onClick={() => navigate("/signup")} className="rounded-lg h-10 px-4 bg-[#137fec] text-white text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-[#137fec]/20">Start for free</button>
             </div>
           </div>
-          <button className="md:hidden text-slate-900 dark:text-white"><MenuIcon /></button>
+          <button className="md:hidden text-slate-900"><MenuIcon /></button>
         </div>
       </header>
 
       <main className="flex-grow flex flex-col items-center py-16 px-4 mt-10">
         {/* Header Section */}
         <div className="text-center max-w-2xl mb-12">
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-6">
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">
                 Frequently Asked <span className="text-[#137fec]">Questions</span>
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
+            <p className="text-lg text-slate-600 mb-8">
                 Everything you need to know about the product and billing.
             </p>
         </div>
@@ -101,13 +101,13 @@ export default function FAQ() {
             {faqs.map((item, index) => (
                 <div 
                     key={index} 
-                    className={`bg-white dark:bg-slate-800 rounded-xl border transition-all duration-300 ${openIndex === index ? "border-[#137fec] shadow-lg" : "border-slate-200 dark:border-slate-700"}`}
+                    className={`bg-white rounded-xl border transition-all duration-300 ${openIndex === index ? "border-[#137fec] shadow-lg" : "border-slate-200"}`}
                 >
                     <button 
                         onClick={() => toggleFAQ(index)}
                         className="w-full flex items-center justify-between p-6 text-left"
                     >
-                        <span className="font-bold text-lg text-slate-900 dark:text-white">{item.q}</span>
+                        <span className="font-bold text-lg text-slate-900">{item.q}</span>
                         <KeyboardArrowDownIcon 
                             className={`text-slate-400 transition-transform duration-300 ${openIndex === index ? "rotate-180 text-[#137fec]" : ""}`} 
                         />
@@ -115,7 +115,7 @@ export default function FAQ() {
                     <div 
                         className={`overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
                     >
-                        <p className="px-6 pb-6 text-slate-600 dark:text-slate-400 leading-relaxed">
+                        <p className="px-6 pb-6 text-slate-600 leading-relaxed">
                             {item.a}
                         </p>
                     </div>
@@ -126,50 +126,50 @@ export default function FAQ() {
       
       </main>
 
-     <footer className="py-12 bg-slate-50 dark:bg-[#0d141b] border-t border-slate-200 dark:border-slate-800">
+     <footer className="py-12 bg-slate-50 border-t border-slate-200">
               <div className="px-4 md:px-10 lg:px-40 flex justify-center">
                 <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
                   <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                    <div className="flex items-center gap-2 text-slate-900">
                       <AnalyticsIcon className="text-[#137fec]" />
                       <span className="font-bold text-lg">SahajInsights</span>
                     </div>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs">
+                    <p className="text-slate-500 text-sm max-w-xs">
                       Empowering teams to make data-driven decisions without the
                       technical overhead.
                     </p>
-                    <p className="text-slate-400 dark:text-slate-600 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+                    <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
                   </div>
                   <div className="flex flex-wrap gap-12 md:gap-20">
                     <div className="flex flex-col gap-3">
-                      <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                      <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
                         Company
                       </h4>
                       <a
-                        className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                        className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                         onClick={() => navigate("/about")}
                       >
                         About
                       </a>
                       <a
-                        className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                        className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                         onClick={() => navigate("/contact")}
                       >
                         Contact us
                       </a>
                     </div>
                     <div className="flex flex-col gap-3">
-                      <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                      <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
                         Support
                       </h4>
                       <a
-                        className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                        className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                         onClick={() => navigate("/privacy-policy")}
                       >
                         Privacy Policy
                       </a>
                       <a
-                        className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                        className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                         onClick={() => navigate("/terms-of-service")}
                       >
                         Terms of Service
