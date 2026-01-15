@@ -211,9 +211,9 @@ export default function Login() {
       />
       <div className="absolute top-8 left-10 flex items-center gap-2 text-white font-semibold text-lg">
         <span className="text-white/80">
-          A<span className="text-[#4319C2]">ii</span>nhome |
+          Aivista
         </span>
-        <span className="font-extrabold text-xl">IG</span>
+      
       </div>
       <div className="flex flex-col items-center w-full h-full relative">
         <img src={view_quilt} alt="cross-pattern" className="w-12 mt-20" />
@@ -354,7 +354,7 @@ export default function Login() {
 
         </form>
         <p className="text-white/70 text-xs absolute bottom-14">
-          ©{currentYear} Aiinhome Technologies Pvt. Ltd. All rights reserved
+          ©{currentYear} Aivista Technologies Pvt. Ltd. All rights reserved
         </p>
       </div>
     </div>
