@@ -53,7 +53,7 @@ function ManageCompanyAdmin() {
       header: "Address",
       sortable: true,
       body: (row: any) => {
-        if (!row.address) return null;   // 🔴 nothing shown
+        if (!row.address) return null;   
 
         let addrText = "";
 
@@ -121,35 +121,11 @@ function ManageCompanyAdmin() {
         </button>
       </Tippy>
 
-      {/* <Tippy content="Delete" theme="gray">
-        <button
-          className="p-1 rounded hover:bg-red-100 text-gray-600"
-          onClick={() => {
-            if (window.confirm("Are you sure you want to delete this company?")) {
-              deleteCompanyAdmin(row.id);
-            }
-          }}
-        >
-          <DeleteOutlineOutlinedIcon fontSize="small" />
-        </button>
-      </Tippy> */}
+      
     </div>
   );
 
-  // const deleteCompanyAdmin = async (companyId: number) => {
-  //   console.log('delete call')
-  //   try {
-  //     const payload = {
-  //       company_id: companyId,
-  //       deleted_by: JSON.parse(localStorage.getItem("ig_user") || "{}")?.user_id,
-  //     };
-
-  //     await ApiServices.adminCompanyDelete(payload);
-  //     fetchCompanyAdmins();
-  //   } catch (err) {
-  //     console.error("Delete failed", err);
-  //   }
-  // };
+  
 
 
   const handleRefresh = async () => {
@@ -157,7 +133,7 @@ function ManageCompanyAdmin() {
 
     setIsRefreshing(true);
 
-    // ✅ RESET FILTER PROPERLY
+    
     setFilters({
       global: { value: "", matchMode: FilterMatchMode.CONTAINS },
     });
@@ -179,11 +155,8 @@ function ManageCompanyAdmin() {
             </p>
           </div>
           <button
-            className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
-            style={{
-              width: '138px',
-              height: '45px',
-            }}
+            className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center p-4"
+         
             onClick={() => navigate("/layout/add-company-admin")}
 
           >

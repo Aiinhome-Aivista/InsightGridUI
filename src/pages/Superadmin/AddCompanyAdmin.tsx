@@ -185,7 +185,7 @@ function AddCompanyAdmin() {
       company_code: admin.company_code || "",
       admin_name: admin.admin_name || admin.full_name || "",
       admin_email: admin.admin_email || admin.email || "",
-      admin_password: "", // ❌ edit mode এ blank
+      admin_password: "", 
 
       phone_number: admin.phone_number || "",
 
@@ -200,9 +200,9 @@ function AddCompanyAdmin() {
 
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="max-w-7xl mx-auto px-6 mb-6">
       <form onSubmit={formik.handleSubmit}>
-        <div className="rounded-xl px-6 py-4">
+        <div className="rounded-xl px-6">
           <h2 className="text-xl font-semibold mb-6">
           </h2>
           <div className="flex items-center justify-between mb-4">
@@ -230,7 +230,7 @@ function AddCompanyAdmin() {
 
           {/* Company Code */}
           <div className="mb-4">
-            <label className="text-sm font-medium">
+            <label className="text-sm font-medium ">
               Company Code {!isEditMode && <span className="text-red-500">*</span>}
             </label>
 
@@ -245,7 +245,7 @@ function AddCompanyAdmin() {
               onChange={(e) =>
                 formik.setFieldValue("company_code", e.value)
               }
-              className={`w-full mt-1 border rounded-lg h-[42px] flex items-centerbg-white`}
+              className={`w-full mt-1 border rounded-lg h-[42px] flex items-center bg-white p-2 `}
               panelClassName="rounded-lg bg-white"
             />
 
