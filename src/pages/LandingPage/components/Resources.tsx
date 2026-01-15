@@ -16,7 +16,7 @@ export default function Resources() {
       title: "The Ultimate Guide to Data Cleaning",
       excerpt: "Raw data is rarely ready for visualization immediately. Learn the industry-standard 5-step process to deduplicate, normalize, and prepare your CSVs for flawless analytics. We cover handling null values, standardizing date formats, and string manipulation techniques that will save you hours of manual work.",
       icon: <ArticleIcon fontSize="large" />,
-      color: "text-blue-600 bg-blue-100 dark:bg-blue-900/30",
+      color: "text-blue-600 bg-blue-100",
       date: "Oct 12, 2025"
     },
     {
@@ -24,7 +24,7 @@ export default function Resources() {
       title: "Building Dashboards in Under 5 Minutes",
       excerpt: "Watch how a senior analyst sets up a full KPI board using SahajInsights. This step-by-step walkthrough demonstrates connecting a data source, configuring widgets, applying global filters, and sharing the final result with stakeholders—all in real-time without writing a single line of code.",
       icon: <PlayCircleOutlineIcon fontSize="large" />,
-      color: "text-purple-600 bg-purple-100 dark:bg-purple-900/30",
+      color: "text-purple-600 bg-purple-100",
       date: "Nov 03, 2025"
     },
     {
@@ -32,7 +32,7 @@ export default function Resources() {
       title: "State of Data Analytics 2026",
       excerpt: "What tools are Fortune 500 companies using this year? We surveyed over 2,000 data professionals to bring you exclusive insights on industry trends, salary benchmarks, AI adoption rates, and the future of self-service business intelligence.",
       icon: <DownloadIcon fontSize="large" />,
-      color: "text-green-600 bg-green-100 dark:bg-green-900/30",
+      color: "text-green-600 bg-green-100",
       date: "Jan 10, 2026"
     },
     {
@@ -40,7 +40,7 @@ export default function Resources() {
       title: "Connecting PostgreSQL Databases",
       excerpt: "A technical deep-dive into establishing secure connections between your local or cloud database and our platform. Learn how to whitelist IPs, configure SSL modes, troubleshoot common connection timeout errors, and optimize your SQL queries for performance.",
       icon: <ArticleIcon fontSize="large" />,
-      color: "text-orange-600 bg-orange-100 dark:bg-orange-900/30",
+      color: "text-orange-600 bg-orange-100",
       date: "Dec 15, 2025"
     },
     {
@@ -48,7 +48,7 @@ export default function Resources() {
       title: "How TechCorp Saved 20h/Week",
       excerpt: "TechCorp's marketing team was spending 4 hours a day manually updating spreadsheets for their weekly sync. See how automating their reporting pipeline with SahajInsights changed their workflow forever, allowing them to focus on strategy rather than data entry.",
       icon: <ArticleIcon fontSize="large" />,
-      color: "text-blue-600 bg-blue-100 dark:bg-blue-900/30",
+      color: "text-blue-600 bg-blue-100",
       date: "Nov 22, 2025"
     },
     {
@@ -56,22 +56,22 @@ export default function Resources() {
       title: "Marketing ROI Dashboard Kit",
       excerpt: "Don't start from scratch. Download this pre-built template designed specifically for marketing teams. It comes with pre-configured formulas for tracking Customer Acquisition Cost (CAC), Lifetime Value (LTV), Return on Ad Spend (ROAS), and churn rates.",
       icon: <DownloadIcon fontSize="large" />,
-      color: "text-pink-600 bg-pink-100 dark:bg-pink-900/30",
+      color: "text-pink-600 bg-pink-100",
       date: "Jan 05, 2026"
     },
   ];
 
   return (
-    <div className="bg-[#f6f7f8] dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
+    <div className="bg-[#f6f7f8] font-sans text-slate-900 overflow-x-hidden min-h-screen flex flex-col">
       
       {/* --- HEADER (Matches LandingPage) --- */}
-      <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+      <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] bg-white/80 backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-xl bg-[#137fec]/10">
               <AnalyticsIcon className="text-2xl" />
             </div>
-            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">
+            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">
               SahajInsights
             </h2>
           </div>
@@ -84,13 +84,13 @@ export default function Resources() {
                 Resources
               </a>
               <a
-                className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
+                className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
                 onClick={() => navigate("/pricing")}
               >
                 Pricing
               </a>
               <a
-                className="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
+                className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
                 onClick={() => navigate("/faq")}
               >
                 FAQ
@@ -99,7 +99,7 @@ export default function Resources() {
             <div className="flex gap-3">
               <button
                 onClick={() => navigate("/login/user")}
-                className="flex items-center justify-center rounded-xl h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                className="flex items-center justify-center rounded-xl h-10 px-4 bg-slate-100 text-slate-900 text-sm font-bold hover:bg-slate-200 transition-colors"
               >
                 Log in
               </button>
@@ -112,7 +112,7 @@ export default function Resources() {
             </div>
           </div>
           {/* Mobile Menu Icon */}
-          <button className="md:hidden text-slate-900 dark:text-white">
+          <button className="md:hidden text-slate-900">
             <MenuIcon />
           </button>
         </div>
@@ -123,11 +123,11 @@ export default function Resources() {
         <div className="w-full max-w-[900px] mx-auto">
             
             {/* Page Title Section */}
-            <div className="mb-16 border-b border-slate-200 dark:border-slate-800 pb-8">
-                <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-6 tracking-tight">
+            <div className="mb-16 border-b border-slate-200 pb-8">
+                <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
                     Resource <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#137fec] to-blue-400">Library</span>
                 </h1>
-                <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl">
+                <p className="text-xl text-slate-600 max-w-2xl">
                     Deep dives, step-by-step tutorials, and industry insights to help you master your data journey.
                 </p>
             </div>
@@ -138,7 +138,7 @@ export default function Resources() {
                     <div 
                         key={idx} 
                         onClick={() => console.log(`Clicked ${item.title}`)}
-                        className="group flex flex-col sm:flex-row gap-6 items-start p-6 -mx-6 rounded-2xl hover:bg-white dark:hover:bg-slate-800/50 transition-all duration-300 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:shadow-lg cursor-pointer"
+                        className="group flex flex-col sm:flex-row gap-6 items-start p-6 -mx-6 rounded-2xl hover:bg-white transition-all duration-300 border border-transparent hover:border-slate-200 hover:shadow-lg cursor-pointer"
                     >
                         
                         {/* Visual Icon Box */}
@@ -153,17 +153,17 @@ export default function Resources() {
                                 <span className={`font-bold uppercase tracking-wider px-2 py-0.5 rounded text-[10px] ${item.color}`}>
                                     {item.category}
                                 </span>
-                                <span className="text-slate-300 dark:text-slate-600">•</span>
-                                <span className="text-slate-500 dark:text-slate-400 font-medium">{item.date}</span>
+                                <span className="text-slate-300">•</span>
+                                <span className="text-slate-500 font-medium">{item.date}</span>
                             </div>
                             
                             {/* Title */}
-                            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-[#137fec] transition-colors leading-tight">
+                            <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-[#137fec] transition-colors leading-tight">
                                 {item.title}
                             </h3>
                             
                             {/* Paragraph Description (The key change) */}
-                            <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-4 text-base">
+                            <p className="text-slate-600 leading-relaxed mb-4 text-base">
                                 {item.excerpt}
                             </p>
                             
@@ -177,50 +177,50 @@ export default function Resources() {
       </main>
 
       {/* --- FOOTER (Matches LandingPage) --- */}
-      <footer className="py-12 bg-slate-50 dark:bg-[#0d141b] border-t border-slate-200 dark:border-slate-800">
+      <footer className="py-12 bg-slate-50 border-t border-slate-200">
         <div className="px-4 md:px-10 lg:px-40 flex justify-center">
           <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+              <div className="flex items-center gap-2 text-slate-900">
                 <AnalyticsIcon className="text-[#137fec]" />
                 <span className="font-bold text-lg">SahajInsights</span>
               </div>
-              <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs">
+              <p className="text-slate-500 text-sm max-w-xs">
                 Empowering teams to make data-driven decisions without the
                 technical overhead.
               </p>
-              <p className="text-slate-400 dark:text-slate-600 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+              <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
             </div>
             <div className="flex flex-wrap gap-12 md:gap-20">
               <div className="flex flex-col gap-3">
-                <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
                   Company
                 </h4>
                 <a
-                  className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                  className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                   onClick={() => navigate("/about")}
                 >
                   About
                 </a>
                 <a
-                  className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                  className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                   onClick={() => navigate("/contact")}
                 >
                   Contact us
                 </a>
               </div>
               <div className="flex flex-col gap-3">
-                <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
                   Support
                 </h4>
                 <a
-                  className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                  className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                   onClick={() => navigate("/privacy-policy")}
                 >
                   Privacy Policy
                 </a>
                 <a
-                  className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                  className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
                   onClick={() => navigate("/terms-of-service")}
                 >
                   Terms of Service
