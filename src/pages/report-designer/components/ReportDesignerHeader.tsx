@@ -211,11 +211,7 @@ export default function DataViewHeader({
 
             <div className="my-4">
               <p className="text-base md:text-lg font-semibold tracking-tight" style={{ color: theme.primaryText }}>
-                <span style={{ color: theme.primaryText }}>A</span>
-                <span style={{ color: theme.accent }} className="font-bold">ii</span>
-                <span style={{ color: theme.primaryText }}>nhome</span>
-                <span className="px-1" style={{ color: theme.secondaryText }}>|</span>
-                <span className="font-extrabold" style={{ color: theme.primaryText }}>IG</span>
+                <span style={{ color: theme.primaryText }}>Aivista</span>
               </p>
             </div>
 

@@ -6,7 +6,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import CookieIcon from '@mui/icons-material/Cookie';
 import StorageIcon from '@mui/icons-material/Storage';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
-
+import projectIcon from "/src/assets/projectIcon.svg";
 export default function PrivacyPolicy() {
   const navigate = useNavigate();
 
@@ -17,8 +17,12 @@ export default function PrivacyPolicy() {
       <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md ">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
-              <AnalyticsIcon className="text-2xl" />
+                 <div className="size-9 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/90">
+                    <img
+            src={projectIcon}
+            alt="Project Icon"
+            className="w-6 h-6"
+          />
             </div>
             <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">SahajInsights</h2>
           </div>
@@ -157,53 +161,51 @@ export default function PrivacyPolicy() {
 
       </main>
 
-     <footer className="py-12 bg-slate-50 border-t border-slate-200">
+      <footer className="py-12 bg-slate-50  border-t border-slate-200 ">
           <div className="px-4 md:px-10 lg:px-40 flex justify-center">
             <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
               <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-2 text-slate-900">
-                  <AnalyticsIcon className="text-[#137fec]" />
-                  <span className="font-bold text-lg">SahajInsights</span>
+                <div className="flex items-center gap-2 text-slate-900 ">
+                <div className="size-9 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/90">
+          <img
+  src={projectIcon}
+  alt="Project Icon"
+  className="w-6 h-6"
+/>
+</div>
+                  <span className="font-bold text-lg">Sahajinsights</span>
                 </div>
-                <p className="text-slate-500 text-sm max-w-xs">
+                <p className="text-slate-500  text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
                 <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
+               
+                 
+              
                 <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
-                    Company
-                  </h4>
-                  <a
-                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/about")}
-                  >
-                    About
-                  </a>
-                  <a
-                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/contact")}
-                  >
-                    Contact us
-                  </a>
-                </div>
-                <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
+                  <h4 className="font-bold text-slate-900  text-sm uppercase tracking-wider">
                     Support
                   </h4>
                   <a
-                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
+                    className="text-slate-500  hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/privacy-policy")}
                   >
                     Privacy Policy
                   </a>
                   <a
-                    className="text-slate-500 hover:text-[#137fec] text-sm cursor-pointer"
+                    className="text-slate-500  hover:text-[#137fec] text-sm cursor-pointer"
                     onClick={() => navigate("/terms-of-service")}
                   >
                     Terms of Service
+                  </a>
+                   <a
+                    className="text-slate-500  hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/contact")}
+                  >
+                    Contact Us
                   </a>
                 </div>
               </div>

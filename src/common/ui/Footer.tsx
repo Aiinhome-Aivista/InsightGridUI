@@ -17,7 +17,7 @@ export default function Footer() {
         color: theme.secondaryText,
       }}
     >
-      ©{currentYear} Aiinhome Technologies Pvt. Ltd. All rights reserved
+      ©{currentYear} Aivista Technologies Pvt. Ltd. All rights reserved
     </footer>
   );
 }
