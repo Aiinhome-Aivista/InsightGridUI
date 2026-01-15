@@ -40,7 +40,7 @@
 
 /* Remove table outer borders */
 .p-datatable-wrapper {
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   overflow: hidden;
 }
 

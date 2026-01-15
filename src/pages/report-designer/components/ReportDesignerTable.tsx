@@ -570,7 +570,7 @@ const columns =
 
         return (
           <div key={tableKey} className="px-4 pb-6">
-            <div className="rounded-xl shadow-xs p-4 bg-white">
+            <div className="rounded-xl shadow-xs bg-white">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h2
