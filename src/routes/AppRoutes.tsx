@@ -59,18 +59,18 @@ function AppRoutes() {
             <Route path="Settings" element={<Settings />} />
             {/* <Route path="customize" element={<Customize_page />} /> */}
             <Route path="dashboard" element={<Dashboard />} />
-            {/* <Route path="manage-company-users" element={<ManageCompanyUsers />} />
+            <Route path="manage-company-users" element={<ManageCompanyUsers />} />
             <Route path="add-company-user" element={<AddCompanyUser />} />
-            <Route path="add-company-user/:id" element={<AddCompanyUser />} /> */}
+            <Route path="add-company-user/:id" element={<AddCompanyUser />} />
 
             {/* super admin routes */}
-            {/* <Route path="super-dashboard" element={<ManageSuperAdminDashboard />} />
+            <Route path="super-dashboard" element={<ManageSuperAdminDashboard />} />
             <Route path="manage-companies" element={<ManageCompanies />} />
             <Route path="register-company" element={<RegisterCompany />} />
             <Route path="register-company/:id" element={<RegisterCompany />} />
             <Route path="manage-company-admin" element={<ManageCompanyAdmin />} />
             <Route path="add-company-admin" element={<AddCompanyAdmin />} />
-            <Route path="add-company-admin/:id" element={<AddCompanyAdmin />} /> */}
+            <Route path="add-company-admin/:id" element={<AddCompanyAdmin />} />
           </Route>
         </Route>
 

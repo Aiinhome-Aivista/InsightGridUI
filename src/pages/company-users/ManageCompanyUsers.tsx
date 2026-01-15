@@ -44,7 +44,7 @@ function ManageCompanyUsers() {
       header: "Address",
       sortable: true,
       body: (row: any) => {
-        if (!row.address) return null;   // 🔴 nothing shown
+        if (!row.address) return null; 
 
         let addrText = "";
 
@@ -118,19 +118,6 @@ function ManageCompanyUsers() {
           <EditOutlinedIcon fontSize="small" />
         </button>
       </Tippy>
-
-      {/* <Tippy content="Delete" theme="gray">
-        <button
-          className="p-1 rounded hover:bg-red-100 text-gray-600"
-          onClick={() => {
-            if (window.confirm("Are you sure you want to delete this company?")) {
-              deleteCompanyAdmin(row.id);
-            }
-          }}
-        >
-          <DeleteOutlineOutlinedIcon fontSize="small" />
-        </button>
-      </Tippy> */}
     </div>
   );
 
@@ -153,7 +140,7 @@ function ManageCompanyUsers() {
 
     setIsRefreshing(true);
 
-    // ✅ RESET FILTER PROPERLY
+    // RESET FILTER PROPERLY
     setFilters({
       global: { value: "", matchMode: FilterMatchMode.CONTAINS },
     });
@@ -174,11 +161,7 @@ function ManageCompanyUsers() {
             </p>
           </div>
           <button
-            className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
-            style={{
-              width: '138px',
-              height: '45px',
-            }}
+            className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center px-4 py-4"
             onClick={() => navigate("/layout/add-company-user")}
 
           >

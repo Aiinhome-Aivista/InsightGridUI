@@ -80,7 +80,7 @@ const RegisterCompany = () => {
       }
       if (!values.from_date) errors.from_date = "From date required";
       if (!values.to_date) errors.to_date = "To date required";
-      // ✅ FINAL CORRECT LOGO VALIDATION
+      //  FINAL CORRECT LOGO VALIDATION
       if (!isEditMode && !values.company_logo) {
         errors.company_logo = "Company Logo is required";
       }
@@ -146,9 +146,6 @@ const RegisterCompany = () => {
     if (!isEditMode || !company) return;
     if (formik.values.company_name) return;
 
-    // const address = company.address || "";
-    // const parts = address.split(",");
-    // const pin = address.split("-")[1]?.trim() || "";
     let addr = {
       area: "",
       city: "",
@@ -488,7 +485,13 @@ const RegisterCompany = () => {
                   name="to_date"
                   min={
                     formik.values.from_date
-                      ? formik.values.from_date
+                      ? new Date(
+                        new Date(formik.values.from_date).setFullYear(
+                          new Date(formik.values.from_date).getFullYear() + 1
+                        )
+                      )
+                        .toISOString()
+                        .split("T")[0]
                       : undefined
                   }
                   disabled={!formik.values.from_date}

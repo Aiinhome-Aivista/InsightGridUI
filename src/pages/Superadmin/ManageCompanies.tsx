@@ -79,31 +79,7 @@ function ManageCompanies() {
     }
   };
 
-  // const actionBodyTemplate = (row: any) => (
-  //   <div className="flex justify-end gap-2">
-  //     <button
-  //       className="p-1 rounded hover:bg-blue-100 text-gray-600"
-  //       onClick={() => {
-  //         navigate(`/layout/register-company/${row.id}`, {
-  //           state: { company: row }
-  //         });
-  //       }}
-  //     >
-  //       <EditOutlinedIcon fontSize="small" />
-  //     </button>
-
-  //     <button
-  //       className="p-1 rounded hover:bg-blue-100 text-gray-600"
-  //       onClick={() => {
-  //         if (window.confirm("Are you sure you want to delete this company?")) {
-  //           deleteCompany(row.id);
-  //         }
-  //       }}
-  //     >
-  //       <DeleteOutlineOutlinedIcon fontSize="small" />
-  //     </button>
-  //   </div>
-  // );
+  
   const actionBodyTemplate = (row: any) => (
     <div className="flex justify-end gap-2">
       <Tippy content="Edit" theme="gray">
@@ -155,7 +131,7 @@ function ManageCompanies() {
 
     setIsRefreshing(true);
 
-    // ✅ RESET FILTER PROPERLY
+    //  RESET FILTER PROPERLY
     setFilters({
       global: { value: "", matchMode: FilterMatchMode.CONTAINS },
     });
