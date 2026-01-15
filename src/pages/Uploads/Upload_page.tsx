@@ -27,7 +27,7 @@ export default function UploadPage() {
   const [isLoadingFiles, setIsLoadingFiles] = useState(false);
 
 
-  
+
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -175,7 +175,11 @@ export default function UploadPage() {
       )}
       <TableImportModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={async () => {
+          setIsModalOpen(false);
+          await trackFiles();
+        }}
+
         onFinish={trackFiles}
         uploadedFileName={uploadedFileName}
         apiData={uploadResponseData}

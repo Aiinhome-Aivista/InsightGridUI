@@ -71,7 +71,8 @@ export default function ConfirmSaveView({
               <button
                 className="px-6 py-2 rounded-xl border border-gray-400 text-gray-700 bg-white hover:bg-[#7ca1f3] hover:text-white transition disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={onCancel}
-                disabled={isActionLoading}
+                disabled={!customOnConfirm && isActionLoading}
+
               >
                 Cancel
               </button>

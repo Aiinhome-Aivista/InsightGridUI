@@ -144,11 +144,6 @@ export default function FileDropZone({ onUploadComplete, theme, disabled = false
         ) : uploadComplete ? (
           <>
             <UploadSuccess fileName={files.length > 1 ? `${files.length} files` : files[0].name} />
-            <UploadActions
-              onReupload={() => startUpload(files)}
-              onDelete={handleDelete}
-              disabled={disabled}
-            />
           </>
         ) : null}
       </div>
