@@ -50,7 +50,7 @@ export default function TermsOfServiceVariant2() {
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
               <AnalyticsIcon className="text-2xl" />
             </div>
-            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">InsightGrid</h2>
+            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">Sahajinsights</h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">

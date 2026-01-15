@@ -61,7 +61,7 @@ export default function About() {
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
               <AnalyticsIcon className="text-2xl" />
             </div>
-            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">InsightGrid</h2>
+            <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">Sahajinsights</h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
@@ -177,7 +177,7 @@ export default function About() {
           <div className="px-4 md:px-10 lg:px-40 text-center max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-black mb-6">Ready to see your data differently?</h2>
             <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-              Join the thousands of teams who have switched to InsightGrid. 
+              Join the thousands of teams who have switched to Sahajinsights. 
               Start your free 14-day trial today.
             </p>
             <button 
