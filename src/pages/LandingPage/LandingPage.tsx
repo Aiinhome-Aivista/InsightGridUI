@@ -16,9 +16,9 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-[#f6f7f8] dark:bg-[#101922] font-sans text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
+    <div className="bg-[#f6f7f8] text-slate-900 overflow-x-hidden min-h-screen flex flex-col">
       {/* Top Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
+      <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] dark:border-slate-800 bg-white/80 dark:bg-[#101922]/90 backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-xl bg-[#137fec]/10">
@@ -74,7 +74,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="flex flex-col min-h-screen">
+      <main className="flex flex-col min-h-screen pt-10">
         {/* Hero Section */}
         <section className="relative py-16 px-4 md:px-10 lg:px-40 flex justify-center bg-white dark:bg-[#101922]">
           <div className="w-full max-w-[960px] flex flex-col items-center text-center gap-6">
@@ -371,48 +371,19 @@ export default function LandingPage() {
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
-                    Product
-                  </h4>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
-                  >
-                    Features
-                  </a>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
-                  >
-                    Integrations
-                  </a>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
-                  >
-                    Pricing
-                  </a>
-                </div>
-                <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
                     Company
                   </h4>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/about")}
                   >
                     About
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/contact")}
                   >
-                    Blog
-                  </a>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
-                  >
-                    Careers
+                    Contact us
                   </a>
                 </div>
                 <div className="flex flex-col gap-3">
@@ -420,20 +391,14 @@ export default function LandingPage() {
                     Support
                   </h4>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
-                  >
-                    Help Center
-                  </a>
-                  <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/privacy-policy")}
                   >
                     Privacy Policy
                   </a>
                   <a
-                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm"
-                    href="#"
+                    className="text-slate-500 dark:text-slate-400 hover:text-[#137fec] text-sm cursor-pointer"
+                    onClick={() => navigate("/terms-of-service")}
                   >
                     Terms of Service
                   </a>

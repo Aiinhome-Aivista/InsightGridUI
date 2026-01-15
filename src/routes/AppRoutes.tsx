@@ -23,6 +23,12 @@ import Faq from "../pages/LandingPage/components/Faq";
 import AddCompanyUser from "../pages/company-users/Components/AddCompanyUser";
 import ManageCompanyAdmin from "../pages/Superadmin/ManageCompanyAdmin";
 import AddCompanyAdmin from "../pages/Superadmin/AddCompanyAdmin";
+import About from "../pages/LandingPage/components/About";
+import Blog from "../pages/LandingPage/components/ContactPage";
+import HelpCenter from "../pages/LandingPage/components/HelpCenter";
+import PrivacyPolicy from "../pages/LandingPage/components/PrivacyPolicy";
+import TermsOfService from "../pages/LandingPage/components/TermsOfService";
+import ContactPage from "../pages/LandingPage/components/ContactPage";
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -36,6 +42,11 @@ function AppRoutes() {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/faq" element={<Faq />} />
         <Route path="/resources" element={<Resources />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/Contact" element={<ContactPage />} />
+        <Route path="/help-center" element={<HelpCenter />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/layout" element={<AppLayout />}>
             <Route index element={<Navigate to="upload" replace />} />
@@ -49,18 +60,18 @@ function AppRoutes() {
             <Route path="Settings" element={<Settings />} />
             {/* <Route path="customize" element={<Customize_page />} /> */}
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="manage-company-users" element={<ManageCompanyUsers />} />
+            {/* <Route path="manage-company-users" element={<ManageCompanyUsers />} />
             <Route path="add-company-user" element={<AddCompanyUser />} />
-            <Route path="add-company-user:id" element={<AddCompanyUser />} />
+            <Route path="add-company-user/:id" element={<AddCompanyUser />} /> */}
 
             {/* super admin routes */}
-            <Route path="super-dashboard" element={<ManageSuperAdminDashboard />} />
+            {/* <Route path="super-dashboard" element={<ManageSuperAdminDashboard />} />
             <Route path="manage-companies" element={<ManageCompanies />} />
             <Route path="register-company" element={<RegisterCompany />} />
             <Route path="register-company/:id" element={<RegisterCompany />} />
             <Route path="manage-company-admin" element={<ManageCompanyAdmin />} />
             <Route path="add-company-admin" element={<AddCompanyAdmin />} />
-            <Route path="add-company-admin/:id" element={<AddCompanyAdmin />} />
+            <Route path="add-company-admin/:id" element={<AddCompanyAdmin />} /> */}
           </Route>
         </Route>
 

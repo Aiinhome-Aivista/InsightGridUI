@@ -21,18 +21,19 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import person_add from '@mui/icons-material/PersonAdd';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
+import admin_panel_settings from '@mui/icons-material/AdminPanelSettings';
 const menuItems = [
-  { name: "Super Dashboard", icon: SpaceDashboardIcon, path: "super-dashboard", roles: ["superadmin"], },
-  { name: "Company", icon: ApartmentIcon, path: "manage-companies", roles: ["superadmin"], },
+  // { name: "Super Dashboard", icon: SpaceDashboardIcon, path: "super-dashboard", roles: ["superadmin"], },
+  // { name: "Company", icon: ApartmentIcon, path: "manage-companies", roles: ["superadmin"], },
   { name: "Dashboard", icon: DashboardRoundedIcon, path: "dashboard", roles: ["companyadmin", "user"] },
-  { name: "User", icon: person_add, path: "manage-company-users", roles: ["companyadmin"] },
+  // { name: "User", icon: person_add, path: "manage-company-users", roles: ["companyadmin"] },
   { name: "Upload", icon: FileUploadOutlinedIcon, path: "upload", roles: ["companyadmin", "user"] },
   { name: "Query Designer", icon: DataObjectRoundedIcon, path: "query-list", roles: ["companyadmin", "user"] },
   { name: "Report Designer", icon: SummarizeOutlinedIcon, path: "report-designer", roles: ["companyadmin", "user"] },
   // { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" , roles: ["companyadmin", "user"] },
   { name: "Settings", icon: SettingsRoundedIcon, path: "Settings", roles: ["companyadmin", "user"] },
   //  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
-  { name: "Company Admin", icon: LogoutRoundedIcon, path: "manage-company-admin", roles: ["superadmin"] },
+  // { name: "Company Admin", icon: admin_panel_settings, path: "manage-company-admin", roles: ["superadmin"] },
   
 
 ];
@@ -71,7 +72,7 @@ export default function Sidebar() {
   return (
     <aside
       className={`${collapsed ? "w-20" : "w-60"} 
-  h-full border-r shrink-0 transition-all duration-200`}
+  h-full border-r shrink-0 transition-all duration-200 flex flex-col`}
       style={{ backgroundColor: theme.surface, borderColor: theme.border, color: theme.primaryText }}
     >
       <div
@@ -167,7 +168,7 @@ export default function Sidebar() {
           })}
         </nav>
       </div>
-      <div className={`py-4 ${collapsed ? 'px-4' : 'px-3'}`} style={{ borderColor: theme.border }}>
+      <div className={`mt-auto py-4 ${collapsed ? 'px-4' : 'px-3'}`} style={{ borderColor: theme.border }}>
         <Tippy
           content="Logout"
           placement="right"
