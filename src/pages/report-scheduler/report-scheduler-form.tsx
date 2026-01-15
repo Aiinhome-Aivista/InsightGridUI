@@ -36,8 +36,11 @@ const ReportSchedulerForm = () => {
     cc: [],
     toSuggestions: [],
     ccSuggestions: [],
-    days: "",
-    time: ""
+    mailTitle: "",
+    mailBody: "",
+    frequency: "",
+    selectedDays: "",
+    scheduleTime: ""
   });
 
   const [activeInputs, setActiveInputs] = useState({
@@ -424,29 +427,74 @@ const ReportSchedulerForm = () => {
             </div>
           </div>
 
-          {/* Days */}
-          <div className="col-span-2">
+          {/* Frequency */}
+          <div className="col-span-3">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Days
+              Frequency
+            </label>
+            <select
+              value={report.frequency}
+              onChange={(e) => setReport({ ...report, frequency: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            >
+              <option value="">Select frequency</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+
+          {/* Mail Title */}
+          <div className="col-span-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Mail Title
             </label>
             <input
               type="text"
-              value={report.days}
-              onChange={(e) => setReport({ ...report, days: e.target.value })}
-              placeholder="Mon, Wed"
+              value={report.mailTitle}
+              onChange={(e) => setReport({ ...report, mailTitle: e.target.value })}
+              placeholder="Enter mail subject"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
 
-          {/* Time */}
-          <div className="col-span-1">
+          {/* Selected Days */}
+          <div className="col-span-3">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Time
+              Selected Days
+            </label>
+            <input
+              type="text"
+              value={report.selectedDays}
+              onChange={(e) => setReport({ ...report, selectedDays: e.target.value })}
+              placeholder="Monday, Thursday"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          {/* Schedule Time */}
+          <div className="col-span-3">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Schedule Time
             </label>
             <input
               type="time"
-              value={report.time}
-              onChange={(e) => setReport({ ...report, time: e.target.value })}
+              value={report.scheduleTime}
+              onChange={(e) => setReport({ ...report, scheduleTime: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          {/* Mail Body */}
+          <div className="col-span-12">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Mail Body
+            </label>
+            <textarea
+              value={report.mailBody}
+              onChange={(e) => setReport({ ...report, mailBody: e.target.value })}
+              placeholder="Enter mail body..."
+              rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
