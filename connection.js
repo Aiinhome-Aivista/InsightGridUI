@@ -31,6 +31,6 @@ export const POST_APIS = {
   company_register: `${BASE_URL}admin/company_register`,
   company_admin_register: `${BASE_URL}admin/company/admin_register`,
   company_get_users: `${BASE_URL}/admin/company_get_users`,
-  company_user_register: `${BASE_URL}admin/company/user_register`,
+  company_user_register: `${BASE_URL}company_user_register`,
   contact_us: `${BASE_URL}contact`,
 };

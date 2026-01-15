@@ -233,6 +233,7 @@ function ManageCompanyUsers() {
             field={col.field}
             header={col.header}
             sortable={col.sortable}
+            body={col.body}
           />
         ))}
 

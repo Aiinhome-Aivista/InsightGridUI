@@ -139,7 +139,7 @@ function AddCompanyAdmin() {
       const res = await ApiServices.company_admin_register(payload);
 
       if (res?.data?.isSuccess) {
-        navigate(-1); // back to list
+        navigate(-1); 
       } else {
         alert(res?.data?.message || "Failed to create admin");
       }

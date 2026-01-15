@@ -90,16 +90,19 @@ function AddCompanyUser() {
       user_email: values.user_email,
       user_password: values.user_password,
       created_by: JSON.parse(localStorage.getItem("ig_user") || "{}")?.user_id,
+      session_id: JSON.parse(localStorage.getItem("ig_user") || "{}")?.session_id,
 
       phone_number: values.phone_number,
-      address: {
+      address: JSON.stringify({
         area: values.area,
         city: values.city,
         district: values.district,
         state: values.state,
         country: values.country,
         pin_code: values.pin_code,
-      },
+      }),
+
+      
     };
 
     if (isEditMode && user?.id) {
@@ -124,7 +127,6 @@ function AddCompanyUser() {
         message: msg,
       });
     }
-    navigate(-1);
   };
 
   const handleResetForm = () => {
