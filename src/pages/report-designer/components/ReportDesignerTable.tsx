@@ -569,7 +569,7 @@ const columns =
         }));
 
         return (
-          <div key={tableKey} className="px-4 pb-6">
+          <div key={tableKey} className="px-4 py-6">
             <div className="rounded-xl shadow-xs bg-white">
               <div className="flex items-start justify-between mb-4">
                 <div>
