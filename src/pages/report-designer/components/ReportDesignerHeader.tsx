@@ -44,6 +44,7 @@ export default function DataViewHeader({
       </Tippy>
     );
   };
+  
   useEffect(() => {
     if (editReport) {
       console.log(" Edit report in header:", editReport);
@@ -60,16 +61,6 @@ export default function DataViewHeader({
       onRunScript?.(matchedOption.value);
     }
   }, [isEditMode, editReport, tableOptions]);
-
-  const handleDropdownShow = () => {
-    window.addEventListener("scroll", handleScroll, true);
-  };
-  const handleDropdownHide = () => {
-    window.removeEventListener("scroll", handleScroll, true);
-  };
-  const handleScroll = () => {
-    dropdownRef.current?.hide();
-  };
   const handleSaveClick = async () => {
     setViewName(reportName);
     try {
@@ -82,6 +73,32 @@ export default function DataViewHeader({
       setLoading(false);
     }
   };
+const valueTemplate = (option) => {
+  if (!option) {
+    return (
+      <span className="text-gray-400 text-sm">
+        Select Views
+      </span>
+    );
+  }
+
+  return (
+    <Tippy content={option.label} theme="gray" placement="top">
+      <span
+        className="
+          block
+          max-w-[120px]
+          overflow-hidden
+          text-ellipsis
+          whitespace-nowrap
+          text-sm font-medium text-gray-700
+        "
+      >
+        {option.label}
+      </span>
+    </Tippy>
+  );
+};
 
   return (
     <header className="px-4">
@@ -141,9 +158,8 @@ export default function DataViewHeader({
             optionLabel="label"
             optionValue="value"
             placeholder="Select Views"
+            valueTemplate={valueTemplate}   
             itemTemplate={itemTemplate}
-            onShow={handleDropdownShow}
-            onHide={handleDropdownHide}
             className="
     w-80 h-10 text-sm
   rounded-xl
@@ -157,8 +173,12 @@ export default function DataViewHeader({
             pt={{
               root: { className: "cursor-pointer" },
               input: {
-                className:
-                  "text-sm font-medium text-gray-700 px-3 py-2 whitespace-normal break-words h-full flex items-center leading-tight",
+           className: `
+      text-sm font-medium text-gray-700 
+      px-3 py-2 h-full flex items-center leading-tight
+      overflow-hidden text-ellipsis whitespace-nowrap
+      max-w-[150px]
+    `,
               },
               trigger: {
                 className:
