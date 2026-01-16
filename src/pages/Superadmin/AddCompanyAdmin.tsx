@@ -139,7 +139,7 @@ function AddCompanyAdmin() {
       const res = await ApiServices.company_admin_register(payload);
 
       if (res?.data?.isSuccess) {
-        navigate(-1); 
+        navigate(-1);
       } else {
         alert(res?.data?.message || "Failed to create admin");
       }
@@ -185,7 +185,7 @@ function AddCompanyAdmin() {
       company_code: admin.company_code || "",
       admin_name: admin.admin_name || admin.full_name || "",
       admin_email: admin.admin_email || admin.email || "",
-      admin_password: "", 
+      admin_password: "",
 
       phone_number: admin.phone_number || "",
 
@@ -252,101 +252,143 @@ function AddCompanyAdmin() {
               </p>
             )}
           </div>
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Company Code */}
-         <div className="">
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Company Code {!isEditMode && <span className="text-red-500">*</span>}
-  </label>
-  <Dropdown
-    value={formik.values.company_code}
-    options={companyCodes}
-    optionLabel="label"
-    optionValue="value"
-    placeholder="Select Company Code"
-    disabled={isEditMode}
-    
-    filter
-    onChange={(e) =>
-      formik.setFieldValue("company_code", e.value)
-    }
-    className={`w-full h-[40px] rounded-lg border 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Company Code */}
+            <div className="">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Company Code {!isEditMode && <span className="text-red-500">*</span>}
+              </label>
+              {/* <Dropdown
+                value={formik.values.company_code}
+                options={companyCodes}
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Company Code"
+                disabled={isEditMode}
+
+                filter
+                onChange={(e) =>
+                  formik.setFieldValue("company_code", e.value)
+                }
+                className={`w-full h-[40px] rounded-lg border 
       ${formik.touched.company_code && formik.errors.company_code
-        ? "border-red-500"
-        : "border-gray-300"
-      }
+                    ? "border-red-500"
+                    : "border-gray-300"
+                  }
       focus:border-blue-500 focus:ring-2 focus:ring-blue-100
       bg-white text-sm`}
-    panelClassName="rounded-lg shadow-lg border border-gray-200"
-  />
+                panelClassName="rounded-lg shadow-lg border border-gray-200"
+              /> */}
+              <Dropdown
+                value={formik.values.company_code}
+                options={companyCodes}
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Company Code"
+                disabled={isEditMode}
+                filter
+                onChange={(e) =>
+                  formik.setFieldValue("company_code", e.value)
+                }
+                className={`w-full border rounded-lg text-sm
+    ${formik.touched.company_code && formik.errors.company_code
+                    ? "border-red-500"
+                    : "border-gray-300"}
+    ${isEditMode ? "bg-gray-100 cursor-not-allowed" : "bg-white"}
+  `}
+                pt={{
+                  root: {
+                    className:
+                      "h-[40px] flex items-center px-0",
+                  },
+                  
+                  input: {
+                    className:
+                      "px-4 py-2 text-sm text-gray-900",
+                  },
+                  trigger: {
+                    className:
+                      "px-3 text-gray-500",
+                  },
+                  panel: {
+                    className:
+                      "rounded-lg shadow-lg border border-gray-200 bg-blue-50",
+                  },
+                  item: {
+                    className:
+                      "px-4 py-2 text-sm hover:bg-blue-50",
+                  },
+                }}
+              />
 
-  {formik.touched.company_code && formik.errors.company_code && (
-    <p className="text-xs text-red-500 mt-1">
-      {formik.errors.company_code}
-    </p>
-  )}
-</div>
 
-          <div className="">
-            <label className="text-sm font-medium">
-              Admin Email {!isEditMode && <span className="text-red-500">*</span>}
-            </label>
-            <input
-              type="email"
-              name="admin_email"
-              value={formik.values.admin_email}
-              onChange={formik.handleChange}
-              className="w-full px-4 py-1.5 border rounded-lg"
-              placeholder="admin@company.com"
-            />
-            {formik.touched.admin_email && formik.errors.admin_email && (
-              <p className="text-xs text-red-500 mt-1">
-                {formik.errors.admin_email}
-              </p>
-            )}
-          </div>
+              {formik.touched.company_code && formik.errors.company_code && (
+                <p className="text-xs text-red-500 mt-1">
+                  {formik.errors.company_code}
+                </p>
+              )}
+            </div>
 
-          {/* Admin Password */}
-
-          {!isEditMode && (
-            <div className="mb-4">
+            <div className="">
               <label className="text-sm font-medium">
-                Password {!isEditMode && <span className="text-red-500">*</span>}
+                Admin Email {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <input
-                type="password"
-                name="admin_password"
-                value={formik.values.admin_password}
+                type="email"
+                name="admin_email"
+                value={formik.values.admin_email}
                 onChange={formik.handleChange}
                 className="w-full px-4 py-1.5 border rounded-lg"
-                placeholder="Enter Password"
+                placeholder="admin@company.com"
               />
-              {formik.touched.admin_password &&
-                formik.errors.admin_password && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {formik.errors.admin_password}
-                  </p>
-                )}
+              {formik.touched.admin_email && formik.errors.admin_email && (
+                <p className="text-xs text-red-500 mt-1">
+                  {formik.errors.admin_email}
+                </p>
+              )}
             </div>
-          )}
-          <div className="mb-4">
-            <label className="text-sm font-medium">
-              Phone Number {!isEditMode && <span className="text-red-500">*</span>}
-            </label>
-            <input
-              type="text"
-              name="phone_number"
-              value={formik.values.phone_number}
-              onChange={formik.handleChange}
-              className="w-full px-4 py-1.5 border rounded-lg"
-              placeholder="Enter Phone Number"
-            />
-            {formik.touched.phone_number && formik.errors.phone_number && (
-              <p className="text-xs text-red-500 mt-1">
-                {formik.errors.phone_number}
-              </p>
+
+            {/* Admin Password */}
+
+            {!isEditMode && (
+              <div className="mb-4">
+                <label className="text-sm font-medium">
+                  Password {!isEditMode && <span className="text-red-500">*</span>}
+                </label>
+                <input
+                  type="password"
+                  name="admin_password"
+                  value={formik.values.admin_password}
+                  onChange={formik.handleChange}
+                  className="w-full px-4 py-1.5 border rounded-lg"
+                  placeholder="Enter Password"
+                />
+                {formik.touched.admin_password &&
+                  formik.errors.admin_password && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {formik.errors.admin_password}
+                    </p>
+                  )}
+              </div>
             )}
-          </div>
+            <div className="mb-4">
+              <label className="text-sm font-medium">
+                Phone Number {!isEditMode && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type="text"
+                name="phone_number"
+                value={formik.values.phone_number}
+                onChange={formik.handleChange}
+                className="w-full px-4 py-1.5 border rounded-lg"
+                placeholder="Enter Phone Number"
+              />
+              {formik.touched.phone_number && formik.errors.phone_number && (
+                <p className="text-xs text-red-500 mt-1">
+                  {formik.errors.phone_number}
+                </p>
+              )}
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
