@@ -61,7 +61,7 @@ export default function About() {
             <div className="size-8 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/10">
               <AnalyticsIcon className="text-2xl" />
             </div>
-            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">sahajinsight</h2>
+            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">Sahajinsight</h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
@@ -92,7 +92,7 @@ export default function About() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#137fec] to-blue-400">accessible to everyone.</span>
             </h1>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              sahajinsight was born from a simple frustration: Data analysis was too hard, too slow, and too expensive. We're here to change that.
+              Sahajinsight was born from a simple frustration: Data analysis was too hard, too slow, and too expensive. We're here to change that.
             </p>
           </div>
         </section>
@@ -103,7 +103,7 @@ export default function About() {
             <div className="flex-1 space-y-6">
               <h2 className="text-3xl font-bold text-slate-900">Our Story</h2>
               <p className="text-slate-600 text-lg leading-relaxed">
-                Founded in 2024, sahajinsight started as an internal tool for a marketing agency. The team was tired of waiting days for engineering to run SQL queries just to answer simple questions about campaign performance.
+                Founded in 2024, Sahajinsight started as an internal tool for a marketing agency. The team was tired of waiting days for engineering to run SQL queries just to answer simple questions about campaign performance.
               </p>
               <p className="text-slate-600 text-lg leading-relaxed">
                 We realized that if we could build a drag-and-drop interface that sat on top of raw data, we could unlock the potential of the entire team. Today, we help thousands of companies visualize their future.
@@ -176,7 +176,7 @@ export default function About() {
           <div className="px-4 md:px-10 lg:px-40 text-center max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-black mb-6">Ready to see your data differently?</h2>
             <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-              Join the thousands of teams who have switched to sahajinsight. 
+              Join the thousands of teams who have switched to Sahajinsight. 
               Start your free 14-day trial today.
             </p>
             <button 
@@ -195,13 +195,13 @@ export default function About() {
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 text-slate-900">
                   <AnalyticsIcon className="text-[#137fec]" />
-                  <span className="font-bold text-lg">sahajinsight</span>
+                  <span className="font-bold text-lg">Sahajinsight</span>
                 </div>
                 <p className="text-slate-500 text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
-                <p className="text-slate-400 text-sm mt-4">© 2026 sahajinsight Inc.</p>
+                <p className="text-slate-400 text-sm mt-4">© 2026 Sahajinsight Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">
