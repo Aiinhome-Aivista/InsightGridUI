@@ -100,9 +100,9 @@ export default function LandingFooter() {
                 </a> */}
 
                 {/* LinkedIn */}
-                {/* <a
+                <a
                   href="#"
-                  className="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-[#0A66C2]/10 transition"
+                  className="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-[#0A66C2]/10 transition "
                 >
                   <svg
                     className="w-5 h-5 text-[#0A66C2]"
@@ -111,7 +111,7 @@ export default function LandingFooter() {
                   >
                     <path d="M4.98 3.5a2.5 2.5 0 11-.01 5.01 2.5 2.5 0 01.01-5.01zM3 8.98h4v12H3zM9 8.98h3.8v1.64h.05c.53-1 1.82-2.05 3.75-2.05 4 0 4.74 2.63 4.74 6.05v6.36h-4v-5.64c0-1.35-.03-3.09-1.88-3.09-1.88 0-2.17 1.47-2.17 3v5.73H9z" />
                   </svg>
-                </a> */}
+                </a>
               </div>
             </div>
 
