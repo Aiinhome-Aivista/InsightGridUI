@@ -40,24 +40,7 @@ export default function ChartSidebar({
       icon: <BarChartIcon sx={{ fontSize: "2rem" }} />,
       subtitle: "Compare Value",
     },
-    // {
-    //   id: 'box',
-    //   name: 'Box Plot',
-    //   icon: <CandlestickChartIcon sx={{ fontSize: '2rem' }} />,
-    //   subtitle: 'Distribution'
-    // },
-    // {
-    //   id: 'bubble',
-    //   name: 'Bubble Chart',
-    //   icon: <BubbleChartIcon sx={{ fontSize: '2rem' }} />,
-    //   subtitle: 'Compare Value'
-    // },
-    //  {
-    //   id: 'kpi',
-    //   name: 'KPI',
-    //   icon: <SpeedIcon sx={{ fontSize: '2rem' }} />,
-    //   subtitle: 'Key Metric'
-    // },
+  
     {
       id: "line",
       name: "Line Chart",
@@ -65,12 +48,6 @@ export default function ChartSidebar({
       subtitle: "Trend Over Time",
     },
 
-    // {
-    //   id: 'mixed',
-    //   name: 'Mixed Chart',
-    //   icon: <ShowChartIcon sx={{ fontSize: '2rem' }} />,
-    //   subtitle: 'Distribution'
-    // },
 
     {
       id: "pie",
@@ -78,12 +55,7 @@ export default function ChartSidebar({
       icon: <PieChartIcon sx={{ fontSize: "2rem" }} />,
       subtitle: "Compare Value",
     },
-    // {
-    //   id: 'waterfall',
-    //   name: 'Waterfall Chart',
-    //   icon: <WaterfallChartIcon sx={{ fontSize: '2rem' }} />,
-    //   subtitle: 'Compare Value'
-    // }
+  
   ];
   const normalizeType = (t?: string, colName?: string) => {
     if (!t) return "text";
@@ -110,58 +82,7 @@ export default function ChartSidebar({
     name: c,
     type: normalizeType(columnTypes?.[c]),
   }));
-  // const isChartDisabled = (chartId: string) => {
-  //   const cols = orderedSelected;
-
-  //   if (cols.length === 0) return true;
-
-  //   switch (chartId) {
-
-  //     case "bar":
-  //     case "pie":
-  //       return !(
-  //         cols.length >= 2 &&
-  //         cols[0].type === "text" &&
-  //         cols[1].type === "number"
-  //       );
-
-  //     case "kpi":
-  //       return !(
-  //         cols.length === 1 &&
-  //         cols[0].type === "number"
-  //       );
-
-  //     case "box":
-  //       return !(
-  //         cols.length === 1 &&
-  //         cols[0].type === "number"
-  //       );
-
-  //     case "mixed":
-  //       return !(
-  //         cols.length >= 3 &&
-  //         cols[0].type === "text" &&
-  //         cols.slice(1).every(c => c.type === "number")
-  //       );
-
-  //     case "bubble":
-  //       return !(
-  //         cols.length >= 2 &&
-  //         cols[0].type === "number" &&
-  //         cols[1].type === "number"
-  //       );
-
-  //     case "waterfall":
-  //       return !(
-  //         cols.length >= 2 &&
-  //         (cols[0].type === "text" || cols[0].type === "date") &&
-  //         cols[1].type === "number"
-  //       );
-
-  //     default:
-  //       return true;
-  //   }
-  // };
+  
 
   const isChartDisabled = (chartId: string) => {
     const cols = orderedSelected;
@@ -199,55 +120,6 @@ export default function ChartSidebar({
     }
   };
 
-  // const autoAssignColumns = (chartType: string) => {
-  //   const cols = orderedSelected;
-
-  //   switch (chartType) {
-  //     case "bar":
-  //     case "pie":
-  //       return {
-  //         xAxis: cols[0].name,
-  //         yAxis: cols[0].name,
-  //         agg: "count",
-  //       };
-  //     case "kpi":
-  //       return {
-  //         value: cols[0].name,
-  //         agg: "count",
-  //       };
-
-  //     case "box":
-  //       return {
-  //         xAxis: cols[0].name,
-  //         agg: "count",
-  //       };
-  //     case "mixed":
-  //       return {
-  //         xAxis: cols[0].name,
-  //         yAxis: cols.slice(1).map((c) => c.name),
-  //       };
-  //     case "bubble":
-  //       return {
-  //         xAxis: cols[0].name,
-  //         yAxis: cols[1].name,
-  //         size: cols[2]?.name,
-  //         label: cols[3]?.name,
-  //       };
-  //     case "waterfall":
-  //       return {
-  //         xAxis: cols[0].name,
-  //         agg: "count",
-  //       };
-  //     case "line":
-  //       return {
-  //         xAxis: cols[0].name,
-  //         yAxis: cols[1].name,
-  //         agg: "sum",
-  //       };
-  //     default:
-  //       return null;
-  //   }
-  // };
   const autoAssignColumns = (chartType: string) => {
     const cols = orderedSelected;
 
@@ -307,9 +179,6 @@ export default function ChartSidebar({
             <h3 className="text-lg font-semibold text-gray-900">
               Recommended Graph
             </h3>
-            {/* <p className="text-xs text-gray-500 mt-0.5">
-              Table: Product Details
-            </p> */}
           </div>
 
           {onClose && (

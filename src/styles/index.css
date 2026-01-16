@@ -52,6 +52,12 @@ body,
   align-items: center !important;
 }
 
+.p-multiselect-header {
+  padding: .5rem !important;
+  border-radius: .5rem !important;
+  background-color: #F3F4F6 !important;
+}
+
 .p-multiselect-token {
   padding-right: 2px;
 }
