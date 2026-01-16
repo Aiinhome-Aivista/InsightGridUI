@@ -5,12 +5,8 @@
 
 html,
 body,
-#root {
+#root {}
 
-}
-
-
-/* Custom base styles */
 @layer base {
   :root {
     font-family: "Ballo Da 2", sans-serif;
@@ -28,7 +24,7 @@ body,
     color: var(--theme-primary-text);
   }
 }
-/* Dropdown text alignment fix */
+
 .p-dropdown {
   display: flex;
   align-items: center;
@@ -45,52 +41,36 @@ body,
 }
 
 
-
-
-/* Remove double check mark */
 .p-multiselect-item .p-checkbox .p-checkbox-box .p-checkbox-icon {
   display: none !important;
 }
 
-/* Fix close icon alignment */
 .p-multiselect-header .p-multiselect-close {
   margin-right: 6px !important;
-  /* adjust spacing */
   margin-top: 2px !important;
-  /* vertical alignment */
   display: flex !important;
   align-items: center !important;
 }
 
-/* Chip spacing */
 .p-multiselect-token {
   padding-right: 2px;
-  /* overall chip breathing space */
 }
 
-/* Gap between text and cross icon */
 .p-multiselect-token-icon {
   margin-left: 4px;
-  /* 🔥 GAP */
   transition: color 0.2s ease;
-  /* smooth hover */
 }
 
-/* Hover effect – red cross */
 .p-multiselect-token-icon:hover {
   color: #ef4444;
-  /* Tailwind red-500 */
 }
 
 
-/* Remove hover effect on entire header */
-/* Panel header */
 .p-multiselect-header {
   display: flex;
   align-items: center;
 }
 
-/* Close (X) icon – slightly moved up */
 .p-multiselect-close {
   display: flex;
   align-items: center;
@@ -99,13 +79,11 @@ body,
   width: 32px;
   margin-left: auto;
   transform: translateY(-7px);
-  /* 🔥 move slightly up */
   border-radius: 8px;
   color: #6b7280;
   transition: all 0.2s ease;
 }
 
-/* Hover */
 .p-multiselect-close:hover {
   color: #ef4444;
   background-color: #fee2e2;
@@ -120,15 +98,12 @@ body,
 .p-multiselect-items-wrapper {
   padding-top: 0 !important;
   margin-top: -35px !important;
-  /* adjust or remove based on height */
 }
 
-/* Show only checkbox tick when selected */
 .p-multiselect-item .p-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon {
   display: block !important;
 }
 
-/* Fix MultiSelect dropdown arrow position */
 .p-multiselect-trigger {
   position: absolute !important;
   right: 10px !important;
@@ -138,14 +113,11 @@ body,
   padding: 0 !important;
 }
 
-/* Ensure chips don't push dropdown arrow */
 .p-multiselect {
   position: relative !important;
   padding-right: 32px !important;
-  /* space for arrow */
 }
 
-/* Proper spacing between checkbox and text */
 .p-multiselect-item {
   display: flex !important;
   align-items: center !important;
@@ -154,13 +126,10 @@ body,
 
 }
 
-
-/* 🔥 Fix filter overlap issue */
 .fixed-multiselect-panel {
   padding-top: 0 !important;
 }
 
-/* Filter input container */
 .fixed-multiselect-panel .p-multiselect-filter-container {
   position: sticky;
   top: 0;
@@ -170,7 +139,7 @@ body,
   border-bottom: 1px solid #e5e7eb;
 }
 
-/* Options list starts AFTER filter */
+
 .fixed-multiselect-panel .p-multiselect-items-wrapper {
   margin-top: 8px !important;
   padding-top: 4px;
@@ -178,20 +147,15 @@ body,
   height: 180px;
 }
 
-/* Each option spacing */
+
 .fixed-multiselect-panel .p-multiselect-item {
   padding: 10px 12px;
 }
 
-
-
-
-/* ===== MultiSelect filter container ===== */
 .p-multiselect-filter-container {
   position: relative;
   display: flex;
   align-items: center;
-  /* 🔥 vertical centering */
 }
 
 .p-multiselect-filter {
@@ -203,7 +167,7 @@ body,
   font-size: 13px;
 }
 
-/* ===== Search icon (left) ===== */
+
 .p-multiselect-filter-icon {
   position: absolute;
   left: 20px;
@@ -213,33 +177,27 @@ body,
   font-size: 14px;
 }
 
-/* ===== Clear (X) icon (right) ===== */
 .p-multiselect-clear-icon {
   position: absolute;
   right: 15px;
   top: 60%;
   transform: translateY(-50%);
-  /* 🔥 perfect vertical center */
   color: #9ca3af;
   transition: color 0.2s ease, background-color 0.2s ease;
   border-radius: 6px;
   padding: 2px;
 }
 
-/* Ensure filter container is relative */
 .p-multiselect-filter-container {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-/* Right-side clear (X) icon */
 .p-multiselect-clear-icon {
   position: absolute;
   right: 10px;
-  /* adjust horizontal spacing */
   top: 50%;
-  /* 🔥 vertical center */
   transform: translateY(-50%);
   display: flex;
   align-items: center;
@@ -251,32 +209,24 @@ body,
   transition: all 0.2s ease;
 }
 
-/* Hover effect */
 .p-multiselect-clear-icon:hover {
   color: #ef4444;
-  /* red */
   background-color: #fee2e2;
 }
 
-/* Hover effect for clear icon */
 .p-multiselect-clear-icon:hover {
   color: #ef4444;
-  /* red-500 */
   background-color: #fee2e2;
-  /* red-100 */
 }
 
 .p-multiselect-filter {
   padding-right: 36px;
-  /* space for clear icon */
 }
 
-/* Chip spacing fix */
 .p-multiselect-token {
   margin-right: 8px !important;
 }
 
-/* Fix panel padding + alignment */
 .p-multiselect-panel {
   border-radius: 12px !important;
   padding-top: 6px !important;
@@ -288,15 +238,6 @@ body,
 }
 
 
-
-
-/* Optional: max table width */
-/* .custom-table {
-  max-width: 1780px;
-
-} */
-
-/* Scrollbar styles for WebKit browsers */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -304,19 +245,16 @@ body,
 
 ::-webkit-scrollbar-track {
   background: #dbeafe00;
-  /* Tailwind's blue-100 */
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: #888e92;
-  /* Tailwind's blue-600 */
   border-radius: 10px;
   border: 2px solid transparent;
-  /* Same as track for a nice padding effect */
+  cursor: pointer
 }
 
-/* Custom component styles */
 @layer components {
   .btn-primary {
     @apply font-medium py-2 px-4 rounded-xl transition-colors duration-200;
@@ -346,27 +284,24 @@ body,
     border: 1px solid var(--theme-border);
   }
 
-  /* Target the table cells to add a bottom border */
   .custom-table .p-datatable-tbody>tr>td {
     border-bottom: 1px solid #f3f4f6 !important;
-    /* Adjust color as needed */
+
   }
 }
 
-/* Footer with aggregations */
+
 .p-datatable .p-datatable-tfoot>tr>td {
   padding: 0 !important;
   border: none !important;
 }
 
-/* Aggregation container - removes default spacing */
 .aggregation-container {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-/* Each aggregation row with full border */
 .aggregation-row-item {
   padding: 8px 16px;
   border-bottom: 1px solid #e5e7eb;
