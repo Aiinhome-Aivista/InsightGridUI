@@ -155,6 +155,7 @@ const valueTemplate = (option) => {
                 setSelectedTables(val ? [val] : []);
               }
             }}
+             appendTo="self"
             optionLabel="label"
             optionValue="value"
             placeholder="Select Views"
