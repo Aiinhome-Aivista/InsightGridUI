@@ -102,7 +102,7 @@ function AddCompanyUser() {
         pin_code: values.pin_code,
       }),
 
-      
+
     };
 
     if (isEditMode && user?.id) {
@@ -158,7 +158,7 @@ function AddCompanyUser() {
       company_code: companyCodeFromLS,
       user_name: user.user_name || user.full_name || "",
       user_email: user.user_email || user.email || "",
-      user_password: "", // ❌ edit mode এ blank
+      user_password: "",
       phone_number: user.phone_number || "",
 
       area: addr.area || "",
@@ -171,12 +171,14 @@ function AddCompanyUser() {
   }, [isEditMode, user]);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="p-6">
       <form onSubmit={formik.handleSubmit}>
-        <div className="rounded-xl px-6 py-4">
-          <h2 className="text-xl font-semibold mb-6">
-          </h2>
-          <div className="flex items-center justify-between mb-4">
+        <div className="rounded-xl px-2 gap-2">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 ">
+            </h2>
+          </div>
+          <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold mb-6">
               Add User
             </h2>
@@ -209,7 +211,7 @@ function AddCompanyUser() {
               type="text"
               name="company_code"
               value={formik.values.company_code}
-              
+
               onChange={formik.handleChange}
               className="w-full px-4 py-2 border rounded-lg mt-1 cursor-not-allowed"
               disabled={true}
@@ -218,91 +220,55 @@ function AddCompanyUser() {
           </div>
 
 
-          {/* Admin Name */}
-          <div className="mb-4">
-            <label className="text-sm font-medium">
-              User Name {!isEditMode && <span className="text-red-500">*</span>}
-            </label>
-            <input
-              type="text"
-              name="user_name"
-              value={formik.values.user_name}
-              disabled={isEditMode}
-              onChange={formik.handleChange}
-              placeholder="Enter User Name"
-              className={`w-full px-4 py-2 border rounded-lg mt-1 
-    ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
-  `}
-            />
-            {formik.touched.user_name && formik.errors.user_name && (
-              <p className="text-xs text-red-500 mt-1">
-                {formik.errors.user_name}
-              </p>
-            )}
-          </div>
-
-          {/* User Email */}
-          <div className="mb-4">
-            <label className="text-sm font-medium">
-              User Email {!isEditMode && <span className="text-red-500">*</span>}
-            </label>
-            <input
-              type="email"
-              name="user_email"
-              value={formik.values.user_email}
-              disabled={isEditMode}
-              onChange={formik.handleChange}
-              className={`w-full px-4 py-2 border rounded-lg mt-1 
-    ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
-  `} placeholder="admin@company.com"
-            />
-            {formik.touched.user_email && formik.errors.user_email && (
-              <p className="text-xs text-red-500 mt-1">
-                {formik.errors.user_email}
-              </p>
-            )}
-          </div>
-
-          {/* User Password */}
-          {!isEditMode && (
-            <div className="mb-6">
+          {/* User Name + User Email */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* User Name */}
+            <div>
               <label className="text-sm font-medium">
-                Password {!isEditMode && <span className="text-red-500">*</span>}
+                User Name {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <input
-                type="password"
-                name="user_password"
-                value={formik.values.user_password}
+                type="text"
+                name="user_name"
+                value={formik.values.user_name}
+                disabled={isEditMode}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg mt-1"
-                placeholder="Enter Password"
+                placeholder="Enter User Name"
+                className={`w-full px-4 py-2 border rounded-lg mt-1 
+        ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
+      `}
               />
-              {formik.touched.user_password &&
-                formik.errors.user_password && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {formik.errors.user_password}
-                  </p>
-                )}
+              {formik.touched.user_name && formik.errors.user_name && (
+                <p className="text-xs text-red-500 mt-1">
+                  {formik.errors.user_name}
+                </p>
+              )}
             </div>
-          )}
-          <div className="mb-4">
-            <label className="text-sm font-medium">
-              Phone Number {!isEditMode && <span className="text-red-500">*</span>}
-            </label>
-            <input
-              type="text"
-              name="phone_number"
-              value={formik.values.phone_number}
-              onChange={formik.handleChange}
-              className="w-full px-4 py-2 border rounded-lg mt-1"
-              placeholder="Enter Phone Number"
-            />
-            {formik.touched.phone_number && formik.errors.phone_number && (
-              <p className="text-xs text-red-500 mt-1">
-                {formik.errors.phone_number}
-              </p>
-            )}
+
+            {/* User Email */}
+            <div>
+              <label className="text-sm font-medium">
+                User Email {!isEditMode && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type="email"
+                name="user_email"
+                value={formik.values.user_email}
+                disabled={isEditMode}
+                onChange={formik.handleChange}
+                placeholder="admin@company.com"
+                className={`w-full px-4 py-2 border rounded-lg mt-1 
+        ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
+      `}
+              />
+              {formik.touched.user_email && formik.errors.user_email && (
+                <p className="text-xs text-red-500 mt-1">
+                  {formik.errors.user_email}
+                </p>
+              )}
+            </div>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium">

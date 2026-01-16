@@ -121,6 +121,9 @@ export default function Sidebar() {
             if (item.path === 'report-designer' && activePath === 'report-designer-view') {
               isActive = true;
             }
+            if (item.path === 'manage-company-users' && activePath === 'add-company-user') {
+              isActive = true;
+            }
             if (item.path === 'manage-companies' && location.pathname.includes('register-company')) {
               isActive = true;
             }
