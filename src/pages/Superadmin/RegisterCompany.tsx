@@ -193,10 +193,10 @@ const RegisterCompany = () => {
   }, [isEditMode, company]);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="w-full mx-auto px-6">
       <form onSubmit={formik.handleSubmit}>
-        <div className="rounded-xl px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
+        <div className="rounded-xl py-4">
+          <div className="flex items-center justify-between mb-2">
             <h2 className="text-xl font-semibold text-[#1C1B1F]">
               Register a Company
             </h2>
@@ -239,7 +239,7 @@ const RegisterCompany = () => {
                   name="company_name"
                   value={formik.values.company_name}
                   onChange={formik.handleChange}
-                  className="w-full pl-10 py-2 border rounded-lg"
+                  className="w-full pl-10 py-1.5 border rounded-lg"
                   placeholder="Enter Company Name"
                 />
               </div>
