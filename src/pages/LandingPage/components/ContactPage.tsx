@@ -4,7 +4,7 @@ import { Toast } from "primereact/toast";
 import ApiServices from "../../../services/ApiServices";
 // import POST_APIS from "../../../../connection";
 
-// Icons (Matching SahajInsights Design System)
+// Icons (Matching sahajinsight Design System)
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import EmailIcon from "@mui/icons-material/Email";
@@ -44,7 +44,7 @@ const ContactPage = () => {
       summary: "Success",
       detail: message,
       life: 3000,
-      // Updated to SahajInsights Blue/Green gradient
+      // Updated to sahajinsight Blue/Green gradient
       style: {
         background: "linear-gradient(135deg, #137fec 0%, #10b981 100%)",
         color: "#fff",

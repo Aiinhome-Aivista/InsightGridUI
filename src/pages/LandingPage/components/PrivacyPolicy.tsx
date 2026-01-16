@@ -179,7 +179,7 @@ export default function PrivacyPolicy() {
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
-                <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsight Inc.</p>
+                <p className="text-slate-400 text-sm mt-4">© 2026 sahajinsight Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                

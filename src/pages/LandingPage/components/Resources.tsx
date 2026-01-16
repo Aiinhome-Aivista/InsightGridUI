@@ -22,7 +22,7 @@ export default function Resources() {
     {
       category: "Video",
       title: "Building Dashboards in Under 5 Minutes",
-      excerpt: "Watch how a senior analyst sets up a full KPI board using SahajInsights. This step-by-step walkthrough demonstrates connecting a data source, configuring widgets, applying global filters, and sharing the final result with stakeholders—all in real-time without writing a single line of code.",
+      excerpt: "Watch how a senior analyst sets up a full KPI board using sahajinsight. This step-by-step walkthrough demonstrates connecting a data source, configuring widgets, applying global filters, and sharing the final result with stakeholders—all in real-time without writing a single line of code.",
       icon: <PlayCircleOutlineIcon fontSize="large" />,
       color: "text-purple-600 bg-purple-100",
       date: "Nov 03, 2025"
@@ -46,7 +46,7 @@ export default function Resources() {
     {
       category: "Case Study",
       title: "How TechCorp Saved 20h/Week",
-      excerpt: "TechCorp's marketing team was spending 4 hours a day manually updating spreadsheets for their weekly sync. See how automating their reporting pipeline with SahajInsights changed their workflow forever, allowing them to focus on strategy rather than data entry.",
+      excerpt: "TechCorp's marketing team was spending 4 hours a day manually updating spreadsheets for their weekly sync. See how automating their reporting pipeline with sahajinsight changed their workflow forever, allowing them to focus on strategy rather than data entry.",
       icon: <ArticleIcon fontSize="large" />,
       color: "text-blue-600 bg-blue-100",
       date: "Nov 22, 2025"

@@ -35,7 +35,7 @@ export default function FAQ() {
   const faqs = [
     {
       q: "Can I connect to my local SQL database?",
-      a: "Yes! SahajInsights supports secure tunneling to local PostgreSQL, MySQL, and SQL Server databases. You can also upload static exports (CSV) if you prefer not to open a connection."
+      a: "Yes! sahajinsight supports secure tunneling to local PostgreSQL, MySQL, and SQL Server databases. You can also upload static exports (CSV) if you prefer not to open a connection."
     },
     {
       q: "Is my data secure?",
