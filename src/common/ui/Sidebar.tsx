@@ -124,6 +124,12 @@ export default function Sidebar() {
             if (item.path === 'manage-company-users' && activePath === 'add-company-user') {
               isActive = true;
             }
+            if (item.path === 'manage-companies' && location.pathname.includes('register-company')) {
+              isActive = true;
+            }
+            if (item.path === 'manage-company-admin' && location.pathname.includes('add-company-admin')) {
+              isActive = true;
+            }
             return (
               <Tippy
                 content={item.name}
