@@ -60,7 +60,7 @@ export default function Pricing() {
   ];
 
   return (
-    <div className="bg-[#f6f7f8] font-sans text-slate-900 overflow-x-hidden min-h-full flex flex-col">
+    <div className="bg-[#f6f7f8] text-slate-900 overflow-x-hidden min-h-full flex flex-col">
       {/* --- HEADER (Same as Landing) --- */}
   <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">

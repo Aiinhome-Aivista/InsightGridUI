@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-[#f6f7f8]  overflow-x-hidden min-h-screen flex flex-col">
+    <div className="bg-[#f6f7f8] overflow-x-hidden min-h-screen flex flex-col">
       
       {/* --- HEADER --- */}
       <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md ">

@@ -63,7 +63,7 @@ export default function Resources() {
   ];
 
   return (
-    <div className="bg-[#f6f7f8] font-sans text-slate-900 overflow-x-hidden min-h-screen flex flex-col">
+    <div className="bg-[#f6f7f8] text-slate-900 overflow-x-hidden min-h-screen flex flex-col">
 
       {/* --- HEADER (Matches LandingPage) --- */}
       <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] bg-white/80 backdrop-blur-md">

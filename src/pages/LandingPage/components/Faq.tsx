@@ -61,7 +61,7 @@ export default function FAQ() {
   };
 
   return (
-    <div className="font-sans text-slate-900 overflow-x-hidden min-h-screen flex flex-col">
+    <div className=" text-slate-900 overflow-x-hidden min-h-screen flex flex-col">
        {/* --- HEADER --- */}
        <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] bg-white/80 backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">

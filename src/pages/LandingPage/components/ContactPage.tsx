@@ -185,7 +185,7 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen font-sans flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Page Transition Overlay */}
       {isTransitioning && (
         <div
