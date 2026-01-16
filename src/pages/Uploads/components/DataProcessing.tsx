@@ -195,7 +195,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between mb-2 px-2">
+      <div className="flex items-center justify-between mb-2">
         <label
           className="block text-sm font-medium"
           style={{ color: theme.primaryText }}

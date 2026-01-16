@@ -602,7 +602,7 @@ const columns =
                         const newGroups = e.value;
                         setSelectedGroupBy(newGroups);
                         if (newGroups.length === 0) {
-                          setAggregations([]);
+                          // setAggregations([]);
                           setCollapsedGroups({});
                           return;
                         }
