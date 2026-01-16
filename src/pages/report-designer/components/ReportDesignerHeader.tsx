@@ -126,7 +126,7 @@ const valueTemplate = (option) => {
           <InputText
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-10 w-full text-sm h-10 rounded-xl ber focus:outordline-none focus:ring-1 focus:ring-[#5433FF]"
+            className="pl-10 w-full md:w-80 text-sm h-10 rounded-xl border focus:outline-none focus:ring-1 focus:ring-[#5433FF]"
             placeholder="Global Search"
           />
         </div>
@@ -168,7 +168,7 @@ const valueTemplate = (option) => {
     bg-white
     border focus:outline-none focus:ring-1 focus:ring-[#5433FF]"
             panelClassName="
-    bg-white rounded-xl border border-gray-100 overflow-hidden text-sm max-w-96
+    bg-white rounded-xl border border-gray-100 overflow-hidden text-sm max-w-56
   "
             pt={{
               root: { className: "cursor-pointer" },
