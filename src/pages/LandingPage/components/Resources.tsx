@@ -63,17 +63,17 @@ export default function Resources() {
 
   return (
     <div className="bg-[#f6f7f8] font-sans text-slate-900 overflow-x-hidden min-h-screen flex flex-col">
-      
+
       {/* --- HEADER (Matches LandingPage) --- */}
       <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] bg-white/80 backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
-           <div className="size-9 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/90">
-          <img
-  src={projectIcon}
-  alt="Project Icon"
-  className="w-6 h-6"
-/>
+            <div className="size-9 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/90">
+              <img
+                src={projectIcon}
+                alt="Project Icon"
+                className="w-6 h-6"
+              />
             </div>
             <h2 className="text-slate-900  text-xl font-bold leading-tight tracking-tight">
               Sahajinsight
@@ -125,111 +125,111 @@ export default function Resources() {
       {/* --- MAIN CONTENT --- */}
       <main className="flex-grow pt-24 pb-20 px-4 md:px-10 lg:px-40">
         <div className="w-full max-w-[900px] mx-auto">
-            
-            {/* Page Title Section */}
-            <div className="mb-16 border-b border-slate-200 pb-8">
-                <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
-                    Resource <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#137fec] to-blue-400">Library</span>
-                </h1>
-                <p className="text-xl text-slate-600 max-w-2xl">
-                    Deep dives, step-by-step tutorials, and industry insights to help you master your data journey.
-                </p>
-            </div>
 
-            {/* List / Paragraph Layout */}
-            <div className="flex flex-col gap-10">
-                {resources.map((item, idx) => (
-                    <div 
-                        key={idx} 
-                        onClick={() => console.log(`Clicked ${item.title}`)}
-                        className="group flex flex-col sm:flex-row gap-6 items-start p-6 -mx-6 rounded-2xl hover:bg-white transition-all duration-300 border border-transparent hover:border-slate-200 hover:shadow-lg cursor-pointer"
-                    >
-                        
-                        {/* Visual Icon Box */}
-                        <div className={`shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center ${item.color} shadow-sm`}>
-                            {item.icon}
-                        </div>
+          {/* Page Title Section */}
+          <div className="mb-16 border-b border-slate-200 pb-8">
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
+              Resource <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#137fec] to-blue-400">Library</span>
+            </h1>
+            <p className="text-xl text-slate-600 max-w-2xl">
+              Deep dives, step-by-step tutorials, and industry insights to help you master your data journey.
+            </p>
+          </div>
 
-                        {/* Content */}
-                        <div className="flex-1">
-                            {/* Meta Data */}
-                            <div className="flex items-center gap-3 mb-2 text-sm">
-                                <span className={`font-bold uppercase tracking-wider px-2 py-0.5 rounded text-[10px] ${item.color}`}>
-                                    {item.category}
-                                </span>
-                                <span className="text-slate-300">•</span>
-                                <span className="text-slate-500 font-medium">{item.date}</span>
-                            </div>
-                            
-                            {/* Title */}
-                            <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-[#137fec] transition-colors leading-tight">
-                                {item.title}
-                            </h3>
-                            
-                            {/* Paragraph Description (The key change) */}
-                            <p className="text-slate-600 leading-relaxed mb-4 text-base">
-                                {item.excerpt}
-                            </p>
-                            
-                          
-                        </div>
-                    </div>
-                ))}
-            </div>
-          
+          {/* List / Paragraph Layout */}
+          <div className="flex flex-col gap-10">
+            {resources.map((item, idx) => (
+              <div
+                key={idx}
+                onClick={() => console.log(`Clicked ${item.title}`)}
+                className="group flex flex-col sm:flex-row gap-6 items-start p-6 -mx-6 rounded-2xl hover:bg-white transition-all duration-300 border border-transparent hover:border-slate-200 hover:shadow-lg cursor-pointer"
+              >
+
+                {/* Visual Icon Box */}
+                <div className={`shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center ${item.color} shadow-sm`}>
+                  {item.icon}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1">
+                  {/* Meta Data */}
+                  <div className="flex items-center gap-3 mb-2 text-sm">
+                    <span className={`font-bold uppercase tracking-wider px-2 py-0.5 rounded text-[10px] ${item.color}`}>
+                      {item.category}
+                    </span>
+                    <span className="text-slate-300">•</span>
+                    <span className="text-slate-500 font-medium">{item.date}</span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-[#137fec] transition-colors leading-tight">
+                    {item.title}
+                  </h3>
+
+                  {/* Paragraph Description (The key change) */}
+                  <p className="text-slate-600 leading-relaxed mb-4 text-base">
+                    {item.excerpt}
+                  </p>
+
+
+                </div>
+              </div>
+            ))}
+          </div>
+
         </div>
       </main>
-    <footer className="py-12 bg-slate-50  border-t border-slate-200 ">
-          <div className="px-4 md:px-10 lg:px-40 flex justify-center">
-            <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-2 text-slate-900 ">
+      <footer className="py-12 bg-slate-50  border-t border-slate-200 ">
+        <div className="px-4 md:px-10 lg:px-40 flex justify-center">
+          <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2 text-slate-900 ">
                 <div className="size-9 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/90">
-          <img
-  src={projectIcon}
-  alt="Project Icon"
-  className="w-6 h-6"
-/>
-</div>
-                  <span className="font-bold text-lg">Sahajinsight</span>
+                  <img
+                    src={projectIcon}
+                    alt="Project Icon"
+                    className="w-6 h-6"
+                  />
                 </div>
-                <p className="text-slate-500  text-sm max-w-xs">
-                  Empowering teams to make data-driven decisions without the
-                  technical overhead.
-                </p>
-                <p className="text-slate-400 text-sm mt-4">© 2026 Sahajinsight Inc.</p>
+                <span className="font-bold text-lg">Sahajinsight</span>
               </div>
-              <div className="flex flex-wrap gap-12 md:gap-20">
-               
-                 
-              
-                <div className="flex flex-col gap-3">
-                  <h4 className="font-bold text-slate-900  text-sm uppercase tracking-wider">
-                    Support
-                  </h4>
-                  <a
-                    className="text-slate-500  hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/privacy-policy")}
-                  >
-                    Privacy Policy
-                  </a>
-                  <a
-                    className="text-slate-500  hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/terms-of-service")}
-                  >
-                    Terms of Service
-                  </a>
-                   <a
-                    className="text-slate-500  hover:text-[#137fec] text-sm cursor-pointer"
-                    onClick={() => navigate("/contact")}
-                  >
-                    Contact Us
-                  </a>
-                </div>
+              <p className="text-slate-500  text-sm max-w-xs">
+                Empowering teams to make data-driven decisions without the
+                technical overhead.
+              </p>
+              <p className="text-slate-400 text-sm mt-4">© 2026 Sahajinsight Inc.</p>
+            </div>
+            <div className="flex flex-wrap gap-12 md:gap-20">
+
+
+
+              <div className="flex flex-col gap-3">
+                <h4 className="font-bold text-slate-900  text-sm uppercase tracking-wider">
+                  Support
+                </h4>
+                <a
+                  className="text-slate-500  hover:text-[#137fec] text-sm cursor-pointer"
+                  onClick={() => navigate("/privacy-policy")}
+                >
+                  Privacy Policy
+                </a>
+                <a
+                  className="text-slate-500  hover:text-[#137fec] text-sm cursor-pointer"
+                  onClick={() => navigate("/terms-of-service")}
+                >
+                  Terms of Service
+                </a>
+                <a
+                  className="text-slate-500  hover:text-[#137fec] text-sm cursor-pointer"
+                  onClick={() => navigate("/contact")}
+                >
+                  Contact Us
+                </a>
               </div>
             </div>
           </div>
-        </footer>
+        </div>
+      </footer>
     </div>
   );
 }
