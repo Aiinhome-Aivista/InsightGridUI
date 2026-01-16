@@ -24,7 +24,7 @@ export default function PrivacyPolicy() {
             className="w-6 h-6"
           />
             </div>
-            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">Sahajinsights</h2>
+            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">sahajinsight</h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
@@ -56,7 +56,7 @@ export default function PrivacyPolicy() {
              Last Updated: January 14, 2026
            </p>
            <p className="mt-4 text-slate-500 max-w-2xl mx-auto">
-             Your privacy is critically important to us. At SahajInsights, we have a few fundamental principles:
+             Your privacy is critically important to us. At sahajinsight, we have a few fundamental principles:
              We don't ask you for personal information unless we truly need it, and we don't sell your data to anyone.
            </p>
         </div>
@@ -107,7 +107,7 @@ export default function PrivacyPolicy() {
                 
                 <h3 className="text-2xl font-bold text-slate-900 mb-4">1. Information We Collect</h3>
                 <p className="text-slate-600 mb-6 leading-7">
-                    <strong>Account Information:</strong> When you sign up for SahajInsights, we collect your name, email address, and password. If you sign up via a third-party service (like Google), we collect your account ID from that service.<br/><br/>
+                    <strong>Account Information:</strong> When you sign up for sahajinsight, we collect your name, email address, and password. If you sign up via a third-party service (like Google), we collect your account ID from that service.<br/><br/>
                     <strong>Connected Data:</strong> The core of our service involves you uploading files (CSV, Excel) or connecting databases (PostgreSQL, MySQL). We process this data to generate charts. We do not own this data; you retain full ownership. <br/><br/>
                     <strong>Usage Logs:</strong> We collect anonymized data on how you interact with the dashboard (e.g., "User created a bar chart") to help us improve the UX.
                 </p>
@@ -153,7 +153,7 @@ export default function PrivacyPolicy() {
 
                 <h3 className="text-2xl font-bold text-slate-900 mb-4">5. Contact Us</h3>
                 <p className="text-slate-600 leading-7">
-                    If you have any questions about this Privacy Policy, please contact us by email: <a href="mailto:privacy@sahajinsights.com" className="text-[#137fec] font-bold hover:underline">privacy@sahajinsights.com</a>.
+                    If you have any questions about this Privacy Policy, please contact us by email: <a href="mailto:privacy@sahajinsight.com" className="text-[#137fec] font-bold hover:underline">privacy@sahajinsight.com</a>.
                 </p>
 
             </div>
@@ -173,13 +173,13 @@ export default function PrivacyPolicy() {
   className="w-6 h-6"
 />
 </div>
-                  <span className="font-bold text-lg">Sahajinsights</span>
+                  <span className="font-bold text-lg">sahajinsight</span>
                 </div>
                 <p className="text-slate-500  text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
-                <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+                <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsight Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                

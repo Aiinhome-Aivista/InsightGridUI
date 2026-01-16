@@ -118,8 +118,8 @@ const ContactPage = () => {
       icon: <EmailIcon fontSize="large" />,
       title: "Email Us",
       description: "For general inquiries and support",
-      value: "support@sahajinsights.com",
-      action: "mailto:support@sahajinsights.com",
+      value: "support@sahajinsight.com",
+      action: "mailto:support@sahajinsight.com",
     },
     {
       icon: <AccessTimeIcon fontSize="large" />,
@@ -214,7 +214,7 @@ const ContactPage = () => {
   className="w-6 h-6"
 />
             </div>
-            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">Sahajinsights</h2>
+            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">sahajinsight</h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
@@ -442,13 +442,13 @@ const ContactPage = () => {
   className="w-6 h-6"
 />
 </div>
-                  <span className="font-bold text-lg">Sahajinsights</span>
+                  <span className="font-bold text-lg">sahajinsight</span>
                 </div>
                 <p className="text-slate-500  text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
-                <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+                <p className="text-slate-400 text-sm mt-4">© 2026 sahajinsight Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                

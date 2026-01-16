@@ -30,7 +30,7 @@ export default function LandingPage() {
 />
             </div>
             <h2 className="text-slate-900  text-xl font-bold leading-tight tracking-tight">
-              Sahajinsights
+              sahajinsight
             </h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
@@ -322,7 +322,7 @@ export default function LandingPage() {
                     </div>
                     <div className="text-slate-400  flex items-center gap-2 text-sm">
                       <PublicIcon className="text-lg" fontSize="small" />
-                      <span>Live on Sahajinsights.io/u/josh</span>
+                      <span>Live on sahajinsight.io/u/josh</span>
                     </div>
                   </div>
                 </div>
@@ -357,9 +357,9 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
-        {/* Footer */}
-        <footer className="py-12 bg-slate-50  border-t border-slate-200 ">
+      
+      </main>
+      <footer className="py-12 bg-slate-50  border-t border-slate-200 ">
           <div className="px-4 md:px-10 lg:px-40 flex justify-center">
             <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
               <div className="flex flex-col gap-4">
@@ -371,13 +371,13 @@ export default function LandingPage() {
   className="w-6 h-6"
 />
 </div>
-                  <span className="font-bold text-lg">Sahajinsights</span>
+                  <span className="font-bold text-lg">sahajinsight</span>
                 </div>
                 <p className="text-slate-500  text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
-                <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+                <p className="text-slate-400 text-sm mt-4">© 2026 sahajinsight Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                
@@ -410,7 +410,6 @@ export default function LandingPage() {
             </div>
           </div>
         </footer>
-      </main>
     </div>
   );
 }
