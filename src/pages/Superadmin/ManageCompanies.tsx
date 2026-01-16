@@ -8,6 +8,8 @@ import { Column } from "primereact/column";
 import { FilterMatchMode } from "primereact/api";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import ConfirmSaveView from "../../Modal/ConfirmSaveView";
+import { useAuth } from "../Auth/AuthContext";
 function ManageCompanies() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -16,6 +18,8 @@ function ManageCompanies() {
   const [filters, setFilters] = useState({
     global: { value: "", matchMode: FilterMatchMode.CONTAINS },
   });
+  const { setIsConfirmSaveModalOpen } = useAuth();
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const navigate = useNavigate();
   useEffect(() => {
     fetchCompanies();
@@ -79,6 +83,11 @@ function ManageCompanies() {
     }
   };
 
+  const handleDeleteClick = (id: number) => {
+    setDeleteId(id);
+    setIsConfirmSaveModalOpen(true);
+  };
+
   
   const actionBodyTemplate = (row: any) => (
     <div className="flex justify-end gap-2">
@@ -98,11 +107,7 @@ function ManageCompanies() {
       <Tippy content="Delete" theme="gray">
         <button
           className="p-1 rounded hover:bg-red-100 text-gray-600"
-          onClick={() => {
-            if (window.confirm("Are you sure you want to delete this company?")) {
-              deleteCompany(row.id);
-            }
-          }}
+          onClick={() => handleDeleteClick(row.id)}
         >
           <DeleteOutlineOutlinedIcon fontSize="small" />
         </button>
@@ -125,6 +130,13 @@ function ManageCompanies() {
     }
   };
 
+  const handleConfirmDelete = async () => {
+    if (deleteId) {
+      await deleteCompany(deleteId);
+      setIsConfirmSaveModalOpen(false);
+      setDeleteId(null);
+    }
+  };
 
   const handleRefresh = async () => {
     if (isRefreshing) return;
@@ -241,6 +253,16 @@ function ManageCompanies() {
         />
       </DataTable>
 
+      <ConfirmSaveView
+        customTitle="Delete Company"
+        customMessage="Are you sure you want to delete this company?"
+        customOnConfirm={handleConfirmDelete}
+        customOnCancel={() => {
+          setIsConfirmSaveModalOpen(false);
+          setDeleteId(null);
+        }}
+        hideHeaderLabel={true}
+      />
 
     </div>
   )

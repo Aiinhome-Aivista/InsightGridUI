@@ -262,7 +262,7 @@ const RegisterCompany = () => {
                   name="company_email"
                   value={formik.values.company_email}
                   onChange={formik.handleChange}
-                  className="w-full pl-10 py-2 border rounded-lg"
+                  className="w-full pl-10 py-1.5 border rounded-lg"
                   placeholder="Enter Company Email"
                 />
               </div>
@@ -285,7 +285,7 @@ const RegisterCompany = () => {
                   name="phone_number"
                   value={formik.values.phone_number}
                   onChange={formik.handleChange}
-                  className="w-full pl-10 py-2 border rounded-lg"
+                  className="w-full pl-10 py-1.5 border rounded-lg"
                   placeholder="Enter Phone Number"
                 />
               </div>
@@ -308,7 +308,7 @@ const RegisterCompany = () => {
                   name="area"
                   value={formik.values.area}
                   onChange={formik.handleChange}
-                  className="w-full pl-10 py-2 border rounded-lg"
+                  className="w-full pl-10 py-1.5 border rounded-lg"
                   placeholder="Ex: Salt Lake"
                 />
               </div>
@@ -331,7 +331,7 @@ const RegisterCompany = () => {
                   name="city"
                   value={formik.values.city}
                   onChange={formik.handleChange}
-                  className="w-full pl-10 py-2 border rounded-lg"
+                  className="w-full pl-10 py-1.5 border rounded-lg"
                   placeholder="Ex: Kolkata"
                 />
               </div>
@@ -349,7 +349,7 @@ const RegisterCompany = () => {
                 name="district"
                 value={formik.values.district}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-1.5 border rounded-lg"
                 placeholder="Ex: North 24 Parganas"
               />
               {formik.touched.district && formik.errors.district && (
@@ -366,7 +366,7 @@ const RegisterCompany = () => {
                 name="state"
                 value={formik.values.state}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-1.5 border rounded-lg"
                 placeholder="Ex: West Bengal"
               />
               {formik.touched.state && formik.errors.state && (
@@ -388,7 +388,7 @@ const RegisterCompany = () => {
                   name="country"
                   value={formik.values.country}
                   onChange={formik.handleChange}
-                  className="w-full pl-10 py-2 border rounded-lg"
+                  className="w-full pl-10 py-1.5 border rounded-lg"
                   placeholder="Ender Country"
                 />
               </div>
@@ -411,7 +411,7 @@ const RegisterCompany = () => {
                   name="pin_code"
                   value={formik.values.pin_code}
                   onChange={formik.handleChange}
-                  className="w-full pl-10 py-2 border rounded-lg"
+                  className="w-full pl-10 py-1.5 border rounded-lg"
                   placeholder="Ex: 700091"
                 />
               </div>
@@ -429,7 +429,7 @@ const RegisterCompany = () => {
                 name="subscription_type"
                 value={formik.values.subscription_type}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-1.5 border rounded-lg"
               >
                 <option value="FREE">FREE</option>
                 <option value="PAID">PAID</option>
@@ -461,7 +461,7 @@ const RegisterCompany = () => {
                   }
                   value={formik.values.from_date}
                   onChange={formik.handleChange}
-                  className="w-full pl-10 py-2 border rounded-lg"
+                  className="w-full pl-10 py-1.5 border rounded-lg"
                 />
               </div>
               {formik.touched.from_date && formik.errors.from_date && (
@@ -497,7 +497,7 @@ const RegisterCompany = () => {
                   disabled={!formik.values.from_date}
                   value={formik.values.to_date}
                   onChange={formik.handleChange}
-                  className="w-full pl-10 py-2 border rounded-lg"
+                  className="w-full pl-10 py-1.5 border rounded-lg"
                 />
               </div>
               {formik.touched.to_date && formik.errors.to_date && (
@@ -552,13 +552,16 @@ const RegisterCompany = () => {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-6 py-2 border rounded-lg text-gray-600 hover:bg-gray-100"
+              className="px-6 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              disabled={formik.isSubmitting}
+              className={`px-6 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 ${
+                formik.isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               {isEditMode ? "Update Company" : "Register Company"}
             </button>
