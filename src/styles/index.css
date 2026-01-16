@@ -28,6 +28,24 @@ body,
     color: var(--theme-primary-text);
   }
 }
+/* Dropdown text alignment fix */
+.p-dropdown {
+  display: flex;
+  align-items: center;
+}
+
+.p-dropdown-label {
+  line-height: 42px;
+  padding: 0 0.75rem;
+  font-size: 14px;
+}
+
+.p-dropdown-trigger {
+  height: 72px;
+}
+
+
+
 
 /* Remove double check mark */
 .p-multiselect-item .p-checkbox .p-checkbox-box .p-checkbox-icon {

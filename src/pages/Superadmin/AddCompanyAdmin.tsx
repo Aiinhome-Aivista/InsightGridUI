@@ -200,13 +200,13 @@ function AddCompanyAdmin() {
 
 
   return (
-    <div className="max-w-7xl mx-auto px-6 mb-6">
+    <div className="W-full mx-auto px-6\3 mb-4">
       <form onSubmit={formik.handleSubmit}>
         <div className="rounded-xl px-6">
           <h2 className="text-xl font-semibold mb-6">
           </h2>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xl font-semibold">
               Add Company Admin
             </h2>
             {!isEditMode && (
@@ -228,33 +228,6 @@ function AddCompanyAdmin() {
             )}
           </div>
 
-          {/* Company Code */}
-          <div className="mb-4">
-            <label className="text-sm font-medium ">
-              Company Code {!isEditMode && <span className="text-red-500">*</span>}
-            </label>
-
-            <Dropdown
-              value={formik.values.company_code}
-              options={companyCodes}
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Select Company Code"
-              disabled={isEditMode}
-              filter
-              onChange={(e) =>
-                formik.setFieldValue("company_code", e.value)
-              }
-              className={`w-full mt-1 border rounded-lg h-[42px] flex items-center bg-white p-2 `}
-              panelClassName="rounded-lg bg-white"
-            />
-
-            {formik.touched.company_code && formik.errors.company_code && (
-              <p className="text-xs text-red-500 mt-1">
-                {formik.errors.company_code}
-              </p>
-            )}
-          </div>
 
 
           {/* Admin Name */}
@@ -268,7 +241,7 @@ function AddCompanyAdmin() {
               value={formik.values.admin_name}
               disabled={isEditMode}
               onChange={formik.handleChange}
-              className={`w-full px-4 py-2 border rounded-lg mt-1 
+              className={`w-full px-4 py-1.5 border rounded-lg mt-1 
     ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
   `}
               placeholder="Enter Admin Name"
@@ -279,9 +252,42 @@ function AddCompanyAdmin() {
               </p>
             )}
           </div>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Company Code */}
+         <div className="">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Company Code {!isEditMode && <span className="text-red-500">*</span>}
+  </label>
+  <Dropdown
+    value={formik.values.company_code}
+    options={companyCodes}
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Select Company Code"
+    disabled={isEditMode}
+    
+    filter
+    onChange={(e) =>
+      formik.setFieldValue("company_code", e.value)
+    }
+    className={`w-full h-[40px] rounded-lg border 
+      ${formik.touched.company_code && formik.errors.company_code
+        ? "border-red-500"
+        : "border-gray-300"
+      }
+      focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+      bg-white text-sm`}
+    panelClassName="rounded-lg shadow-lg border border-gray-200"
+  />
 
-          {/* Admin Email */}
-          <div className="mb-4">
+  {formik.touched.company_code && formik.errors.company_code && (
+    <p className="text-xs text-red-500 mt-1">
+      {formik.errors.company_code}
+    </p>
+  )}
+</div>
+
+          <div className="">
             <label className="text-sm font-medium">
               Admin Email {!isEditMode && <span className="text-red-500">*</span>}
             </label>
@@ -290,7 +296,7 @@ function AddCompanyAdmin() {
               name="admin_email"
               value={formik.values.admin_email}
               onChange={formik.handleChange}
-              className="w-full px-4 py-2 border rounded-lg mt-1"
+              className="w-full px-4 py-1.5 border rounded-lg"
               placeholder="admin@company.com"
             />
             {formik.touched.admin_email && formik.errors.admin_email && (
@@ -303,7 +309,7 @@ function AddCompanyAdmin() {
           {/* Admin Password */}
 
           {!isEditMode && (
-            <div className="mb-6">
+            <div className="mb-4">
               <label className="text-sm font-medium">
                 Password {!isEditMode && <span className="text-red-500">*</span>}
               </label>
@@ -312,7 +318,7 @@ function AddCompanyAdmin() {
                 name="admin_password"
                 value={formik.values.admin_password}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg mt-1"
+                className="w-full px-4 py-1.5 border rounded-lg"
                 placeholder="Enter Password"
               />
               {formik.touched.admin_password &&
@@ -332,7 +338,7 @@ function AddCompanyAdmin() {
               name="phone_number"
               value={formik.values.phone_number}
               onChange={formik.handleChange}
-              className="w-full px-4 py-2 border rounded-lg mt-1"
+              className="w-full px-4 py-1.5 border rounded-lg"
               placeholder="Enter Phone Number"
             />
             {formik.touched.phone_number && formik.errors.phone_number && (
@@ -340,6 +346,7 @@ function AddCompanyAdmin() {
                 {formik.errors.phone_number}
               </p>
             )}
+          </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -350,7 +357,7 @@ function AddCompanyAdmin() {
                 name="area"
                 value={formik.values.area}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg mt-1"
+                className="w-full px-4 py-1.5 border rounded-lg mt-1"
                 placeholder="Area / Street"
               />
             </div>
@@ -363,7 +370,7 @@ function AddCompanyAdmin() {
                 name="city"
                 value={formik.values.city}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg mt-1"
+                className="w-full px-4 py-1.5 border rounded-lg mt-1"
                 placeholder="City"
               />
             </div>
@@ -376,7 +383,7 @@ function AddCompanyAdmin() {
                 name="district"
                 value={formik.values.district}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg mt-1"
+                className="w-full px-4 py-1.5 border rounded-lg mt-1"
                 placeholder="District"
               />
             </div>
@@ -389,7 +396,7 @@ function AddCompanyAdmin() {
                 name="state"
                 value={formik.values.state}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg mt-1"
+                className="w-full px-4 py-1.5 border rounded-lg mt-1"
                 placeholder="State"
               />
             </div>
@@ -402,7 +409,7 @@ function AddCompanyAdmin() {
                 name="country"
                 value={formik.values.country}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg mt-1"
+                className="w-full px-4 py-1.5 border rounded-lg mt-1"
                 placeholder="Country"
               />
             </div>
@@ -415,7 +422,7 @@ function AddCompanyAdmin() {
                 name="pin_code"
                 value={formik.values.pin_code}
                 onChange={formik.handleChange}
-                className="w-full px-4 py-2 border rounded-lg mt-1"
+                className="w-full px-4 py-1.5 border rounded-lg mt-1"
                 placeholder="700091"
               />
             </div>
@@ -426,13 +433,13 @@ function AddCompanyAdmin() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-6 py-2 border rounded-lg text-gray-600 hover:bg-gray-100"
+              className="px-6 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-6 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               {isEditMode ? "Update Admin" : " Create Admin"}
             </button>
@@ -456,7 +463,7 @@ function AddCompanyAdmin() {
                 onClick={() =>
                   setErrorModal({ open: false, message: "" })
                 }
-                className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-5 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 OK
               </button>
