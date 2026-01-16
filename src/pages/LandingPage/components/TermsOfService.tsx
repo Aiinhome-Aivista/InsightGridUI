@@ -12,7 +12,7 @@ export default function TermsOfServiceVariant2() {
     {
       id: "1",
       title: "Acceptance of Terms",
-      content: "By accessing or using Sahajinsights ('the Service'), you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service."
+      content: "By accessing or using Sahajinsight ('the Service'), you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service."
     },
     {
       id: "2",
@@ -22,7 +22,7 @@ export default function TermsOfServiceVariant2() {
     {
       id: "3",
       title: "Intellectual Property",
-      content: "The Service and its original content (excluding Content provided by users), features and functionality are and will remain the exclusive property ofSahajinsights and its licensors."
+      content: "The Service and its original content (excluding Content provided by users), features and functionality are and will remain the exclusive property ofSahajinsight and its licensors."
     },
     {
       id: "4",
@@ -32,7 +32,7 @@ export default function TermsOfServiceVariant2() {
     {
       id: "5",
       title: "Limitation of Liability",
-      content: "In no event shallSahajinsights be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses."
+      content: "In no event shallSahajinsight be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses."
     },
     {
       id: "6",
@@ -54,7 +54,7 @@ export default function TermsOfServiceVariant2() {
   className="w-6 h-6"
 />
             </div>
-            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">Sahajinsights</h2>
+            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">Sahajinsight</h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
@@ -116,7 +116,7 @@ export default function TermsOfServiceVariant2() {
             <div className="lg:col-span-8 lg:border-l lg:border-slate-100 lg:pl-12">
               <div className="prose prose-lg max-w-none">
                 <p className="text-xl text-slate-600 leading-relaxed mb-12">
-                  Welcome to Sahajinsights. Please read these terms carefully. By using our services, you agree to be bound by these terms, which establish a contractual relationship between you andSahajinsights Inc.
+                  Welcome to Sahajinsight. Please read these terms carefully. By using our services, you agree to be bound by these terms, which establish a contractual relationship between you andSahajinsight Inc.
                 </p>
 
                 <div className="space-y-16">
@@ -163,13 +163,13 @@ export default function TermsOfServiceVariant2() {
   className="w-6 h-6"
 />
 </div>
-                  <span className="font-bold text-lg">Sahajinsights</span>
+                  <span className="font-bold text-lg">Sahajinsight</span>
                 </div>
                 <p className="text-slate-500  text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
-                <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+                <p className="text-slate-400 text-sm mt-4">© 2026 Sahajinsight Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                

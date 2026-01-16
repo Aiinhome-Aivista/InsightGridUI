@@ -30,7 +30,7 @@ export default function LandingPage() {
               />
             </div>
             <h2 className="text-slate-900  text-xl font-bold leading-tight tracking-tight">
-              Sahajinsights
+              Sahajinsight
             </h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
@@ -322,7 +322,7 @@ export default function LandingPage() {
                     </div>
                     <div className="text-slate-400  flex items-center gap-2 text-sm">
                       <PublicIcon className="text-lg" fontSize="small" />
-                      <span>Live on Sahajinsights.io/u/josh</span>
+                      <span>Live on Sahajinsight.io/u/josh</span>
                     </div>
                   </div>
                 </div>
@@ -357,13 +357,14 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
-        {/* Footer */}
-        <footer className="py-12 bg-slate-50  border-t border-slate-200 ">
+      
+      </main>
+      <footer className="py-12 bg-slate-50  border-t border-slate-200 ">
           <div className="px-4 md:px-10 lg:px-40 flex justify-center">
             <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 text-slate-900 ">
+<<<<<<< HEAD
                   <div className="size-9 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/90">
                     <img
                       src={projectIcon}
@@ -372,12 +373,22 @@ export default function LandingPage() {
                     />
                   </div>
                   <span className="font-bold text-lg">Sahajinsights</span>
+=======
+                <div className="size-9 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/90">
+          <img
+  src={projectIcon}
+  alt="Project Icon"
+  className="w-6 h-6"
+/>
+</div>
+                  <span className="font-bold text-lg">Sahajinsight</span>
+>>>>>>> 1648d2d81f28a42164664b074d3cd115fe2772a6
                 </div>
                 <p className="text-slate-500  text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
-                <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+                <p className="text-slate-400 text-sm mt-4">© 2026 Sahajinsight Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                 <div className="flex flex-col gap-3">
@@ -472,7 +483,6 @@ export default function LandingPage() {
             </div>
           </div>
         </footer>
-      </main>
     </div>
   );
 }

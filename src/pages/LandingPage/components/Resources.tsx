@@ -22,7 +22,7 @@ export default function Resources() {
     {
       category: "Video",
       title: "Building Dashboards in Under 5 Minutes",
-      excerpt: "Watch how a senior analyst sets up a full KPI board using SahajInsights. This step-by-step walkthrough demonstrates connecting a data source, configuring widgets, applying global filters, and sharing the final result with stakeholders—all in real-time without writing a single line of code.",
+      excerpt: "Watch how a senior analyst sets up a full KPI board using Sahajinsight. This step-by-step walkthrough demonstrates connecting a data source, configuring widgets, applying global filters, and sharing the final result with stakeholders—all in real-time without writing a single line of code.",
       icon: <PlayCircleOutlineIcon fontSize="large" />,
       color: "text-purple-600 bg-purple-100",
       date: "Nov 03, 2025"
@@ -46,7 +46,7 @@ export default function Resources() {
     {
       category: "Case Study",
       title: "How TechCorp Saved 20h/Week",
-      excerpt: "TechCorp's marketing team was spending 4 hours a day manually updating spreadsheets for their weekly sync. See how automating their reporting pipeline with SahajInsights changed their workflow forever, allowing them to focus on strategy rather than data entry.",
+      excerpt: "TechCorp's marketing team was spending 4 hours a day manually updating spreadsheets for their weekly sync. See how automating their reporting pipeline with Sahajinsight changed their workflow forever, allowing them to focus on strategy rather than data entry.",
       icon: <ArticleIcon fontSize="large" />,
       color: "text-blue-600 bg-blue-100",
       date: "Nov 22, 2025"
@@ -76,7 +76,7 @@ export default function Resources() {
 />
             </div>
             <h2 className="text-slate-900  text-xl font-bold leading-tight tracking-tight">
-              Sahajinsights
+              Sahajinsight
             </h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
@@ -179,7 +179,7 @@ export default function Resources() {
           
         </div>
       </main>
- <footer className="py-12 bg-slate-50  border-t border-slate-200 ">
+    <footer className="py-12 bg-slate-50  border-t border-slate-200 ">
           <div className="px-4 md:px-10 lg:px-40 flex justify-center">
             <div className="w-full max-w-[960px] flex flex-col md:flex-row justify-between gap-8">
               <div className="flex flex-col gap-4">
@@ -191,13 +191,13 @@ export default function Resources() {
   className="w-6 h-6"
 />
 </div>
-                  <span className="font-bold text-lg">Sahajinsights</span>
+                  <span className="font-bold text-lg">Sahajinsight</span>
                 </div>
                 <p className="text-slate-500  text-sm max-w-xs">
                   Empowering teams to make data-driven decisions without the
                   technical overhead.
                 </p>
-                <p className="text-slate-400 text-sm mt-4">© 2026 SahajInsights Inc.</p>
+                <p className="text-slate-400 text-sm mt-4">© 2026 Sahajinsight Inc.</p>
               </div>
               <div className="flex flex-wrap gap-12 md:gap-20">
                
