@@ -102,7 +102,7 @@ function AddCompanyUser() {
         pin_code: values.pin_code,
       }),
 
-      
+
     };
 
     if (isEditMode && user?.id) {
@@ -158,7 +158,7 @@ function AddCompanyUser() {
       company_code: companyCodeFromLS,
       user_name: user.user_name || user.full_name || "",
       user_email: user.user_email || user.email || "",
-      user_password: "", // ❌ edit mode এ blank
+      user_password: "",
       phone_number: user.phone_number || "",
 
       area: addr.area || "",
@@ -171,12 +171,14 @@ function AddCompanyUser() {
   }, [isEditMode, user]);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="p-6">
       <form onSubmit={formik.handleSubmit}>
-        <div className="rounded-xl px-6 py-4">
-          <h2 className="text-xl font-semibold mb-6">
-          </h2>
-          <div className="flex items-center justify-between mb-4">
+        <div className="rounded-xl px-2 gap-2">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 ">
+            </h2>
+          </div>
+          <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold mb-6">
               Add User
             </h2>
@@ -209,7 +211,7 @@ function AddCompanyUser() {
               type="text"
               name="company_code"
               value={formik.values.company_code}
-              
+
               onChange={formik.handleChange}
               className="w-full px-4 py-2 border rounded-lg mt-1 cursor-not-allowed"
               disabled={true}
