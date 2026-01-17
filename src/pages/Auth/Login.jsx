@@ -7,7 +7,7 @@ import { useAuth } from "./AuthContext";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const { login } = useAuth();
@@ -20,6 +20,7 @@ export default function Login() {
   const [companyCodeError, setCompanyCodeError] = useState("");
   const currentYear = getCurrentYear();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [notification, setNotification] = useState({
     open: false,
@@ -209,9 +210,12 @@ export default function Login() {
         alt="cross-pattern"
         className="absolute bottom-0 right-0 w-[800px]"
       />
-      <div className="absolute top-8 left-10 flex items-center gap-2 text-white font-semibold text-lg">
-        <span className="text-white/80">
-          Aivista
+      <div className="absolute top-8 left-10 flex items-center gap-2 text-white font-semibold text-lg z-50">
+        <span
+          className="text-white/80 cursor-pointer"
+          onClick={() => navigate("/")}
+        >
+          Sahajinsight
         </span>
       
       </div>
