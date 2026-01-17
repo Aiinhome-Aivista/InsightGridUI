@@ -418,10 +418,7 @@ const ContactPage = () => {
                         Check out our comprehensive help center for guides,
                         tutorials, and troubleshooting tips.
                       </p>
-                      <button className="text-[#137fec] font-bold hover:underline transition-colors flex items-center gap-1 text-sm">
-                        <span>Visit Help Center</span>
-                        <ArrowForwardIcon fontSize="small" />
-                      </button>
+                      
                     </div>
                   </div>
                 </div>

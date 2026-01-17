@@ -139,7 +139,7 @@ export default function PrivacyPolicy() {
                 <p className="text-slate-600 mb-6 leading-7">
                     We employ third-party companies and individuals to facilitate our Service ("Service Providers"). These third parties have access to your Personal Data only to perform these tasks on our behalf and are obligated not to disclose or use it for any other purpose.
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div className="p-4 bg-slate-50 rounded border border-slate-100">
                         <span className="font-bold text-slate-900 block">AWS (Amazon Web Services)</span>
                         <span className="text-xs text-slate-500">Infrastructure & Hosting</span>
@@ -148,13 +148,13 @@ export default function PrivacyPolicy() {
                         <span className="font-bold text-slate-900 block">Stripe</span>
                         <span className="text-xs text-slate-500">Payment Processing</span>
                     </div>
-                </div>
+                </div> */}
 
                 <hr className="border-slate-100 my-8" />
 
                 <h3 className="text-2xl font-bold text-slate-900 mb-4">5. Contact Us</h3>
                 <p className="text-slate-600 leading-7">
-                    If you have any questions about this Privacy Policy, please contact us by email: <a href="mailto:privacy@Sahajinsight.com" className="text-[#137fec] font-bold hover:underline">privacy@Sahajinsight.com</a>.
+                    If you have any questions about this Privacy Policy, please contact us by email: <a href="mailto:support@sahajinsight.com" className="text-[#137fec] font-bold hover:underline">support@sahajinsight.com</a>.
                 </p>
 
             </div>

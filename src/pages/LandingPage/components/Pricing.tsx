@@ -206,7 +206,7 @@ export default function Pricing() {
                       placeholder="Enter your email"
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">
                       Subject
                     </label>
@@ -221,7 +221,7 @@ export default function Pricing() {
                       <option value="billing">Billing Question</option>
                   
                     </select>
-                  </div>
+                  </div> */}
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">
                       Your Message
