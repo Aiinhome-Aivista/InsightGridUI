@@ -59,6 +59,8 @@ export default function LandingFooter() {
               {/* Facebook */}
               <a
                 href="https://www.facebook.com/sahajinsight"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-[#1877F2]/10 transition"
               >
                 <svg
