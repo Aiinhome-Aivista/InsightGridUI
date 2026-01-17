@@ -329,7 +329,7 @@ const ContactPage = () => {
                 <form className="space-y-5" onSubmit={handleSubmit}>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">
-                      Your Name
+                      Your Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -343,7 +343,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">
-                      Email Address
+                      Email Address <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
@@ -357,7 +357,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">
-                      Subject
+                      Subject <span className="text-red-500">*</span>
                     </label>
                     <select
                       name="subject"
@@ -376,7 +376,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">
-                      Your Message
+                      Your Message <span className="text-red-500">*</span>
                     </label>
                     <textarea
                       name="message"

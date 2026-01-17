@@ -18,6 +18,9 @@ import { useNavigate } from "react-router-dom";
 import { useParams, useLocation } from "react-router-dom";
 import { POST_APIS, BASE_URL } from "../../../connection";
 import ApiServices from "../../services/ApiServices";
+import { MdCurrencyRupee } from "react-icons/md";
+
+
 
 const RegisterCompany = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -329,9 +332,8 @@ const RegisterCompany = () => {
     `}
                 >
                   <AutorenewRoundedIcon
-                    className={`w-5 h-5 text-gray-600 ${
-                      isResetting ? "animate-spin" : ""
-                    }`}
+                    className={`w-5 h-5 text-gray-600 ${isResetting ? "animate-spin" : ""
+                      }`}
                     fontSize="small"
                   />
                 </button>
@@ -393,7 +395,7 @@ const RegisterCompany = () => {
                 GST Number{" "}
               </label>
               <div className="relative">
-                <Phone
+                <Globe2
                   size={18}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                 />
@@ -447,7 +449,7 @@ const RegisterCompany = () => {
                   placeholder="Ex: Kolkata"
                 />
               </div>
-             
+
             </div>
             {/* <div>
               <label className="text-sm font-medium">
@@ -602,7 +604,7 @@ const RegisterCompany = () => {
                   />
                 </div>
               </div>
-{/* 
+              {/* 
               {formik.touched.phone_number && formik.errors.phone_number && (
                 <p className="mt-1 text-xs text-red-500">
                   {formik.errors.phone_number}
@@ -613,7 +615,7 @@ const RegisterCompany = () => {
             <div>
               <label className="text-sm font-medium">
                 PIN Code
-               
+
               </label>
               <div className="relative">
                 <Package
@@ -628,7 +630,7 @@ const RegisterCompany = () => {
                   placeholder="Ex: 700091"
                 />
               </div>
-             
+
             </div>
             {/* <div>
               <label className="text-sm font-medium">
@@ -728,7 +730,7 @@ const RegisterCompany = () => {
                 {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
-                <Phone
+                <MdCurrencyRupee
                   size={18}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                 />
@@ -797,7 +799,7 @@ const RegisterCompany = () => {
             >
               Cancel
             </button>
-            <button
+            {/* <button
               type="submit"
               disabled={formik.isSubmitting}
               className={`px-6 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 ${
@@ -805,7 +807,25 @@ const RegisterCompany = () => {
               }`}
             >
               {isEditMode ? "Update Company" : "Register Company"}
+            </button> */}
+            <button
+              type="submit"
+              disabled={formik.isSubmitting}
+              className={`px-6 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2
+    ${formik.isSubmitting ? "opacity-70 cursor-not-allowed" : ""}
+  `}
+            >
+              {formik.isSubmitting && (
+                <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              )}
+
+              {formik.isSubmitting
+                ? "Processing..."
+                : isEditMode
+                  ? "Update Company"
+                  : "Register Company"}
             </button>
+
           </div>
         </div>
       </form>
