@@ -22,9 +22,20 @@
 }
 
 .custom-table {
+  position: relative;
   background-color: white !important;
   border-radius: 0.75rem !important;
 }
+
+
+.custom-table .p-datatable-loading-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 
 /* Rows */
 .p-datatable .p-datatable-tbody>tr>td {

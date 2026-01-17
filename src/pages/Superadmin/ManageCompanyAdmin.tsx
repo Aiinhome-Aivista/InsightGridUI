@@ -121,11 +121,11 @@ function ManageCompanyAdmin() {
         </button>
       </Tippy>
 
-      
+
     </div>
   );
 
-  
+
 
 
   const handleRefresh = async () => {
@@ -133,7 +133,7 @@ function ManageCompanyAdmin() {
 
     setIsRefreshing(true);
 
-    
+
     setFilters({
       global: { value: "", matchMode: FilterMatchMode.CONTAINS },
     });
@@ -156,7 +156,7 @@ function ManageCompanyAdmin() {
           </div>
           <button
             className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center p-4"
-         
+
             onClick={() => navigate("/layout/add-company-admin")}
 
           >
@@ -212,10 +212,11 @@ function ManageCompanyAdmin() {
 
         </div>
       </div>
-      <DataTable
+      {/* <DataTable
         value={companyAdmin}
         paginator
         rows={5}
+        loading={isLoading}
         filters={filters}
         globalFilterFields={columnConfig.map(c => c.field)}
         stripedRows
@@ -228,7 +229,7 @@ function ManageCompanyAdmin() {
             field={col.field}
             header={col.header}
             sortable={col.sortable}
-            // body={col.body}
+          // body={col.body}
 
           />
         ))}
@@ -239,7 +240,42 @@ function ManageCompanyAdmin() {
           body={actionBodyTemplate}
           style={{ width: "120px" }}
         />
-      </DataTable>
+      </DataTable> */}
+      <div className="relative min-h-[300px]">
+        {isLoading && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+
+        <DataTable
+          value={companyAdmin}
+          paginator
+          rows={5}
+          filters={filters}
+          globalFilterFields={columnConfig.map(c => c.field)}
+          stripedRows
+          emptyMessage="No companies found"
+          className="custom-table"
+        >
+          {columnConfig.map((col) => (
+            <Column
+              key={col.field}
+              field={col.field}
+              header={col.header}
+              sortable={col.sortable}
+            />
+          ))}
+
+          <Column
+            header="Action"
+            align="center"
+            body={actionBodyTemplate}
+            style={{ width: "120px" }}
+          />
+        </DataTable>
+      </div>
+
 
 
     </div>

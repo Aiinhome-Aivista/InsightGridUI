@@ -215,9 +215,8 @@ function AddCompanyAdmin() {
                   className={`w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] bg-[#F3F3F3] hover:bg-[#E5E5E5] transition-all${isResetting ? "cursor-wait opacity-70" : "cursor-pointer"}`}
                 >
                   <AutorenewRoundedIcon
-                    className={`w-5 h-5 text-gray-600 ${
-                      isResetting ? "animate-spin" : ""
-                    }`}
+                    className={`w-5 h-5 text-gray-600 ${isResetting ? "animate-spin" : ""
+                      }`}
                     fontSize="small"
                   />
                 </button>
@@ -236,7 +235,7 @@ function AddCompanyAdmin() {
               name="admin_name"
               value={formik.values.admin_name}
               onChange={formik.handleChange}
-              className="w-full px-4 py-1.5 border rounded-lg mt-1" 
+              className="w-full px-4 py-1.5 border rounded-lg mt-1"
               placeholder="Enter Admin Name"
             />
             {formik.touched.admin_name && formik.errors.admin_name && (
@@ -283,11 +282,10 @@ function AddCompanyAdmin() {
                 filter
                 onChange={(e) => formik.setFieldValue("company_code", e.value)}
                 className={`w-full border rounded-lg text-sm
-    ${
-      formik.touched.company_code && formik.errors.company_code
-        ? "border-red-500"
-        : "border-gray-300"
-    }
+    ${formik.touched.company_code && formik.errors.company_code
+                    ? "border-red-500"
+                    : "border-gray-300"
+                  }
     ${isEditMode ? "bg-gray-100 cursor-not-allowed" : "bg-white"}
   `}
                 pt={{
@@ -490,12 +488,31 @@ function AddCompanyAdmin() {
             >
               Cancel
             </button>
-            <button
+            {/* <button
               type="submit"
               className="px-6 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               {isEditMode ? "Update Admin" : " Create Admin"}
+            </button> */}
+            <button
+              type="submit"
+              disabled={formik.isSubmitting}
+              className={`px-6 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700
+    flex items-center justify-center gap-2
+    ${formik.isSubmitting ? "opacity-70 cursor-not-allowed" : ""}
+  `}
+            >
+              {formik.isSubmitting && (
+                <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              )}
+
+              {formik.isSubmitting
+                ? "Processing..."
+                : isEditMode
+                  ? "Update Admin"
+                  : "Create Admin"}
             </button>
+
           </div>
         </div>
       </form>

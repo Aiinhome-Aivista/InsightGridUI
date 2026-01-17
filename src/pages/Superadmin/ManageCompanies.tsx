@@ -88,7 +88,7 @@ function ManageCompanies() {
     setIsConfirmSaveModalOpen(true);
   };
 
-  
+
   const actionBodyTemplate = (row: any) => (
     <div className="flex justify-end gap-2">
       <Tippy content="Edit" theme="gray">
@@ -225,8 +225,9 @@ function ManageCompanies() {
 
         </div>
       </div>
-      <DataTable
+      {/* <DataTable
         value={companies}
+        loading={isLoading}
         paginator
         rows={5}
         filters={filters}
@@ -251,7 +252,44 @@ function ManageCompanies() {
           body={actionBodyTemplate}
           style={{ width: "120px" }}
         />
-      </DataTable>
+      </DataTable> */}
+
+      <div className="relative min-h-[300px]">
+        {isLoading && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+
+        <DataTable
+          value={companies}
+          paginator
+          rows={5}
+          filters={filters}
+          globalFilterFields={columnConfig.map(c => c.field)}
+          stripedRows
+          emptyMessage="No companies found"
+          className="custom-table"
+        >
+          {columnConfig.map((col) => (
+            <Column
+              key={col.field}
+              field={col.field}
+              header={col.header}
+              sortable={col.sortable}
+              body={col.body}
+            />
+          ))}
+
+          <Column
+            header="Action"
+            align="center"
+            body={actionBodyTemplate}
+            style={{ width: "120px" }}
+          />
+        </DataTable>
+      </div>
+
 
       <ConfirmSaveView
         customTitle="Delete Company"
