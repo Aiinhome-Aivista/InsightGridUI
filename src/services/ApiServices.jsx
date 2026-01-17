@@ -90,14 +90,17 @@ class ApiServices {
   getAllCompanyAdmins() {
     return axios.get(GET_APIS.get_all_company_admins);
   }
-  companyRegister(formData) {
-    return axios.post(POST_APIS.company_register, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-  }
+  // companyRegister(formData) {
+  //   return axios.post(POST_APIS.company_register, formData, {
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //     },
+  //   });
+  // }
 
+  companyRegister(body){
+    return axios.post(POST_APIS.company_register, body);
+  }
   company_admin_register(body) {
     return axios.post(POST_APIS.company_admin_register, body);
   }
