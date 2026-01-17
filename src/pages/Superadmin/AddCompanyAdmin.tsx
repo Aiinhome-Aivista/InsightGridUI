@@ -41,16 +41,16 @@ function AddCompanyAdmin() {
     initialValues: {
       company_code: "",
       admin_name: "",
-      admin_email: "",
+      // admin_email: "",
       admin_password: "",
 
-      phone_number: "",
-      area: "",
-      city: "",
-      district: "",
-      state: "",
-      country: "",
-      pin_code: "",
+      // phone_number: "",
+      // area: "",
+      // city: "",
+      // district: "",
+      // state: "",
+      // country: "",
+      // pin_code: "",
     },
 
     validate: (values) => {
@@ -64,14 +64,14 @@ function AddCompanyAdmin() {
         errors.admin_name = "Admin Name is required";
       }
 
-      if (!values.admin_email) {
-        errors.admin_email = "Admin Email is required";
-      } else {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.com$/i;
-        if (!emailRegex.test(values.admin_email)) {
-          errors.admin_email = "Enter a valid email ending with .com";
-        }
-      }
+      // if (!values.admin_email) {
+      //   errors.admin_email = "Admin Email is required";
+      // } else {
+      //   const emailRegex = /^[^\s@]+@[^\s@]+\.com$/i;
+      //   if (!emailRegex.test(values.admin_email)) {
+      //     errors.admin_email = "Enter a valid email ending with .com";
+      //   }
+      // }
 
       // if (!values.admin_password) {
       //   errors.admin_password = "Password is required";
@@ -87,20 +87,20 @@ function AddCompanyAdmin() {
       }
 
 
-      if (!values.phone_number)
-        errors.phone_number = "Phone Number is required";
+      // if (!values.phone_number)
+      //   errors.phone_number = "Phone Number is required";
 
-      if (!values.area) errors.area = "Area is required";
-      if (!values.city) errors.city = "City is required";
-      if (!values.district) errors.district = "District is required";
-      if (!values.state) errors.state = "State is required";
-      if (!values.country) errors.country = "Country is required";
+      // if (!values.area) errors.area = "Area is required";
+      // if (!values.city) errors.city = "City is required";
+      // if (!values.district) errors.district = "District is required";
+      // if (!values.state) errors.state = "State is required";
+      // if (!values.country) errors.country = "Country is required";
 
-      if (!values.pin_code) {
-        errors.pin_code = "PIN Code is required";
-      } else if (!/^\d{6}$/.test(values.pin_code)) {
-        errors.pin_code = "PIN Code must be 6 digits";
-      }
+      // if (!values.pin_code) {
+      //   errors.pin_code = "PIN Code is required";
+      // } else if (!/^\d{6}$/.test(values.pin_code)) {
+      //   errors.pin_code = "PIN Code must be 6 digits";
+      // }
 
       return errors;
     },
@@ -117,20 +117,20 @@ function AddCompanyAdmin() {
       id: null,
       company_code: values.company_code,
       admin_name: values.admin_name,
-      admin_email: values.admin_email,
+      // admin_email: values.admin_email,
       admin_password: values.admin_password,
 
-      phone_number: values.phone_number,
+      // phone_number: values.phone_number,
 
       // 🔥 backend expects STRING (JSON)
-      address: JSON.stringify({
-        area: values.area,
-        city: values.city,
-        district: values.district,
-        state: values.state,
-        country: values.country,
-        pin_code: values.pin_code,
-      }),
+      // address: JSON.stringify({
+      //   area: values.area,
+      //   city: values.city,
+      //   district: values.district,
+      //   state: values.state,
+      //   country: values.country,
+      //   pin_code: values.pin_code,
+      // }),
     };
     if (isEditMode && admin?.id) {
       payload.id = admin.id;
@@ -184,17 +184,17 @@ function AddCompanyAdmin() {
     formik.setValues({
       company_code: admin.company_code || "",
       admin_name: admin.admin_name || admin.full_name || "",
-      admin_email: admin.admin_email || admin.email || "",
+      // admin_email: admin.admin_email || admin.email || "",
       admin_password: "",
 
-      phone_number: admin.phone_number || "",
+      // phone_number: admin.phone_number || "",
 
-      area: addr.area || "",
-      city: addr.city || "",
-      district: addr.district || "",
-      state: addr.state || "",
-      country: addr.country || "",
-      pin_code: addr.pin_code || "",
+      // area: addr.area || "",
+      // city: addr.city || "",
+      // district: addr.district || "",
+      // state: addr.state || "",
+      // country: addr.country || "",
+      // pin_code: addr.pin_code || "",
     });
   }, [isEditMode, admin]);
 
@@ -301,7 +301,7 @@ function AddCompanyAdmin() {
                     className:
                       "h-[40px] flex items-center px-0",
                   },
-                  
+
                   input: {
                     className:
                       "px-4 py-2 text-sm text-gray-900",
@@ -329,7 +329,7 @@ function AddCompanyAdmin() {
               )}
             </div>
 
-            <div className="">
+            {/* <div className="">
               <label className="text-sm font-medium">
                 Admin Email {!isEditMode && <span className="text-red-500">*</span>}
               </label>
@@ -346,7 +346,7 @@ function AddCompanyAdmin() {
                   {formik.errors.admin_email}
                 </p>
               )}
-            </div>
+            </div> */}
 
             {/* Admin Password */}
 
@@ -371,7 +371,7 @@ function AddCompanyAdmin() {
                   )}
               </div>
             )}
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="text-sm font-medium">
                 Phone Number {!isEditMode && <span className="text-red-500">*</span>}
               </label>
@@ -467,7 +467,7 @@ function AddCompanyAdmin() {
                 className="w-full px-4 py-1.5 border rounded-lg mt-1"
                 placeholder="700091"
               />
-            </div>
+            </div> */}
           </div>
 
           {/* Buttons */}
