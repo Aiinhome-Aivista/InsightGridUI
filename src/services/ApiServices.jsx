@@ -113,6 +113,10 @@ class ApiServices {
   contactUs(body) {
   return axios.post(POST_APIS.contact_us, body);
   }
+
+  getCountryList() {
+    return axios.get(GET_APIS.country_list);
+  }
 }
 
 export default new ApiServices();

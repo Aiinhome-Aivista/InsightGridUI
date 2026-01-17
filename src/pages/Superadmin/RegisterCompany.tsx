@@ -22,6 +22,12 @@ import ApiServices from "../../services/ApiServices";
 const RegisterCompany = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [isResetting, setIsResetting] = useState(false);
+
+  const [countryOptions, setCountryOptions] = useState<
+    { label: string; value: string; dialCode: string }[]
+  >([]);
+  const [loadingCountries, setLoadingCountries] = useState(false);
+
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
@@ -29,26 +35,52 @@ const RegisterCompany = () => {
   console.log("company", company);
   const isEditMode = Boolean(id && company);
 
+
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        setLoadingCountries(true);
+        const res = await ApiServices.getCountryList();
+
+        if (res?.data?.isSuccess) {
+          setCountryOptions(res.data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch country list", error);
+      } finally {
+        setLoadingCountries(false);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
+
   const formik = useFormik({
     validateOnMount: false,
     initialValues: {
       id: null,
       created_by: "",
       company_name: "",
+      gst_number: "",
       company_email: "",
-      phone_number: "",
-      company_logo: null,
-
-      area: "",
-      city: "",
-      district: "",
-      state: "",
       country: "",
+      dial_code: "",     // phone prefix
+      phone_number: "",
+      // company_logo: null,
+
+      // area: "",
+      address: "",
+      city: "",
+      // district: "",
+      // state: "",
       pin_code: "",
 
-      subscription_type: "FREE",
+      // subscription_type: "FREE",
       from_date: "",
       to_date: "",
+      subscription_amount: "",
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -62,13 +94,23 @@ const RegisterCompany = () => {
           errors.company_email = "Enter a valid email ending with .com";
         }
       }
+      if (!values.gst_number) {
+        errors.gst_number = "GST Number is required";
+      }
+      // if (!values.phone_number) {
+      //   errors.phone_number = "Phone Number is required";
+      // }
       if (!values.phone_number) {
         errors.phone_number = "Phone Number is required";
+      } else if (!/^\d{7,12}$/.test(values.phone_number)) {
+        errors.phone_number = "Enter valid phone number";
       }
-      if (!values.area) errors.area = "Area is required";
+
+      // if (!values.area) errors.area = "Area is required";
+      if (!values.address) errors.address = "Address is required";
       if (!values.city) errors.city = "City is required";
-      if (!values.district) errors.district = "District is required";
-      if (!values.state) errors.state = "State is required";
+      // if (!values.district) errors.district = "District is required";
+      // if (!values.state) errors.state = "State is required";
       if (!values.country) errors.country = "Country is required";
       if (!values.pin_code) {
         errors.pin_code = "PIN Code is required";
@@ -80,21 +122,23 @@ const RegisterCompany = () => {
       }
       if (!values.from_date) errors.from_date = "From date required";
       if (!values.to_date) errors.to_date = "To date required";
+      if (!values.subscription_amount)
+        errors.subscription_amount = "Subscription Amount is required";
       //  FINAL CORRECT LOGO VALIDATION
-      if (!isEditMode && !values.company_logo) {
-        errors.company_logo = "Company Logo is required";
-      }
+      // if (!isEditMode && !values.company_logo) {
+      //   errors.company_logo = "Company Logo is required";
+      // }
 
-      if (values.company_logo) {
-        const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-        const maxSize = 2 * 1024 * 1024;
+      // if (values.company_logo) {
+      //   const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+      //   const maxSize = 2 * 1024 * 1024;
 
-        if (!allowedTypes.includes(values.company_logo.type)) {
-          errors.company_logo = "Only PNG, JPG or JPEG files are allowed";
-        } else if (values.company_logo.size > maxSize) {
-          errors.company_logo = "Logo size must be less than 2MB";
-        }
-      }
+      //   if (!allowedTypes.includes(values.company_logo.type)) {
+      //     errors.company_logo = "Only PNG, JPG or JPEG files are allowed";
+      //   } else if (values.company_logo.size > maxSize) {
+      //     errors.company_logo = "Logo size must be less than 2MB";
+      //   }
+      // }
 
       return errors;
     },
@@ -109,17 +153,28 @@ const RegisterCompany = () => {
     }
     formData.append("company_name", values.company_name);
     formData.append("company_email", values.company_email);
-    formData.append("phone_number", values.phone_number);
-    const address = JSON.stringify({
-      area: values.area,
-      city: values.city,
-      district: values.district,
-      state: values.state,
-      country: values.country,
-      pin_code: values.pin_code,
-    });
-    formData.append("address", address);
-    formData.append("subscription_type", values.subscription_type);
+    // formData.append("phone_number", values.phone_number);
+    formData.append(
+      "phone_number",
+      `${values.dial_code}${values.phone_number}`
+    );
+    formData.append("country", values.country);
+
+    formData.append("gst_number", values.gst_number);
+    // const address = JSON.stringify({
+    //   // area: values.area,
+    //   adress: values.address,
+    //   city: values.city,
+    //   // district: values.district,
+    //   // state: values.state,
+    //   country: values.country,
+    //   pin_code: values.pin_code,
+    // });
+    formData.append("address", values.address);
+    formData.append("city", values.city);
+    formData.append("pin_code", values.pin_code);
+    // formData.append("subscription_type", values.subscription_type);
+    formData.append("subscription_amount", values.subscription_amount);
     formData.append("from_date", values.from_date);
     formData.append("to_date", values.to_date);
     formData.append(
@@ -127,12 +182,16 @@ const RegisterCompany = () => {
       JSON.parse(localStorage.getItem("ig_user"))?.user_id
     );
 
-    if (values.company_logo) {
-      formData.append("company_logo", values.company_logo);
-    }
-    await ApiServices.companyRegister(formData);
+    // if (values.company_logo) {
+    //   formData.append("company_logo", values.company_logo);
+    // }
+    // await ApiServices.companyRegister(formData);
 
-    navigate("/layout/manage-companies");
+    // navigate("/layout/manage-companies");
+    for (const [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
   };
   const handleResetForm = () => {
     setIsResetting(true);
@@ -142,55 +201,55 @@ const RegisterCompany = () => {
       setIsResetting(false);
     }, 400);
   };
-  useEffect(() => {
-    if (!isEditMode || !company) return;
-    if (formik.values.company_name) return;
+  // useEffect(() => {
+  //   if (!isEditMode || !company) return;
+  //   if (formik.values.company_name) return;
 
-    let addr = {
-      area: "",
-      city: "",
-      district: "",
-      state: "",
-      country: "",
-      pin_code: "",
-    };
+  //   let addr = {
+  //     area: "",
+  //     city: "",
+  //     district: "",
+  //     state: "",
+  //     country: "",
+  //     pin_code: "",
+  //   };
 
-    try {
-      addr = company.address ? JSON.parse(company.address) : addr;
-    } catch (e) {
-      console.warn("Invalid address JSON");
-    }
+  //   try {
+  //     addr = company.address ? JSON.parse(company.address) : addr;
+  //   } catch (e) {
+  //     console.warn("Invalid address JSON");
+  //   }
 
-    formik.setValues({
-      id: company.id,
-      created_by: company.created_by || "",
+  //   formik.setValues({
+  //     id: company.id,
+  //     created_by: company.created_by || "",
 
-      company_name: company.company_name || "",
-      company_email: company.company_email || "",
-      phone_number: company.phone_number || "",
-      company_logo: null,
+  //     company_name: company.company_name || "",
+  //     company_email: company.company_email || "",
+  //     phone_number: company.phone_number || "",
+  //     // company_logo: null,
 
-      area: addr.area || "",
-      city: addr.city || "",
-      district: addr.district || "",
-      state: addr.state || "",
-      country: addr.country || "",
-      pin_code: addr.pin_code || "",
+  //     // area: addr.area || "",
+  //     city: addr.city || "",
+  //     // district: addr.district || "",
+  //     // state: addr.state || "",
+  //     country: addr.country || "",
+  //     pin_code: addr.pin_code || "",
 
-      subscription_type: company.subscription_type || "FREE",
+  //     subscription_type: company.subscription_type || "FREE",
 
-      from_date: company.from_date
-        ? new Date(company.from_date).toISOString().slice(0, 10)
-        : "",
-      to_date: company.to_date
-        ? new Date(company.to_date).toISOString().slice(0, 10)
-        : "",
-    });
+  //     from_date: company.from_date
+  //       ? new Date(company.from_date).toISOString().slice(0, 10)
+  //       : "",
+  //     to_date: company.to_date
+  //       ? new Date(company.to_date).toISOString().slice(0, 10)
+  //       : "",
+  //   });
 
-    if (company.company_logo) {
-      setLogoPreview(`${BASE_URL}${company.company_logo}`);
-    }
-  }, [isEditMode, company]);
+  //   if (company.company_logo) {
+  //     setLogoPreview(`${BASE_URL}${company.company_logo}`);
+  //   }
+  // }, [isEditMode, company]);
 
   return (
     <div className="w-full mx-auto px-6">
@@ -274,7 +333,7 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                Phone Number {!isEditMode && <span className="text-red-500">*</span>}
+                GST Number {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Phone
@@ -282,22 +341,23 @@ const RegisterCompany = () => {
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                 />
                 <input
-                  name="phone_number"
-                  value={formik.values.phone_number}
+                  name="gst_number"
+                  value={formik.values.gst_number}
                   onChange={formik.handleChange}
                   className="w-full pl-10 py-1.5 border rounded-lg"
-                  placeholder="Enter Phone Number"
+                  placeholder="Enter GST Number"
                 />
               </div>
-              {formik.touched.phone_number && formik.errors.phone_number && (
+              {formik.touched.gst_number && formik.errors.gst_number && (
                 <p className="mt-1 text-xs text-red-500">
-                  {formik.errors.phone_number}
+                  {formik.errors.gst_number}
                 </p>
               )}
             </div>
+
             <div>
               <label className="text-sm font-medium">
-                Area / Street {!isEditMode && <span className="text-red-500">*</span>}
+                Address {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <MapPin
@@ -305,16 +365,16 @@ const RegisterCompany = () => {
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                 />
                 <input
-                  name="area"
-                  value={formik.values.area}
+                  name="address"
+                  value={formik.values.address}
                   onChange={formik.handleChange}
                   className="w-full pl-10 py-1.5 border rounded-lg"
                   placeholder="Ex: Salt Lake"
                 />
               </div>
-              {formik.touched.area && formik.errors.area && (
+              {formik.touched.address && formik.errors.address && (
                 <p className="mt-1 text-xs text-red-500">
-                  {formik.errors.area}
+                  {formik.errors.address}
                 </p>
               )}
             </div>
@@ -341,7 +401,7 @@ const RegisterCompany = () => {
                 </p>
               )}
             </div>
-            <div>
+            {/* <div>
               <label className="text-sm font-medium">
                 District {!isEditMode && <span className="text-red-500">*</span>}
               </label>
@@ -357,8 +417,8 @@ const RegisterCompany = () => {
                   {formik.errors.district}
                 </p>
               )}
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
               <label className="text-sm font-medium">
                 State {!isEditMode && <span className="text-red-500">*</span>}
               </label>
@@ -374,8 +434,8 @@ const RegisterCompany = () => {
                   {formik.errors.state}
                 </p>
               )}
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
               <label className="text-sm font-medium">
                 Country {!isEditMode && <span className="text-red-500">*</span>}
               </label>
@@ -397,7 +457,111 @@ const RegisterCompany = () => {
                   {formik.errors.country}
                 </p>
               )}
+            </div> */}
+            <div>
+              <label className="text-sm font-medium">
+                Country {!isEditMode && <span className="text-red-500">*</span>}
+              </label>
+
+              <div className="relative">
+                <Globe2
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+
+                <select
+                  name="country"
+                  value={formik.values.country}
+                  onChange={(e) => {
+                    const selected = countryOptions.find(
+                      (c) => c.value === e.target.value
+                    );
+
+                    formik.setFieldValue("country", selected?.value || "");
+                    formik.setFieldValue("dial_code", selected?.dialCode || "");
+                    formik.setFieldTouched("country", true);
+                  }}
+                  className="w-full pl-10 py-1.5 border rounded-lg bg-white"
+                  disabled={loadingCountries}
+                >
+                  <option value="" disabled>
+                    {loadingCountries ? "Loading countries..." : "Select Country"}
+                  </option>
+
+                  {countryOptions.map((c) => (
+                    <option key={c.value} value={c.value}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+
+
+              </div>
+
+              {formik.touched.country && formik.errors.country && (
+                <p className="mt-1 text-xs text-red-500">{formik.errors.country}</p>
+              )}
             </div>
+
+            {/* <div>
+              <label className="text-sm font-medium">
+                Phone Number {!isEditMode && <span className="text-red-500">*</span>}
+              </label>
+              <div className="relative">
+                <Phone
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  name="phone_number"
+                  value={formik.values.phone_number}
+                  onChange={formik.handleChange}
+                  className="w-full pl-10 py-1.5 border rounded-lg"
+                  placeholder="Enter Phone Number"
+                />
+              </div>
+              {formik.touched.phone_number && formik.errors.phone_number && (
+                <p className="mt-1 text-xs text-red-500">
+                  {formik.errors.phone_number}
+                </p>
+              )}
+            </div> */}
+            <div>
+              <label className="text-sm font-medium">
+                Phone Number {!isEditMode && <span className="text-red-500">*</span>}
+              </label>
+
+              <div className="flex">
+                {/* Dial Code */}
+                <div className="flex items-center px-3 border border-r-0 rounded-l-lg bg-gray-100 text-gray-700 text-sm min-w-[60px] justify-center">
+                  {formik.values.dial_code}
+                </div>
+
+                {/* Phone Input */}
+                <div className="relative w-full">
+                  <Phone
+                    size={18}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+                  <input
+                    name="phone_number"
+                    value={formik.values.phone_number}
+                    onChange={formik.handleChange}
+                    className="w-full pl-10 py-1.5 border rounded-r-lg"
+                    placeholder="Enter phone number"
+                    disabled={!formik.values.country}
+                  />
+                </div>
+              </div>
+
+
+              {formik.touched.phone_number && formik.errors.phone_number && (
+                <p className="mt-1 text-xs text-red-500">
+                  {formik.errors.phone_number}
+                </p>
+              )}
+            </div>
+
             <div>
               <label className="text-sm font-medium">
                 PIN Code {!isEditMode && <span className="text-red-500">*</span>}
@@ -421,7 +585,7 @@ const RegisterCompany = () => {
                 </p>
               )}
             </div>
-            <div>
+            {/* <div>
               <label className="text-sm font-medium">
                 Subscription Type {!isEditMode && <span className="text-red-500">*</span>}
               </label>
@@ -440,7 +604,7 @@ const RegisterCompany = () => {
                     {formik.errors.subscription_type}
                   </p>
                 )}
-            </div>
+            </div> */}
             <div>
               <label className="text-sm font-medium">
                 From Date {!isEditMode && <span className="text-red-500">*</span>}
@@ -483,16 +647,21 @@ const RegisterCompany = () => {
                 <input
                   type="date"
                   name="to_date"
+                  // min={
+                  //   formik.values.from_date
+                  //     ? new Date(
+                  //       new Date(formik.values.from_date).setFullYear(
+                  //         new Date(formik.values.from_date).getFullYear() + 1
+                  //       )
+                  //     )
+                  //       .toISOString()
+                  //       .split("T")[0]
+                  //     : undefined
+                  // }
                   min={
-                    formik.values.from_date
-                      ? new Date(
-                        new Date(formik.values.from_date).setFullYear(
-                          new Date(formik.values.from_date).getFullYear() + 1
-                        )
-                      )
-                        .toISOString()
-                        .split("T")[0]
-                      : undefined
+                    isEditMode
+                      ? undefined
+                      : new Date().toISOString().split("T")[0]
                   }
                   disabled={!formik.values.from_date}
                   value={formik.values.to_date}
@@ -507,8 +676,32 @@ const RegisterCompany = () => {
               )}
             </div>
 
+            <div>
+              <label className="text-sm font-medium">
+                Subscription Amount {!isEditMode && <span className="text-red-500">*</span>}
+              </label>
+              <div className="relative">
+                <Phone
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  name="subscription_amount"
+                  value={formik.values.subscription_amount}
+                  onChange={formik.handleChange}
+                  className="w-full pl-10 py-1.5 border rounded-lg"
+                  placeholder="Enter Subscription Amount"
+                />
+              </div>
+              {formik.touched.subscription_amount && formik.errors.subscription_amount && (
+                <p className="mt-1 text-xs text-red-500">
+                  {formik.errors.subscription_amount}
+                </p>
+              )}
+            </div>
+
             {/* Logo */}
-            <div className="md:col-span-2">
+            {/* <div className="md:col-span-2">
               <label className="text-sm font-medium">
                 Company Logo {!isEditMode && <span className="text-red-500">*</span>}
               </label>
@@ -546,7 +739,7 @@ const RegisterCompany = () => {
                     {formik.errors.company_logo}
                   </p>
                 )}
-            </div>
+            </div> */}
           </div>
           <div className="w-full flex items-center justify-between mt-6">
             <button
@@ -559,9 +752,8 @@ const RegisterCompany = () => {
             <button
               type="submit"
               disabled={formik.isSubmitting}
-              className={`px-6 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 ${
-                formik.isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`px-6 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 ${formik.isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
             >
               {isEditMode ? "Update Company" : "Register Company"}
             </button>

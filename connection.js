@@ -4,6 +4,8 @@ export const GET_APIS = {
   get_all_companies: `${BASE_URL}admin/get_companies`,
   get_all_company_admins: `${BASE_URL}admin/get_all_company_admins`,
   company_code_dropdown: `${BASE_URL}admin/company_code_dropdown`,
+  country_list: `${BASE_URL}/get_country_options`,
+
 
 };
 
