@@ -360,7 +360,7 @@ function AddCompanyAdmin() {
                   placeholder="Enter Password"
                 />
 
-                {isEditMode && (
+                
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -369,7 +369,7 @@ function AddCompanyAdmin() {
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
-                )}
+
               </div>
 
               {formik.touched.admin_password &&
