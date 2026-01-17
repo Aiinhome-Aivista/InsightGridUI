@@ -7,7 +7,7 @@ import { useAuth } from "./AuthContext";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const { login } = useAuth();
@@ -20,6 +20,7 @@ export default function Login() {
   const [companyCodeError, setCompanyCodeError] = useState("");
   const currentYear = getCurrentYear();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [notification, setNotification] = useState({
     open: false,
@@ -207,16 +208,19 @@ export default function Login() {
       <img
         src={Union}
         alt="cross-pattern"
-        className="absolute bottom-0 right-0 w-[800px]"
+        className="absolute bottom-0 right-0 w-[500px] md:w-[800px] pointer-events-none"
       />
-      <div className="absolute top-8 left-10 flex items-center gap-2 text-white font-semibold text-lg">
-        <span className="text-white/80">
-          Aivista
+      <div className="absolute top-6 left-6 md:top-8 md:left-10 flex items-center gap-2 text-white font-semibold text-lg z-50">
+        <span
+          className="text-white/80 cursor-pointer"
+          onClick={() => navigate("/")}
+        >
+          Sahajinsight
         </span>
       
       </div>
-      <div className="flex flex-col items-center w-full h-full relative">
-        <img src={view_quilt} alt="cross-pattern" className="w-12 mt-20" />
+      <div className="flex flex-col items-center justify-center w-full relative py-2 px-4">
+        <img src={view_quilt} alt="cross-pattern" className="w-12" />
         {/* <div className="flex flex-col items-center">
           <h1 className="text-white text-3xl font-bold">InsightGrid</h1>
           <p className="text-white/80 text-sm mt-1">
@@ -224,8 +228,8 @@ export default function Login() {
           </p>
         </div> */}
 
-        <div className="flex flex-col items-center text-center">
-          <h1 className="text-white text-3xl font-bold">
+        <div className="flex flex-col items-center text-center mb-8">
+          <h1 className="text-white text-2xl md:text-3xl font-bold">
             {loginTitleMap[loginType]}
           </h1>
           <p className="text-white/80 text-sm mt-1">
@@ -235,7 +239,7 @@ export default function Login() {
 
         <form
           onSubmit={handleLogin}
-          className="mt-10 w-80 flex flex-col space-y-4"
+          className="w-full max-w-xs flex flex-col space-y-4"
         >
           <div className="w-full">
             <input
@@ -353,7 +357,7 @@ export default function Login() {
           </button>
 
         </form>
-        <p className="text-white/70 text-xs absolute bottom-14">
+        <p className="text-white/70 text-xs mt-12 text-center">
           ©{currentYear} Aivista Technologies Pvt. Ltd. All rights reserved
         </p>
       </div>
