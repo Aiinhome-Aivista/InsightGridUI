@@ -35,8 +35,6 @@ const RegisterCompany = () => {
   console.log("company", company);
   const isEditMode = Boolean(id && company);
 
-
-
   useEffect(() => {
     const fetchCountries = async () => {
       try {
@@ -56,7 +54,6 @@ const RegisterCompany = () => {
     fetchCountries();
   }, []);
 
-
   const formik = useFormik({
     validateOnMount: false,
     initialValues: {
@@ -66,7 +63,7 @@ const RegisterCompany = () => {
       gst_number: "",
       company_email: "",
       country: "",
-      dial_code: "",     // phone prefix
+      dial_code: "", // phone prefix
       phone_number: "",
       // company_logo: null,
 
@@ -147,51 +144,68 @@ const RegisterCompany = () => {
     },
   });
   const submitCompany = async (values: any) => {
-    const formData = new FormData();
+    // const formData = new FormData();
+    // if (isEditMode && id) {
+    //   formData.append("id", id);
+    // }
+    // formData.append("company_name", values.company_name);
+    // formData.append("company_email", values.company_email);
+    // // formData.append("phone_number", values.phone_number);
+    // formData.append(
+    //   "phone_number",
+    //   `${values.dial_code}${values.phone_number}`
+    // );
+    // formData.append("country", values.country);
+
+    // formData.append("gst_number", values.gst_number);
+    // // const address = JSON.stringify({
+    // //   // area: values.area,
+    // //   adress: values.address,
+    // //   city: values.city,
+    // //   // district: values.district,
+    // //   // state: values.state,
+    // //   country: values.country,
+    // //   pin_code: values.pin_code,
+    // // });
+    // formData.append("address", values.address);
+    // formData.append("city", values.city);
+    // formData.append("pin_code", values.pin_code);
+    // // formData.append("subscription_type", values.subscription_type);
+    // formData.append("subscription_amount", values.subscription_amount);
+    // formData.append("from_date", values.from_date);
+    // formData.append("to_date", values.to_date);
+    // formData.append(
+    //   "created_by",
+    //   JSON.parse(localStorage.getItem("ig_user"))?.user_id
+    // );
+    const payload: any = {
+      company_name: values.company_name,
+      company_email: values.company_email,
+      phone_number: values.phone_number,
+      dial_code: values.dial_code,
+      country: values.country,
+      gst_number: values.gst_number,
+      address: values.address,
+      city: values.city,
+      pin_code: values.pin_code,
+      subscription_amount: values.subscription_amount,
+      from_date: values.from_date,
+      to_date: values.to_date,
+      created_by: JSON.parse(localStorage.getItem("ig_user") || "{}")?.user_id,
+    };
+
     if (isEditMode && id) {
-      formData.append("id", id);
+      payload.id = id;
     }
-    formData.append("company_name", values.company_name);
-    formData.append("company_email", values.company_email);
-    // formData.append("phone_number", values.phone_number);
-    formData.append(
-      "phone_number",
-      `${values.dial_code}${values.phone_number}`
-    );
-    formData.append("country", values.country);
-
-    formData.append("gst_number", values.gst_number);
-    // const address = JSON.stringify({
-    //   // area: values.area,
-    //   adress: values.address,
-    //   city: values.city,
-    //   // district: values.district,
-    //   // state: values.state,
-    //   country: values.country,
-    //   pin_code: values.pin_code,
-    // });
-    formData.append("address", values.address);
-    formData.append("city", values.city);
-    formData.append("pin_code", values.pin_code);
-    // formData.append("subscription_type", values.subscription_type);
-    formData.append("subscription_amount", values.subscription_amount);
-    formData.append("from_date", values.from_date);
-    formData.append("to_date", values.to_date);
-    formData.append(
-      "created_by",
-      JSON.parse(localStorage.getItem("ig_user"))?.user_id
-    );
-
     // if (values.company_logo) {
     //   formData.append("company_logo", values.company_logo);
     // }
-    // await ApiServices.companyRegister(formData);
+    await ApiServices.companyRegister(payload);
 
-    // navigate("/layout/manage-companies");
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-
+    navigate("/layout/manage-companies");
+    // for (const [key, value] of formData.entries()) {
+    //   console.log(key, value);
+    // }
   };
   const handleResetForm = () => {
     setIsResetting(true);
@@ -251,6 +265,47 @@ const RegisterCompany = () => {
   //   }
   // }, [isEditMode, company]);
 
+  useEffect(() => {
+    if (!isEditMode || !company) return;
+
+    // Prevent re-setting values on re-render
+    if (formik.values.company_name) return;
+
+    formik.setValues({
+      id: company.id ?? null,
+      created_by: company.created_by || "",
+
+      company_name: company.company_name || "",
+      company_email: company.company_email || "",
+      gst_number: company.gst_number || "",
+
+      country: company.country || "",
+      dial_code: company.dial_code || "",
+      phone_number: company.phone_number || "",
+
+      address: company.address || "",
+      city: company.city || "",
+      pin_code: company.pin_code || "",
+
+      subscription_amount: company.subscription_amount || "",
+
+      from_date: company.from_date
+        ? new Date(company.from_date).toISOString().slice(0, 10)
+        : "",
+
+      to_date: company.to_date
+        ? new Date(company.to_date).toISOString().slice(0, 10)
+        : "",
+    });
+
+    // 🔹 Logo preview (if exists)
+    // if (company.company_logo) {
+    //   setLogoPreview(`${BASE_URL}${company.company_logo}`);
+    // } else {
+    //   setLogoPreview(null);
+    // }
+  }, [isEditMode, company]);
+
   return (
     <div className="w-full mx-auto px-6">
       <form onSubmit={formik.handleSubmit}>
@@ -260,7 +315,6 @@ const RegisterCompany = () => {
               Register a Company
             </h2>
             {!isEditMode && (
-
               <Tippy content="Reset" theme="gray">
                 <button
                   type="button"
@@ -275,8 +329,9 @@ const RegisterCompany = () => {
     `}
                 >
                   <AutorenewRoundedIcon
-                    className={`w-5 h-5 text-gray-600 ${isResetting ? "animate-spin" : ""
-                      }`}
+                    className={`w-5 h-5 text-gray-600 ${
+                      isResetting ? "animate-spin" : ""
+                    }`}
                     fontSize="small"
                   />
                 </button>
@@ -287,7 +342,8 @@ const RegisterCompany = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium">
-                Company Name {!isEditMode && <span className="text-red-500">*</span>}
+                Company Name{" "}
+                {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Building2
@@ -310,7 +366,8 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                Company Email {!isEditMode && <span className="text-red-500">*</span>}
+                Company Email{" "}
+                {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Mail
@@ -333,7 +390,8 @@ const RegisterCompany = () => {
             </div>
             <div>
               <label className="text-sm font-medium">
-                GST Number {!isEditMode && <span className="text-red-500">*</span>}
+                GST Number{" "}
+                {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Phone
@@ -474,7 +532,7 @@ const RegisterCompany = () => {
                   value={formik.values.country}
                   onChange={(e) => {
                     const selected = countryOptions.find(
-                      (c) => c.value === e.target.value
+                      (c) => c.value === e.target.value,
                     );
 
                     formik.setFieldValue("country", selected?.value || "");
@@ -485,7 +543,9 @@ const RegisterCompany = () => {
                   disabled={loadingCountries}
                 >
                   <option value="" disabled>
-                    {loadingCountries ? "Loading countries..." : "Select Country"}
+                    {loadingCountries
+                      ? "Loading countries..."
+                      : "Select Country"}
                   </option>
 
                   {countryOptions.map((c) => (
@@ -494,12 +554,12 @@ const RegisterCompany = () => {
                     </option>
                   ))}
                 </select>
-
-
               </div>
 
               {formik.touched.country && formik.errors.country && (
-                <p className="mt-1 text-xs text-red-500">{formik.errors.country}</p>
+                <p className="mt-1 text-xs text-red-500">
+                  {formik.errors.country}
+                </p>
               )}
             </div>
 
@@ -528,7 +588,8 @@ const RegisterCompany = () => {
             </div> */}
             <div>
               <label className="text-sm font-medium">
-                Phone Number {!isEditMode && <span className="text-red-500">*</span>}
+                Phone Number{" "}
+                {!isEditMode && <span className="text-red-500">*</span>}
               </label>
 
               <div className="flex">
@@ -554,7 +615,6 @@ const RegisterCompany = () => {
                 </div>
               </div>
 
-
               {formik.touched.phone_number && formik.errors.phone_number && (
                 <p className="mt-1 text-xs text-red-500">
                   {formik.errors.phone_number}
@@ -564,7 +624,8 @@ const RegisterCompany = () => {
 
             <div>
               <label className="text-sm font-medium">
-                PIN Code {!isEditMode && <span className="text-red-500">*</span>}
+                PIN Code{" "}
+                {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Package
@@ -607,7 +668,8 @@ const RegisterCompany = () => {
             </div> */}
             <div>
               <label className="text-sm font-medium">
-                From Date {!isEditMode && <span className="text-red-500">*</span>}
+                From Date{" "}
+                {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Calendar
@@ -678,7 +740,8 @@ const RegisterCompany = () => {
 
             <div>
               <label className="text-sm font-medium">
-                Subscription Amount {!isEditMode && <span className="text-red-500">*</span>}
+                Subscription Amount{" "}
+                {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Phone
@@ -693,11 +756,12 @@ const RegisterCompany = () => {
                   placeholder="Enter Subscription Amount"
                 />
               </div>
-              {formik.touched.subscription_amount && formik.errors.subscription_amount && (
-                <p className="mt-1 text-xs text-red-500">
-                  {formik.errors.subscription_amount}
-                </p>
-              )}
+              {formik.touched.subscription_amount &&
+                formik.errors.subscription_amount && (
+                  <p className="mt-1 text-xs text-red-500">
+                    {formik.errors.subscription_amount}
+                  </p>
+                )}
             </div>
 
             {/* Logo */}
@@ -752,8 +816,9 @@ const RegisterCompany = () => {
             <button
               type="submit"
               disabled={formik.isSubmitting}
-              className={`px-6 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 ${formik.isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+              className={`px-6 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 ${
+                formik.isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               {isEditMode ? "Update Company" : "Register Company"}
             </button>
