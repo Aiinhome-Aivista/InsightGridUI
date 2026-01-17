@@ -263,7 +263,7 @@ export default function Pricing() {
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                required
+                // required
                 rows={5}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all resize-none"
                 placeholder="How can we help you?"

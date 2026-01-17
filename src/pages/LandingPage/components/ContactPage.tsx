@@ -367,11 +367,11 @@ const ContactPage = () => {
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
                     >
                       <option value="">Select a topic</option>
-                      <option value="general">General Enquiry</option>
-                      <option value="support">Technical Support</option>
-                      <option value="billing">Billing Question</option>
-                      <option value="feedback">Feedback</option>
-                      <option value="partnership">Partnership</option>
+                      <option value="General Enquiry">General Enquiry</option>
+                      <option value="Technical Support">Technical Support</option>
+                      <option value="Billing Question">Billing Question</option>
+                      <option value="Feedback">Feedback</option>
+                      <option value="Partnership">Partnership</option>
                     </select>
                   </div>
                   <div>
