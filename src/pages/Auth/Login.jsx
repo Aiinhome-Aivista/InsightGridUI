@@ -244,17 +244,17 @@ export default function Login() {
           <div className="w-full">
             <input
               type="text"
-              placeholder="User Email"
+              placeholder="User Name"
               value={user_email}
               onChange={(e) => {
                 const val = e.target.value;
                 setUserEmail(val);
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (val && !emailRegex.test(val)) {
-                  setEmailError("Enter a valid User Email");
-                } else {
-                  setEmailError("");
-                }
+                // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                // if (val && !emailRegex.test(val)) {
+                //   setEmailError("Enter a valid User Email");
+                // } else {
+                //   setEmailError("");
+                // }
               }}
               className={`w-full px-4 py-2 rounded-md bg-transparent border ${emailError ? "border-red-400" : "border-white/40"
                 } text-white outline-none placeholder-white/60`}

@@ -24,15 +24,15 @@ function ManageCompanyAdmin() {
   }, []);
   const columnConfig = [
     {
-      field: "admin_name",
+      field: "admin_user_id",
       header: "Full Name",
       sortable: true,
     },
-    {
-      field: "admin_email",
-      header: "Email",
-      sortable: true,
-    },
+    // {
+    //   field: "admin_email",
+    //   header: "Email",
+    //   sortable: true,
+    // },
     {
       field: "company_name",
       header: "Company Name",
@@ -43,46 +43,46 @@ function ManageCompanyAdmin() {
       header: "Company DB Name",
       sortable: true,
     },
-    {
-      field: "phone_number",
-      header: "Phone Number",
-      sortable: true,
-    },
-    {
-      field: "address",
-      header: "Address",
-      sortable: true,
-      body: (row: any) => {
-        if (!row.address) return null;   
+    // {
+    //   field: "phone_number",
+    //   header: "Phone Number",
+    //   sortable: true,
+    // },
+    // {
+    //   field: "address",
+    //   header: "Address",
+    //   sortable: true,
+    //   body: (row: any) => {
+    //     if (!row.address) return null;   
 
-        let addrText = "";
+    //     let addrText = "";
 
-        try {
-          const addr = JSON.parse(row.address);
-          addrText = [
-            addr.area,
-            addr.city,
-            addr.district,
-            addr.state,
-            addr.country,
-            addr.pin_code ? `- ${addr.pin_code}` : ""
-          ]
-            .filter(Boolean)
-            .join(", ");
-        } catch {
-          addrText = row.address; // plain string
-        }
+    //     try {
+    //       const addr = JSON.parse(row.address);
+    //       addrText = [
+    //         addr.area,
+    //         addr.city,
+    //         addr.district,
+    //         addr.state,
+    //         addr.country,
+    //         addr.pin_code ? `- ${addr.pin_code}` : ""
+    //       ]
+    //         .filter(Boolean)
+    //         .join(", ");
+    //     } catch {
+    //       addrText = row.address; // plain string
+    //     }
 
-        return (
-          <div
-            className="max-w-[280px] truncate"
-            title={addrText}
-          >
-            {addrText}
-          </div>
-        );
-      },
-    }
+    //     return (
+    //       <div
+    //         className="max-w-[280px] truncate"
+    //         title={addrText}
+    //       >
+    //         {addrText}
+    //       </div>
+    //     );
+    //   },
+    // }
 
 
   ];
@@ -228,7 +228,7 @@ function ManageCompanyAdmin() {
             field={col.field}
             header={col.header}
             sortable={col.sortable}
-            body={col.body}
+            // body={col.body}
 
           />
         ))}

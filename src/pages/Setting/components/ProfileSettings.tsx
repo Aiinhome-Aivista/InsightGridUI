@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useFormik } from 'formik';
+import React, { useState } from "react";
+import { useFormik } from "formik";
 import {
   User,
   Mail,
@@ -10,90 +10,137 @@ import {
   Building2,
   Hash,
   MapPin,
-  Package
-} from 'lucide-react';
+  Package,
+} from "lucide-react";
 interface ProfileSettingsProps {
   activeTab: string;
 }
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
-  const userData = JSON.parse(localStorage.getItem("ig_user") || '{}');
+  const userData = JSON.parse(localStorage.getItem("ig_user") || "{}");
   const BASE_URL = (import.meta as any).env.VITE_API_BASE_URL;
   const [avatar, setAvatar] = useState<string | null>(
-    userData?.company_logo ? `${BASE_URL}${userData.company_logo}` : null
+    userData?.company_logo ? `${BASE_URL}${userData.company_logo}` : null,
   );
   const [isSaving, setIsSaving] = useState(false);
   console.log("User Data in ProfileSettings:", userData);
 
-  let parsedAddress = {
-    area: "",
-    city: "",
-    district: "",
-    state: "",
-    country: "",
-    pin_code: ""
-  };
+  // let parsedAddress = {
+  //   area: "",
+  //   city: "",
+  //   district: "",
+  //   state: "",
+  //   country: "",
+  //   pin_code: ""
+  // };
 
-  try {
-    if (userData?.company_address) {
-      parsedAddress =
-        typeof userData.company_address === "string"
-          ? JSON.parse(userData.company_address)
-          : userData.company_address;
-    }
-  } catch (e) {
-    console.warn("Invalid company_address JSON");
-  }
-  const formattedAddress = [
-    parsedAddress.area,
-    parsedAddress.city,
-    parsedAddress.district,
-    parsedAddress.state,
-    parsedAddress.country
-  ]
-    .filter(Boolean)
-    .join(", ");
+  // try {
+  //   if (userData?.company_address) {
+  //     parsedAddress =
+  //       typeof userData.company_address === "string"
+  //         ? JSON.parse(userData.company_address)
+  //         : userData.company_address;
+  //   }
+  // } catch (e) {
+  //   console.warn("Invalid company_address JSON");
+  // }
+  // const formattedAddress = [
+  //   parsedAddress.area,
+  //   parsedAddress.city,
+  //   parsedAddress.district,
+  //   parsedAddress.state,
+  //   parsedAddress.country
+  // ]
+  //   .filter(Boolean)
+  //   .join(", ");
   const formik = useFormik({
     initialValues: {
-      companyName: userData?.company_name || '',
-      companyCode: userData?.company_code || '',
-      address: formattedAddress,
-      zipCode: parsedAddress.pin_code || '',
-      email: userData?.company_email || '',
-      phoneNumber: userData?.company_phone || '',
+      companyName: userData?.company_name || "",
+      companyCode: userData?.company_code || "",
+      address: userData?.company_address,
+      zipCode: userData?.pin_code || "",
+      email: userData?.company_email || "",
+      phoneNumber: userData?.company_phone || "",
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
-      if (!values.companyName) errors.companyName = 'Company Name is required';
-      if (!values.companyCode) errors.companyCode = 'Company Code is required';
-      if (!values.address) errors.address = 'Address is required';
-      if (!values.zipCode) errors.zipCode = 'Zip Code is required';
+      if (!values.companyName) errors.companyName = "Company Name is required";
+      if (!values.companyCode) errors.companyCode = "Company Code is required";
+      if (!values.address) errors.address = "Address is required";
+      if (!values.zipCode) errors.zipCode = "Zip Code is required";
       if (!values.email) {
-        errors.email = 'Email is required';
-      } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
-        errors.email = 'Invalid email address';
+        errors.email = "Email is required";
+      } else if (
+        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+      ) {
+        errors.email = "Invalid email address";
       }
-      if (!values.phoneNumber) errors.phoneNumber = 'Phone Number is required';
+      if (!values.phoneNumber) errors.phoneNumber = "Phone Number is required";
       return errors;
     },
     enableReinitialize: true,
     onSubmit: async (values) => {
       setIsSaving(true);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Form data:', values);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("Form data:", values);
       setIsSaving(false);
-      alert('Profile updated successfully!');
+      alert("Profile updated successfully!");
     },
   });
 
-  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setAvatar(reader.result as string);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
+  const handleAvatarUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatar(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // 1️⃣ instant preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatar(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // 2️⃣ backend upload
+    const formData = new FormData();
+    formData.append("company_id", userData.company_id);
+    formData.append("company_logo", file);
+
+    try {
+      const res = await fetch(`${BASE_URL}/admin/company/logo`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const json = await res.json();
+
+      if (json.isSuccess) {
+        // 3️⃣ session (localStorage) update
+        const updatedUser = {
+          ...userData,
+          company_logo: json.data.company_logo,
+        };
+
+        localStorage.setItem("ig_user", JSON.stringify(updatedUser));
+
+        // 4️⃣ backend path দিয়ে avatar update (final)
+        setAvatar(`${BASE_URL}${json.data.company_logo}`);
+      } else {
+        alert(json.message || "Logo upload failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error while uploading logo");
     }
   };
 
@@ -101,7 +148,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
     setAvatar(null);
   };
 
-  if (activeTab !== 'profile') return null;
+  if (activeTab !== "profile") return null;
   return (
     <div className="max-w-8xl">
       <form onSubmit={formik.handleSubmit} className="relative">
@@ -119,6 +166,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   <User size={48} className="text-gray-400" />
                 )}
               </div>
+              <label
+                htmlFor="avatar-upload"
+                className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow cursor-pointer"
+              >
+                <Camera size={16} className="text-gray-600" />
+              </label>
               <input
                 type="file"
                 id="avatar-upload"
@@ -127,13 +180,19 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                 className="hidden"
               />
             </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">{userData?.company_name || 'Company Name'}</h3>
-            </div>
+
+            {/* <div className="flex-1">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                {userData?.company_name || "Company Name"}
+              </h3>
+            </div> */}
           </div>
         </div>
         <div className="rounded-xl pt-3 px-6">
-          <h3 className="text-lg font-semibold text-gray-800 pb-2"> Company Details </h3>
+          <h3 className="text-lg font-semibold text-gray-800 pb-2">
+            {" "}
+            Company Details{" "}
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -150,12 +209,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Company name"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.companyName && formik.errors.companyName ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${
+                    formik.touched.companyName && formik.errors.companyName
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  }`}
                 />
               </div>
               {formik.touched.companyName && formik.errors.companyName && (
-                <p className="mt-1 text-sm text-red-600">{formik.errors.companyName as string}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {formik.errors.companyName as string}
+                </p>
               )}
             </div>
             <div>
@@ -173,12 +237,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Company Code"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.companyCode && formik.errors.companyCode ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${
+                    formik.touched.companyCode && formik.errors.companyCode
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  }`}
                 />
               </div>
               {formik.touched.companyCode && formik.errors.companyCode && (
-                <p className="mt-1 text-sm text-red-600">{formik.errors.companyCode as string}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {formik.errors.companyCode as string}
+                </p>
               )}
             </div>
             <div>
@@ -196,12 +265,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Address"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.address && formik.errors.address ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${
+                    formik.touched.address && formik.errors.address
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  }`}
                 />
               </div>
               {formik.touched.address && formik.errors.address && (
-                <p className="mt-1 text-sm text-red-600">{formik.errors.address as string}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {formik.errors.address as string}
+                </p>
               )}
             </div>
             <div>
@@ -219,12 +293,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Zip Code"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.zipCode && formik.errors.zipCode ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${
+                    formik.touched.zipCode && formik.errors.zipCode
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  }`}
                 />
               </div>
               {formik.touched.zipCode && formik.errors.zipCode && (
-                <p className="mt-1 text-sm text-red-600">{formik.errors.zipCode as string}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {formik.errors.zipCode as string}
+                </p>
               )}
             </div>
             <div>
@@ -242,12 +321,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Email"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.email && formik.errors.email ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${
+                    formik.touched.email && formik.errors.email
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  }`}
                 />
               </div>
               {formik.touched.email && formik.errors.email && (
-                <p className="mt-1 text-sm text-red-600">{formik.errors.email as string}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {formik.errors.email as string}
+                </p>
               )}
             </div>
             <div>
@@ -265,17 +349,21 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Phone Number"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${formik.touched.phoneNumber && formik.errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                  className={`w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${
+                    formik.touched.phoneNumber && formik.errors.phoneNumber
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  }`}
                 />
               </div>
               {formik.touched.phoneNumber && formik.errors.phoneNumber && (
-                <p className="mt-1 text-sm text-red-600">{formik.errors.phoneNumber as string}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {formik.errors.phoneNumber as string}
+                </p>
               )}
             </div>
           </div>
         </div>
-
       </form>
     </div>
   );

@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { POST_APIS, BASE_URL } from "../../../connection";
-import { Dropdown } from 'primereact/dropdown';
+import { Dropdown } from "primereact/dropdown";
 import Tippy from "@tippyjs/react";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import ApiServices from "../../services/ApiServices";
 import { useParams, useLocation } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 function AddCompanyAdmin() {
   const [isResetting, setIsResetting] = useState(false);
@@ -19,7 +20,9 @@ function AddCompanyAdmin() {
   const { id } = useParams();
   const location = useLocation();
   const admin = location.state?.admin;
-  console.log("admin", admin);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // console.log("admin", admin);
   const isEditMode = Boolean(id && admin);
   useEffect(() => {
     fetchCompanyCodes();
@@ -35,7 +38,6 @@ function AddCompanyAdmin() {
       console.error("Failed to load company codes", err);
     }
   };
-
 
   const formik = useFormik({
     initialValues: {
@@ -86,7 +88,6 @@ function AddCompanyAdmin() {
         }
       }
 
-
       // if (!values.phone_number)
       //   errors.phone_number = "Phone Number is required";
 
@@ -110,9 +111,9 @@ function AddCompanyAdmin() {
     },
   });
   const submitCompanyAdmin = async (values) => {
-
     const payload = {
-      session_id: JSON.parse(localStorage.getItem("ig_user") || "{}")?.session_id,
+      session_id: JSON.parse(localStorage.getItem("ig_user") || "{}")
+        ?.session_id,
       created_by: JSON.parse(localStorage.getItem("ig_user") || "{}")?.user_id,
       id: null,
       company_code: values.company_code,
@@ -166,26 +167,26 @@ function AddCompanyAdmin() {
   useEffect(() => {
     if (!isEditMode || !admin) return;
 
-    let addr = {
-      area: "",
-      city: "",
-      district: "",
-      state: "",
-      country: "",
-      pin_code: "",
-    };
+    // let addr = {
+    //   area: "",
+    //   city: "",
+    //   district: "",
+    //   state: "",
+    //   country: "",
+    //   pin_code: "",
+    // };
 
-    try {
-      addr = admin.address ? JSON.parse(admin.address) : addr;
-    } catch (e) {
-      console.warn("Invalid address JSON");
-    }
+    // try {
+    //   addr = admin.address ? JSON.parse(admin.address) : addr;
+    // } catch (e) {
+    //   console.warn("Invalid address JSON");
+    // }
 
     formik.setValues({
       company_code: admin.company_code || "",
-      admin_name: admin.admin_name || admin.full_name || "",
+      admin_name: admin.admin_user_id || "",
       // admin_email: admin.admin_email || admin.email || "",
-      admin_password: "",
+      admin_password: admin.plain_password || "",
 
       // phone_number: admin.phone_number || "",
 
@@ -198,19 +199,14 @@ function AddCompanyAdmin() {
     });
   }, [isEditMode, admin]);
 
-
   return (
     <div className="W-full mx-auto px-6\3 mb-4">
       <form onSubmit={formik.handleSubmit}>
         <div className="rounded-xl px-6">
-          <h2 className="text-xl font-semibold mb-6">
-          </h2>
+          <h2 className="text-xl font-semibold mb-6"></h2>
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xl font-semibold">
-              Add Company Admin
-            </h2>
+            <h2 className="text-xl font-semibold">Add Company Admin</h2>
             {!isEditMode && (
-
               <Tippy content="Reset" theme="gray">
                 <button
                   type="button"
@@ -219,8 +215,9 @@ function AddCompanyAdmin() {
                   className={`w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] bg-[#F3F3F3] hover:bg-[#E5E5E5] transition-all${isResetting ? "cursor-wait opacity-70" : "cursor-pointer"}`}
                 >
                   <AutorenewRoundedIcon
-                    className={`w-5 h-5 text-gray-600 ${isResetting ? "animate-spin" : ""
-                      }`}
+                    className={`w-5 h-5 text-gray-600 ${
+                      isResetting ? "animate-spin" : ""
+                    }`}
                     fontSize="small"
                   />
                 </button>
@@ -228,22 +225,18 @@ function AddCompanyAdmin() {
             )}
           </div>
 
-
-
           {/* Admin Name */}
           <div className="mb-4">
             <label className="text-sm font-medium">
-              Admin Name {!isEditMode && <span className="text-red-500">*</span>}
+              Admin Name{" "}
+              {!isEditMode && <span className="text-red-500">*</span>}
             </label>
             <input
               type="text"
               name="admin_name"
               value={formik.values.admin_name}
-              disabled={isEditMode}
               onChange={formik.handleChange}
-              className={`w-full px-4 py-1.5 border rounded-lg mt-1 
-    ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}
-  `}
+              className="w-full px-4 py-1.5 border rounded-lg mt-1" 
               placeholder="Enter Admin Name"
             />
             {formik.touched.admin_name && formik.errors.admin_name && (
@@ -256,7 +249,8 @@ function AddCompanyAdmin() {
             {/* Company Code */}
             <div className="">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Company Code {!isEditMode && <span className="text-red-500">*</span>}
+                Company Code{" "}
+                {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               {/* <Dropdown
                 value={formik.values.company_code}
@@ -287,40 +281,35 @@ function AddCompanyAdmin() {
                 placeholder="Select Company Code"
                 disabled={isEditMode}
                 filter
-                onChange={(e) =>
-                  formik.setFieldValue("company_code", e.value)
-                }
+                onChange={(e) => formik.setFieldValue("company_code", e.value)}
                 className={`w-full border rounded-lg text-sm
-    ${formik.touched.company_code && formik.errors.company_code
-                    ? "border-red-500"
-                    : "border-gray-300"}
+    ${
+      formik.touched.company_code && formik.errors.company_code
+        ? "border-red-500"
+        : "border-gray-300"
+    }
     ${isEditMode ? "bg-gray-100 cursor-not-allowed" : "bg-white"}
   `}
                 pt={{
                   root: {
-                    className:
-                      "h-[40px] flex items-center px-0",
+                    className: "h-[40px] flex items-center px-0",
                   },
 
                   input: {
-                    className:
-                      "px-4 py-2 text-sm text-gray-900",
+                    className: "px-4 py-2 text-sm text-gray-900",
                   },
                   trigger: {
-                    className:
-                      "px-3 text-gray-500",
+                    className: "px-3 text-gray-500",
                   },
                   panel: {
                     className:
                       "rounded-lg shadow-lg border border-gray-200 bg-blue-50",
                   },
                   item: {
-                    className:
-                      "px-4 py-2 text-sm hover:bg-blue-50",
+                    className: "px-4 py-2 text-sm hover:bg-blue-50",
                   },
                 }}
               />
-
 
               {formik.touched.company_code && formik.errors.company_code && (
                 <p className="text-xs text-red-500 mt-1">
@@ -350,27 +339,49 @@ function AddCompanyAdmin() {
 
             {/* Admin Password */}
 
-            {!isEditMode && (
-              <div className="mb-4">
-                <label className="text-sm font-medium">
-                  Password {!isEditMode && <span className="text-red-500">*</span>}
-                </label>
-                <input
+            <div className="mb-4">
+              <label className="text-sm font-medium">
+                Password{" "}
+                {!isEditMode && <span className="text-red-500">*</span>}
+              </label>
+              {/* <input
                   type="password"
                   name="admin_password"
                   value={formik.values.admin_password}
                   onChange={formik.handleChange}
                   className="w-full px-4 py-1.5 border rounded-lg"
                   placeholder="Enter Password"
+                /> */}
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="admin_password"
+                  value={formik.values.admin_password}
+                  onChange={formik.handleChange}
+                  className="w-full px-4 py-1.5 border rounded-lg pr-10"
+                  placeholder="Enter Password"
                 />
-                {formik.touched.admin_password &&
-                  formik.errors.admin_password && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {formik.errors.admin_password}
-                    </p>
-                  )}
+
+                {isEditMode && (
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                )}
               </div>
-            )}
+
+              {formik.touched.admin_password &&
+                formik.errors.admin_password && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {formik.errors.admin_password}
+                  </p>
+                )}
+            </div>
+
             {/* <div className="mb-4">
               <label className="text-sm font-medium">
                 Phone Number {!isEditMode && <span className="text-red-500">*</span>}
@@ -486,7 +497,6 @@ function AddCompanyAdmin() {
               {isEditMode ? "Update Admin" : " Create Admin"}
             </button>
           </div>
-
         </div>
       </form>
       {errorModal.open && (
@@ -496,15 +506,11 @@ function AddCompanyAdmin() {
               Action Failed
             </h3>
 
-            <p className="text-gray-700 mb-6">
-              {errorModal.message}
-            </p>
+            <p className="text-gray-700 mb-6">{errorModal.message}</p>
 
             <div className="flex justify-end">
               <button
-                onClick={() =>
-                  setErrorModal({ open: false, message: "" })
-                }
+                onClick={() => setErrorModal({ open: false, message: "" })}
                 className="px-5 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 OK
@@ -513,9 +519,8 @@ function AddCompanyAdmin() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
-export default AddCompanyAdmin
+export default AddCompanyAdmin;

@@ -91,32 +91,32 @@ const RegisterCompany = () => {
           errors.company_email = "Enter a valid email ending with .com";
         }
       }
-      if (!values.gst_number) {
-        errors.gst_number = "GST Number is required";
-      }
+      // if (!values.gst_number) {
+      //   errors.gst_number = "GST Number is required";
+      // }
       // if (!values.phone_number) {
       //   errors.phone_number = "Phone Number is required";
       // }
-      if (!values.phone_number) {
-        errors.phone_number = "Phone Number is required";
-      } else if (!/^\d{7,12}$/.test(values.phone_number)) {
-        errors.phone_number = "Enter valid phone number";
-      }
+      // if (!values.phone_number) {
+      //   errors.phone_number = "Phone Number is required";
+      // } else if (!/^\d{7,12}$/.test(values.phone_number)) {
+      //   errors.phone_number = "Enter valid phone number";
+      // }
 
       // if (!values.area) errors.area = "Area is required";
-      if (!values.address) errors.address = "Address is required";
-      if (!values.city) errors.city = "City is required";
+      // if (!values.address) errors.address = "Address is required";
+      // if (!values.city) errors.city = "City is required";
       // if (!values.district) errors.district = "District is required";
       // if (!values.state) errors.state = "State is required";
-      if (!values.country) errors.country = "Country is required";
-      if (!values.pin_code) {
-        errors.pin_code = "PIN Code is required";
-      } else {
-        const pinRegex = /^\d{6}$/;
-        if (!pinRegex.test(values.pin_code)) {
-          errors.pin_code = "PIN Code must be exactly 6 digits";
-        }
-      }
+      // if (!values.country) errors.country = "Country is required";
+      // if (!values.pin_code) {
+      //   errors.pin_code = "PIN Code is required";
+      // } else {
+      //   const pinRegex = /^\d{6}$/;
+      //   if (!pinRegex.test(values.pin_code)) {
+      //     errors.pin_code = "PIN Code must be exactly 6 digits";
+      //   }
+      // }
       if (!values.from_date) errors.from_date = "From date required";
       if (!values.to_date) errors.to_date = "To date required";
       if (!values.subscription_amount)
@@ -391,7 +391,6 @@ const RegisterCompany = () => {
             <div>
               <label className="text-sm font-medium">
                 GST Number{" "}
-                {!isEditMode && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
                 <Phone
@@ -406,16 +405,16 @@ const RegisterCompany = () => {
                   placeholder="Enter GST Number"
                 />
               </div>
-              {formik.touched.gst_number && formik.errors.gst_number && (
+              {/* {formik.touched.gst_number && formik.errors.gst_number && (
                 <p className="mt-1 text-xs text-red-500">
                   {formik.errors.gst_number}
                 </p>
-              )}
+              )} */}
             </div>
 
             <div>
               <label className="text-sm font-medium">
-                Address {!isEditMode && <span className="text-red-500">*</span>}
+                Address
               </label>
               <div className="relative">
                 <MapPin
@@ -430,15 +429,10 @@ const RegisterCompany = () => {
                   placeholder="Ex: Salt Lake"
                 />
               </div>
-              {formik.touched.address && formik.errors.address && (
-                <p className="mt-1 text-xs text-red-500">
-                  {formik.errors.address}
-                </p>
-              )}
             </div>
             <div>
               <label className="text-sm font-medium">
-                City {!isEditMode && <span className="text-red-500">*</span>}
+                City
               </label>
               <div className="relative">
                 <Map
@@ -453,11 +447,7 @@ const RegisterCompany = () => {
                   placeholder="Ex: Kolkata"
                 />
               </div>
-              {formik.touched.city && formik.errors.city && (
-                <p className="mt-1 text-xs text-red-500">
-                  {formik.errors.city}
-                </p>
-              )}
+             
             </div>
             {/* <div>
               <label className="text-sm font-medium">
@@ -518,7 +508,7 @@ const RegisterCompany = () => {
             </div> */}
             <div>
               <label className="text-sm font-medium">
-                Country {!isEditMode && <span className="text-red-500">*</span>}
+                Country
               </label>
 
               <div className="relative">
@@ -556,11 +546,11 @@ const RegisterCompany = () => {
                 </select>
               </div>
 
-              {formik.touched.country && formik.errors.country && (
+              {/* {formik.touched.country && formik.errors.country && (
                 <p className="mt-1 text-xs text-red-500">
                   {formik.errors.country}
                 </p>
-              )}
+              )} */}
             </div>
 
             {/* <div>
@@ -588,9 +578,7 @@ const RegisterCompany = () => {
             </div> */}
             <div>
               <label className="text-sm font-medium">
-                Phone Number{" "}
-                {!isEditMode && <span className="text-red-500">*</span>}
-              </label>
+                Phone Number</label>
 
               <div className="flex">
                 {/* Dial Code */}
@@ -614,18 +602,18 @@ const RegisterCompany = () => {
                   />
                 </div>
               </div>
-
+{/* 
               {formik.touched.phone_number && formik.errors.phone_number && (
                 <p className="mt-1 text-xs text-red-500">
                   {formik.errors.phone_number}
                 </p>
-              )}
+              )} */}
             </div>
 
             <div>
               <label className="text-sm font-medium">
-                PIN Code{" "}
-                {!isEditMode && <span className="text-red-500">*</span>}
+                PIN Code
+               
               </label>
               <div className="relative">
                 <Package
@@ -640,11 +628,7 @@ const RegisterCompany = () => {
                   placeholder="Ex: 700091"
                 />
               </div>
-              {formik.touched.pin_code && formik.errors.pin_code && (
-                <p className="mt-1 text-xs text-red-500">
-                  {formik.errors.pin_code}
-                </p>
-              )}
+             
             </div>
             {/* <div>
               <label className="text-sm font-medium">
