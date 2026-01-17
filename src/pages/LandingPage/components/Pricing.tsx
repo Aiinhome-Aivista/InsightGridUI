@@ -22,47 +22,122 @@
 // } 
 
 import { useNavigate } from "react-router-dom";
-import AnalyticsIcon from "@mui/icons-material/Analytics";
-import MenuIcon from "@mui/icons-material/Menu";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CreditCardOffIcon from "@mui/icons-material/CreditCardOff";
+import { useState, useRef } from "react";
+import { Toast } from "primereact/toast";
+
+import EmailIcon from "@mui/icons-material/Email";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import ForumIcon from "@mui/icons-material/Forum";
+import SendIcon from "@mui/icons-material/Send";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import WavingHandIcon from "@mui/icons-material/WavingHand";
+
 import projectIcon from "/src/assets/projectIcon.svg";
 import LandingFooter from "./LandingFooter";
+import ApiServices from "../../../services/ApiServices";
+import { MenuIcon } from "lucide-react";
+
 export default function Pricing() {
   const navigate = useNavigate();
 
-  const tiers = [
-    {
-      name: "Starter",
-      price: "$0",
-      desc: "Perfect for individuals exploring data.",
-      features: ["1 User", "5 Data Sources", "Basic Charts", "7-day Data Retention"],
-      cta: "Start for Free",
-      highlight: true,
-    },
-    {
-      name: "Pro",
-      price: "$29",
-      period: "/mo",
-      desc: "For analysts and small teams needing power.",
-      features: ["5 Users", "Unlimited Sources", "AI Insights (Beta)", "Export to PDF/PNG", "Priority Support"],
-      cta: "Get Started",
-      highlight: false,
-    },
-    {
-      name: "Enterprise",
-      price: "Custom",
-      desc: "Scalable solutions for large organizations.",
-      features: ["Unlimited Users", "SSO & Advanced Security", "Dedicated Success Manager", "On-premise Deployment", "Custom API Access"],
-      cta: "Contact Sales",
-      highlight: false,
-    },
-  ];
+  /* ✅ FIX 1: Toast ref */
+  const toast = useRef<Toast>(null);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  /* Transition */
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionOrigin, setTransitionOrigin] = useState({ x: 0, y: 0 });
+  const [transitionColor, setTransitionColor] = useState("bg-[#137fec]");
+
+  /* ✅ FIX 2: Typed helpers */
+  const validateEmail = (email: string): boolean => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email.toLowerCase());
+  };
+
+  const showSuccess = (message: string) => {
+    toast.current?.show({
+      severity: "success",
+      summary: "Success",
+      detail: message,
+      life: 3000,
+      style: {
+        background: "linear-gradient(135deg, #137fec 0%, #10b981 100%)",
+        color: "#fff",
+        borderRadius: "12px",
+        border: "none",
+      },
+    });
+  };
+
+  const showError = (message: string) => {
+    toast.current?.show({
+      severity: "error",
+      summary: "Error",
+      detail: message,
+      life: 3000,
+      style: {
+        background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+        color: "#fff",
+        borderRadius: "12px",
+        border: "none",
+      },
+    });
+  };
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    if (!validateEmail(formData.email)) {
+      showError("Please enter a valid email address.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const res = await ApiServices.contactUs(formData);
+
+      if (res.data?.success) {
+        showSuccess(res.data.message || "Email sent successfully!");
+        setSubmitted(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        showError(res.data?.message || "Failed to send email");
+      }
+    } catch {
+      showError("Server error. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   return (
-    <div className="bg-[#f6f7f8] text-slate-900 overflow-x-hidden min-h-full flex flex-col">
-      {/* --- HEADER (Same as Landing) --- */}
-  <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md">
+    <div className="min-h-screen flex flex-col">
+      <Toast ref={toast} position="top-right" />
+
+    <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
          <div className="size-9 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/90">
@@ -90,67 +165,99 @@ export default function Pricing() {
           <button className="md:hidden text-slate-900"><MenuIcon /></button>
         </div>
       </header>
-
-      <main className="flex-grow mt-10">
-        {/* Pricing Hero */}
-        <section className="py-16 px-4 md:px-10 lg:px-40 text-center">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-6">
-            Simple, transparent <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#137fec] to-blue-400">pricing</span>
-          </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Start for free, upgrade as you grow. No hidden fees or surprise charges.
-          </p>
+        <section className="py-16 px-4 md:px-10 lg:px-40 text-center mt-10">
+         <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900">
+  For Details on Pricing
+  <br />
+  Please Contact Us
+</h1>    
         </section>
 
-        {/* Pricing Cards */}
-        <section className="pb-24 px-4 md:px-10 lg:px-40 flex justify-center">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-[1200px] w-full items-start">
-            {tiers.map((tier, index) => (
-              <div 
-                key={index}
-                className={`relative bg-white rounded-2xl p-8 border transition-all duration-300 hover:-translate-y-1
-                  ${tier.highlight 
-                    ? "border-[#137fec] shadow-2xl shadow-[#137fec]/10 ring-1 ring-[#137fec] z-10 scale-105" 
-                    : "border-slate-200 shadow-xl"
-                  }`}
-              >
-                {tier.highlight && (
-                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#137fec] text-white text-xs font-bold uppercase tracking-wider py-1 px-3 rounded-full">
-                     Most Popular
-                   </div>
-                )}
-                <h3 className="text-xl font-bold text-slate-900 mb-2">{tier.name}</h3>
-                <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-4xl font-black text-slate-900">{tier.price}</span>
-                  {tier.period && <span className="text-slate-500 font-medium">{tier.period}</span>}
-                </div>
-                <p className="text-slate-500 text-sm mb-8 min-h-[40px]">{tier.desc}</p>
+  
+      <main className="flex-grow max-w-4xl mx-auto px-4 md:px-10 lg:px-40 mb-20 w-full">
+   <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+               
+                <form className="space-y-5" onSubmit={handleSubmit}>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                      Your Name
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                      Subject
+                    </label>
+                    <select
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
+                    >
                 
-                <button 
-                  onClick={() => tier.name === "Starter" && navigate("/login")}
-                  className={`w-full h-12 rounded-lg font-bold text-sm mb-8 transition-colors
-                  ${tier.highlight 
-                    ? "bg-[#137fec] text-white hover:bg-blue-600 shadow-lg shadow-[#137fec]/20" 
-                    : "bg-slate-100 text-slate-900 hover:bg-slate-200"
-                  }`}>
-                  {tier.cta}
-                </button>
-
-                <ul className="space-y-4">
-                  {tier.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-sm text-slate-600">
-                      <CheckCircleIcon className={`text-lg ${tier.highlight ? "text-[#137fec]" : "text-slate-400"}`} />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                      <option value="billing">Billing Question</option>
+                  
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                      Your Message
+                    </label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={5}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all resize-none"
+                      placeholder="How can we help you?"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-4 rounded-xl bg-[#137fec] text-white font-bold hover:bg-blue-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Send Message</span>
+                        <SendIcon fontSize="small" />
+                      </>
+                    )}
+                  </button>
+                </form>
               </div>
-            ))}
-          </div>
-        </section>
       </main>
-              
-                  <LandingFooter />
+
+      <LandingFooter />
     </div>
   );
 }
