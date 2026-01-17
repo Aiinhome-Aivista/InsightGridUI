@@ -205,31 +205,61 @@ const ContactPage = () => {
             `}</style>
 
       <Toast ref={toast} position="top-right" className="custom-toast" />
-  <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md">
+      <header className="fixed top-0 z-50 w-full border-b border-[#e7edf3] backdrop-blur-md">
         <div className="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
-                   <div className="size-9 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/90">
-          <img
-  src={projectIcon}
-  alt="Project Icon"
-  className="w-6 h-6"
-/>
+          <div
+            className="flex items-center gap-4 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            <div className="size-9 text-[#137fec] flex items-center justify-center rounded-lg bg-[#137fec]/90">
+              <img src={projectIcon} alt="Project Icon" className="w-6 h-6" />
             </div>
-            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">Sahajinsight</h2>
+            <h2 className="text-slate-900 text-xl font-bold leading-tight tracking-tight">
+              Sahajinsight
+            </h2>
           </div>
           <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
             <nav className="flex items-center gap-8">
-                            <a onClick={() => navigate("/Contact us")} className="text-[#137fec] text-sm font-bold transition-colors cursor-pointer">Contact us</a>
-              <a onClick={() => navigate("/resources")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Resources</a>
-              <a onClick={() => navigate("/pricing")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">Pricing</a>
-              <a onClick={() => navigate("/faq")} className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer">FAQ</a>
+              <a
+                onClick={() => navigate("/Contact us")}
+                className="text-[#137fec] text-sm font-bold transition-colors cursor-pointer"
+              >
+                Contact us
+              </a>
+              <a
+                onClick={() => navigate("/resources")}
+                className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
+              >
+                Resources
+              </a>
+              <a
+                onClick={() => navigate("/pricing")}
+                className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
+              >
+                Pricing
+              </a>
+              <a
+                onClick={() => navigate("/faq")}
+                className="text-slate-600 text-sm font-medium hover:text-[#137fec] transition-colors cursor-pointer"
+              >
+                FAQ
+              </a>
             </nav>
             <div className="flex gap-3">
-               <button onClick={() => navigate("/login")} className="rounded-lg h-10 px-4 bg-slate-100 text-slate-900 text-sm font-bold hover:bg-slate-200 transition-colors">Log in</button>
-               <button onClick={() => navigate("/signup")} className="rounded-lg h-10 px-4 bg-[#137fec] text-white text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-[#137fec]/20">Start for free</button>
+              <button
+                onClick={() => navigate("/login")}
+                className="rounded-lg h-10 px-4 bg-slate-100 text-slate-900 text-sm font-bold hover:bg-slate-200 transition-colors"
+              >
+                Log in
+              </button>
+              <button
+                onClick={() => navigate("/signup")}
+                className="rounded-lg h-10 px-4 bg-[#137fec] text-white text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-[#137fec]/20"
+              >
+                Start for free
+              </button>
             </div>
           </div>
-    
         </div>
       </header>
 
@@ -337,7 +367,7 @@ const ContactPage = () => {
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-[#137fec] focus:ring-2 focus:ring-[#137fec]/10 transition-all"
                     >
                       <option value="">Select a topic</option>
-                      <option value="general">General Inquiry</option>
+                      <option value="general">General Enquiry</option>
                       <option value="support">Technical Support</option>
                       <option value="billing">Billing Question</option>
                       <option value="feedback">Feedback</option>
@@ -418,10 +448,6 @@ const ContactPage = () => {
                         Check out our comprehensive help center for guides,
                         tutorials, and troubleshooting tips.
                       </p>
-                      <button className="text-[#137fec] font-bold hover:underline transition-colors flex items-center gap-1 text-sm">
-                        <span>Visit Help Center</span>
-                        <ArrowForwardIcon fontSize="small" />
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -430,7 +456,7 @@ const ContactPage = () => {
           </div>
         </section>
       </main>
-      
+
       <LandingFooter />
     </div>
   );
