@@ -237,7 +237,7 @@ const valueTemplate = (option) => {
             </div>
 
             <p className="mb-6 font-extrabold" style={{ color: theme.primaryText }}>
-              Are you sure you want to go back?
+              Do you want to discard your changes?
             </p>
 
             <div className="flex justify-center gap-4">
