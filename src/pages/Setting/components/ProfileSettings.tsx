@@ -236,7 +236,7 @@ const handleAvatarUpload = async (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company Name *
+                Company Name
               </label>
               <div className="relative ">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -254,6 +254,7 @@ const handleAvatarUpload = async (
                       ? "border-red-300"
                       : "border-gray-300"
                   }`}
+                  disabled
                 />
               </div>
               {formik.touched.companyName && formik.errors.companyName && (
@@ -264,7 +265,7 @@ const handleAvatarUpload = async (
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company Code *
+                Company Code
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -282,6 +283,7 @@ const handleAvatarUpload = async (
                       ? "border-red-300"
                       : "border-gray-300"
                   }`}
+                  disabled
                 />
               </div>
               {formik.touched.companyCode && formik.errors.companyCode && (
@@ -292,7 +294,7 @@ const handleAvatarUpload = async (
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Address *
+                Address
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -310,6 +312,7 @@ const handleAvatarUpload = async (
                       ? "border-red-300"
                       : "border-gray-300"
                   }`}
+                  disabled
                 />
               </div>
               {formik.touched.address && formik.errors.address && (
@@ -320,7 +323,7 @@ const handleAvatarUpload = async (
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Zip Code *
+                Zip Code
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -338,6 +341,7 @@ const handleAvatarUpload = async (
                       ? "border-red-300"
                       : "border-gray-300"
                   }`}
+                  disabled
                 />
               </div>
               {formik.touched.zipCode && formik.errors.zipCode && (
@@ -348,7 +352,7 @@ const handleAvatarUpload = async (
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email *
+                Email
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -366,6 +370,7 @@ const handleAvatarUpload = async (
                       ? "border-red-300"
                       : "border-gray-300"
                   }`}
+                  disabled
                 />
               </div>
               {formik.touched.email && formik.errors.email && (
@@ -376,7 +381,7 @@ const handleAvatarUpload = async (
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number *
+                Phone Number
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -394,6 +399,7 @@ const handleAvatarUpload = async (
                       ? "border-red-300"
                       : "border-gray-300"
                   }`}
+                  disabled
                 />
               </div>
               {formik.touched.phoneNumber && formik.errors.phoneNumber && (

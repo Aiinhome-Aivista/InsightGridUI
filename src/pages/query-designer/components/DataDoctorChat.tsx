@@ -586,6 +586,8 @@ export default function Chat({
       }
 
       saveChatStore(store);
+    }finally{
+      setIsExecuting(false)
     }
 
   };
