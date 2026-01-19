@@ -30,7 +30,7 @@ export default function LogoutModal() {
 
         <div className="my-4">
           <p className="text-base md:text-lg font-semibold tracking-tight" style={{ color: theme.primaryText }}>
-            <span style={{ color: theme.primaryText }}>Aivista</span>
+            <span style={{ color: theme.primaryText }}>Sahajinsight</span>
           </p>
         </div>
 
