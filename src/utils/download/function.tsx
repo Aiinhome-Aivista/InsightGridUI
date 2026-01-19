@@ -99,7 +99,7 @@ export const generatePDF = async (
     console.warn("No data available for PDF");
     return;
   }
-  console.log("Generating PDF...",chartImageUrls);
+  console.log("Generating PDF...", chartImageUrls);
 
   const user = JSON.parse(localStorage.getItem("ig_user") || "{}");
 
@@ -119,25 +119,25 @@ export const generatePDF = async (
   // }
   let companyAddress = "";
 
-const {
-  company_address,
-  city,
-  country,
-  pin_code
-} = user || {};
-
-if (city || country || pin_code) {
-  companyAddress = [
+  const {
     company_address,
     city,
     country,
     pin_code
-  ]
-    .filter(Boolean)
-    .join(", ");
-} else {
-  companyAddress = company_address || "";
-}
+  } = user || {};
+
+  if (city || country || pin_code) {
+    companyAddress = [
+      company_address,
+      city,
+      country,
+      pin_code
+    ]
+      .filter(Boolean)
+      .join(", ");
+  } else {
+    companyAddress = company_address || "";
+  }
 
   const logoUrl = user?.company_logo_url || "";
   const createdDate = new Date().toLocaleDateString("en-GB");
@@ -183,6 +183,17 @@ if (city || country || pin_code) {
   const logoW = 50;
   const logoH = 40;
 
+  const leftMargin = 40;
+  const hasLogo = !!logoUrl;
+
+  // Company name position
+  const companyNameX = hasLogo
+    ? logoX + logoW + 10
+    : leftMargin;
+
+  // Address & date ALWAYS extreme left
+  const addressStartX = leftMargin;
+
   if (logoUrl) {
     const logoBase64 = await fetchImageAsBase64(logoUrl);
     doc.addImage(logoBase64, "PNG", logoX, logoY, logoW, logoH);
@@ -196,13 +207,20 @@ if (city || country || pin_code) {
 
   const companyNameY = logoY + logoH / 2 + companyFontSize / 2 - 2; // perfectly centered
 
-  doc.text(companyName, logoX + logoW + 10, companyNameY);
+  // doc.text(companyName, logoX + logoW + 10, companyNameY);
+  doc.text(companyName, companyNameX, companyNameY);
+
+
 
   // Row 2: Address (limited width, not full row)
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
 
-  const addressX = 38;
+  // const addressX = 38;
+  // const addressX = contentStartX;
+  const addressX = addressStartX;
+
+
   const addressY = logoY + logoH + 8;
   const addressWidth = pageWidth * 0.35;
 
@@ -281,59 +299,59 @@ if (city || country || pin_code) {
   if (chartImages.length % 2 !== 0) {
     yPos += chartHeight + gapY;
   }
-const getFontSize = (colCount: number) => {
-  const maxFont = 10;   // minimum columns
-  const minFont = 5;    // extreme columns
-  const maxCols = 20;   // after this, stay min
+  const getFontSize = (colCount: number) => {
+    const maxFont = 10;   // minimum columns
+    const minFont = 5;    // extreme columns
+    const maxCols = 20;   // after this, stay min
 
-  if (colCount <= 5) return maxFont;
-  if (colCount >= maxCols) return minFont;
+    if (colCount <= 5) return maxFont;
+    if (colCount >= maxCols) return minFont;
 
-  // linear scale
-  return (
-    maxFont -
-    ((colCount - 5) * (maxFont - minFont)) / (maxCols - 5)
-  );
-};
+    // linear scale
+    return (
+      maxFont -
+      ((colCount - 5) * (maxFont - minFont)) / (maxCols - 5)
+    );
+  };
 
 
   const tableStartY = yPos + 20;
- const dynamicFontSize = getFontSize(columnCount);
+  const dynamicFontSize = getFontSize(columnCount);
 
-autoTable(doc, {
-  startY: tableStartY,
+  autoTable(doc, {
+    startY: tableStartY,
 
-  head: [headers],
-  body: rows.map((r) => columns.map((col) => r[col] ?? "")),
+    head: [headers],
+    body: rows.map((r) => columns.map((col) => r[col] ?? "")),
 
-  theme: "grid",
+    theme: "grid",
 
-  styles: {
-    fontSize: dynamicFontSize,
-    cellPadding: {
-      top: 4,
-      bottom: 4,
-      left: 3,
-      right: 3,
-    },
-    halign: "center",
-    valign: "middle",
+    styles: {
+      fontSize: dynamicFontSize,
+      cellPadding: {
+        top: 4,
+        bottom: 4,
+        left: 3,
+        right: 3,
+      },
+      halign: "center",
+      valign: "middle",
       textColor: [31, 41, 55],
-    overflow: "linebreak",
-  },
-headStyles: {
-  fontSize: dynamicFontSize + 1,
-  minCellHeight: 24,
-  fillColor: [243, 244, 246],
-  textColor: [61, 91, 129],
-  fontStyle: "bold",
-  overflow: "ellipsize",
-},
+      overflow: "linebreak",
+    },
+    headStyles: {
+      fontSize: dynamicFontSize + 1,
+      minCellHeight: 24,
+      fillColor: [243, 244, 246],
+      textColor: [61, 91, 129],
+      fontStyle: "bold",
+      overflow: "ellipsize",
+    },
 
-  bodyStyles: {
-    minCellHeight: 20,
-  },
-});
+    bodyStyles: {
+      minCellHeight: 20,
+    },
+  });
 
 
 
