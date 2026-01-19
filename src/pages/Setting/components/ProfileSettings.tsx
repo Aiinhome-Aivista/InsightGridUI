@@ -12,14 +12,15 @@ import {
   MapPin,
   Package,
 } from "lucide-react";
+import ApiServices from "../../../services/ApiServices";
+
 interface ProfileSettingsProps {
   activeTab: string;
 }
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
   const userData = JSON.parse(localStorage.getItem("ig_user") || "{}");
-  const BASE_URL = (import.meta as any).env.VITE_API_BASE_URL;
   const [avatar, setAvatar] = useState<string | null>(
-    userData?.company_logo ? `${BASE_URL}${userData.company_logo}` : null,
+     userData?.company_logo_url || null
   );
   const [isSaving, setIsSaving] = useState(false);
   console.log("User Data in ProfileSettings:", userData);
@@ -98,51 +99,90 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
   //     reader.readAsDataURL(file);
   //   }
   // };
-  const handleAvatarUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  // const handleAvatarUpload = async (
+  //   event: React.ChangeEvent<HTMLInputElement>,
+  // ) => {
+  //   const file = event.target.files?.[0];
+  //   if (!file) return;
 
-    // 1️⃣ instant preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setAvatar(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+  //   // 1️⃣ instant preview
+  //   const reader = new FileReader();
+  //   reader.onloadend = () => {
+  //     setAvatar(reader.result as string);
+  //   };
+  //   reader.readAsDataURL(file);
 
-    // 2️⃣ backend upload
-    const formData = new FormData();
-    formData.append("company_id", userData.company_id);
-    formData.append("company_logo", file);
+  //   // 2️⃣ backend upload
+  //   const formData = new FormData();
+  //   formData.append("company_id", userData.company_id);
+  //   formData.append("company_logo", file);
 
-    try {
-      const res = await fetch(`${BASE_URL}/admin/company/logo`, {
-        method: "POST",
-        body: formData,
-      });
+  //   try {
+  //     const res = await fetch(`${BASE_URL}/admin/company/logo`, {
+  //       method: "POST",
+  //       body: formData,
+  //     });
 
-      const json = await res.json();
+  //     const json = await res.json();
 
-      if (json.isSuccess) {
-        // 3️⃣ session (localStorage) update
-        const updatedUser = {
-          ...userData,
-          company_logo: json.data.company_logo,
-        };
+  //     if (json.isSuccess) {
+  //       // 3️⃣ session (localStorage) update
+  //     const updatedUser = {
+  //       ...userData,
+  //       company_logo: json.data.company_logo,
+  //       company_logo_url: json.data.company_logo_url,
+  //     };
 
-        localStorage.setItem("ig_user", JSON.stringify(updatedUser));
+  //     localStorage.setItem("ig_user", JSON.stringify(updatedUser));
+  //     setAvatar(json.data.company_logo_url);
 
-        // 4️⃣ backend path দিয়ে avatar update (final)
-        setAvatar(`${BASE_URL}${json.data.company_logo}`);
-      } else {
-        alert(json.message || "Logo upload failed");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Server error while uploading logo");
-    }
+  //     } else {
+  //       alert(json.message || "Logo upload failed");
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Server error while uploading logo");
+  //   }
+  // };
+const handleAvatarUpload = async (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  // 1️⃣ instant preview
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    setAvatar(reader.result as string);
   };
+  reader.readAsDataURL(file);
+
+  // 2️⃣ backend upload
+  const formData = new FormData();
+  formData.append("company_id", userData.company_id);
+  formData.append("company_logo", file);
+
+  try {
+    const res = await ApiServices.uploadCompanyLogo(formData);
+    const json = res.data;
+
+    if (json.isSuccess) {
+      const updatedUser = {
+        ...userData,
+        company_logo: json.data.company_logo,
+        company_logo_url: json.data.company_logo_url,
+      };
+
+      localStorage.setItem("ig_user", JSON.stringify(updatedUser));
+      setAvatar(json.data.company_logo_url);
+    } else {
+      alert(json.message || "Logo upload failed");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error while uploading logo");
+  }
+};
 
   const handleDeleteAvatar = () => {
     setAvatar(null);

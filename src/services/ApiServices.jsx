@@ -120,6 +120,14 @@ class ApiServices {
   getCountryList() {
     return axios.get(GET_APIS.country_list);
   }
+  uploadCompanyLogo(formData) {
+  return axios.post(POST_APIS.logo, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
 }
 
 export default new ApiServices();

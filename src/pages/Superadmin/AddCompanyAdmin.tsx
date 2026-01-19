@@ -201,11 +201,11 @@ function AddCompanyAdmin() {
 
   return (
     <div className="W-full mx-auto px-6\3 mb-4">
-      <form onSubmit={formik.handleSubmit}>
+      <form onSubmit={formik.handleSubmit} autoComplete="off">
         <div className="rounded-xl px-6">
           <h2 className="text-xl font-semibold mb-6"></h2>
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xl font-semibold">Add Company Admin</h2>
+            <h2 className="text-xl font-semibold">Add Company User</h2>
             {!isEditMode && (
               <Tippy content="Reset" theme="gray">
                 <button
@@ -227,7 +227,7 @@ function AddCompanyAdmin() {
           {/* Admin Name */}
           <div className="mb-4">
             <label className="text-sm font-medium">
-              Admin Name{" "}
+              User Name{" "}
               {!isEditMode && <span className="text-red-500">*</span>}
             </label>
             <input
@@ -236,7 +236,8 @@ function AddCompanyAdmin() {
               value={formik.values.admin_name}
               onChange={formik.handleChange}
               className="w-full px-4 py-1.5 border rounded-lg mt-1"
-              placeholder="Enter Admin Name"
+              placeholder="Enter User Name"
+              autoComplete="off"
             />
             {formik.touched.admin_name && formik.errors.admin_name && (
               <p className="text-xs text-red-500 mt-1">
@@ -358,6 +359,7 @@ function AddCompanyAdmin() {
                   onChange={formik.handleChange}
                   className="w-full px-4 py-1.5 border rounded-lg pr-10"
                   placeholder="Enter Password"
+                  autoComplete="new-password"
                 />
 
                 
@@ -509,8 +511,8 @@ function AddCompanyAdmin() {
               {formik.isSubmitting
                 ? "Processing..."
                 : isEditMode
-                  ? "Update Admin"
-                  : "Create Admin"}
+                  ? "Update User"
+                  : "Create User"}
             </button>
 
           </div>

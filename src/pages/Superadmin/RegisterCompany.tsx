@@ -94,6 +94,8 @@ const RegisterCompany = () => {
           errors.company_email = "Enter a valid email ending with .com";
         }
       }
+
+      
       // if (!values.gst_number) {
       //   errors.gst_number = "GST Number is required";
       // }
@@ -124,6 +126,8 @@ const RegisterCompany = () => {
       if (!values.to_date) errors.to_date = "To date required";
       if (!values.subscription_amount)
         errors.subscription_amount = "Subscription Amount is required";
+
+      
       //  FINAL CORRECT LOGO VALIDATION
       // if (!isEditMode && !values.company_logo) {
       //   errors.company_logo = "Company Logo is required";

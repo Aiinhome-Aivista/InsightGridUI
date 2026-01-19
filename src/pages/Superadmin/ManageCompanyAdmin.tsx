@@ -25,7 +25,7 @@ function ManageCompanyAdmin() {
   const columnConfig = [
     {
       field: "admin_user_id",
-      header: "Full Name",
+      header: "User Name",
       sortable: true,
     },
     // {
@@ -148,9 +148,9 @@ function ManageCompanyAdmin() {
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-8">
           <div>
-            <h1 className="text-xl font-semibold text-[#1C1B1F] leading-tight">Manage Company Admins</h1>
+            <h1 className="text-xl font-semibold text-[#1C1B1F] leading-tight">Manage Company Users</h1>
             <p className="text-[12px] text-[#888585] mt-1 whitespace-nowrap">
-              Start by adding your first company admin.
+              Start by adding your first company user.
 
             </p>
           </div>
@@ -160,7 +160,7 @@ function ManageCompanyAdmin() {
             onClick={() => navigate("/layout/add-company-admin")}
 
           >
-            Add Company Admin
+            Add Company User
           </button>
         </div>
         <div className="flex items-center gap-3">
@@ -255,7 +255,7 @@ function ManageCompanyAdmin() {
           filters={filters}
           globalFilterFields={columnConfig.map(c => c.field)}
           stripedRows
-          emptyMessage="No companies found"
+          emptyMessage="No users found"
           className="custom-table"
         >
           {columnConfig.map((col) => (
