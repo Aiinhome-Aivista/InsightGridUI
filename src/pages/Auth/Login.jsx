@@ -106,7 +106,7 @@ export default function Login() {
       if (res?.isSuccess) {
         setNotification({
           open: true,
-          message: "Login successfully!",
+          message: "Login successful!",
           severity: "success",
         });
 
