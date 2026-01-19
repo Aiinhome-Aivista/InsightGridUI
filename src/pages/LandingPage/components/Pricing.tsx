@@ -201,10 +201,9 @@ export default function Pricing() {
         </div>
       </header>
       <section className="py-16 px-4 md:px-10 lg:px-40 text-center mt-10">
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900">
-          For Details on Pricing
-          <br />
-          Please Contact Us
+        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-700">
+          Please share your query, and we’ll   <br /> get back to you shortly
+        
         </h1>
       </section>
 

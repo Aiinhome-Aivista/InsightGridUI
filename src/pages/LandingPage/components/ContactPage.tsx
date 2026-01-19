@@ -119,8 +119,8 @@ const ContactPage = () => {
       icon: <EmailIcon fontSize="large" />,
       title: "Email Us",
       description: "For general inquiries and support",
-      value: "support@Sahajinsight.com",
-      action: "mailto:support@Sahajinsight.com",
+      value: "support@sahajinsight.com",
+      action: "mailto:support@sahajinsight.com",
     },
     {
       icon: <AccessTimeIcon fontSize="large" />,

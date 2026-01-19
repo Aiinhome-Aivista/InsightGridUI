@@ -66,7 +66,7 @@ export default function Header() {
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center">
             <p className="text-base md:text-lg font-semibold tracking-tight" style={{ color: theme.primaryText }}>
-              <span style={{ color: theme.primaryText }}>Aivista</span>
+              <span style={{ color: theme.primaryText }}>Sahajinsight</span>
             </p>
           </div>
           <div className="flex items-center gap-3 text-sm" style={{ color: theme.secondaryText }}>
