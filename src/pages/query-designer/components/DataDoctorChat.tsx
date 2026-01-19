@@ -440,18 +440,66 @@ export default function Chat({
         session_id: userData?.session_id,
         sql_query: executableQuery,
       };
-      console.log("Executing SQL Payload:", payload);
+
       const response = await ApiService.executeSql(payload);
 
-      if (
-        response.data.isSuccess &&
-        response.data.data &&
-        Array.isArray(response.data.data.rows)
-      ) {
+      // if (
+      //   response.data.isSuccess &&
+      //   response.data.data &&
+      //   Array.isArray(response.data.data.rows)
+      // ) {
+      //   const rowCount =
+      //     response.data.data.total_rows ?? response.data.data.rows.length;
+      //   const executionTime = response.data.data.execution_time ?? null;
+      //   const rows = response.data.data.rows;
+      //   const columns =
+      //     rows.length > 0
+      //       ? Object.keys(rows[0]).map((key) => ({ column_name: key }))
+      //       : [];
+
+      //   setTableData({ rows, columns });
+      //   setDownloadData({ rows, columns });
+      //   setDisplayedLogs([response.data.message || "Execution successful."]);
+      //   setExecutionMeta({
+      //     rows_effected: rowCount,
+      //     query_time: executionTime,
+      //   });
+      //   setIsScriptRunSuccess(true);
+      //   const store = getChatStore(
+      //     userData?.user_id || "unknown",
+      //     chat.session_id
+      //   );
+      //   const lastMsg = [...store.messages]
+      //     .reverse()
+      //     .find((m) => m.is_execute === false);
+
+      //   if (lastMsg) {
+      //     lastMsg.is_execute = true;
+      //     lastMsg.is_success = true;
+      //     lastMsg.row_count = rowCount;
+      //     lastMsg.query_time = executionTime;
+      //   }
+
+      //   saveChatStore(store);
+      // } else {
+      //   setTableData(null);
+      //   setDisplayedLogs([
+      //     response.data.message || "Execution failed or returned no data.",
+      //   ]);
+      //   setExecutionMeta(null);
+      //   setIsScriptRunSuccess(false);
+      // }
+      //  ALWAYS show backend message first
+      setDisplayedLogs([response.data.message || ""]);
+
+      if (response.data.isSuccess === true) {
         const rowCount =
-          response.data.data.total_rows ?? response.data.data.rows.length;
-        const executionTime = response.data.data.execution_time ?? null;
-        const rows = response.data.data.rows;
+          response.data.data?.total_rows ??
+          response.data.data?.rows?.length ??
+          0;
+
+        const executionTime = response.data.data?.execution_time ?? null;
+        const rows = response.data.data?.rows || [];
         const columns =
           rows.length > 0
             ? Object.keys(rows[0]).map((key) => ({ column_name: key }))
@@ -459,16 +507,17 @@ export default function Chat({
 
         setTableData({ rows, columns });
         setDownloadData({ rows, columns });
-        setDisplayedLogs([response.data.message || "Execution successful."]);
         setExecutionMeta({
           rows_effected: rowCount,
           query_time: executionTime,
         });
         setIsScriptRunSuccess(true);
+
         const store = getChatStore(
           userData?.user_id || "unknown",
           chat.session_id
         );
+
         const lastMsg = [...store.messages]
           .reverse()
           .find((m) => m.is_execute === false);
@@ -482,15 +531,46 @@ export default function Chat({
 
         saveChatStore(store);
       } else {
+        //  FAILURE CASE (200 but isSuccess=false)
         setTableData(null);
-        setDisplayedLogs([
-          response.data.message || "Execution failed or returned no data.",
-        ]);
         setExecutionMeta(null);
         setIsScriptRunSuccess(false);
       }
-    } catch (error) {
+
+      // } catch (error) {
+      //   console.error("Execute SQL API Error:", error);
+      //   const store = getChatStore(
+      //     userData?.user_id || "unknown",
+      //     chat.session_id
+      //   );
+
+      //   const lastMsg = [...store.messages]
+      //     .reverse()
+      //     .find((m) => m.ai_response === chat.query);
+
+      //   if (lastMsg) {
+      //     lastMsg.is_execute = true;
+      //     lastMsg.is_success = false;
+      //   }
+
+      //   saveChatStore(store);
+      // } finally {
+      //   setIsExecuting(false);
+      // }
+    } catch (error: any) {
       console.error("Execute SQL API Error:", error);
+
+      //  SHOW MESSAGE FOR 400 / 500
+      setDisplayedLogs([
+        error?.response?.data?.message ||
+        error?.message ||
+        "Server error while executing query."
+      ]);
+
+      setTableData(null);
+      setExecutionMeta(null);
+      setIsScriptRunSuccess(false);
+
       const store = getChatStore(
         userData?.user_id || "unknown",
         chat.session_id
@@ -506,9 +586,8 @@ export default function Chat({
       }
 
       saveChatStore(store);
-    } finally {
-      setIsExecuting(false);
     }
+
   };
   // const handleDeleteMessage = (queryId: number) => {
   //   const updatedHistory = messageHistory.filter(
@@ -519,11 +598,11 @@ export default function Chat({
   //   localStorage.setItem("chat_history", JSON.stringify(updatedHistory));
   // };
 
-useEffect(() => {
+  useEffect(() => {
     const query = chat?.query || "";
     setTypedQuery(""); // Clear previous text
     const scriptContainerRef = document.getElementById("script-container");
-    
+
     if (!query) return;
 
     let i = 0; // Start from the very first character
@@ -532,12 +611,12 @@ useEffect(() => {
       if (i < query.length) {
         // Retrieve the character at the current index 'i'
         const char = query.charAt(i);
-        
+
         // Append it to the state
         setTypedQuery((prev) => prev + char);
-        
+
         i++; // Increment index
-        
+
         // Scroll to bottom
         if (scriptContainerRef) {
           scriptContainerRef.scrollTop = scriptContainerRef.scrollHeight;
@@ -668,8 +747,8 @@ useEffect(() => {
   //   setSaveModalConfig({});
   //   setIsConfirmSaveModalOpen(true);
   // };
-  
- const handleSaveClick = () => {
+
+  const handleSaveClick = () => {
     const existingTitles = (location.state as any)?.existingTitles || [];
     const currentName = viewName.trim().toLowerCase();
     const originalName = passedData?.query_title?.trim().toLowerCase();
@@ -684,7 +763,7 @@ useEffect(() => {
       } else {
         setSaveModalConfig({
           customMessage: "Query name already exists. Please choose a different name.",
-          showConfirmButton: false, 
+          showConfirmButton: false,
         });
         setIsConfirmSaveModalOpen(true);
         return;
