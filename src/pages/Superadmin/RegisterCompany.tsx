@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
+import { parsePhoneNumberFromString, CountryCode } from "libphonenumber-js";
+
 import {
   Building2,
   Mail,
@@ -95,7 +97,59 @@ const RegisterCompany = () => {
         }
       }
 
-      
+      // ---------- PHONE (OPTIONAL + COUNTRY BASED) ----------
+      // if (values.phone_number) {
+      //   if (!values.country) {
+      //     errors.phone_number = "Select country to validate phone number";
+      //   } else {
+      //     try {
+      //       const phone = parsePhoneNumberFromString(
+      //         values.phone_number,
+      //         values.country as any // ISO code: IN, US, AE, etc.
+      //       );
+
+      //       if (!phone || !phone.isValid()) {
+      //         errors.phone_number =
+      //           "Invalid phone number for selected country";
+      //       }
+      //     } catch {
+      //       errors.phone_number = "Invalid phone number format";
+      //     }
+      //   }
+      // }
+
+      // ---------- PHONE (OPTIONAL + DIGITS + COUNTRY BASED) ----------
+      if (values.phone_number) {
+        // 1️⃣ digits-only check (your requirement)
+        if (!/^\d+$/.test(values.phone_number)) {
+          errors.phone_number = "Phone number must contain only digits";
+        }
+        // 2️⃣ country-based validation
+        else {
+          if (!values.country) {
+            errors.phone_number = "Select country to validate phone number";
+          } else {
+            try {
+              const countryCode = values.country as CountryCode;
+
+              const phone = parsePhoneNumberFromString(
+                values.phone_number,
+                countryCode
+              );
+
+              if (!phone || !phone.isValid()) {
+                errors.phone_number =
+                  "Invalid phone number for selected country";
+              }
+            } catch {
+              errors.phone_number = "Invalid phone number format";
+            }
+          }
+        }
+      }
+
+
+
       // if (!values.gst_number) {
       //   errors.gst_number = "GST Number is required";
       // }
@@ -127,7 +181,7 @@ const RegisterCompany = () => {
       if (!values.subscription_amount)
         errors.subscription_amount = "Subscription Amount is required";
 
-      
+
       //  FINAL CORRECT LOGO VALIDATION
       // if (!isEditMode && !values.company_logo) {
       //   errors.company_logo = "Company Logo is required";
@@ -598,22 +652,37 @@ const RegisterCompany = () => {
                     size={18}
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                   />
-                  <input
+                  {/* <input
                     name="phone_number"
                     value={formik.values.phone_number}
                     onChange={formik.handleChange}
                     className="w-full pl-10 py-1.5 border rounded-r-lg"
                     placeholder="Enter phone number"
                     disabled={!formik.values.country}
+                  /> */}
+                  <input
+                    name="phone_number"
+                    value={formik.values.phone_number}
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    onChange={(e) => {
+                      const digitsOnly = e.target.value.replace(/\D/g, "");
+                      formik.setFieldValue("phone_number", digitsOnly);
+                    }}
+                    onBlur={formik.handleBlur}
+                    className="w-full pl-10 py-1.5 border rounded-r-lg"
+                    placeholder="Enter phone number"
+                    disabled={!formik.values.country}
                   />
+
                 </div>
               </div>
-              {/* 
+
               {formik.touched.phone_number && formik.errors.phone_number && (
                 <p className="mt-1 text-xs text-red-500">
                   {formik.errors.phone_number}
                 </p>
-              )} */}
+              )}
             </div>
 
             <div>
