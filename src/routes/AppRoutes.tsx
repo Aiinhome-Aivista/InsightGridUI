@@ -29,7 +29,15 @@ import HelpCenter from "../pages/LandingPage/components/HelpCenter";
 import PrivacyPolicy from "../pages/LandingPage/components/PrivacyPolicy";
 import TermsOfService from "../pages/LandingPage/components/TermsOfService";
 import ContactPage from "../pages/LandingPage/components/ContactPage";
+import { useEffect } from "react";
+import { trackPageView } from "../utils/ga";
+
 function AppRoutes() {
+   const location = useLocation();
+
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location]);
   return (
     <AuthProvider>
       <Routes>
