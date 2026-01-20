@@ -157,7 +157,7 @@ function ManageCompanyAdmin() {
           <button
             className="bg-blue-400 hover:bg-blue-700 h-10 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center p-4"
 
-            onClick={() => navigate("/layout/add-company-admin")}
+            onClick={() => navigate("/layout/add-company-user")}
 
           >
             Add Company User

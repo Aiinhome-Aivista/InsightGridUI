@@ -33,7 +33,8 @@ const menuItems = [
   // { name: "Report Scheduler", icon: HourglassTopTwoToneIcon , path: "report-scheduler" , roles: ["companyadmin", "user"] },
   { name: "Settings", icon: SettingsRoundedIcon, path: "Settings", roles: ["companyadmin", "user"] },
   //  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
-  { name: "Company Admin", icon: admin_panel_settings, path: "manage-company-admin", roles: ["superadmin"] },
+  // { name: "Company Admin", icon: admin_panel_settings, path: "manage-company-admin", roles: ["superadmin"] },
+  { name: "Company User", icon: admin_panel_settings, path: "manage-company-user", roles: ["superadmin"] },
   
 
 ];
@@ -127,7 +128,7 @@ export default function Sidebar() {
             if (item.path === 'manage-companies' && location.pathname.includes('register-company')) {
               isActive = true;
             }
-            if (item.path === 'manage-company-admin' && location.pathname.includes('add-company-admin')) {
+            if (item.path === 'manage-company-user' && location.pathname.includes('add-company-user')) {
               isActive = true;
             }
             return (
