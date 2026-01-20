@@ -112,7 +112,7 @@ function ManageCompanyAdmin() {
         <button
           className="p-1 rounded hover:bg-blue-100 text-gray-600"
           onClick={() => {
-            navigate(`/layout/add-company-admin/${row.id}`, {
+            navigate(`/layout/add-company-user/${row.id}`, {
               state: { admin: row }
             });
           }}
