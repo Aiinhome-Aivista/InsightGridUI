@@ -94,13 +94,13 @@ function AddSEO() {
   /* ================= UI ================= */
 
   return (
-    <div className="mx-auto px-6 py-8 max-w-3xl">
+    <div className="px-6 py-8">
       <h1 className="text-xl font-semibold mb-6">
         {id ? "Edit SEO" : "Add SEO"}
       </h1>
 
       <form onSubmit={formik.handleSubmit}>
-        <div className="bg-white rounded-xl p-6 space-y-6">
+        <div className="bg-white rounded-xl space-y-6">
           {/* ROW 1: SEO TITLE + PAGE PATH */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* SEO TITLE */}
@@ -111,6 +111,7 @@ function AddSEO() {
               <input
                 name="seo_title"
                 type="text"
+                placeholder="Enter SEO title"
                 value={formik.values.seo_title}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -137,6 +138,7 @@ function AddSEO() {
               <input
                 name="page_path"
                 type="text"
+                placeholder="Enter page path"
                 value={formik.values.page_path}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -164,6 +166,7 @@ function AddSEO() {
             <input
               name="target_keyword"
               type="text"
+              placeholder="Enter target keyword"
               value={formik.values.target_keyword}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -192,6 +195,7 @@ function AddSEO() {
             <textarea
               name="meta_description"
               rows={4}
+              placeholder="Enter meta description"
               value={formik.values.meta_description}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -213,12 +217,12 @@ function AddSEO() {
           </div>
 
           {/* ACTION BUTTONS */}
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-between gap-3 pt-2">
             {/* CANCEL */}
             <button
               type="button"
               onClick={() => navigate("/layout/manage-seo")}
-              className="h-10 px-6 rounded-lg border border-gray-300 text-sm hover:bg-gray-50"
+              className="h-10 px-6 rounded-lg border text-gray-600 text-sm hover:bg-gray-100"
             >
               Cancel
             </button>
