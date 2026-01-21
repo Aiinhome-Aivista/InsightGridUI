@@ -30,16 +30,6 @@ const SEO = ({
       {/* Robots */}
       {noIndex && <meta name="robots" content="noindex, follow" />}
 
-      {/* Open Graph */}
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      {canonical && <meta property="og:url" content={canonical} />}
-      <meta property="og:type" content="website" />
-
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
     </Helmet>
   );
 };
