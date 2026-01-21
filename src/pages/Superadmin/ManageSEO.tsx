@@ -7,6 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { FilterMatchMode } from "primereact/api";
 import ApiServices from "../../services/ApiServices";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import { useAuth } from '../Auth/AuthContext';
+import ConfirmSaveView from '../../Modal/ConfirmSaveView';
 
 function ManageSEO() {
  const [isRefreshing, setIsRefreshing] = useState(false);
@@ -16,28 +19,42 @@ function ManageSEO() {
   const [filters, setFilters] = useState({
     global: { value: "", matchMode: FilterMatchMode.CONTAINS },
   });
+const [deleteId, setDeleteId] = useState<number | null>(null);
+    const { setIsConfirmSaveModalOpen } = useAuth();
+  
   const navigate = useNavigate();
   useEffect(() => {
     fetchSEO();
   }, []);
-  const columnConfig = [
-    {
-      field: "",
-      header: "SEO Title",
-      sortable: true,
-    }, 
-    {
-      field: "",
-      header: "Keyword",
-      sortable: true,
+  const EllipsisCell = ({ text, width = 260 }: { text: string; width?: number }) => {
+  if (!text) return "-";
 
-    },
-    {
-      field: "",
-      header: "Description",
-      sortable: true,
-    },
-   
+  return (
+    <Tippy content={text} placement="top" theme="light-border">
+      <div
+        className="truncate"
+        style={{
+          maxWidth: `${width}px`,
+          cursor: "pointer",
+        }}
+      >
+        {text}
+      </div>
+    </Tippy>
+  );
+};
+
+  const columnConfig = [
+    { field: "page_path", header: "Page Path", sortable: true, },
+    { field: "seo_title", header: "SEO Title", sortable: false, body: (row: any) => (
+      <EllipsisCell text={row.seo_title} width={140} />
+    ), },
+    { field: "target_keyword", header: "Keyword", sortable: false, body: (row: any) => (
+      <EllipsisCell text={row.target_keyword} width={140} />
+    ), },
+    { field: "meta_description", header: "Description", sortable: false, body: (row: any) => (
+      <EllipsisCell text={row.meta_description} width={140} />
+    ), },
     // {
     //   field: "address",
     //   header: "Company Address",
@@ -68,7 +85,7 @@ function ManageSEO() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await ApiServices.getAllCompanies();
+      const response = await ApiServices.getSEOlist();
       if (response?.data?.isSuccess) {
         setSeoData(response.data.data);
       } else {
@@ -85,20 +102,31 @@ function ManageSEO() {
 
 
 
+
+
+
   const actionBodyTemplate = (row: any) => (
     <div className="flex justify-end gap-2">
       <Tippy content="Edit" theme="gray">
         <button
           className="p-1 rounded hover:bg-blue-100 text-gray-600"
           onClick={() => {
-            navigate(`/layout/register-company/${row.id}`, {
-              state: { company: row }
+            navigate(`/layout/add-seo/${row.id}`, {
+              state: { seo: row }
             });
           }}
         >
           <EditOutlinedIcon fontSize="small" />
         </button>
       </Tippy>
+      <Tippy content="Delete" theme="gray">
+              <button
+                className="p-1 rounded hover:bg-red-100 text-gray-600"
+                onClick={() => handleDeleteClick(row.id)}
+              >
+                <DeleteOutlineOutlinedIcon fontSize="small" />
+              </button>
+            </Tippy>
     </div>
   );
 
@@ -120,7 +148,27 @@ function ManageSEO() {
 
     setIsRefreshing(false);
   };
+ const handleDeleteClick = (id: number) => {
+    setDeleteId(id);
+    setIsConfirmSaveModalOpen(true);
+  };
+   const deleteSEO = async (seoId: number) => {
+  try {
+    await ApiServices.deleteSEO({ id: seoId });
+    fetchSEO();
+  } catch (err) {
+    console.error("Delete failed", err);
+  }
+};
 
+  
+    const handleConfirmDelete = async () => {
+      if (deleteId) {
+        await deleteSEO(deleteId);
+        setIsConfirmSaveModalOpen(false);
+        setDeleteId(null);
+      }
+    };
   return (
     <div className="mx-auto px-6 py-8">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
@@ -205,10 +253,10 @@ function ManageSEO() {
           value={seoData}
           paginator
           rows={5}
-        //   filters={filters}
+          filters={filters}
           globalFilterFields={columnConfig.map(c => c.field)}
           stripedRows
-          emptyMessage="No data found"
+          emptyMessage="No SEO records found"
           className="custom-table"
         >
           {columnConfig.map((col) => (
@@ -217,18 +265,30 @@ function ManageSEO() {
               field={col.field}
               header={col.header}
               sortable={col.sortable}
-            //   body={col.body}
+              body={col.body}
             />
           ))}
 
           <Column
             header="Action"
             align="center"
-            // body={actionBodyTemplate}
+            body={actionBodyTemplate}
             style={{ width: "120px" }}
           />
         </DataTable>
       </div>
+      
+            <ConfirmSaveView
+              customTitle="Delete SEO"
+              customMessage="Are you sure you want to delete this SEO?"
+              customOnConfirm={handleConfirmDelete}
+              customOnCancel={() => {
+                setIsConfirmSaveModalOpen(false);
+                setDeleteId(null);
+              }}
+              hideHeaderLabel={true}
+            />
+      
     </div>
   )
 }

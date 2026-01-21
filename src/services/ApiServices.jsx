@@ -128,6 +128,26 @@ class ApiServices {
   });
 }
 
+createSEO(body){
+  return axios.post(POST_APIS.createSEO, body);
+}
+getSEOlist(){
+  return axios.get(GET_APIS.getSEOlist);
+}
+updateSEO(body){
+  return axios.post(POST_APIS.updateSEO, body);
+}
+
+ deleteSEO(body) {
+    return axios.post(POST_APIS.deleteSEO, body);
+  }
+getSEOByPath(path) {
+  return axios.get(
+    `${GET_APIS.getSEObyPath}?path=${encodeURIComponent(path)}`
+  );
+}
+
+
 }
 
 export default new ApiServices();
