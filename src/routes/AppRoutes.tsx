@@ -31,6 +31,8 @@ import TermsOfService from "../pages/LandingPage/components/TermsOfService";
 import ContactPage from "../pages/LandingPage/components/ContactPage";
 import { useEffect } from "react";
 import { trackPageView } from "../utils/ga";
+import ManageSEO from "../pages/Superadmin/ManageSEO";
+import AddSEO from "../pages/Superadmin/AddSEO";
 
 function AppRoutes() {
    const location = useLocation();
@@ -80,6 +82,10 @@ function AppRoutes() {
             <Route path="manage-company-user" element={<ManageCompanyAdmin />} />
             <Route path="add-company-user" element={<AddCompanyAdmin />} />
             <Route path="add-company-user/:id" element={<AddCompanyAdmin />} />
+            <Route path="manage-seo" element={<ManageSEO />} />
+            <Route path="add-seo" element={<AddSEO />} />
+            <Route path="add-seo/:id" element={<AddSEO />} />
+
           </Route>
         </Route>
 

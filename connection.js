@@ -5,7 +5,7 @@ export const GET_APIS = {
   get_all_company_admins: `${BASE_URL}admin/get_all_company_admins`,
   company_code_dropdown: `${BASE_URL}admin/company_code_dropdown`,
   country_list: `${BASE_URL}/get_country_options`,
-
+  getSEOlist:`${BASE_URL}/get_seo_list`
 
 };
 
@@ -36,4 +36,5 @@ export const POST_APIS = {
   company_user_register: `${BASE_URL}company_user_register`,
   contact_us: `${BASE_URL}contact`,
   logo : `${BASE_URL}admin/company/logo`,
+  saveSEO:`${BASE_URL}/save_seo`
 };

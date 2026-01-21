@@ -22,6 +22,7 @@ import person_add from '@mui/icons-material/PersonAdd';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import admin_panel_settings from '@mui/icons-material/AdminPanelSettings';
+import ScreenSearchDesktopIcon from '@mui/icons-material/ScreenSearchDesktop';
 const menuItems = [
   { name: "Super Dashboard", icon: SpaceDashboardIcon, path: "super-dashboard", roles: ["superadmin"], },
   { name: "Company", icon: ApartmentIcon, path: "manage-companies", roles: ["superadmin"], },
@@ -35,8 +36,7 @@ const menuItems = [
   //  { name: "Customize", icon: TuneOutlinedIcon, path: "customize" },
   // { name: "Company Admin", icon: admin_panel_settings, path: "manage-company-admin", roles: ["superadmin"] },
   { name: "Company User", icon: admin_panel_settings, path: "manage-company-user", roles: ["superadmin"] },
-  
-
+  { name: "Seo Metadata", icon: ScreenSearchDesktopIcon, path: "manage-seo", roles: ["superadmin"] },
 ];
 
 export default function Sidebar() {
@@ -129,6 +129,9 @@ export default function Sidebar() {
               isActive = true;
             }
             if (item.path === 'manage-company-user' && location.pathname.includes('add-company-user')) {
+              isActive = true;
+            }
+             if (item.path === 'manage-seo' && location.pathname.includes('add-seo')) {
               isActive = true;
             }
             return (
