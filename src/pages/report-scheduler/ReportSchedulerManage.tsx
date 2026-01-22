@@ -101,13 +101,14 @@ const ReportSchedulerManage = () => {
             </p>
           </div>
 
-          <button
-            className="bg-blue-400 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
-            style={{ width: "108px", height: "45px" }}
-            onClick={() => navigate("/layout/report-scheduler-form")}
-          >
-            Create Schedule
-          </button>
+          <div className="">
+            <button
+              className="px-4 py-2 bg-blue-400  hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
+              onClick={() => navigate("/layout/report-scheduler-form")}
+            >
+              Create Schedule
+            </button>
+          </div>
         </div>
 
         {/* Right Side */}
