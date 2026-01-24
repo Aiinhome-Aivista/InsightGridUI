@@ -19,17 +19,16 @@ class ApiServices {
   // For file upload (FormData)
   fileUpload(formData) {
     return axios.post(POST_APIS.fileUpload, formData, {
-      headers: { "Content-Type": "multipart/form-data" }
+      headers: { "Content-Type": "multipart/form-data" },
     });
   }
 
   // For preview (JSON)
   preview(payload) {
     return axios.post(POST_APIS.fileUpload, payload, {
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     });
   }
-
 
   processSessionData(body) {
     return axios.post(POST_APIS.processSessionData, body);
@@ -42,7 +41,6 @@ class ApiServices {
   tracker(body) {
     return axios.post(POST_APIS.tracker, body);
   }
-
 
   getDashboardData(body) {
     return axios.post(POST_APIS.get_dashboard_data, body);
@@ -71,7 +69,6 @@ class ApiServices {
     return axios.post(POST_APIS.delete_uploaded_file, body);
   }
 
-
   getUploadProgress(body) {
     return axios.post(POST_APIS.upload_progress, body);
   }
@@ -98,7 +95,7 @@ class ApiServices {
   //   });
   // }
 
-  companyRegister(body){
+  companyRegister(body) {
     return axios.post(POST_APIS.company_register, body);
   }
   company_admin_register(body) {
@@ -114,40 +111,41 @@ class ApiServices {
     return axios.post(POST_APIS.company_user_register, body);
   }
   contactUs(body) {
-  return axios.post(POST_APIS.contact_us, body);
+    return axios.post(POST_APIS.contact_us, body);
   }
 
   getCountryList() {
     return axios.get(GET_APIS.country_list);
   }
   uploadCompanyLogo(formData) {
-  return axios.post(POST_APIS.logo, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-}
+    return axios.post(POST_APIS.logo, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
 
-createSEO(body){
-  return axios.post(POST_APIS.createSEO, body);
-}
-getSEOlist(){
-  return axios.get(GET_APIS.getSEOlist);
-}
-updateSEO(body){
-  return axios.post(POST_APIS.updateSEO, body);
-}
+  createSEO(body) {
+    return axios.post(POST_APIS.createSEO, body);
+  }
+  getSEOlist() {
+    return axios.get(GET_APIS.getSEOlist);
+  }
+  updateSEO(body) {
+    return axios.post(POST_APIS.updateSEO, body);
+  }
 
- deleteSEO(body) {
+  deleteSEO(body) {
     return axios.post(POST_APIS.deleteSEO, body);
   }
-getSEOByPath(path) {
-  return axios.get(
-    `${GET_APIS.getSEObyPath}?path=${encodeURIComponent(path)}`
-  );
-}
-
-
+  getSEOByPath(path) {
+    return axios.get(
+      `${GET_APIS.getSEObyPath}?path=${encodeURIComponent(path)}`,
+    );
+  }
+  generateReportPDF(body) {
+    return axios.post(POST_APIS.generate_pdf, body);
+  }
 }
 
 export default new ApiServices();

@@ -45,14 +45,14 @@ export interface ChartConfig {
   order: any;
   id: string;
   type:
-  | "line"
-  | "bar"
-  | "pie"
-  | "kpi"
-  | "box"
-  | "mixed"
-  | "bubble"
-  | "waterfall";
+    | "line"
+    | "bar"
+    | "pie"
+    | "kpi"
+    | "box"
+    | "mixed"
+    | "bubble"
+    | "waterfall";
   xAxis?: string;
   yAxis?: string | string[]; //  IMPORTANT
   value?: string;
@@ -62,11 +62,16 @@ export interface ChartConfig {
   rows: any[];
   style?: Record<string, any>;
   customTitle?: string;
+  chart_column_details?: {
+    column_name: string;
+    column_type: string;
+    column_data: any[];
+  }[];
 }
 
 const calculateAggregation = (
   rows: any[],
-  aggregations: { column: string; agg: string }[]
+  aggregations: { column: string; agg: string }[],
 ) => {
   const map: Record<string, Record<string, number>> = {};
 
@@ -81,7 +86,7 @@ const calculateAggregation = (
       case "sum":
         map[column]["SUM"] = rows.reduce(
           (a, r) => a + Number(r[column] || 0),
-          0
+          0,
         );
         break;
 
@@ -93,13 +98,13 @@ const calculateAggregation = (
 
       case "min":
         map[column]["MIN"] = Math.min(
-          ...rows.map((r) => Number(r[column] || 0))
+          ...rows.map((r) => Number(r[column] || 0)),
         );
         break;
 
       case "max":
         map[column]["MAX"] = Math.max(
-          ...rows.map((r) => Number(r[column] || 0))
+          ...rows.map((r) => Number(r[column] || 0)),
         );
         break;
     }
@@ -111,7 +116,7 @@ const groupRows = (
   rows: any[],
   groupCols: string[],
   aggregations: { column: string; agg: string }[],
-  aggregationOrder: string[]
+  aggregationOrder: string[],
 ) => {
   if (!groupCols.length) return rows;
 
@@ -138,7 +143,7 @@ const groupRows = (
       finalRows.push({
         ...item,
         __parentGroup: groupKey,
-      })
+      }),
     );
 
     //  GROUP AGGREGATION ROW
@@ -273,7 +278,7 @@ export default function DataViewTable({
       : [];
   const filteredRows = applyFilters(baseRows);
   const aggregationOrder = Array.from(
-    new Set(aggregations.map((a) => a.agg.toUpperCase()))
+    new Set(aggregations.map((a) => a.agg.toUpperCase())),
   );
 
   const aggregationMap: Record<string, Record<string, number>> = {};
@@ -291,7 +296,7 @@ export default function DataViewTable({
       case "sum":
         aggregationMap[column]["SUM"] = filteredRows.reduce(
           (acc, row) => acc + Number(row[column] || 0),
-          0
+          0,
         );
         break;
 
@@ -303,13 +308,13 @@ export default function DataViewTable({
 
       case "min":
         aggregationMap[column]["MIN"] = Math.min(
-          ...filteredRows.map((r) => Number(r[column] || 0))
+          ...filteredRows.map((r) => Number(r[column] || 0)),
         );
         break;
 
       case "max":
         aggregationMap[column]["MAX"] = Math.max(
-          ...filteredRows.map((r) => Number(r[column] || 0))
+          ...filteredRows.map((r) => Number(r[column] || 0)),
         );
         break;
     }
@@ -356,7 +361,7 @@ export default function DataViewTable({
 
   const renameChart = (id: string, newName: string) => {
     setCharts((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, customTitle: newName } : c))
+      prev.map((c) => (c.id === id ? { ...c, customTitle: newName } : c)),
     );
   };
 
@@ -379,7 +384,7 @@ export default function DataViewTable({
         ].filter(Boolean) as string[];
 
         return usedColumns.every((col) => activeColumns.includes(col));
-      })
+      }),
     );
   };
   const getColumnsUsedByCharts = (charts: ChartConfig[]) => {
@@ -403,7 +408,7 @@ export default function DataViewTable({
   };
 
   const isSameChart = (a: ChartConfig, b: Partial<ChartConfig>) => {
-    const normalize = (v: any) => (Array.isArray(v) ? v.join("|") : v ?? "");
+    const normalize = (v: any) => (Array.isArray(v) ? v.join("|") : (v ?? ""));
 
     return (
       a.type === b.type &&
@@ -449,9 +454,7 @@ export default function DataViewTable({
         style: {
           ...chart.style,
           colors:
-            chart.style.colors ||
-              chart.style.pieColor || 
-              chart.style.color
+            chart.style.colors || chart.style.pieColor || chart.style.color
               ? [chart.style.color]
               : undefined,
         },
@@ -487,6 +490,7 @@ export default function DataViewTable({
           agg: c.agg,
           style: c.style || {},
           xAxis_values: getXAxisValues(c),
+          chart_column_details: buildChartColumnDetails(c, chartRows),
         })),
         available_columns: buildAvailableColumns(),
         user_message: message,
@@ -495,7 +499,7 @@ export default function DataViewTable({
       const res = await ApiServices.modifyChart(payload);
 
       const ai = res.data?.data;
-      const aiMessage = res.data?.message; 
+      const aiMessage = res.data?.message;
 
       if (!ai || ai.blocked) {
         return ai?.assistant_message || "I couldn’t apply that change.";
@@ -510,6 +514,10 @@ export default function DataViewTable({
           return normalizeStyle({
             ...chart,
             ...update.updated_fields,
+            chart_column_details: buildChartColumnDetails(
+              { ...chart, ...update.updated_fields },
+              chartRows,
+            ),
           });
         });
 
@@ -535,24 +543,44 @@ export default function DataViewTable({
     }
   };
 
+  const buildChartColumnDetails = (chart: ChartConfig, rows: any[]) => {
+    const cols = new Set<string>();
+
+    // X axis
+    if (chart.xAxis) cols.add(chart.xAxis);
+
+    // Y axis (single / array)
+    if (chart.yAxis) {
+      Array.isArray(chart.yAxis)
+        ? chart.yAxis.forEach((c) => cols.add(c))
+        : cols.add(chart.yAxis);
+    }
+
+    return Array.from(cols).map((col) => ({
+      column_name: col,
+      column_type: getColumnType(allData[selectedTables[0]], col),
+      column_data: rows.map((r) => r[col]),
+    }));
+  };
+
   return (
     <div>
       {selectedTables.map((tableKey) => {
         const table = allData[tableKey];
         if (!table) return null;
-const columns =
-  table.columns?.map((col: { column_name: string }) => ({
-    column_name: col.column_name,
-    header:
-      columnRenames[col.column_name] ||
-      col.column_name
-        .replace(/_/g, " ")
-        .toLowerCase()     
-        .split(" ")        
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" "),       
-    sortable: false,
-  })) || [];
+        const columns =
+          table.columns?.map((col: { column_name: string }) => ({
+            column_name: col.column_name,
+            header:
+              columnRenames[col.column_name] ||
+              col.column_name
+                .replace(/_/g, " ")
+                .toLowerCase()
+                .split(" ")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" "),
+            sortable: false,
+          })) || [];
         const groupByColumns = table.visualization?.group_by || [];
         const filters = table.visualization?.filters || {};
         const chartColumns =
@@ -610,7 +638,7 @@ const columns =
                           filteredRows,
                           newGroups,
                           aggregations,
-                          aggregationOrder
+                          aggregationOrder,
                         );
 
                         const collapsed = groups
@@ -642,13 +670,13 @@ const columns =
                       appendTo="self"
                       filter
                       value={selectedFilters.map(
-                        (f) => `${f.column}|${f.operator}`
+                        (f) => `${f.column}|${f.operator}`,
                       )}
                       options={Object.entries(filters).flatMap(([col, ops]) =>
                         (ops as string[]).map((op) => ({
                           label: `${col.toUpperCase()} ${op}`,
                           value: `${col}|${op}`,
-                        }))
+                        })),
                       )}
                       onChange={(e) => {
                         const parsed = e.value.map((v: string) => {
@@ -765,10 +793,11 @@ const columns =
                         setViewType("table");
                         setShowChartSidebar(false);
                       }}
-                      className={`px-2 py-2 ${viewType === "table"
+                      className={`px-2 py-2 ${
+                        viewType === "table"
                           ? "bg-gray-100"
                           : "hover:bg-gray-50"
-                        }`}
+                      }`}
                     >
                       <TableRowsRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
@@ -777,10 +806,11 @@ const columns =
                         setViewType("chart");
                         setShowChartSidebar(true);
                       }}
-                      className={`px-2 py-1 ${viewType === "chart"
+                      className={`px-2 py-1 ${
+                        viewType === "chart"
                           ? "bg-gray-100"
                           : "hover:bg-gray-50"
-                        }`}
+                      }`}
                     >
                       <BarChartRoundedIcon sx={{ fontSize: 18 }} />
                     </button>
@@ -790,8 +820,9 @@ const columns =
                         setShowChatSidebar(true);
                         setShowChartSidebar(false);
                       }}
-                      className={`px-2 py-2 ${showChatSidebar ? "bg-gray-100" : "hover:bg-gray-50"
-                        }`}
+                      className={`px-2 py-2 ${
+                        showChatSidebar ? "bg-gray-100" : "hover:bg-gray-50"
+                      }`}
                     >
                       <MdChat />
                     </button>
@@ -822,19 +853,18 @@ const columns =
                   onAggregationSelect={(column, agg) => {
                     setAggregations((prev) => {
                       const exists = prev.some(
-                        (a) => a.column === column && a.agg === agg
+                        (a) => a.column === column && a.agg === agg,
                       );
 
                       // TOGGLE OFF (remove)
                       if (exists) {
                         return prev.filter(
-                          (a) => !(a.column === column && a.agg === agg)
+                          (a) => !(a.column === column && a.agg === agg),
                         );
                       }
                       return [...prev, { column, agg }];
                     });
                   }}
-
                   enableRowGrouping={selectedGroupBy.length > 0}
                   collapsedGroups={collapsedGroups}
                   onToggleGroup={toggleGroup}
@@ -859,7 +889,7 @@ const columns =
                   onChartSelect={(config) => {
                     setCharts((prev) => {
                       const exists = prev.some((chart) =>
-                        isSameChart(chart, config)
+                        isSameChart(chart, config),
                       );
 
                       if (exists) {
@@ -868,7 +898,14 @@ const columns =
 
                       return [
                         ...prev,
-                        { ...config, id: Date.now().toString() },
+                        {
+                          ...config,
+                          id: Date.now().toString(),
+                          chart_column_details: buildChartColumnDetails(
+                            config,
+                            chartRows,
+                          ),
+                        },
                       ];
                     });
                   }}

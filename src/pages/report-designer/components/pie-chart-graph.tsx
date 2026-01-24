@@ -16,7 +16,6 @@
 //     }
 //   });
 
-
 //   const data = Object.entries(grouped).map(([name, value]) => ({
 //     name,
 //     value
@@ -68,20 +67,17 @@
 //   );
 // }
 
-
-
-
+import { useEffect } from "react";
 import {
   PieChart,
   Pie,
   Cell,
   ResponsiveContainer,
   Tooltip,
-  Legend
+  Legend,
 } from "recharts";
 
 export default function PieChartGraph({ config }: { config: any }) {
-
   const MAX_LEGEND_ITEMS = 10;
 
   if (!config?.rows || !config?.xAxis) return null;
@@ -101,10 +97,10 @@ export default function PieChartGraph({ config }: { config: any }) {
       : Object.keys(grouped);
 
   const data = order
-    .filter(k => grouped[k] !== undefined)
-    .map(k => ({
+    .filter((k) => grouped[k] !== undefined)
+    .map((k) => ({
       name: k,
-      value: grouped[k]
+      value: grouped[k],
     }));
 
   // 3️⃣ TOTAL (for percentage)
@@ -117,7 +113,7 @@ export default function PieChartGraph({ config }: { config: any }) {
     "#5B8FF9",
     "#B1C9F1",
     "#D6DEE8",
-    "#081F4D"
+    "#081F4D",
   ];
 
   const colorsConfig =
@@ -126,25 +122,77 @@ export default function PieChartGraph({ config }: { config: any }) {
     config.style?.color ??
     config.style?.barColor;
 
+  // const getColor = (name: string, index: number) => {
+  //   // mapping object (either shape: { mapping: { name: color } } or direct mapping)
+  //   if (colorsConfig && typeof colorsConfig === "object" && !Array.isArray(colorsConfig)) {
+  //     return (
+  //       (colorsConfig.mapping && colorsConfig.mapping[name]) ||
+  //       (colorsConfig[name] as string) ||
+  //       defaultColors[index % defaultColors.length]
+  //     );
+  //   }
+
+  //   // array of colors
+  //   if (Array.isArray(colorsConfig) && colorsConfig.length > 0) {
+  //     return colorsConfig[index % colorsConfig.length];
+  //   }
+
+  //   // single string color
+  //   if (typeof colorsConfig === "string") return colorsConfig;
+
+  //   return defaultColors[index % defaultColors.length];
+  // };
+  useEffect(() => {
+    if (
+      typeof config.onAutoStyle === "function" &&
+      !config.style?.colors &&
+      data.length > 0
+    ) {
+      const usedColors = data.map(
+        (_, i) => defaultColors[i % defaultColors.length],
+      );
+
+      config.onAutoStyle({
+        colors: usedColors,
+      });
+    }
+  }, [data]);
+
   const getColor = (name: string, index: number) => {
-    // mapping object (either shape: { mapping: { name: color } } or direct mapping)
-    if (colorsConfig && typeof colorsConfig === "object" && !Array.isArray(colorsConfig)) {
-      return (
+    let resolvedColor: string;
+
+    // mapping object
+    if (
+      colorsConfig &&
+      typeof colorsConfig === "object" &&
+      !Array.isArray(colorsConfig)
+    ) {
+      resolvedColor =
         (colorsConfig.mapping && colorsConfig.mapping[name]) ||
         (colorsConfig[name] as string) ||
-        defaultColors[index % defaultColors.length]
-      );
+        defaultColors[index % defaultColors.length];
+    }
+    // array
+    else if (Array.isArray(colorsConfig) && colorsConfig.length > 0) {
+      resolvedColor = colorsConfig[index % colorsConfig.length];
+    }
+    // single string
+    else if (typeof colorsConfig === "string") {
+      resolvedColor = colorsConfig;
+    }
+    // default
+    else {
+      resolvedColor = defaultColors[index % defaultColors.length];
     }
 
-    // array of colors
-    if (Array.isArray(colorsConfig) && colorsConfig.length > 0) {
-      return colorsConfig[index % colorsConfig.length];
-    }
+    // 🔥 AUTO CAPTURE DEFAULT COLORS (ONCE)
+    // if (!config.style?.colors && typeof config.onAutoStyle === "function") {
+    //   config.onAutoStyle({
+    //     colors: defaultColors,
+    //   });
+    // }
 
-    // single string color
-    if (typeof colorsConfig === "string") return colorsConfig;
-
-    return defaultColors[index % defaultColors.length];
+    return resolvedColor;
   };
 
   // 5️⃣ PERCENT LABEL (inside slice)
@@ -162,13 +210,10 @@ export default function PieChartGraph({ config }: { config: any }) {
             innerRadius="45%"
             outerRadius="80%"
             label={renderLabel}
-            labelLine={false}   
+            labelLine={false}
           >
             {data.map((entry, i) => (
-              <Cell
-                key={i}
-                fill={getColor(entry.name, i)}
-              />
+              <Cell key={i} fill={getColor(entry.name, i)} />
             ))}
           </Pie>
 
@@ -200,7 +245,7 @@ export default function PieChartGraph({ config }: { config: any }) {
                         alignItems: "center",
                         marginBottom: 8,
                         fontSize: 12,
-                        color: "#333"
+                        color: "#333",
                       }}
                     >
                       <span
@@ -210,7 +255,7 @@ export default function PieChartGraph({ config }: { config: any }) {
                           borderRadius: "50%",
                           backgroundColor: entry.color,
                           display: "inline-block",
-                          marginRight: 8
+                          marginRight: 8,
                         }}
                       />
                       {entry.value}
@@ -220,8 +265,6 @@ export default function PieChartGraph({ config }: { config: any }) {
               );
             }}
           />
-
-
         </PieChart>
       </ResponsiveContainer>
     </div>
