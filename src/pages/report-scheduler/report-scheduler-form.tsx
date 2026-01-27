@@ -1,14 +1,57 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Plus, Book, Search, Trash2, ArrowLeft, Users, Mail } from "lucide-react";
+import ApiServices from "../../services/ApiServices";
 
 const ReportSchedulerForm = () => {
-  const reportNames = [
-    "Sales Report",
-    "Inventory Report",
-    "Customer Analytics",
-    "Financial Summary",
-    "Performance Dashboard"
-  ];
+
+  const [reports, setReports] = useState<
+    { label: string; value: string }[]
+  >([]);
+
+
+  // const reportNames = [
+  //   "Sales Report",
+  //   "Inventory Report",
+  //   "Customer Analytics",
+  //   "Financial Summary",
+  //   "Performance Dashboard"
+  // ];
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const getUserContext = () => {
+    try {
+      const raw = localStorage.getItem("ig_user");
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  };
+
+
+  const fetchReports = async () => {
+    try {
+      const user = getUserContext();
+
+      const payload = {
+        created_by: user?.user_id || null,
+        session_id: user?.session_id || null
+      };
+
+      const res = await ApiServices.reportsDropdown(payload);
+
+      if (res?.data?.isSuccess) {
+        setReports(res.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to load reports dropdown", error);
+    }
+  };
+
+
 
   // Address books with names and email lists
   const [addressBooks, setAddressBooks] = useState([
@@ -251,9 +294,9 @@ const ReportSchedulerForm = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
           >
             <option value="">Select a report</option>
-            {reportNames.map((name, idx) => (
-              <option key={idx} value={name}>
-                {name}
+            {reports.map((reportItem) => (
+              <option key={reportItem.value} value={reportItem.value}>
+                {reportItem.label}
               </option>
             ))}
           </select>
