@@ -164,6 +164,9 @@ class ApiServices {
   reportSchedulesList() {
     return axios.post(POST_APIS.report_schedules_list, body);
   }
+  saveReportScheduler() {
+    return axios.post(POST_APIS.save_report_scheduler, body);
+  }
 }
 
 export default new ApiServices();
