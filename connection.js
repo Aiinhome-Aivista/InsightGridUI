@@ -40,5 +40,7 @@ export const POST_APIS = {
   createSEO:`${BASE_URL}admin/create_seo`,
   updateSEO:`${BASE_URL}admin/update_seo`,
   deleteSEO:`${BASE_URL}admin/delete_seo`,
+  generate_pdf:`${BASE_URL}generate_pdf`,
+  
   
 };

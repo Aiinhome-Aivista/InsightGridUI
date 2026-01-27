@@ -35,10 +35,12 @@ export default function TableView() {
     { column: string; agg: string }[]
   >([]);
   const [selectedChartColumns, setSelectedChartColumns] = useState<string[]>(
-    []
+    [],
   );
   const [charts, setCharts] = useState<any[]>([]);
-  const [columnRenames, setColumnRenames] = useState<Record<string, string>>({});
+  const [columnRenames, setColumnRenames] = useState<Record<string, string>>(
+    {},
+  );
   useEffect(() => {
     if (report) {
       console.log(" Edit report received:", report);
@@ -59,7 +61,7 @@ export default function TableView() {
       (config.filters || []).map((f: any) => ({
         column: f.column,
         operator: f.operator,
-      }))
+      })),
     );
     const values: Record<string, any> = {};
     (config.filters || []).forEach((f: any) => {
@@ -75,7 +77,7 @@ export default function TableView() {
         .map((c) => ({
           ...c,
           id: c.id ? c.id : crypto.randomUUID(),
-        }))
+        })),
     );
     setColumnRenames(config.column_renames || {});
     setChatHistory(config.chat_history || []);
@@ -171,13 +173,14 @@ export default function TableView() {
     }
   };
 
-
-  const captureChartAsImage = async (elementId: string): Promise<string | null> => {
+  const captureChartAsImage = async (
+    elementId: string,
+  ): Promise<string | null> => {
     const element = document.getElementById(elementId);
     if (!element) return null;
     // HIDE DELETE ICONS BEFORE CAPTURE
     const deleteButtons = element.querySelectorAll(".chart-delete-btn");
-    deleteButtons.forEach(btn => {
+    deleteButtons.forEach((btn) => {
       (btn as HTMLElement).style.visibility = "hidden";
     });
 
@@ -187,7 +190,7 @@ export default function TableView() {
     element.style.overflow = "visible";
     element.style.height = "auto";
 
-    await new Promise(r => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 100));
 
     const canvas = await html2canvas(element, {
       scale: 2,
@@ -198,7 +201,7 @@ export default function TableView() {
     });
 
     //  RESTORE DELETE ICONS
-    deleteButtons.forEach(btn => {
+    deleteButtons.forEach((btn) => {
       (btn as HTMLElement).style.visibility = "visible";
     });
 
@@ -207,7 +210,7 @@ export default function TableView() {
 
     return canvas.toDataURL("image/png");
   };
-  
+
   const handleSaveReport = async () => {
     try {
       setIsSaving(true);
@@ -242,9 +245,46 @@ export default function TableView() {
         //   customTitle: c.customTitle,
         // })),
         charts: charts.map((c, index) => ({
-          ...c,                // 🔥 FULL FINAL STATE
+          ...c, // 🔥 FULL FINAL STATE
           order: index + 1,
-          rows: undefined      // ❌ rows save করার দরকার নেই
+          customTitle:
+            c.customTitle ??
+            (c.type === "bar"
+              ? "BAR Chart"
+              : c.type === "pie"
+                ? "PIE Chart"
+                : c.type === "line"
+                  ? "LINE Chart"
+                  : `${c.type.toUpperCase()} Chart`),
+          // ✅ COLOR: use existing chart style only
+          // style: c.style
+          //   ? {
+          //       ...c.style,
+
+          //       // normalize only (NO hardcode)
+          //       barColor:
+          //         c.type === "bar"
+          //           ? (c.style.barColor ?? c.style.color)
+          //           : undefined,
+
+          //       lineColor:
+          //         c.type === "line"
+          //           ? (c.style.lineColor ?? c.style.color)
+          //           : undefined,
+
+          //       colors:
+          //         c.type === "pie"
+          //           ? (c.style.colors ??
+          //             (c.style.color ? [c.style.color] : undefined))
+          //           : undefined,
+          //     }
+          //   : undefined,
+          style: c.style
+            ? Object.fromEntries(
+                Object.entries(c.style).filter(([_, v]) => v !== undefined),
+              )
+            : undefined,
+          rows: undefined, //  rows save করার দরকার নেই
         })),
         column_renames: columnRenames,
         chat_history: chatHistory,
@@ -255,7 +295,6 @@ export default function TableView() {
       for (let i = 0; i < charts.length; i++) {
         const chart = charts[i];
 
-     
         const elementId = `report-chart-${chart.id}`;
 
         const imageBase64 = await captureChartAsImage(elementId);
@@ -265,16 +304,9 @@ export default function TableView() {
           chart_id: chart.id,
           type: chart.type,
           order: i + 1,
-          image_base64: imageBase64
+          image_base64: imageBase64,
         });
-
       }
-
-
-
-
-
-
 
       const payload = {
         session_id: user.session_id,
@@ -283,8 +315,9 @@ export default function TableView() {
         report_name: reportName,
         query_history_id: selectedQuery.id,
         report_config: reportConfig,
-        chart_images: chartImages
+        chart_images: chartImages,
       };
+      console.log("Save report payload", payload);
       await ApiServices.report_save(payload);
     } catch (err) {
       console.error(" Save report error", err);
@@ -308,7 +341,7 @@ export default function TableView() {
         tableOptions={tableOptions}
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
-        onRunScript={() => { }}
+        onRunScript={() => {}}
         reportName={reportName}
         setReportName={setReportName}
         onSaveReport={handleSaveReport}
@@ -327,7 +360,9 @@ export default function TableView() {
       ) : selectedTables.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[69vh] text-gray-400">
           <div className="mb-3 text-4xl">
-            <span className="material-symbols-outlined text-[30px]">glass_cup</span>
+            <span className="material-symbols-outlined text-[30px]">
+              glass_cup
+            </span>
           </div>
           <p className="text-sm font-medium">
             Please select a view to create report

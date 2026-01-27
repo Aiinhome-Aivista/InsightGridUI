@@ -10,7 +10,7 @@ import {
   DragDropContext,
   Droppable,
   Draggable,
-  DropResult
+  DropResult,
 } from "@hello-pangea/dnd";
 import LineChartGraph from "./line-chart-graph";
 interface RenderChartsProps {
@@ -18,9 +18,15 @@ interface RenderChartsProps {
   onRemoveChart: (id: string) => void;
   onReorderCharts: (charts: ChartConfig[]) => void;
   onRenameChart?: (id: string, newName: string) => void;
-    exportMode?:true
+  exportMode?: true;
 }
-export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, onRenameChart,exportMode }: RenderChartsProps) {
+export default function RenderCharts({
+  charts,
+  onRemoveChart,
+  onReorderCharts,
+  onRenameChart,
+  exportMode,
+}: RenderChartsProps) {
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
     const items = Array.from(charts);
@@ -32,10 +38,49 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, o
   const renderChart = (chart: ChartConfig) => {
     switch (chart.type) {
       case "bar":
-        return <BarChartGraph config={chart} exportMode={exportMode} />;
+        // return <BarChartGraph config={chart} exportMode={exportMode} />;
+        return (
+          <BarChartGraph
+            exportMode={exportMode}
+            config={{
+              ...chart,
+              onAutoStyle: (style: any) => {
+                onReorderCharts(
+                  charts.map((c) =>
+                    c.id === chart.id
+                      ? { ...c, style: { ...(c.style || {}), ...style } }
+                      : c,
+                  ),
+                );
+              },
+            }}
+          />
+        );
 
       case "pie":
-        return <PieChartGraph config={chart} />;
+        // return <PieChartGraph config={chart} />;
+        return (
+          <PieChartGraph
+            config={{
+              ...chart,
+              onAutoStyle: (style: any) => {
+                onReorderCharts(
+                  charts.map((c) =>
+                    c.id === chart.id
+                      ? {
+                          ...c,
+                          style: {
+                            ...(c.style || {}),
+                            ...style,
+                          },
+                        }
+                      : c,
+                  ),
+                );
+              },
+            }}
+          />
+        );
 
       case "kpi":
         return (
@@ -56,8 +101,24 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, o
       case "box":
         return <BoxPlotGraph config={chart} />;
       case "line":
-        return <LineChartGraph config={chart} />;
-
+      // return <LineChartGraph config={chart} />;
+      case "line":
+        return (
+          <LineChartGraph
+            config={{
+              ...chart,
+              onAutoStyle: (style: any) => {
+                onReorderCharts(
+                  charts.map((c) =>
+                    c.id === chart.id
+                      ? { ...c, style: { ...(c.style || {}), ...style } }
+                      : c,
+                  ),
+                );
+              },
+            }}
+          />
+        );
       default:
         return null;
     }
@@ -85,17 +146,22 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, o
             {charts.map((chart, index) => (
               <Draggable key={chart.id} draggableId={chart.id} index={index}>
                 {(provided, snapshot) => (
-                  <div key={chart.id}
-                   
+                  <div
+                    key={chart.id}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
-                    className={`w-full transition ${snapshot.isDragging ? "ring-2 ring-indigo-400 rounded-xl" : ""
-                      }`}
+                    className={`w-full transition ${
+                      snapshot.isDragging
+                        ? "ring-2 ring-indigo-400 rounded-xl"
+                        : ""
+                    }`}
                   >
                     <ChartCard
-                      id ={chart.id}
-                      title={chart.customTitle || `${chart.type.toUpperCase()} Chart`}
+                      id={chart.id}
+                      title={
+                        chart.customTitle || `${chart.type.toUpperCase()} Chart`
+                      }
                       description={
                         chart.xAxis ? `Based on ${chart.xAxis}` : "Chart"
                       }
@@ -104,7 +170,6 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, o
                     >
                       {renderChart(chart)}
                     </ChartCard>
-
                   </div>
                 )}
               </Draggable>
@@ -113,8 +178,6 @@ export default function RenderCharts({ charts, onRemoveChart, onReorderCharts, o
           </div>
         )}
       </Droppable>
-
     </DragDropContext>
   );
 }
-

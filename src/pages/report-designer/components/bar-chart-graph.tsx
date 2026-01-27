@@ -7,7 +7,7 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  Cell
+  Cell,
 } from "recharts";
 
 type BarChartGraphProps = {
@@ -17,7 +17,7 @@ type BarChartGraphProps = {
 
 export default function BarChartGraph({
   config,
-  exportMode = true
+  exportMode = true,
 }: BarChartGraphProps) {
   if (!config?.rows || !config?.xAxis || !config?.yAxis) return null;
 
@@ -29,8 +29,7 @@ export default function BarChartGraph({
     if (config.agg === "count") {
       grouped[key] = (grouped[key] || 0) + 1;
     } else {
-      grouped[key] =
-        (grouped[key] || 0) + Number(r[config.yAxis] || 0);
+      grouped[key] = (grouped[key] || 0) + Number(r[config.yAxis] || 0);
     }
   });
 
@@ -40,16 +39,14 @@ export default function BarChartGraph({
       : Object.keys(grouped);
 
   const targetData = order
-    .filter(key => grouped[key] !== undefined)
-    .map(key => ({
+    .filter((key) => grouped[key] !== undefined)
+    .map((key) => ({
       name: key,
-      value: grouped[key]
+      value: grouped[key],
     }));
 
   const [chartData, setChartData] = useState(
-    exportMode
-      ? targetData
-      : targetData.map(d => ({ ...d, value: 0 }))
+    exportMode ? targetData : targetData.map((d) => ({ ...d, value: 0 })),
   );
 
   useEffect(() => {
@@ -69,10 +66,10 @@ export default function BarChartGraph({
       }
 
       setChartData(
-        targetData.map(item => ({
+        targetData.map((item) => ({
           ...item,
-          value: Number(((item.value / totalSteps) * step).toFixed(1))
-        }))
+          value: Number(((item.value / totalSteps) * step).toFixed(1)),
+        })),
       );
     }, 20);
 
@@ -103,7 +100,7 @@ export default function BarChartGraph({
               position: "insideBottom",
               offset: -10,
               fill: "#6B7280",
-              fontSize: 12
+              fontSize: 12,
             }}
           />
 
@@ -119,13 +116,13 @@ export default function BarChartGraph({
             contentStyle={{
               borderRadius: 8,
               border: "1px solid #E5E7EB",
-              fontSize: 13
+              fontSize: 13,
             }}
             formatter={(value: number) => [
               Math.round(value),
               config.agg === "count"
                 ? `Count of ${config.yAxis}`
-                : `Total ${config.yAxis}`
+                : `Total ${config.yAxis}`,
             ]}
           />
 
@@ -135,7 +132,7 @@ export default function BarChartGraph({
             maxBarSize={36}
             isAnimationActive={false}
           >
-            {chartData.map((entry, index) => (
+            {/* {chartData.map((entry, index) => (
               <Cell
                 key={index}
                 fill={
@@ -145,7 +142,26 @@ export default function BarChartGraph({
                       "#93C5FD"
                 }
               />
-            ))}
+            ))} */}
+            {chartData.map((entry, index) => {
+              // 1️⃣ chart এ যেই color লাগবে সেটা resolve করছি
+              const resolvedColor =
+                typeof config.style?.barColor === "string"
+                  ? config.style.barColor
+                  : config.style?.barColor?.mapping?.[entry.name] || "#93C5FD"; // 🔥 recharts default look
+
+              // 2️⃣ যদি এখনো style না থাকে → auto capture
+              if (
+                !config.style?.barColor &&
+                typeof config.onAutoStyle === "function"
+              ) {
+                config.onAutoStyle({
+                  barColor: resolvedColor,
+                });
+              }
+
+              return <Cell key={index} fill={resolvedColor} />;
+            })}
           </Bar>
         </BarChart>
       </ResponsiveContainer>

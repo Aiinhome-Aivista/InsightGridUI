@@ -179,6 +179,7 @@ import {
   ResponsiveContainer,
   CartesianGrid
 } from "recharts";
+import { useEffect } from "react";
 
 export default function LineChartGraph({ config }: { config: any }) {
   if (!config?.rows || !config?.xAxis || !config?.yAxis) return null;
@@ -253,7 +254,22 @@ export default function LineChartGraph({ config }: { config: any }) {
       <circle cx={cx} cy={cy} r={7} fill={color} stroke="#fff" strokeWidth={2} />
     );
   };
-
+useEffect(() => {
+  if (
+    typeof config.onAutoStyle === "function" &&
+    !config.style?.lineColor &&
+    !config.style?.colors &&
+    data.length > 0
+  ) {
+    // ✅ line default behavior:
+    // - lineColor = first color
+    // - dots can still use palette
+    config.onAutoStyle({
+      lineColor: DEFAULT_PALETTE[0],
+      colors: DEFAULT_PALETTE.slice(0, data.length),
+    });
+  }
+}, [data]);
   return (
     <div className="w-full h-[260px]">
       <ResponsiveContainer width="100%" height="100%">
