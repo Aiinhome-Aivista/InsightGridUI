@@ -256,6 +256,8 @@ export default function TableView() {
                 : c.type === "line"
                   ? "LINE Chart"
                   : `${c.type.toUpperCase()} Chart`),
+          //  THIS IS THE KEY LINE (UI description → backend subtitle)
+          subtitle: c.subtitle ?? (c.xAxis ? `Based on ${c.xAxis}` : ""),
           // ✅ COLOR: use existing chart style only
           // style: c.style
           //   ? {

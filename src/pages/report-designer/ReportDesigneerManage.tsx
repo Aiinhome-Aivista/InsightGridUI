@@ -26,7 +26,7 @@ const ReportDesignManage = () => {
     downloadChartData,
     setDownloadChartData,
   } = useAuth();
-  
+
   const timeAgo = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return "";
     try {
@@ -39,7 +39,7 @@ const ReportDesignManage = () => {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
-        }
+        },
       );
       const fullTimestamp = `${isoDate} ${cleanTime}`;
       const created = new Date(fullTimestamp);
@@ -106,8 +106,8 @@ const ReportDesignManage = () => {
   };
   const filteredReports = reports.filter((r) =>
     Object.values(r).some((v) =>
-      String(v).toLowerCase().includes(globalFilter.toLowerCase())
-    )
+      String(v).toLowerCase().includes(globalFilter.toLowerCase()),
+    ),
   );
   const formatNumber = (value: number, decimals = 2) => {
     return Number.isFinite(value) ? value.toFixed(decimals) : "";
@@ -120,7 +120,7 @@ const ReportDesignManage = () => {
     aggregations?: {
       column: string;
       agg: "sum" | "max" | "min" | "avg" | "count";
-    }[]
+    }[],
   ) => {
     const hasGroup = !!groupBy;
     const hasAgg = !!aggregations?.length;
@@ -159,7 +159,7 @@ const ReportDesignManage = () => {
             break;
           }
           case "count":
-            val = values.length.toString(); 
+            val = values.length.toString();
             break;
         }
 
@@ -215,7 +215,7 @@ const ReportDesignManage = () => {
             break;
           }
           case "count":
-            val = values.length.toString(); 
+            val = values.length.toString();
             break;
         }
 
@@ -232,113 +232,160 @@ const ReportDesignManage = () => {
     return finalRows;
   };
 
+  // const handlePreview = async (report: any) => {
+  //   setPreviewingId(report.report_id);
+  //   try {
+  //     const aiResponse = report?.query?.ai_responce;
+  //     if (!aiResponse) return;
+
+  //     const execRes = await ApiServices.executeSql({
+  //       sql_query: aiResponse,
+  //       session_id: userData?.session_id,
+  //     });
+
+  //     const api = execRes.data.data;
+
+  //     const config =
+  //       typeof report.report_config === "string"
+  //         ? JSON.parse(report.report_config)
+  //         : report.report_config;
+  //     const finalRows = buildFinalRows(
+  //       api.rows,
+  //       api.columns,
+  //       config.group_by?.[0],
+  //       config.aggregations
+  //     );
+  //     const chartsForPreview = (config.charts || []).map((c: any) => ({
+  //       ...c,
+  //       rows: api.rows,
+  //     }));
+  //     setPreviewChartData(chartsForPreview);
+  //     await new Promise((res) => setTimeout(res, 500));
+
+  //     const chartImages = (config.chart_images || []).map(
+  //       (img: any) => img.url
+  //     );
+  //     const cleanFileName = report.report_name
+  //       .replace(/\s*report$/i, "")
+  //       .trim();
+  //     await generatePDF(
+  //       {
+  //         rows: finalRows,
+  //         columns: api.columns.map((c: string) => ({
+  //           column_name: c,
+  //           header: config.column_renames?.[c] || undefined,
+  //         })),
+  //       },
+  //       chartImages,
+  //       "preview",
+  //       cleanFileName,
+  //       chartsForPreview
+  //     );
+  //   } catch (err) {
+  //     console.error("Preview failed", err);
+  //   } finally {
+  //     setPreviewingId(null);
+  //   }
+  // };
+
   const handlePreview = async (report: any) => {
     setPreviewingId(report.report_id);
     try {
-      const aiResponse = report?.query?.ai_responce;
-      if (!aiResponse) return;
+      const payload = {
+        session_id: userData.session_id,
+        report_title: report.report_name,
+        query: report.query.ai_responce,
 
-      const execRes = await ApiServices.executeSql({
-        sql_query: aiResponse,
-        session_id: userData?.session_id,
-      });
+        // 🔥 chart + column + data
+        chart: report.report_config.charts,
+      };
 
-      const api = execRes.data.data;
+      const res = await ApiServices.generateReportPDF(payload);
 
-      const config =
-        typeof report.report_config === "string"
-          ? JSON.parse(report.report_config)
-          : report.report_config;
-      const finalRows = buildFinalRows(
-        api.rows,
-        api.columns,
-        config.group_by?.[0],
-        config.aggregations
-      );
-      const chartsForPreview = (config.charts || []).map((c: any) => ({
-        ...c,
-        rows: api.rows,
-      }));
-      setPreviewChartData(chartsForPreview);
-      await new Promise((res) => setTimeout(res, 500));
-
-      const chartImages = (config.chart_images || []).map(
-        (img: any) => img.url
-      );
-      const cleanFileName = report.report_name
-        .replace(/\s*report$/i, "")
-        .trim();
-      await generatePDF(
-        {
-          rows: finalRows,
-          columns: api.columns.map((c: string) => ({
-            column_name: c,
-            header: config.column_renames?.[c] || undefined,
-          })),
-        },
-        chartImages,
-        "preview",
-        cleanFileName,
-        chartsForPreview
-      );
-    } catch (err) {
-      console.error("Preview failed", err);
+      // 🔥 backend generated pdf open
+      window.open(res.data.data.download_url, "_blank");
+    } catch (e) {
+      console.error(e);
     } finally {
       setPreviewingId(null);
     }
   };
+  // const handleDownload = async (report: any) => {
+  //   setDownloadingId(report.report_id);
+  //   try {
+  //     const aiResponse = report?.query?.ai_responce;
+  //     if (!aiResponse) return;
+  //     const execRes = await ApiServices.executeSql({
+  //       sql_query: aiResponse,
+  //       session_id: userData?.session_id,
+  //     });
+  //     const api = execRes.data.data;
+  //     const config =
+  //       typeof report.report_config === "string"
+  //         ? JSON.parse(report.report_config)
+  //         : report.report_config;
+  //     const finalRows = buildFinalRows(
+  //       api.rows,
+  //       api.columns,
+  //       config.group_by?.[0],
+  //       config.aggregations
+  //     );
+
+  //     const chartsForDownload = (config.charts || []).map((c: any) => ({
+  //       ...c,
+  //       rows: api.rows,
+  //     }));
+
+  //     const chartImages = (config.chart_images || []).map(
+  //       (img: any) => img.url
+  //     );
+  //     const cleanFileName = report.report_name
+  //       .replace(/\s*report$/i, "")
+  //       .trim();
+  //     await generatePDF(
+  //       {
+  //         rows: finalRows,
+  //         columns: api.columns.map((c: string) => ({
+  //           column_name: c,
+  //           header: config.column_renames?.[c] || undefined,
+  //         })),
+  //       },
+  //       chartImages,
+  //       "download",
+  //       cleanFileName,
+  //       chartsForDownload
+  //     );
+  //   } catch (err) {
+  //     console.error("Download failed", err);
+  //   } finally {
+  //     setDownloadingId(null);
+  //   }
+  // };
+  
   const handleDownload = async (report: any) => {
     setDownloadingId(report.report_id);
     try {
-      const aiResponse = report?.query?.ai_responce;
-      if (!aiResponse) return;
-      const execRes = await ApiServices.executeSql({
-        sql_query: aiResponse,
-        session_id: userData?.session_id,
-      });
-      const api = execRes.data.data;
-      const config =
-        typeof report.report_config === "string"
-          ? JSON.parse(report.report_config)
-          : report.report_config;
-      const finalRows = buildFinalRows(
-        api.rows,
-        api.columns,
-        config.group_by?.[0],
-        config.aggregations
-      );
+      const payload = {
+        session_id: userData.session_id,
+        report_title: report.report_name,
+        query: report.query.ai_responce,
 
-      const chartsForDownload = (config.charts || []).map((c: any) => ({
-        ...c,
-        rows: api.rows,
-      }));
+        // ✅ saved chart config + data
+        chart: report.report_config.charts,
+      };
 
-      const chartImages = (config.chart_images || []).map(
-        (img: any) => img.url
-      );
-      const cleanFileName = report.report_name
-        .replace(/\s*report$/i, "")
-        .trim();
-      await generatePDF(
-        {
-          rows: finalRows,
-          columns: api.columns.map((c: string) => ({
-            column_name: c,
-            header: config.column_renames?.[c] || undefined,
-          })),
-        },
-        chartImages,
-        "download",
-        cleanFileName,
-        chartsForDownload
-      );
+      const res = await ApiServices.generateReportPDF(payload);
+
+      const pdfUrl = res.data.data.download_url;
+
+      // 🔥 OPEN IN NEW WINDOW (same as preview)
+      window.open(pdfUrl, "_blank");
     } catch (err) {
       console.error("Download failed", err);
     } finally {
       setDownloadingId(null);
     }
   };
-
   const handleRefresh = async () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
@@ -400,15 +447,17 @@ const ReportDesignManage = () => {
               className={`
                           w-10 h-10 flex items-center justify-center rounded-xl border border-[#D9D9D9] 
                           bg-[#D9D9D9] hover:bg-[#D9D9D9] transition-all
-                          ${isRefreshing
-                  ? "opacity-70 cursor-wait"
-                  : "cursor-pointer"
-                }
+                          ${
+                            isRefreshing
+                              ? "opacity-70 cursor-wait"
+                              : "cursor-pointer"
+                          }
                         `}
             >
               <AutorenewRoundedIcon
-                className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""
-                  }`}
+                className={`w-5 h-5 text-gray-500 ${
+                  isRefreshing ? "animate-spin" : ""
+                }`}
                 fontSize="small"
               />
             </button>
@@ -452,7 +501,9 @@ const ReportDesignManage = () => {
                 {filteredReports.map((item) => {
                   return (
                     <tr key={item.report_id} className="hover:bg-gray-50">
-                      <td className="px-6 py-2.5 text-xs">{item.report_name}</td>
+                      <td className="px-6 py-2.5 text-xs">
+                        {item.report_name}
+                      </td>
 
                       <td className="px-6 py-2.5 text-xs text-gray-600">
                         {item.actual_created_date}
@@ -461,7 +512,7 @@ const ReportDesignManage = () => {
                       <td className="px-6 py-2.5 text-xs text-gray-600">
                         {timeAgo(
                           item.actual_created_date,
-                          item.actual_created_at
+                          item.actual_created_at,
                         )}
                       </td>
 
@@ -485,7 +536,10 @@ const ReportDesignManage = () => {
                             disabled={previewingId !== null}
                           >
                             {previewingId === item.report_id ? (
-                              <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
+                              <AutorenewRoundedIcon
+                                className="animate-spin"
+                                fontSize="small"
+                              />
                             ) : (
                               "Preview"
                             )}
@@ -497,7 +551,10 @@ const ReportDesignManage = () => {
                             disabled={downloadingId !== null}
                           >
                             {downloadingId === item.report_id ? (
-                              <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
+                              <AutorenewRoundedIcon
+                                className="animate-spin"
+                                fontSize="small"
+                              />
                             ) : (
                               "Download"
                             )}
