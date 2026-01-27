@@ -161,6 +161,9 @@ class ApiServices {
   reportsDropdown(body) {
     return axios.post(POST_APIS.reports_dropdown, body);
   }
+  reportSchedulesList() {
+    return axios.post(POST_APIS.report_schedules_list, body);
+  }
 }
 
 export default new ApiServices();
