@@ -11,7 +11,7 @@ const PageSEO = () => {
       title={seo.seo_title}
       description={seo.meta_description}
       keywords={seo.target_keyword}
-      canonical={`https://sahajinsight.com/devloperzn${seo.page_path}`}
+      canonical={`https://sahajinsight.com/${seo.page_path}`}
     />
   );
 };
