@@ -146,6 +146,21 @@ class ApiServices {
   generateReportPDF(body) {
     return axios.post(POST_APIS.generate_pdf, body);
   }
+  addressBookList(body) {
+    return axios.post(POST_APIS.address_book_list, body);
+  }
+  addressBookCreate(body) {
+    return axios.post(POST_APIS.address_book_create, body);
+  }
+  addressBookEmailAdd(body) {
+    return axios.post(POST_APIS.address_book_email_add, body);
+  }
+  addressBookEmailRemove(body) {
+    return axios.post(POST_APIS.address_book_email_remove, body);
+  }
+  reportsDropdown(body) {
+    return axios.post(POST_APIS.reports_dropdown, body);
+  }
 }
 
 export default new ApiServices();

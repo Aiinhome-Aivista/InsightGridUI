@@ -41,6 +41,9 @@ export const POST_APIS = {
   updateSEO:`${BASE_URL}admin/update_seo`,
   deleteSEO:`${BASE_URL}admin/delete_seo`,
   generate_pdf:`${BASE_URL}generate_pdf`,
-  
-  
+  address_book_list:`${BASE_URL}address_book_list`,
+  address_book_create:`${BASE_URL}address_book_create`,
+  address_book_email_add:`${BASE_URL}address_book_email_add`,
+  address_book_email_remove:`${BASE_URL}address_book_email_remove`,
+  reports_dropdown:`${BASE_URL}reports_dropdown`
 };
