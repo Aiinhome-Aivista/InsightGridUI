@@ -161,10 +161,10 @@ class ApiServices {
   reportsDropdown(body) {
     return axios.post(POST_APIS.reports_dropdown, body);
   }
-  reportSchedulesList() {
+  reportSchedulesList(body) {
     return axios.post(POST_APIS.report_schedules_list, body);
   }
-  saveReportScheduler() {
+  saveReportScheduler(body) {
     return axios.post(POST_APIS.save_report_scheduler, body);
   }
 }

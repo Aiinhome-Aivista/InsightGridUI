@@ -13,7 +13,9 @@ const ReportSchedulerManage = () => {
   const { downloadData, setDownloadData } = useAuth();
 
 
-
+  useEffect(() => {
+    fetchReportScheduleList();
+  }, []);
 
 
   const getStoredUser = () => {
@@ -33,11 +35,9 @@ const ReportSchedulerManage = () => {
     };
   };
 
-  useEffect(() => {
-    fetchReportList();
-  }, []);
 
-  const fetchReportList = async () => {
+
+  const fetchReportScheduleList = async () => {
     try {
       setLoading(true);
 
@@ -53,7 +53,7 @@ const ReportSchedulerManage = () => {
         created_by: user.user_id,
       };
 
-      const response = await ApiServices.getReportList(payload);
+      const response = await ApiServices.reportSchedulerList(payload);
 
       console.log("📥 Full API Response:", response);
       console.log("📥 Response Data:", response?.data);
