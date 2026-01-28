@@ -12,11 +12,9 @@ const ReportSchedulerManage = () => {
   const [loading, setLoading] = useState(false);
   const { downloadData, setDownloadData } = useAuth();
 
-
   useEffect(() => {
     fetchReportScheduleList();
   }, []);
-
 
   const getStoredUser = () => {
     try {
@@ -35,38 +33,30 @@ const ReportSchedulerManage = () => {
     };
   };
 
-
-
   const fetchReportScheduleList = async () => {
     try {
       setLoading(true);
 
       const user = getStoredUser();
-
-      if (!user?.session_id || !user?.user_id) {
-        console.error("Session or User ID missing");
-        return;
-      }
+      if (!user?.session_id || !user?.user_id) return;
 
       const payload = {
         session_id: user.session_id,
         created_by: user.user_id,
       };
 
-      const response = await ApiServices.reportSchedulerList(payload);
+      const response = await ApiServices.reportSchedulesList(payload);
 
-      console.log("📥 Full API Response:", response);
-      console.log("📥 Response Data:", response?.data);
+      console.log("📥 API Response:", response?.data);
 
-      setReports(response?.data?.data?.["Report list"] || []);
+      // ✅ FIX HERE
+      setReports(response?.data?.data || []);
     } catch (error) {
       console.error("Report list error:", error);
     } finally {
       setLoading(false);
     }
   };
-
-
 
   // const filteredQueries = queries.filter((q) =>
   //   Object.values(q).some((v) =>
@@ -76,15 +66,9 @@ const ReportSchedulerManage = () => {
 
   const filteredReports = reports.filter((r) =>
     Object.values(r).some((v) =>
-      String(v).toLowerCase().includes(globalFilter.toLowerCase())
-    )
+      String(v).toLowerCase().includes(globalFilter.toLowerCase()),
+    ),
   );
-
-
-
-
-
-
 
   return (
     <div className="mx-auto px-6 py-8">
@@ -104,7 +88,7 @@ const ReportSchedulerManage = () => {
           <div className="">
             <button
               className="px-4 py-2 bg-blue-400  hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
-              onClick={() => navigate("/layout/report-scheduler-form")}
+              onClick={() => navigate("/layout/add-report-scheduler")}
             >
               Create Schedule
             </button>
@@ -169,7 +153,6 @@ const ReportSchedulerManage = () => {
                 <th className="px-5 py-3 text-left">Report Name</th>
                 <th className="px-5 py-3 text-left">Schedule Name</th>
                 <th className="px-5 py-3 text-left">Schedule on</th>
-                <th className="px-5 py-3 text-left">Rows</th>
                 <th className="px-5 py-3 text-right">Action</th>
               </tr>
             </thead>
@@ -180,28 +163,14 @@ const ReportSchedulerManage = () => {
 
                 return (
                   <tr key={item.report_id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 text-xs">
-                      {item.report_name}
-                    </td>
+                    <td className="px-6 py-3 text-xs">{item.report_name}</td>
 
-                    <td className="px-6 py-3 text-xs text-gray-600">
-                      {date}
-                    </td>
+                    <td className="px-6 py-3 text-xs text-gray-600">{item.schedule_name}</td>
 
-                    <td className="px-6 py-3 text-xs text-gray-600">
-                      {time}
-                    </td>
-
-                    <td className="px-6 py-3 text-xs text-gray-600">
-                      {item.row_affected}
-                    </td>
+                    <td className="px-6 py-3 text-xs text-gray-600">{time}</td>
 
                     <td className="px-6 py-3">
                       <div className="flex justify-end gap-2">
-
-
-
-
                         {/* <button
                           className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"
                           onClick={() =>
@@ -217,14 +186,13 @@ const ReportSchedulerManage = () => {
                           onClick={() => {
                             console.log(" Edit Report Data:", item);
 
-                            navigate("/layout/report-designer-view", {
-                              state: { report: item },
+                            navigate(`/layout/add-report-scheduler/${item.id}`, {
+                              state: { schedule: item },
                             });
                           }}
                         >
                           Edit
                         </button>
-
                       </div>
                     </td>
                   </tr>

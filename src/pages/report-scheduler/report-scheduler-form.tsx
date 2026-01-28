@@ -1,25 +1,95 @@
 import { useEffect, useState } from "react";
-import { X, Plus, Book, Search, Trash2, ArrowLeft, Users, Mail } from "lucide-react";
+import {
+  X,
+  Plus,
+  Book,
+  Search,
+  Trash2,
+  ArrowLeft,
+  Users,
+  Mail,
+} from "lucide-react";
 import ApiServices from "../../services/ApiServices";
-
+import { useNavigate } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 const ReportSchedulerForm = () => {
+  const navigate = useNavigate();
+const location = useLocation();
+const { id } = useParams(); // route param (optional)
 
-  const [reports, setReports] = useState<
+useEffect(() => {
+  // 🔹 EDIT MODE: state দিয়ে আসলে
+  if (location.state?.schedule) {
+    const s = location.state.schedule;
+
+    setReportSchedule({
+      scheduleId: s.id,
+      scheduleName: s.schedule_name || "",
+      reportName: s.report_id || "",
+
+      to: JSON.parse(s.recipient_to || "[]"),
+      cc: JSON.parse(s.recipient_cc || "[]"),
+
+      toInput: "",
+      ccInput: "",
+      toSuggestions: [],
+      ccSuggestions: [],
+
+      mailTitle: s.mail_title || "",
+      mailBody: s.mail_body || "",
+      frequency: s.frequency || "",
+      selectedDays: s.selected_days || "",
+      scheduleTime: s.schedule_time || "",
+    });
+
+    return;
+  }
+
+  // 🔹 ADD MODE (new)
+  setReportSchedule((prev) => ({
+    ...prev,
+    scheduleId: null,
+  }));
+}, [location.state, id]);
+  const [dropdownData, setDropdownData] = useState<
     { label: string; value: string }[]
   >([]);
+  const [addressBooks, setAddressBooks] = useState<
+    { id: number; name: string; emails: string[] }[]
+  >([]);
 
-
-  // const reportNames = [
-  //   "Sales Report",
-  //   "Inventory Report",
-  //   "Customer Analytics",
-  //   "Financial Summary",
-  //   "Performance Dashboard"
-  // ];
-
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [addingEmail, setAddingEmail] = useState(false);
   useEffect(() => {
-    fetchReports();
+    fetchReportsDropdown();
+    fetchAddressBooks();
   }, []);
+  const fetchAddressBooks = async () => {
+    try {
+      const user = getUserContext();
+      if (!user?.session_id || !user?.user_id) return;
+
+      const payload = {
+        created_by: user.user_id,
+        session_id: user.session_id,
+      };
+
+      const res = await ApiServices.addressBookList(payload);
+
+      if (res?.data?.isSuccess) {
+        const books = (res.data.data || []).map((b) => ({
+          ...b,
+          emails: Array.isArray(b.emails)
+            ? b.emails
+            : JSON.parse(b.emails || "[]"),
+        }));
+
+        setAddressBooks(books);
+      }
+    } catch (err) {
+      console.error("Address book load failed", err);
+    }
+  };
 
   const getUserContext = () => {
     try {
@@ -31,47 +101,36 @@ const ReportSchedulerForm = () => {
     }
   };
 
-
-  const fetchReports = async () => {
+  const fetchReportsDropdown = async () => {
     try {
       const user = getUserContext();
 
       const payload = {
         created_by: user?.user_id || null,
-        session_id: user?.session_id || null
+        session_id: user?.session_id || null,
       };
 
       const res = await ApiServices.reportsDropdown(payload);
 
       if (res?.data?.isSuccess) {
-        setReports(res.data.data);
+        setDropdownData(res.data.data);
       }
     } catch (error) {
       console.error("Failed to load reports dropdown", error);
     }
   };
 
-
-
-  // Address books with names and email lists
-  const [addressBooks, setAddressBooks] = useState([
-    { id: 1, name: "Team", emails: ["abc@gmail.com", "xyz@ymail.com"] },
-    { id: 2, name: "Clients", emails: ["client1@company.com", "client2@corp.com"] },
-    { id: 3, name: "Management", emails: ["manager@company.com"] }
-  ]);
-
-  const [recentSearches, setRecentSearches] = useState([
-    "user@company.com",
-    "test@example.com"
-  ]);
-
   const [isAddressBookOpen, setIsAddressBookOpen] = useState(false);
-  const [selectedAddressBook, setSelectedAddressBook] = useState(null);
+  const [selectedAddressBook, setSelectedAddressBook] = useState<number | null>(
+    null,
+  );
   const [newEmailForBook, setNewEmailForBook] = useState("");
   const [newAddressBookName, setNewAddressBookName] = useState("");
   const [isCreatingNewBook, setIsCreatingNewBook] = useState(false);
-
-  const [report, setReport] = useState({
+  const [creatingBook, setCreatingBook] = useState(false);
+  const [reportSchedule, setReportSchedule] = useState({
+    scheduleId: null, //  ADD করো
+    scheduleName: "",
     reportName: "",
     toInput: "",
     ccInput: "",
@@ -83,25 +142,27 @@ const ReportSchedulerForm = () => {
     mailBody: "",
     frequency: "",
     selectedDays: "",
-    scheduleTime: ""
+    scheduleTime: "",
   });
 
   const [activeInputs, setActiveInputs] = useState({
     to: false,
-    cc: false
+    cc: false,
   });
 
   // Get all unique emails from all address books
   const getAllEmails = (): string[] => {
     const allEmails = new Set<string>();
-    addressBooks.forEach(book => {
-      book.emails.forEach(email => allEmails.add(email));
+    addressBooks.forEach((book) => {
+      book.emails.forEach((email) => allEmails.add(email));
     });
     return Array.from(allEmails);
   };
 
   // Get suggestions including both emails and address books
-  const getSuggestions = (input: string): { type: string; value: string; id?: number }[] => {
+  const getSuggestions = (
+    input: string,
+  ): { type: string; value: string; id?: number }[] => {
     if (!input) return [];
 
     const suggestions: { type: string; value: string; id?: number }[] = [];
@@ -109,16 +170,20 @@ const ReportSchedulerForm = () => {
 
     // Add matching emails
     const allEmails = getAllEmails();
-    allEmails.forEach(email => {
+    allEmails.forEach((email) => {
       if (email.toLowerCase().includes(lowerInput)) {
-        suggestions.push({ type: 'email', value: email });
+        suggestions.push({ type: "email", value: email });
       }
     });
 
     // Add matching address books
-    addressBooks.forEach(book => {
+    addressBooks.forEach((book) => {
       if (book.name.toLowerCase().includes(lowerInput)) {
-        suggestions.push({ type: 'addressBook', value: book.name, id: book.id });
+        suggestions.push({
+          type: "addressBook",
+          value: book.name,
+          id: book.id,
+        });
       }
     });
 
@@ -126,42 +191,47 @@ const ReportSchedulerForm = () => {
   };
 
   // Handle email input change
-  const handleEmailInputChange = (field, value) => {
+  const handleEmailInputChange = (field: "to" | "cc", value: string) => {
     const suggestions = getSuggestions(value);
-    setReport({
-      ...report,
+    setReportSchedule({
+      ...reportSchedule,
       [`${field}Input`]: value,
-      [`${field}Suggestions`]: suggestions
+      [`${field}Suggestions`]: suggestions,
     });
   };
 
   // Add email or address book to the field
   const handleAddItem = (field, item) => {
-    if (item.type === 'email') {
+    if (item.type === "email") {
       // Add single email
-      if (!report[field].includes(item.value)) {
-        setReport({
-          ...report,
-          [field]: [...report[field], item.value],
+      if (!reportSchedule[field].includes(item.value)) {
+        setReportSchedule({
+          ...reportSchedule,
+          [field]: [...reportSchedule[field], item.value],
           [`${field}Input`]: "",
-          [`${field}Suggestions`]: []
+          [`${field}Suggestions`]: [],
         });
 
         // Add to recent searches if not already there
-        if (!recentSearches.includes(item.value) && !getAllEmails().includes(item.value)) {
+        if (
+          !recentSearches.includes(item.value) &&
+          !getAllEmails().includes(item.value)
+        ) {
           setRecentSearches([item.value, ...recentSearches]);
         }
       }
-    } else if (item.type === 'addressBook') {
+    } else if (item.type === "addressBook") {
       // Add all emails from the address book
-      const book = addressBooks.find(b => b.id === item.id);
+      const book = addressBooks.find((b) => b.id === item.id);
       if (book) {
-        const newEmails = book.emails.filter(email => !report[field].includes(email));
-        setReport({
-          ...report,
-          [field]: [...report[field], ...newEmails],
+        const newEmails = book.emails.filter(
+          (email) => !reportSchedule[field].includes(email),
+        );
+        setReportSchedule({
+          ...reportSchedule,
+          [field]: [...reportSchedule[field], ...newEmails],
           [`${field}Input`]: "",
-          [`${field}Suggestions`]: []
+          [`${field}Suggestions`]: [],
         });
       }
     }
@@ -170,86 +240,159 @@ const ReportSchedulerForm = () => {
 
   // Remove email chip
   const handleRemoveEmailChip = (field, email) => {
-    setReport({
-      ...report,
-      [field]: report[field].filter(e => e !== email)
+    setReportSchedule({
+      ...reportSchedule,
+      [field]: reportSchedule[field].filter((e) => e !== email),
     });
   };
 
   // Handle adding email to selected address book from recent searches
-  const handleAddToAddressBook = (email) => {
-    if (selectedAddressBook) {
-      const updatedBooks = addressBooks.map(book => {
-        if (book.id === selectedAddressBook) {
-          if (!book.emails.includes(email)) {
-            return { ...book, emails: [...book.emails, email] };
-          }
-        }
-        return book;
-      });
-      setAddressBooks(updatedBooks);
+  const handleAddToAddressBook = async (email: string) => {
+    if (!selectedAddressBook) return;
+
+    try {
+      const user = getUserContext();
+      const payload = {
+        address_book_id: selectedAddressBook,
+        email,
+        created_by: user.user_id,
+        session_id: user.session_id,
+      };
+
+      const res = await ApiServices.addressBookEmailAdd(payload);
+
+      if (res?.data?.isSuccess) {
+        fetchAddressBooks(); // 🔥 single source of truth
+      }
+    } catch (err) {
+      console.error("Add to address book failed", err);
     }
   };
 
   // Handle removing from recent searches
   const handleRemoveFromRecentSearches = (email) => {
-    setRecentSearches(recentSearches.filter(e => e !== email));
+    setRecentSearches(recentSearches.filter((e) => e !== email));
   };
 
   // Handle adding email to selected address book
-  const handleAddEmailToBook = () => {
-    if (newEmailForBook && selectedAddressBook) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (emailRegex.test(newEmailForBook)) {
-        const updatedBooks = addressBooks.map(book => {
-          if (book.id === selectedAddressBook) {
-            if (!book.emails.includes(newEmailForBook)) {
-              return { ...book, emails: [...book.emails, newEmailForBook] };
-            }
-          }
-          return book;
-        });
-        setAddressBooks(updatedBooks);
+  const handleAddEmailToBook = async () => {
+    if (!newEmailForBook || !selectedAddressBook) return;
+
+    try {
+      setAddingEmail(true);
+
+      const user = getUserContext();
+      const payload = {
+        address_book_id: selectedAddressBook,
+        email: newEmailForBook,
+        created_by: user.user_id,
+        session_id: user.session_id,
+      };
+
+      const res = await ApiServices.addressBookEmailAdd(payload);
+
+      // ✅ SUCCESS
+      if (res?.data?.isSuccess) {
         setNewEmailForBook("");
-      } else {
-        alert("Please enter a valid email address");
+        fetchAddressBooks();
       }
+    } catch (err: any) {
+      // 🔥🔥 THIS IS WHERE 409 IS HANDLED 🔥🔥
+      if (err?.response?.status === 409) {
+        alert(err.response.data.message);
+        // "Email already exists in this address book"
+        return;
+      }
+
+      console.error("Add email failed", err);
+    } finally {
+      setAddingEmail(false);
     }
   };
-
   // Handle creating new address book
-  const handleCreateAddressBook = () => {
-    if (newAddressBookName.trim()) {
-      const newBook = {
-        id: addressBooks.length + 1,
+  const handleCreateAddressBook = async () => {
+    if (!newAddressBookName.trim()) return;
+
+    try {
+      setCreatingBook(true);
+
+      const user = getUserContext();
+      const payload = {
         name: newAddressBookName.trim(),
-        emails: []
+        created_by: user.user_id,
+        session_id: user.session_id,
       };
-      setAddressBooks([...addressBooks, newBook]);
-      setSelectedAddressBook(newBook.id);
-      setNewAddressBookName("");
-      setIsCreatingNewBook(false);
+
+      const res = await ApiServices.addressBookCreate(payload);
+
+      if (res?.data?.isSuccess) {
+        setNewAddressBookName("");
+        setIsCreatingNewBook(false);
+        fetchAddressBooks();
+      }
+    } catch (err) {
+      console.error("Create address book failed", err);
+    } finally {
+      setCreatingBook(false);
     }
   };
 
   // Handle removing email from address book
-  const handleRemoveFromBook = (bookId, email) => {
-    const updatedBooks = addressBooks.map(book => {
-      if (book.id === bookId) {
-        return { ...book, emails: book.emails.filter(e => e !== email) };
+  const handleRemoveFromBook = async (bookId: number, email: string) => {
+    try {
+      const user = getUserContext();
+      const payload = {
+        address_book_id: bookId,
+        email,
+        created_by: user.user_id,
+        session_id: user.session_id,
+      };
+
+      const res = await ApiServices.addressBookEmailRemove(payload);
+
+      if (res?.data?.isSuccess) {
+        fetchAddressBooks(); // 🔥 refresh
       }
-      return book;
-    });
-    setAddressBooks(updatedBooks);
+    } catch (err) {
+      console.error("Remove email failed", err);
+    }
   };
 
-  const handleSubmit = () => {
-    console.log("Report:", report);
-    console.log("Address Books:", addressBooks);
-    alert("Schedule saved! Check console for details.");
+  const handleSubmit = async () => {
+    try {
+      const user = getUserContext();
+      if (!user) return;
+
+      const payload = {
+        schedule_id: reportSchedule.scheduleId, // ⭐ null = ADD | value = EDIT
+        session_id: user.session_id,
+        created_by: user.user_id,
+        schedule_name:reportSchedule.scheduleName,
+        report_id: reportSchedule.reportName,
+        mail_title: reportSchedule.mailTitle,
+        mail_body: reportSchedule.mailBody,
+        to: reportSchedule.to,
+        cc: reportSchedule.cc,
+        schedule_time: reportSchedule.scheduleTime,
+        frequency: reportSchedule.frequency,
+        selected_days: reportSchedule.selectedDays,
+        is_active: true,
+      };
+
+      const res = await ApiServices.saveReportScheduler(payload);
+
+      if (res?.data?.isSuccess) {
+        navigate(-1); // optional
+      }
+    } catch (err) {
+      console.error("Save schedule failed", err);
+      alert("Failed to save schedule");
+    }
   };
 
-  const selectedBook = addressBooks.find(book => book.id === selectedAddressBook);
+  const selectedBook = addressBooks.find(
+    (book) => book.id === selectedAddressBook,
+  );
 
   return (
     <div className="mx-auto px-6 py-8">
@@ -283,18 +426,40 @@ const ReportSchedulerForm = () => {
 
       {/* Report Form */}
       <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="col-span-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Schedule Name
+          </label>
+          <input
+            type="text"
+            value={reportSchedule.scheduleName}
+            onChange={(e) =>
+              setReportSchedule({
+                ...reportSchedule,
+                scheduleName: e.target.value,
+              })
+            }
+            placeholder="Enter schedule name"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
         {/* Report Name */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Report Name
           </label>
           <select
-            value={report.reportName}
-            onChange={(e) => setReport({ ...report, reportName: e.target.value })}
+            value={reportSchedule.reportName}
+            onChange={(e) =>
+              setReportSchedule({
+                ...reportSchedule,
+                reportName: e.target.value,
+              })
+            }
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
           >
             <option value="">Select a report</option>
-            {reports.map((reportItem) => (
+            {dropdownData.map((reportItem) => (
               <option key={reportItem.value} value={reportItem.value}>
                 {reportItem.label}
               </option>
@@ -312,14 +477,14 @@ const ReportSchedulerForm = () => {
             <div className="relative">
               <div className="w-full min-h-[42px] px-3 py-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500">
                 <div className="flex flex-wrap gap-2">
-                  {report.to.map((email, idx) => (
+                  {reportSchedule.to.map((email, idx) => (
                     <span
                       key={idx}
                       className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs"
                     >
                       {email}
                       <button
-                        onClick={() => handleRemoveEmailChip('to', email)}
+                        onClick={() => handleRemoveEmailChip("to", email)}
                         className="hover:text-blue-900"
                       >
                         <X size={12} />
@@ -331,29 +496,39 @@ const ReportSchedulerForm = () => {
                       <Search size={14} className="text-gray-400 mr-1" />
                       <input
                         type="text"
-                        value={report.toInput}
-                        onChange={(e) => handleEmailInputChange('to', e.target.value)}
-                        onFocus={() => setActiveInputs({ ...activeInputs, to: true })}
+                        value={reportSchedule.toInput}
+                        onChange={(e) =>
+                          handleEmailInputChange("to", e.target.value)
+                        }
+                        onFocus={() =>
+                          setActiveInputs({ ...activeInputs, to: true })
+                        }
                         onKeyPress={(e) => {
-                          if (e.key === 'Enter' && report.toInput.trim()) {
+                          if (
+                            e.key === "Enter" &&
+                            reportSchedule.toInput.trim()
+                          ) {
                             e.preventDefault();
-                            const email = report.toInput.trim();
-                            if (!report.to.includes(email)) {
-                              setReport({
-                                ...report,
-                                to: [...report.to, email],
+                            const email = reportSchedule.toInput.trim();
+                            if (!reportSchedule.to.includes(email)) {
+                              setReportSchedule({
+                                ...reportSchedule,
+                                to: [...reportSchedule.to, email],
                                 toInput: "",
-                                toSuggestions: []
+                                toSuggestions: [],
                               });
                               // Add to recent searches if not already there
-                              if (!recentSearches.includes(email) && !getAllEmails().includes(email)) {
+                              if (
+                                !recentSearches.includes(email) &&
+                                !getAllEmails().includes(email)
+                              ) {
                                 setRecentSearches([email, ...recentSearches]);
                               }
                             } else {
-                              setReport({
-                                ...report,
+                              setReportSchedule({
+                                ...reportSchedule,
                                 toInput: "",
-                                toSuggestions: []
+                                toSuggestions: [],
                               });
                             }
                             setActiveInputs({ ...activeInputs, to: false });
@@ -363,24 +538,25 @@ const ReportSchedulerForm = () => {
                         className="flex-1 outline-none text-sm"
                       />
                     </div>
-                    {activeInputs.to && report.toSuggestions.length > 0 && (
-                      <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-auto">
-                        {report.toSuggestions.map((item, idx) => (
-                          <div
-                            key={idx}
-                            onClick={() => handleAddItem('to', item)}
-                            className="px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm flex items-center justify-between"
-                          >
-                            <span>{item.value}</span>
-                            {item.type === 'addressBook' ? (
-                              <Users size={14} className="text-purple-500" />
-                            ) : (
-                              <Mail size={14} className="text-gray-400" />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {activeInputs.to &&
+                      reportSchedule.toSuggestions.length > 0 && (
+                        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-auto">
+                          {reportSchedule.toSuggestions.map((item, idx) => (
+                            <div
+                              key={idx}
+                              onClick={() => handleAddItem("to", item)}
+                              className="px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm flex items-center justify-between"
+                            >
+                              <span>{item.value}</span>
+                              {item.type === "addressBook" ? (
+                                <Users size={14} className="text-purple-500" />
+                              ) : (
+                                <Mail size={14} className="text-gray-400" />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>
@@ -395,14 +571,14 @@ const ReportSchedulerForm = () => {
             <div className="relative">
               <div className="w-full min-h-[42px] px-3 py-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500">
                 <div className="flex flex-wrap gap-2">
-                  {report.cc.map((email, idx) => (
+                  {reportSchedule.cc.map((email, idx) => (
                     <span
                       key={idx}
                       className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded text-xs"
                     >
                       {email}
                       <button
-                        onClick={() => handleRemoveEmailChip('cc', email)}
+                        onClick={() => handleRemoveEmailChip("cc", email)}
                         className="hover:text-green-900"
                       >
                         <X size={12} />
@@ -414,29 +590,39 @@ const ReportSchedulerForm = () => {
                       <Search size={14} className="text-gray-400 mr-1" />
                       <input
                         type="text"
-                        value={report.ccInput}
-                        onChange={(e) => handleEmailInputChange('cc', e.target.value)}
-                        onFocus={() => setActiveInputs({ ...activeInputs, cc: true })}
+                        value={reportSchedule.ccInput}
+                        onChange={(e) =>
+                          handleEmailInputChange("cc", e.target.value)
+                        }
+                        onFocus={() =>
+                          setActiveInputs({ ...activeInputs, cc: true })
+                        }
                         onKeyPress={(e) => {
-                          if (e.key === 'Enter' && report.ccInput.trim()) {
+                          if (
+                            e.key === "Enter" &&
+                            reportSchedule.ccInput.trim()
+                          ) {
                             e.preventDefault();
-                            const email = report.ccInput.trim();
-                            if (!report.cc.includes(email)) {
-                              setReport({
-                                ...report,
-                                cc: [...report.cc, email],
+                            const email = reportSchedule.ccInput.trim();
+                            if (!reportSchedule.cc.includes(email)) {
+                              setReportSchedule({
+                                ...reportSchedule,
+                                cc: [...reportSchedule.cc, email],
                                 ccInput: "",
-                                ccSuggestions: []
+                                ccSuggestions: [],
                               });
                               // Add to recent searches if not already there
-                              if (!recentSearches.includes(email) && !getAllEmails().includes(email)) {
+                              if (
+                                !recentSearches.includes(email) &&
+                                !getAllEmails().includes(email)
+                              ) {
                                 setRecentSearches([email, ...recentSearches]);
                               }
                             } else {
-                              setReport({
-                                ...report,
+                              setReportSchedule({
+                                ...reportSchedule,
                                 ccInput: "",
-                                ccSuggestions: []
+                                ccSuggestions: [],
                               });
                             }
                             setActiveInputs({ ...activeInputs, cc: false });
@@ -446,24 +632,25 @@ const ReportSchedulerForm = () => {
                         className="flex-1 outline-none text-sm"
                       />
                     </div>
-                    {activeInputs.cc && report.ccSuggestions.length > 0 && (
-                      <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-auto">
-                        {report.ccSuggestions.map((item, idx) => (
-                          <div
-                            key={idx}
-                            onClick={() => handleAddItem('cc', item)}
-                            className="px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm flex items-center justify-between"
-                          >
-                            <span>{item.value}</span>
-                            {item.type === 'addressBook' ? (
-                              <Users size={14} className="text-purple-500" />
-                            ) : (
-                              <Mail size={14} className="text-gray-400" />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {activeInputs.cc &&
+                      reportSchedule.ccSuggestions.length > 0 && (
+                        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-auto">
+                          {reportSchedule.ccSuggestions.map((item, idx) => (
+                            <div
+                              key={idx}
+                              onClick={() => handleAddItem("cc", item)}
+                              className="px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm flex items-center justify-between"
+                            >
+                              <span>{item.value}</span>
+                              {item.type === "addressBook" ? (
+                                <Users size={14} className="text-purple-500" />
+                              ) : (
+                                <Mail size={14} className="text-gray-400" />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>
@@ -476,8 +663,13 @@ const ReportSchedulerForm = () => {
               Frequency
             </label>
             <select
-              value={report.frequency}
-              onChange={(e) => setReport({ ...report, frequency: e.target.value })}
+              value={reportSchedule.frequency}
+              onChange={(e) =>
+                setReportSchedule({
+                  ...reportSchedule,
+                  frequency: e.target.value,
+                })
+              }
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             >
               <option value="">Select frequency</option>
@@ -494,8 +686,13 @@ const ReportSchedulerForm = () => {
             </label>
             <input
               type="text"
-              value={report.mailTitle}
-              onChange={(e) => setReport({ ...report, mailTitle: e.target.value })}
+              value={reportSchedule.mailTitle}
+              onChange={(e) =>
+                setReportSchedule({
+                  ...reportSchedule,
+                  mailTitle: e.target.value,
+                })
+              }
               placeholder="Enter mail subject"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
@@ -508,8 +705,13 @@ const ReportSchedulerForm = () => {
             </label>
             <input
               type="text"
-              value={report.selectedDays}
-              onChange={(e) => setReport({ ...report, selectedDays: e.target.value })}
+              value={reportSchedule.selectedDays}
+              onChange={(e) =>
+                setReportSchedule({
+                  ...reportSchedule,
+                  selectedDays: e.target.value,
+                })
+              }
               placeholder="Monday, Thursday"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
@@ -522,8 +724,13 @@ const ReportSchedulerForm = () => {
             </label>
             <input
               type="time"
-              value={report.scheduleTime}
-              onChange={(e) => setReport({ ...report, scheduleTime: e.target.value })}
+              value={reportSchedule.scheduleTime}
+              onChange={(e) =>
+                setReportSchedule({
+                  ...reportSchedule,
+                  scheduleTime: e.target.value,
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
@@ -534,8 +741,13 @@ const ReportSchedulerForm = () => {
               Mail Body
             </label>
             <textarea
-              value={report.mailBody}
-              onChange={(e) => setReport({ ...report, mailBody: e.target.value })}
+              value={reportSchedule.mailBody}
+              onChange={(e) =>
+                setReportSchedule({
+                  ...reportSchedule,
+                  mailBody: e.target.value,
+                })
+              }
               placeholder="Enter mail body..."
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
@@ -565,7 +777,9 @@ const ReportSchedulerForm = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-semibold text-gray-900">Address Book Manager</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Address Book Manager
+              </h2>
               <button
                 onClick={() => setIsAddressBookOpen(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -583,7 +797,9 @@ const ReportSchedulerForm = () => {
                 <div className="flex gap-2">
                   <select
                     value={selectedAddressBook || ""}
-                    onChange={(e) => setSelectedAddressBook(Number(e.target.value))}
+                    onChange={(e) =>
+                      setSelectedAddressBook(Number(e.target.value))
+                    }
                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   >
                     <option value="">Choose an address book</option>
@@ -606,21 +822,28 @@ const ReportSchedulerForm = () => {
               {/* Create New Address Book */}
               {isCreatingNewBook && (
                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Create New Address Book</h3>
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">
+                    Create New Address Book
+                  </h3>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={newAddressBookName}
                       onChange={(e) => setNewAddressBookName(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleCreateAddressBook()}
+                      onKeyPress={(e) =>
+                        e.key === "Enter" && handleCreateAddressBook()
+                      }
                       placeholder="Enter address book name"
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                     <button
                       onClick={handleCreateAddressBook}
-                      className="bg-green-500 hover:bg-green-600 text-white rounded-lg px-6 py-2 transition-all"
+                      disabled={creatingBook}
+                      className={`px-6 py-2 rounded-lg transition-all text-white
+${creatingBook ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"}
+`}
                     >
-                      Create
+                      {creatingBook ? "Creating..." : "Create"}
                     </button>
                     <button
                       onClick={() => {
@@ -646,15 +869,20 @@ const ReportSchedulerForm = () => {
                       type="email"
                       value={newEmailForBook}
                       onChange={(e) => setNewEmailForBook(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleAddEmailToBook()}
+                      onKeyPress={(e) =>
+                        e.key === "Enter" && handleAddEmailToBook()
+                      }
                       placeholder="Enter email address"
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                     <button
                       onClick={handleAddEmailToBook}
-                      className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6 py-2 transition-all"
+                      disabled={addingEmail}
+                      className={`rounded-lg px-6 py-2 text-white transition-all
+    ${addingEmail ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}
+  `}
                     >
-                      Add
+                      {addingEmail ? "Adding..." : "Add"}
                     </button>
                   </div>
                 </div>
@@ -662,7 +890,9 @@ const ReportSchedulerForm = () => {
 
               {/* Recent Searches */}
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Recent Searches</h3>
+                <h3 className="text-sm font-medium text-gray-700 mb-3">
+                  Recent Searches
+                </h3>
                 <div className="border border-gray-200 rounded-lg">
                   {recentSearches.length === 0 ? (
                     <div className="p-4 text-center text-gray-500 text-sm">
@@ -687,7 +917,9 @@ const ReportSchedulerForm = () => {
                               </button>
                             )}
                             <button
-                              onClick={() => handleRemoveFromRecentSearches(email)}
+                              onClick={() =>
+                                handleRemoveFromRecentSearches(email)
+                              }
                               className="text-red-600 hover:text-red-700 p-1"
                               title="Remove from recent searches"
                             >
@@ -714,14 +946,21 @@ const ReportSchedulerForm = () => {
                       </div>
                     ) : (
                       <div className="divide-y divide-gray-100">
-                        {selectedBook.emails.map((email, idx) => (
+                        {(Array.isArray(selectedBook.emails)
+                          ? selectedBook.emails
+                          : []
+                        ).map((email, idx) => (
                           <div
                             key={idx}
                             className="flex items-center justify-between p-3 hover:bg-gray-50"
                           >
-                            <span className="text-sm text-gray-700">{email}</span>
+                            <span className="text-sm text-gray-700">
+                              {email}
+                            </span>
                             <button
-                              onClick={() => handleRemoveFromBook(selectedBook.id, email)}
+                              onClick={() =>
+                                handleRemoveFromBook(selectedBook.id, email)
+                              }
                               className="text-red-600 hover:text-red-700"
                             >
                               <Trash2 size={16} />

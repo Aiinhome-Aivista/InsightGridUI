@@ -35,7 +35,7 @@ import ManageSEO from "../pages/Superadmin/ManageSEO";
 import AddSEO from "../pages/Superadmin/AddSEO";
 
 function AppRoutes() {
-   const location = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
     trackPageView(location.pathname);
@@ -62,9 +62,23 @@ function AppRoutes() {
             <Route path="upload" element={<Upload_page />} />
             <Route path="query-list" element={<ShowQuery />} />
             <Route path="report-designer" element={<ReportDesignerManage />} />
-            <Route path="report-scheduler" element={<ReportSchedulerManage />} />
-            <Route path="report-scheduler-form" element={<ReportSchedulerForm />} />
-            <Route path="report-designer-view" element={<ReportDesignerParents />} />
+            <Route
+              path="report-scheduler"
+              element={<ReportSchedulerManage />}
+            />
+            <Route
+              path="add-report-scheduler"
+              element={<ReportSchedulerForm />}
+            />
+            <Route
+              path="add-report-scheduler/:id"
+              element={<ReportSchedulerForm />}
+            />
+
+            <Route
+              path="report-designer-view"
+              element={<ReportDesignerParents />}
+            />
             <Route path="query-designer" element={<QueryDesigner />} />
             <Route path="Settings" element={<Settings />} />
             {/* <Route path="customize" element={<Customize_page />} /> */}
@@ -74,18 +88,23 @@ function AppRoutes() {
             <Route path="add-company-user/:id" element={<AddCompanyUser />} /> */}
 
             {/* super admin routes */}
-            <Route path="super-dashboard" element={<ManageSuperAdminDashboard />} />
+            <Route
+              path="super-dashboard"
+              element={<ManageSuperAdminDashboard />}
+            />
             <Route path="manage-companies" element={<ManageCompanies />} />
             <Route path="register-company" element={<RegisterCompany />} />
             <Route path="register-company/:id" element={<RegisterCompany />} />
             {/* <Route path="manage-company-admin" element={<ManageCompanyAdmin />} /> */}
-            <Route path="manage-company-user" element={<ManageCompanyAdmin />} />
+            <Route
+              path="manage-company-user"
+              element={<ManageCompanyAdmin />}
+            />
             <Route path="add-company-user" element={<AddCompanyAdmin />} />
             <Route path="add-company-user/:id" element={<AddCompanyAdmin />} />
             <Route path="manage-seo" element={<ManageSEO />} />
             <Route path="add-seo" element={<AddSEO />} />
             <Route path="add-seo/:id" element={<AddSEO />} />
-
           </Route>
         </Route>
 
@@ -97,15 +116,23 @@ function AppRoutes() {
 
 const RootRoute = () => {
   const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <Navigate to="/layout/upload" replace /> : <LandingPage />;
+  return isAuthenticated ? (
+    <Navigate to="/layout/upload" replace />
+  ) : (
+    <LandingPage />
+  );
 };
 
 const PublicRoute = ({ component: Component }) => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || "/layout/upload";
-  const isLoginPage = location.pathname === '/login';
-  return isAuthenticated && isLoginPage ? <Navigate to={from} replace /> : <Component />;
+  const isLoginPage = location.pathname === "/login";
+  return isAuthenticated && isLoginPage ? (
+    <Navigate to={from} replace />
+  ) : (
+    <Component />
+  );
 };
 
 export default AppRoutes;
