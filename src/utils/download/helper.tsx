@@ -6,3 +6,14 @@ export const getColumns = (data: any[]) => {
 export const convertToTableRows = (data: any[], columns: string[]) => {
   return data.map((row) => columns.map((col) => row[col]));
 };
+
+
+export const WEEK_DAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
