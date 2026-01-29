@@ -11,7 +11,6 @@ const ReportSchedulerManage = () => {
   const [loading, setLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-
   useEffect(() => {
     fetchReportScheduleList();
   }, []);
@@ -25,7 +24,6 @@ const ReportSchedulerManage = () => {
     }
   };
 
-
   const handleRefresh = async () => {
     if (isRefreshing) return;
 
@@ -37,15 +35,6 @@ const ReportSchedulerManage = () => {
     } finally {
       setIsRefreshing(false);
     }
-  };
-
-
-  const getDateTime = (value: string) => {
-    const d = new Date(value);
-    return {
-      date: d.toLocaleDateString(),
-      time: d.toLocaleTimeString(),
-    };
   };
 
   const fetchReportScheduleList = async () => {
@@ -88,8 +77,50 @@ const ReportSchedulerManage = () => {
     return `${hour12}:${minutes.toString().padStart(2, "0")} ${ampm}`;
   };
 
+  const getAllScheduleNames = () => {
+    return reports.map((r) => r.schedule_name);
+  };
 
+  const getRunsOnText = (item: any) => {
+    const freq = item.frequency;
 
+    if (freq === "daily") {
+      return "Every Day";
+    }
+
+    if (freq === "weekly") {
+      if (item.selected_days) {
+        return `Every ${item.selected_days}`;
+      }
+      return "Weekly";
+    }
+
+    if (freq === "monthly") {
+      const d = new Date(item.created_at);
+      return `Every month on ${d.getDate()}th`;
+    }
+
+    if (freq === "once") {
+      const d = new Date(item.created_at);
+      return d.toLocaleDateString();
+    }
+
+    return "-";
+  };
+
+  const getScheduleStatus = (item: any) => {
+    if (!item.last_run) {
+      return {
+        text: "Scheduled",
+        className: "bg-yellow-100 text-yellow-700",
+      };
+    }
+
+    return {
+      text: "Mail Sent",
+      className: "bg-green-100 text-green-700",
+    };
+  };
   return (
     <div className="mx-auto px-6 py-8">
       {/* Header */}
@@ -108,7 +139,14 @@ const ReportSchedulerManage = () => {
           <div className="">
             <button
               className="px-4 py-2 bg-blue-400  hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center"
-              onClick={() => navigate("/layout/add-report-scheduler")}
+              // onClick={() => navigate("/layout/add-report-scheduler")}
+              onClick={() =>
+                navigate("/layout/add-report-scheduler", {
+                  state: {
+                    scheduleNames: getAllScheduleNames(),
+                  },
+                })
+              }
             >
               Create Schedule
             </button>
@@ -152,15 +190,17 @@ const ReportSchedulerManage = () => {
             className={`
                           w-10 h-10 flex items-center justify-center rounded-xl border border-[#D9D9D9] 
                           bg-[#D9D9D9] hover:bg-[#D9D9D9] transition-all
-                          ${isRefreshing
-                ? "opacity-70 cursor-wait"
-                : "cursor-pointer"
-              }
+                          ${
+                            isRefreshing
+                              ? "opacity-70 cursor-wait"
+                              : "cursor-pointer"
+                          }
                         `}
           >
             <AutorenewRoundedIcon
-              className={`w-5 h-5 text-gray-500 ${isRefreshing ? "animate-spin" : ""
-                }`}
+              className={`w-5 h-5 text-gray-500 ${
+                isRefreshing ? "animate-spin" : ""
+              }`}
               fontSize="small"
             />
           </button>
@@ -180,38 +220,68 @@ const ReportSchedulerManage = () => {
               <tr>
                 <th className="px-5 py-3 text-left">Report Name</th>
                 <th className="px-5 py-3 text-left">Schedule Name</th>
-                <th className="px-5 py-3 text-left">Schedule Date</th>
+                <th className="px-5 py-3 text-left">Frequency</th>
+                <th className="px-5 py-3 text-left">Runs On</th>
                 <th className="px-5 py-3 text-left">Schedule Time</th>
-                {/* <th className="px-5 py-3 text-left">Status</th> */}
+                <th className="px-5 py-3 text-left">Status</th>
                 <th className="px-5 py-3 text-right">Action</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-gray-100">
               {filteredReports.map((item) => {
-                const { date, time } = getDateTime(item.created_at);
-
                 return (
                   <tr key={item.report_id} className="hover:bg-gray-50">
                     <td className="px-6 py-3 text-xs">{item.report_name}</td>
 
-                    <td className="px-6 py-3 text-xs text-gray-600">{item.schedule_name}</td>
-
-                    <td className="px-6 py-3 text-xs text-gray-600">{date}</td>
+                    <td className="px-6 py-3 text-xs text-gray-600">
+                      {item.schedule_name}
+                    </td>
+                    <td className="px-6 py-3 text-xs text-gray-600">
+                      {item.frequency}
+                    </td>
+                    <td className="px-6 py-3 text-xs text-gray-600">
+                      {getRunsOnText(item)}
+                    </td>
                     <td className="px-6 py-3 text-xs text-gray-600">
                       {formatTime12Hour(item.schedule_time)}
                     </td>
 
-                    {/* <td className="px-6 py-3 text-xs text-gray-600">{item.status}</td> */}
+                    <td className="px-6 py-3 text-xs text-gray-600">
+                      {(() => {
+                        const status = getScheduleStatus(item);
+                        return (
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${status.className}`}
+                          >
+                            {status.text}
+                          </span>
+                        );
+                      })()}
+                    </td>
 
                     <td className="px-6 py-3">
                       <div className="flex justify-end gap-2">
                         <button
                           className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"
+                          // onClick={() => {
+                          //   navigate(
+                          //     `/layout/add-report-scheduler/${item.id}`,
+                          //     {
+                          //       state: { schedule: item },
+                          //     },
+                          //   );
+                          // }}
                           onClick={() => {
-                            navigate(`/layout/add-report-scheduler/${item.id}`, {
-                              state: { schedule: item },
-                            });
+                            navigate(
+                              `/layout/add-report-scheduler/${item.id}`,
+                              {
+                                state: {
+                                  schedule: item,
+                                  scheduleNames: getAllScheduleNames(), // ⭐ ADD THIS
+                                },
+                              },
+                            );
                           }}
                         >
                           Edit

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   X,
   Plus,
@@ -12,45 +12,45 @@ import {
 import ApiServices from "../../services/ApiServices";
 import { useNavigate } from "react-router-dom";
 import { useLocation, useParams } from "react-router-dom";
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+import { WEEK_DAYS } from "../../utils/download/helper";
+import { Dropdown } from "primereact/dropdown";
 const ReportSchedulerForm = () => {
-  const navigate = useNavigate();
-const location = useLocation();
-const { id } = useParams(); // route param (optional)
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [addingEmail, setAddingEmail] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [isAddressBookOpen, setIsAddressBookOpen] = useState(false);
+  const [selectedAddressBook, setSelectedAddressBook] = useState<number | null>(
+    null,
+  );
+  const [newEmailForBook, setNewEmailForBook] = useState("");
+  const [newAddressBookName, setNewAddressBookName] = useState("");
+  const [isCreatingNewBook, setIsCreatingNewBook] = useState(false);
+  const [creatingBook, setCreatingBook] = useState(false);
+  const [scheduleNameError, setScheduleNameError] = useState("");
+  const [reportSchedule, setReportSchedule] = useState({
+    scheduleId: null, //  ADD করো
+    scheduleName: "",
+    reportName: "",
+    toInput: "",
+    ccInput: "",
+    to: [],
+    cc: [],
+    toSuggestions: [],
+    ccSuggestions: [],
+    // mailTitle: "",
+    // mailBody: "",
+    frequency: "",
+    selectedDays: "",
+    scheduleTime: "",
+  });
 
-useEffect(() => {
-  // 🔹 EDIT MODE: state দিয়ে আসলে
-  if (location.state?.schedule) {
-    const s = location.state.schedule;
+  const [activeInputs, setActiveInputs] = useState({
+    to: false,
+    cc: false,
+  });
+  const [isSaving, setIsSaving] = useState(false);
 
-    setReportSchedule({
-      scheduleId: s.id,
-      scheduleName: s.schedule_name || "",
-      reportName: s.report_id || "",
-
-      to: JSON.parse(s.recipient_to || "[]"),
-      cc: JSON.parse(s.recipient_cc || "[]"),
-
-      toInput: "",
-      ccInput: "",
-      toSuggestions: [],
-      ccSuggestions: [],
-
-      mailTitle: s.mail_title || "",
-      mailBody: s.mail_body || "",
-      frequency: s.frequency || "",
-      selectedDays: s.selected_days || "",
-      scheduleTime: s.schedule_time || "",
-    });
-
-    return;
-  }
-
-  // 🔹 ADD MODE (new)
-  setReportSchedule((prev) => ({
-    ...prev,
-    scheduleId: null,
-  }));
-}, [location.state, id]);
   const [dropdownData, setDropdownData] = useState<
     { label: string; value: string }[]
   >([]);
@@ -58,12 +58,91 @@ useEffect(() => {
     { id: number; name: string; emails: string[] }[]
   >([]);
 
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [addingEmail, setAddingEmail] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams(); // route param (optional)
+  const isEditMode = Boolean(reportSchedule.scheduleId);
+  const originalScheduleRef = useRef<any>(null);
+  const existingScheduleNames: string[] = location.state?.scheduleNames || [];
+
+  const selectedBook = addressBooks.find(
+    (book) => book.id === selectedAddressBook,
+  );
+
+  const addressBookOptions = addressBooks.map((book) => ({
+    label: `${book.name} (${book.emails.length} emails)`,
+    value: book.id,
+  }));
+
+  const frequencyOptions = [
+    { label: "Daily", value: "daily" },
+    { label: "Weekly", value: "weekly" },
+    { label: "Monthly", value: "monthly" },
+  ];
+
+  useEffect(() => {
+    // 🔹 EDIT MODE: state দিয়ে আসলে
+    // if (location.state?.schedule) {
+    //   const s = location.state.schedule;
+
+    //   setReportSchedule({
+    //     scheduleId: s.id,
+    //     scheduleName: s.schedule_name || "",
+    //     reportName: s.report_id || "",
+
+    //     to: JSON.parse(s.recipient_to || "[]"),
+    //     cc: JSON.parse(s.recipient_cc || "[]"),
+
+    //     toInput: "",
+    //     ccInput: "",
+    //     toSuggestions: [],
+    //     ccSuggestions: [],
+
+    //     mailTitle: s.mail_title || "",
+    //     mailBody: s.mail_body || "",
+    //     frequency: s.frequency || "",
+    //     selectedDays: s.selected_days || "",
+    //     scheduleTime: s.schedule_time || "",
+    //   });
+
+    //   return;
+    // }
+    if (location.state?.schedule) {
+      const s = location.state.schedule;
+
+      const initialData = {
+        scheduleId: s.id,
+        scheduleName: s.schedule_name || "",
+        reportName: s.report_id || "",
+        to: JSON.parse(s.recipient_to || "[]"),
+        cc: JSON.parse(s.recipient_cc || "[]"),
+        toInput: "",
+        ccInput: "",
+        toSuggestions: [],
+        ccSuggestions: [],
+        // mailTitle: s.mail_title || "",
+        // mailBody: s.mail_body || "",
+        frequency: s.frequency || "",
+        selectedDays: s.selected_days || "",
+        scheduleTime: s.schedule_time || "",
+      };
+
+      originalScheduleRef.current = initialData;
+      setReportSchedule(initialData);
+      return;
+    }
+    // 🔹 ADD MODE (new)
+    setReportSchedule((prev) => ({
+      ...prev,
+      scheduleId: null,
+    }));
+  }, [location.state, id]);
+
   useEffect(() => {
     fetchReportsDropdown();
     fetchAddressBooks();
   }, []);
+
   const fetchAddressBooks = async () => {
     try {
       const user = getUserContext();
@@ -119,36 +198,6 @@ useEffect(() => {
       console.error("Failed to load reports dropdown", error);
     }
   };
-
-  const [isAddressBookOpen, setIsAddressBookOpen] = useState(false);
-  const [selectedAddressBook, setSelectedAddressBook] = useState<number | null>(
-    null,
-  );
-  const [newEmailForBook, setNewEmailForBook] = useState("");
-  const [newAddressBookName, setNewAddressBookName] = useState("");
-  const [isCreatingNewBook, setIsCreatingNewBook] = useState(false);
-  const [creatingBook, setCreatingBook] = useState(false);
-  const [reportSchedule, setReportSchedule] = useState({
-    scheduleId: null, //  ADD করো
-    scheduleName: "",
-    reportName: "",
-    toInput: "",
-    ccInput: "",
-    to: [],
-    cc: [],
-    toSuggestions: [],
-    ccSuggestions: [],
-    mailTitle: "",
-    mailBody: "",
-    frequency: "",
-    selectedDays: "",
-    scheduleTime: "",
-  });
-
-  const [activeInputs, setActiveInputs] = useState({
-    to: false,
-    cc: false,
-  });
 
   // Get all unique emails from all address books
   const getAllEmails = (): string[] => {
@@ -360,6 +409,7 @@ useEffect(() => {
 
   const handleSubmit = async () => {
     try {
+      setIsSaving(true);
       const user = getUserContext();
       if (!user) return;
 
@@ -367,10 +417,10 @@ useEffect(() => {
         schedule_id: reportSchedule.scheduleId, // ⭐ null = ADD | value = EDIT
         session_id: user.session_id,
         created_by: user.user_id,
-        schedule_name:reportSchedule.scheduleName,
+        schedule_name: reportSchedule.scheduleName,
         report_id: reportSchedule.reportName,
-        mail_title: reportSchedule.mailTitle,
-        mail_body: reportSchedule.mailBody,
+        // mail_title: reportSchedule.mailTitle,
+        // mail_body: reportSchedule.mailBody,
         to: reportSchedule.to,
         cc: reportSchedule.cc,
         schedule_time: reportSchedule.scheduleTime,
@@ -386,13 +436,71 @@ useEffect(() => {
       }
     } catch (err) {
       console.error("Save schedule failed", err);
-      alert("Failed to save schedule");
+      // alert("Failed to save schedule");
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const selectedBook = addressBooks.find(
-    (book) => book.id === selectedAddressBook,
-  );
+  const handleResetForm = () => {
+    if (isResetting) return;
+
+    setIsResetting(true);
+
+    setTimeout(() => {
+      if (isEditMode && originalScheduleRef.current) {
+        // 🔄 Reset to original EDIT data
+        setReportSchedule({
+          ...originalScheduleRef.current,
+          toInput: "",
+          ccInput: "",
+          toSuggestions: [],
+          ccSuggestions: [],
+        });
+      } else {
+        // 🆕 Reset CREATE form
+        setReportSchedule({
+          scheduleId: null,
+          scheduleName: "",
+          reportName: "",
+          toInput: "",
+          ccInput: "",
+          to: [],
+          cc: [],
+          toSuggestions: [],
+          ccSuggestions: [],
+          // mailTitle: "",
+          // mailBody: "",
+          frequency: "",
+          selectedDays: "",
+          scheduleTime: "",
+        });
+      }
+
+      // 🔥 Reset UI-only states
+      setActiveInputs({ to: false, cc: false });
+      setSelectedAddressBook(null);
+      setNewEmailForBook("");
+      setIsCreatingNewBook(false);
+
+      setIsResetting(false);
+    }, 400);
+  };
+
+  const toggleWeekDay = (day: string) => {
+    const currentDays = reportSchedule.selectedDays
+      ? reportSchedule.selectedDays.split(",").map((d) => d.trim())
+      : [];
+
+    const updatedDays = currentDays.includes(day)
+      ? currentDays.filter((d) => d !== day)
+      : [...currentDays, day];
+
+    setReportSchedule({
+      ...reportSchedule,
+      selectedDays: updatedDays.join(", "),
+    });
+  };
 
   return (
     <div className="mx-auto px-6 py-8">
@@ -407,21 +515,38 @@ useEffect(() => {
           </button>
           <div>
             <h1 className="text-xl font-semibold text-gray-900">
-              Create Schedule
+              {isEditMode ? "Edit Schedule" : "Create Schedule"}
             </h1>
             <p className="text-sm text-gray-500 mt-1">
               Configure your report schedule settings
             </p>
           </div>
         </div>
-
-        <button
-          onClick={() => setIsAddressBookOpen(true)}
-          className="bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-medium transition-all px-6 py-2.5 flex items-center gap-2"
-        >
-          <Book size={16} />
-          Address Book
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsAddressBookOpen(true)}
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-all px-6 py-2.5 flex items-center gap-2"
+          >
+            <Book size={16} />
+            Address Book
+          </button>
+          {!isEditMode && (
+            <button
+              type="button"
+              onClick={handleResetForm}
+              disabled={isResetting}
+              className={`w-10 h-10 flex items-center justify-center rounded-lg border border-[#D9D9D9] bg-[#F3F3F3] hover:bg-[#E5E5E5] transition-all
+  ${isResetting ? "cursor-wait opacity-70" : "cursor-pointer"}`}
+            >
+              <AutorenewRoundedIcon
+                className={`w-5 h-5 text-gray-600 ${
+                  isResetting ? "animate-spin" : ""
+                }`}
+                fontSize="small"
+              />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Report Form */}
@@ -433,18 +558,49 @@ useEffect(() => {
           <input
             type="text"
             value={reportSchedule.scheduleName}
-            onChange={(e) =>
+            // onChange={(e) =>
+            //   setReportSchedule({
+            //     ...reportSchedule,
+            //     scheduleName: e.target.value,
+            //   })
+            // }
+            onChange={(e) => {
+              const value = e.target.value;
+              const normalized = value.toLowerCase().trim();
+
+              const isDuplicate =
+                existingScheduleNames
+                  .map((n) => n.toLowerCase().trim())
+                  .includes(normalized) &&
+                normalized !==
+                  originalScheduleRef.current?.scheduleName
+                    ?.toLowerCase()
+                    .trim();
+
+              setScheduleNameError(
+                isDuplicate ? "Schedule name already exists" : "",
+              );
+
               setReportSchedule({
                 ...reportSchedule,
-                scheduleName: e.target.value,
-              })
-            }
+                scheduleName: value,
+              });
+            }}
             placeholder="Enter schedule name"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            className={`w-full px-3 py-2 border rounded-lg
+    ${
+      scheduleNameError
+        ? "border-red-500 focus:ring-red-500"
+        : "border-gray-300 focus:ring-blue-500"
+    }`}
+            // className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
           />
+          {scheduleNameError && (
+            <p className="text-red-500 text-xs mt-1">{scheduleNameError}</p>
+          )}
         </div>
         {/* Report Name */}
-        <div className="mb-4">
+        {/* <div className="mb-4 mt-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Report Name
           </label>
@@ -465,12 +621,94 @@ useEffect(() => {
               </option>
             ))}
           </select>
+        </div> */}
+        {/* Report Name – Searchable PrimeReact Dropdown */}
+        <div className="mb-4 mt-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Report Name
+          </label>
+
+          <Dropdown
+            value={reportSchedule.reportName || null}
+            options={dropdownData}
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select Report"
+            filter
+            filterPlaceholder="Search report..."
+            appendTo="self"
+            onChange={(e) =>
+              setReportSchedule({
+                ...reportSchedule,
+                reportName: e.value,
+              })
+            }
+            className="
+      w-full h-10 text-sm
+      rounded-xl
+      flex items-center justify-between
+      transition-all duration-200
+      bg-white
+      border focus:outline-none focus:ring-1 focus:ring-[#5433FF]
+    "
+            panelClassName="
+      bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
+    "
+            pt={{
+              root: { className: "cursor-pointer" },
+
+              input: {
+                className: `
+          text-sm font-medium text-gray-700
+          px-3 py-2 h-full flex items-center
+          overflow-hidden text-ellipsis whitespace-nowrap
+        `,
+              },
+
+              trigger: {
+                className:
+                  "w-8 flex items-center justify-center text-gray-400 shrink-0",
+              },
+
+              /* 🔍 Search styling */
+              filterContainer: {
+                className: "px-3 py-2 border-b border-gray-100",
+              },
+
+              filterInput: {
+                className: `
+          w-full
+          pl-10 pr-3 py-2
+          text-sm
+          border border-gray-200
+          rounded-lg
+          focus:ring-1 focus:ring-[#5433FF]
+          outline-none
+        `,
+              },
+
+              list: { className: "p-1" },
+
+              item: ({ context }: any) => ({
+                className: `
+          px-3 py-2 rounded-xl cursor-pointer transition-colors mb-0.5
+          ${
+            context.selected
+              ? "bg-gray-100 font-semibold text-gray-900"
+              : "hover:bg-gray-50 text-gray-700"
+          }
+        `,
+              }),
+
+              itemLabel: { className: "font-medium" },
+            }}
+          />
         </div>
 
         {/* Mail Fields and Schedule */}
         <div className="grid grid-cols-12 gap-4">
           {/* To Field */}
-          <div className="col-span-5">
+          <div className="col-span-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               To
             </label>
@@ -658,18 +896,21 @@ useEffect(() => {
           </div>
 
           {/* Frequency */}
-          <div className="col-span-3">
+          {/* <div className="col-span-3">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Frequency
             </label>
             <select
               value={reportSchedule.frequency}
-              onChange={(e) =>
+              onChange={(e) => {
+                const value = e.target.value;
+
                 setReportSchedule({
                   ...reportSchedule,
-                  frequency: e.target.value,
-                })
-              }
+                  frequency: value,
+                  selectedDays: value === "daily" ? "" : reportSchedule.selectedDays,
+                });
+              }}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             >
               <option value="">Select frequency</option>
@@ -677,10 +918,79 @@ useEffect(() => {
               <option value="weekly">Weekly</option>
               <option value="monthly">Monthly</option>
             </select>
+
+          </div> */}
+          {/* Frequency – PrimeReact Dropdown */}
+          <div className="col-span-3">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Frequency
+            </label>
+
+            <Dropdown
+              value={reportSchedule.frequency || null}
+              options={frequencyOptions}
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select Frequency"
+              filter
+              filterPlaceholder="Search frequency..."
+              appendTo="self"
+              onChange={(e) => {
+                const value = e.value;
+
+                setReportSchedule({
+                  ...reportSchedule,
+                  frequency: value,
+                  selectedDays:
+                    value === "daily" ? "" : reportSchedule.selectedDays,
+                });
+              }}
+              className="
+      w-full h-10 text-sm
+      rounded-xl
+      flex items-center justify-between
+      transition-all duration-200
+      bg-white
+      border focus:outline-none focus:ring-1 focus:ring-[#5433FF]
+    "
+              panelClassName="
+      bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
+    "
+              pt={{
+                root: { className: "cursor-pointer" },
+                input: {
+                  className: `
+          text-sm font-medium text-gray-700
+          px-3 py-2 h-full flex items-center
+          overflow-hidden text-ellipsis whitespace-nowrap
+        `,
+                },
+                trigger: {
+                  className:
+                    "w-8 flex items-center justify-center text-gray-400 shrink-0",
+                },
+                filterContainer: {
+                  className: "px-3 py-2 ",
+                },
+
+                list: { className: "p-1" },
+                item: ({ context }: any) => ({
+                  className: `
+          px-3 py-2 rounded-xl cursor-pointer transition-colors mb-0.5
+          ${
+            context.selected
+              ? "bg-gray-100 font-semibold text-gray-900"
+              : "hover:bg-gray-50 text-gray-700"
+          }
+        `,
+                }),
+                itemLabel: { className: "font-medium" },
+              }}
+            />
           </div>
 
           {/* Mail Title */}
-          <div className="col-span-6">
+          {/* <div className="col-span-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Mail Title
             </label>
@@ -696,10 +1006,10 @@ useEffect(() => {
               placeholder="Enter mail subject"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
-          </div>
+          </div> */}
 
           {/* Selected Days */}
-          <div className="col-span-3">
+          {/* <div className="col-span-3">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Selected Days
             </label>
@@ -715,7 +1025,65 @@ useEffect(() => {
               placeholder="Monday, Thursday"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
-          </div>
+          </div> */}
+          {/* WEEKLY – Multi-day selector */}
+          {reportSchedule.frequency === "weekly" && (
+            <div className="col-span-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select Days
+              </label>
+
+              <div className="flex flex-wrap gap-2">
+                {WEEK_DAYS.map((day) => {
+                  const isSelected = reportSchedule.selectedDays
+                    .split(",")
+                    .map((d) => d.trim())
+                    .includes(day);
+
+                  return (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => toggleWeekDay(day)}
+                      className={`px-3 py-1.5 rounded-full text-sm border transition-all
+              ${
+                isSelected
+                  ? "bg-blue-500 text-white border-blue-500"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+              }`}
+                    >
+                      {day.slice(0, 3)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* MONTHLY – Native Calendar */}
+          {reportSchedule.frequency === "monthly" && (
+            <div className="col-span-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select Date
+              </label>
+
+              <input
+                type="date"
+                onChange={(e) => {
+                  const day = new Date(e.target.value).getDate();
+                  setReportSchedule({
+                    ...reportSchedule,
+                    selectedDays: String(day),
+                  });
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+
+              <p className="text-xs text-gray-500 mt-2">
+                Only the day will be used (every month)
+              </p>
+            </div>
+          )}
 
           {/* Schedule Time */}
           <div className="col-span-3">
@@ -736,7 +1104,7 @@ useEffect(() => {
           </div>
 
           {/* Mail Body */}
-          <div className="col-span-12">
+          {/* <div className="col-span-12">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Mail Body
             </label>
@@ -752,7 +1120,7 @@ useEffect(() => {
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -764,11 +1132,19 @@ useEffect(() => {
         >
           Cancel
         </button>
+
         <button
           onClick={handleSubmit}
-          className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all"
+          disabled={isSaving}
+          className={`px-6 py-2 rounded-lg transition-all text-white flex items-center gap-2
+    ${isSaving ? "bg-blue-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}
+  `}
         >
-          Save Schedule
+          {isSaving && (
+            <AutorenewRoundedIcon className="animate-spin" fontSize="small" />
+          )}
+
+          {isEditMode ? "Edit Schedule" : "Save Schedule"}
         </button>
       </div>
 
@@ -795,20 +1171,77 @@ useEffect(() => {
                   Select Address Book
                 </label>
                 <div className="flex gap-2">
-                  <select
-                    value={selectedAddressBook || ""}
-                    onChange={(e) =>
-                      setSelectedAddressBook(Number(e.target.value))
-                    }
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  >
-                    <option value="">Choose an address book</option>
-                    {addressBooks.map((book) => (
-                      <option key={book.id} value={book.id}>
-                        {book.name} ({book.emails.length} emails)
-                      </option>
-                    ))}
-                  </select>
+                  <Dropdown
+                    value={selectedAddressBook || null}
+                    options={addressBookOptions}
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Choose an address book"
+                    filter
+                    filterPlaceholder="Search address book..."
+                    appendTo="self"
+                    onChange={(e) => setSelectedAddressBook(e.value)}
+                    className="
+    flex-1 h-10 text-sm
+    rounded-xl
+    flex items-center justify-between
+    transition-all duration-200
+    bg-white
+    border focus:outline-none focus:ring-1 focus:ring-[#5433FF]
+  "
+                    panelClassName="
+    bg-white rounded-xl border border-gray-100 overflow-hidden text-sm
+  "
+                    pt={{
+                      root: { className: "cursor-pointer" },
+
+                      input: {
+                        className: `
+        text-sm font-medium text-gray-700
+        px-3 py-2 h-full flex items-center
+        overflow-hidden text-ellipsis whitespace-nowrap
+      `,
+                      },
+
+                      trigger: {
+                        className:
+                          "w-8 flex items-center justify-center text-gray-400 shrink-0",
+                      },
+
+                      /* 🔍 Search box styling */
+                      filterContainer: {
+                        className: "px-3 py-2 border-b border-gray-100",
+                      },
+
+                      filterInput: {
+                        className: `
+        w-full
+        pl-10 pr-3 py-2
+        text-sm
+        border border-gray-200
+        rounded-lg
+        focus:ring-1 focus:ring-[#5433FF]
+        outline-none
+      `,
+                      },
+
+                      list: { className: "p-1" },
+
+                      item: ({ context }: any) => ({
+                        className: `
+        px-3 py-2 rounded-xl cursor-pointer transition-colors mb-0.5
+        ${
+          context.selected
+            ? "bg-gray-100 font-semibold text-gray-900"
+            : "hover:bg-gray-50 text-gray-700"
+        }
+      `,
+                      }),
+
+                      itemLabel: { className: "font-medium" },
+                    }}
+                  />
+
                   <button
                     onClick={() => setIsCreatingNewBook(true)}
                     className="bg-green-500 hover:bg-green-600 text-white rounded-lg px-4 py-2 transition-all flex items-center gap-2"
