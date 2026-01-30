@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { MdOutlineHourglassEmpty } from "react-icons/md";
-import DownloadView from "../../utils/download/downloadView";
 import { AuthProvider, useAuth } from "../Auth/AuthContext";
 import ApiServices from "../../services/ApiServices";
 import { generatePDF } from "../../utils/download/function";
@@ -562,7 +561,7 @@ const ReportDesignManage = () => {
                           <button
                             className="text-green-600 bg-green-100 px-3 py-1 rounded-full text-xs"
                             onClick={() => {
-                              console.log(" Edit Report Data:", item);
+                              // console.log(" Edit Report Data:", item);
 
                               navigate("/layout/report-designer-view", {
                                 state: { report: item },

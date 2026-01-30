@@ -30,7 +30,7 @@ interface TableImportModalProps {
 
 const TableImportModal = ({ isOpen, onClose, onFinish, uploadedFileName, apiData }: TableImportModalProps) => {
 
-    console.log("🔍 TableImportModal received apiData:", apiData);
+    // console.log("🔍 TableImportModal received apiData:", apiData);
     const [createNewTable, setCreateNewTable] = useState<'yes' | 'no'>('yes');
     const [selectedTable, setSelectedTable] = useState('');
     const [tableName, setTableName] = useState(uploadedFileName.replace(/\.[^/.]+$/, ''));

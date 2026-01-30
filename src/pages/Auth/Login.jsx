@@ -100,7 +100,7 @@ export default function Login() {
       }
 
       res = response.data;
-      console.log("Login Response:", res);
+      // console.log("Login Response:", res);
 
       //Success handling
       if (res?.isSuccess) {

@@ -23,7 +23,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
      userData?.company_logo_url || null
   );
   const [isSaving, setIsSaving] = useState(false);
-  console.log("User Data in ProfileSettings:", userData);
+  // console.log("User Data in ProfileSettings:", userData);
 
   // let parsedAddress = {
   //   area: "",
@@ -83,7 +83,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ activeTab }) => {
       setIsSaving(true);
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Form data:", values);
+      // console.log("Form data:", values);
       setIsSaving(false);
       alert("Profile updated successfully!");
     },

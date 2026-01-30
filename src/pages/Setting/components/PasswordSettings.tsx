@@ -32,7 +32,7 @@ const PasswordSettings: React.FC<PasswordSettingsProps> = ({ activeTab }) => {
   const onSubmit = async (data: FormData) => {
     setIsSaving(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log('Password data:', data);
+    // console.log('Password data:', data);
     setIsSaving(false);
     setIsSuccess(true);
     reset();

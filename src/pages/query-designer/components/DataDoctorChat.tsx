@@ -259,7 +259,7 @@ export default function Chat({
 
   useEffect(() => {
     if (!passedData) {
-      console.log("Create mode: clearing chat history");
+      // console.log("Create mode: clearing chat history");
       localStorage.removeItem("data_doctor_chat_store");
       setChat((prev) => ({
         ...prev,
@@ -278,7 +278,7 @@ export default function Chat({
 
   useEffect(() => {
     if (!passedData?.messages?.length) return;
-    console.log("Edit mode: patching chat history", passedData);
+    // console.log("Edit mode: patching chat history", passedData);
     if (passedData.id) {
       setParentQueryId(passedData.id);
     }
@@ -298,7 +298,7 @@ export default function Chat({
     if (!passedData?.messages?.length) return;
     const lastMsg = getLastMessage(passedData.messages);
     if (!lastMsg?.ai_response) return;
-    console.log("Edit mode: loading last procedure");
+    // console.log("Edit mode: loading last procedure");
     setIsScriptGenerated(false);
     setChat((prev) => ({
       ...prev,
@@ -709,7 +709,7 @@ export default function Chat({
       })),
     };
 
-    console.log("Full session save payload:", payload);
+    // console.log("Full session save payload:", payload);
 
     try {
       setIsSaving?.(true);

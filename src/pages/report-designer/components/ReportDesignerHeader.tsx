@@ -44,7 +44,7 @@ export default function DataViewHeader({
       </Tippy>
     );
   };
-  
+
   useEffect(() => {
     if (editReport) {
       console.log(" Edit report in header:", editReport);
@@ -73,19 +73,18 @@ export default function DataViewHeader({
       setLoading(false);
     }
   };
-const valueTemplate = (option) => {
-  if (!option) {
-    return (
-      <span className="text-gray-400 text-sm">
-        Select Views
-      </span>
-    );
-  }
+  const hasSelectedView =
+  Array.isArray(selectedTables) && selectedTables.length > 0;
 
-  return (
-    <Tippy content={option.label} theme="gray" placement="top">
-      <span
-        className="
+  const valueTemplate = (option) => {
+    if (!option) {
+      return <span className="text-gray-400 text-sm">Select Views</span>;
+    }
+
+    return (
+      <Tippy content={option.label} theme="gray" placement="top">
+        <span
+          className="
           block
           max-w-[120px]
           overflow-hidden
@@ -93,12 +92,12 @@ const valueTemplate = (option) => {
           whitespace-nowrap
           text-sm font-medium text-gray-700
         "
-      >
-        {option.label}
-      </span>
-    </Tippy>
-  );
-};
+        >
+          {option.label}
+        </span>
+      </Tippy>
+    );
+  };
 
   return (
     <header className="px-4">
@@ -155,11 +154,11 @@ const valueTemplate = (option) => {
                 setSelectedTables(val ? [val] : []);
               }
             }}
-             appendTo="self"
+            appendTo="self"
             optionLabel="label"
             optionValue="value"
             placeholder="Select Views"
-            valueTemplate={valueTemplate}   
+            valueTemplate={valueTemplate}
             itemTemplate={itemTemplate}
             className="
     w-80 h-10 text-sm
@@ -174,7 +173,7 @@ const valueTemplate = (option) => {
             pt={{
               root: { className: "cursor-pointer" },
               input: {
-           className: `
+                className: `
       text-sm font-medium text-gray-700 
       px-3 py-2 h-full flex items-center leading-tight
       overflow-hidden text-ellipsis whitespace-nowrap
@@ -187,25 +186,30 @@ const valueTemplate = (option) => {
               },
               list: { className: "p-1" },
               item: ({ context }: any) => ({
-                className: `px-3 py-2 rounded-xl text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${context.selected
+                className: `px-3 py-2 rounded-xl text-gray-700 cursor-pointer transition-colors mb-0.5 whitespace-normal break-words ${
+                  context.selected
                     ? "bg-gray-100 font-semibold"
                     : "hover:bg-gray-50"
-                  }`,
+                }`,
               }),
               itemLabel: { className: "font-medium" },
             }}
           />
           <button
             onClick={handleSaveClick}
-            disabled={!reportName || isSaving || loading}
-            className={`rounded-xl text-sm font-medium transition-all flex items-center h-10 justify-center ${!reportName || isSaving || loading
+            disabled={!reportName || !hasSelectedView || isSaving || loading}
+            className={`rounded-xl text-sm font-medium transition-all flex items-center h-10 justify-center ${
+              !reportName || !hasSelectedView || isSaving || loading
                 ? "bg-gray-300 cursor-not-allowed text-white"
                 : "bg-[#7CA1F3] hover:bg-blue-500 text-white"
-              }`}
+            }`}
             style={{ width: "108px", height: "40px" }}
           >
             {isSaving || loading ? (
-              <AutorenewRoundedIcon className="animate-spin" sx={{ fontSize: 20 }} />
+              <AutorenewRoundedIcon
+                className="animate-spin"
+                sx={{ fontSize: 20 }}
+              />
             ) : (
               "Save Report"
             )}
@@ -231,12 +235,18 @@ const valueTemplate = (option) => {
             <WarningRoundedIcon sx={{ color: theme.accent, fontSize: 48 }} />
 
             <div className="my-4">
-              <p className="text-base md:text-lg font-semibold tracking-tight" style={{ color: theme.primaryText }}>
+              <p
+                className="text-base md:text-lg font-semibold tracking-tight"
+                style={{ color: theme.primaryText }}
+              >
                 <span style={{ color: theme.primaryText }}>Sahajinsight</span>
               </p>
             </div>
 
-            <p className="mb-6 font-extrabold" style={{ color: theme.primaryText }}>
+            <p
+              className="mb-6 font-extrabold"
+              style={{ color: theme.primaryText }}
+            >
               Do you want to discard your changes?
             </p>
 
@@ -244,8 +254,12 @@ const valueTemplate = (option) => {
               <button
                 style={{ borderColor: theme.accent, color: theme.primaryText }}
                 className="h-8 w-15 border font-extrabold text-xs px-5 rounded-xl hover:text-white transition"
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = theme.accent)}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.backgroundColor = theme.accent)
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
                 onClick={() => {
                   setShowBackConfirm(false);
                   navigate(-1);
@@ -254,7 +268,11 @@ const valueTemplate = (option) => {
                 Yes
               </button>
               <button
-                style={{ backgroundColor: theme.accent, borderColor: theme.accent, color: theme.primaryText }}
+                style={{
+                  backgroundColor: theme.accent,
+                  borderColor: theme.accent,
+                  color: theme.primaryText,
+                }}
                 className="h-8 w-15 border font-extrabold text-xs px-5 rounded-xl transition"
                 onClick={() => setShowBackConfirm(false)}
               >

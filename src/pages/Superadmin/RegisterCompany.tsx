@@ -37,7 +37,7 @@ const RegisterCompany = () => {
   const { id } = useParams();
   const location = useLocation();
   const company = location.state?.company;
-  console.log("company", company);
+  // console.log("company", company);
   const isEditMode = Boolean(id && company);
 
   useEffect(() => {

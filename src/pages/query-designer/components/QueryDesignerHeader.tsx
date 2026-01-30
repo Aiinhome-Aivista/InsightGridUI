@@ -58,7 +58,7 @@ export default function DashboardHeader({
 
   useEffect(() => {
     if (passedData) {
-      console.log("DashboardHeader received edit data:", passedData);
+      // console.log("DashboardHeader received edit data:", passedData);
     }
   }, [passedData]);
 

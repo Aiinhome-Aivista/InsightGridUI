@@ -86,7 +86,7 @@ export default function UploadPage() {
         files.length > 1 ? `${files.length} files` : files[0].name
       );
       const uploadResponse = await ApiService.fileUpload(formData);
-      console.log("Upload Response:", uploadResponse?.data);
+      // console.log("Upload Response:", uploadResponse?.data);
       const responseData = uploadResponse?.data;
       if (!responseData?.isSuccess) {
         console.error("Upload failed:", responseData?.message);

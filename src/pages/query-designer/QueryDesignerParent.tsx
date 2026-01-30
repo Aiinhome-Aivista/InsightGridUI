@@ -33,12 +33,12 @@ export default function Dashboard_page() {
 
       setPassedData(rowData);
 
-      console.log("Edit mode data received:", rowData);
+      // console.log("Edit mode data received:", rowData);
     }
   }, [location.state]);
 
   const handleRefresh = () => {
-    console.log("Refresh triggered");
+    // console.log("Refresh triggered");
   };
   const getStoredUser = () => {
     try {
@@ -57,10 +57,10 @@ export default function Dashboard_page() {
       created_by: user?.user_id || "",
       session_id: user?.session_id || "",
     };
-    console.log(" Payload Sent to API:", payload);
+    // console.log(" Payload Sent to API:", payload);
     try {
       const response = await ApiServices.getTableData(payload);
-      console.log(" API Response:", response.data);
+      // console.log(" API Response:", response.data);
       const responseData = response.data.data || {};
       const tables = responseData.tables_dropdown || [];
       setTableOptions([...tables].reverse());

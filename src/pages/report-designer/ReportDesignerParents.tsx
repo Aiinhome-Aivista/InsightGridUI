@@ -173,43 +173,43 @@ export default function TableView() {
     }
   };
 
-  const captureChartAsImage = async (
-    elementId: string,
-  ): Promise<string | null> => {
-    const element = document.getElementById(elementId);
-    if (!element) return null;
-    // HIDE DELETE ICONS BEFORE CAPTURE
-    const deleteButtons = element.querySelectorAll(".chart-delete-btn");
-    deleteButtons.forEach((btn) => {
-      (btn as HTMLElement).style.visibility = "hidden";
-    });
+  // const captureChartAsImage = async (
+  //   elementId: string,
+  // ): Promise<string | null> => {
+  //   const element = document.getElementById(elementId);
+  //   if (!element) return null;
+  //   // HIDE DELETE ICONS BEFORE CAPTURE
+  //   const deleteButtons = element.querySelectorAll(".chart-delete-btn");
+  //   deleteButtons.forEach((btn) => {
+  //     (btn as HTMLElement).style.visibility = "hidden";
+  //   });
 
-    const prevOverflow = element.style.overflow;
-    const prevHeight = element.style.height;
+  //   const prevOverflow = element.style.overflow;
+  //   const prevHeight = element.style.height;
 
-    element.style.overflow = "visible";
-    element.style.height = "auto";
+  //   element.style.overflow = "visible";
+  //   element.style.height = "auto";
 
-    await new Promise((r) => setTimeout(r, 100));
+  //   await new Promise((r) => setTimeout(r, 100));
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-      scrollX: 0,
-      scrollY: -window.scrollY,
-    });
+  //   const canvas = await html2canvas(element, {
+  //     scale: 2,
+  //     backgroundColor: "#ffffff",
+  //     useCORS: true,
+  //     scrollX: 0,
+  //     scrollY: -window.scrollY,
+  //   });
 
-    //  RESTORE DELETE ICONS
-    deleteButtons.forEach((btn) => {
-      (btn as HTMLElement).style.visibility = "visible";
-    });
+  //   //  RESTORE DELETE ICONS
+  //   deleteButtons.forEach((btn) => {
+  //     (btn as HTMLElement).style.visibility = "visible";
+  //   });
 
-    element.style.overflow = prevOverflow;
-    element.style.height = prevHeight;
+  //   element.style.overflow = prevOverflow;
+  //   element.style.height = prevHeight;
 
-    return canvas.toDataURL("image/png");
-  };
+  //   return canvas.toDataURL("image/png");
+  // };
 
   const handleSaveReport = async () => {
     try {
@@ -245,7 +245,7 @@ export default function TableView() {
         //   customTitle: c.customTitle,
         // })),
         charts: charts.map((c, index) => ({
-          ...c, // 🔥 FULL FINAL STATE
+          ...c, //  FULL FINAL STATE
           order: index + 1,
           customTitle:
             c.customTitle ??
@@ -292,23 +292,23 @@ export default function TableView() {
         chat_history: chatHistory,
       };
 
-      const chartImages = [];
+      // const chartImages = [];
 
-      for (let i = 0; i < charts.length; i++) {
-        const chart = charts[i];
+      // for (let i = 0; i < charts.length; i++) {
+      //   const chart = charts[i];
 
-        const elementId = `report-chart-${chart.id}`;
+      //   const elementId = `report-chart-${chart.id}`;
 
-        const imageBase64 = await captureChartAsImage(elementId);
-        if (!imageBase64) continue;
+      //   const imageBase64 = await captureChartAsImage(elementId);
+      //   if (!imageBase64) continue;
 
-        chartImages.push({
-          chart_id: chart.id,
-          type: chart.type,
-          order: i + 1,
-          image_base64: imageBase64,
-        });
-      }
+      //   chartImages.push({
+      //     chart_id: chart.id,
+      //     type: chart.type,
+      //     order: i + 1,
+      //     image_base64: imageBase64,
+      //   });
+      // }
 
       const payload = {
         session_id: user.session_id,
@@ -317,9 +317,9 @@ export default function TableView() {
         report_name: reportName,
         query_history_id: selectedQuery.id,
         report_config: reportConfig,
-        chart_images: chartImages,
+        // chart_images: chartImages,
       };
-      console.log("Save report payload", payload);
+      // console.log("Save report payload", payload);
       await ApiServices.report_save(payload);
     } catch (err) {
       console.error(" Save report error", err);

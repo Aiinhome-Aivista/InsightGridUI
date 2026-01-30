@@ -108,7 +108,34 @@ const ReportSchedulerManage = () => {
     return "-";
   };
 
+  // const getScheduleStatus = (item: any) => {
+  //   if (!item.last_run) {
+  //     return {
+  //       text: "Scheduled",
+  //       className: "bg-yellow-100 text-yellow-700",
+  //     };
+  //   }
+
+  //   return {
+  //     text: "Mail Sent",
+  //     className: "bg-green-100 text-green-700",
+  //   };
+  // };
+
   const getScheduleStatus = (item: any) => {
+    if (!item.schedule_time) {
+      return {
+        text: "Scheduled",
+        className: "bg-yellow-100 text-yellow-700",
+      };
+    }
+
+    const now = new Date();
+
+    const todayStr = now.toISOString().split("T")[0];
+    const scheduledDateTime = new Date(`${todayStr}T${item.schedule_time}:00`);
+
+    // If never run → Scheduled
     if (!item.last_run) {
       return {
         text: "Scheduled",
@@ -116,11 +143,104 @@ const ReportSchedulerManage = () => {
       };
     }
 
+    const lastRun = new Date(item.last_run.replace(" ", "T"));
+
+    // -------------------------
+    // DAILY
+    // -------------------------
+    if (item.frequency === "daily") {
+      const lastRunDate = lastRun.toISOString().split("T")[0];
+
+      if (
+        lastRunDate === todayStr &&
+        lastRun >= scheduledDateTime &&
+        now >= scheduledDateTime
+      ) {
+        return {
+          text: "Mail Sent",
+          className: "bg-green-100 text-green-700",
+        };
+      }
+
+      return {
+        text: "Scheduled",
+        className: "bg-yellow-100 text-yellow-700",
+      };
+    }
+
+    // -------------------------
+    // WEEKLY
+    // -------------------------
+    if (item.frequency === "weekly") {
+      const todayName = now.toLocaleDateString("en-US", {
+        weekday: "long",
+      });
+
+      if (!item.selected_days?.includes(todayName)) {
+        return {
+          text: "Scheduled",
+          className: "bg-yellow-100 text-yellow-700",
+        };
+      }
+
+      if (lastRun >= scheduledDateTime && now >= scheduledDateTime) {
+        return {
+          text: "Mail Sent",
+          className: "bg-green-100 text-green-700",
+        };
+      }
+
+      return {
+        text: "Scheduled",
+        className: "bg-yellow-100 text-yellow-700",
+      };
+    }
+
+    // -------------------------
+    // MONTHLY
+    // -------------------------
+    if (item.frequency === "monthly") {
+      const scheduledDay = new Date(item.created_at).getDate();
+      const todayDate = now.getDate();
+
+      if (todayDate !== scheduledDay) {
+        return {
+          text: "Scheduled",
+          className: "bg-yellow-100 text-yellow-700",
+        };
+      }
+
+      if (lastRun >= scheduledDateTime && now >= scheduledDateTime) {
+        return {
+          text: "Mail Sent",
+          className: "bg-green-100 text-green-700",
+        };
+      }
+
+      return {
+        text: "Scheduled",
+        className: "bg-yellow-100 text-yellow-700",
+      };
+    }
+
+    // -------------------------
+    // ONCE
+    // -------------------------
+    if (item.frequency === "once") {
+      if (lastRun) {
+        return {
+          text: "Mail Sent",
+          className: "bg-green-100 text-green-700",
+        };
+      }
+    }
+
     return {
-      text: "Mail Sent",
-      className: "bg-green-100 text-green-700",
+      text: "Scheduled",
+      className: "bg-yellow-100 text-yellow-700",
     };
   };
+
   return (
     <div className="mx-auto px-6 py-8">
       {/* Header */}

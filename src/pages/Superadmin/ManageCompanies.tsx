@@ -116,7 +116,7 @@ function ManageCompanies() {
   );
 
   const deleteCompany = async (companyId: number) => {
-    console.log('delete call')
+    // console.log('delete call')
     try {
       const payload = {
         company_id: companyId,

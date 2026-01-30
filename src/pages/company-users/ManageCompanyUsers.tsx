@@ -121,20 +121,20 @@ function ManageCompanyUsers() {
     </div>
   );
 
-  const deleteCompanyAdmin = async (companyId: number) => {
-    console.log('delete call')
-    try {
-      const payload = {
-        company_id: companyId,
-        deleted_by: JSON.parse(localStorage.getItem("ig_user") || "{}")?.user_id,
-      };
+  // const deleteCompanyAdmin = async (companyId: number) => {
+  //   console.log('delete call')
+  //   try {
+  //     const payload = {
+  //       company_id: companyId,
+  //       deleted_by: JSON.parse(localStorage.getItem("ig_user") || "{}")?.user_id,
+  //     };
 
-      await ApiServices.adminCompanyDelete(payload);
-      fetchCompanyUsers();
-    } catch (err) {
-      console.error("Delete failed", err);
-    }
-  };
+  //     await ApiServices.adminCompanyDelete(payload);
+  //     fetchCompanyUsers();
+  //   } catch (err) {
+  //     console.error("Delete failed", err);
+  //   }
+  // };
   const handleRefresh = async () => {
     if (isRefreshing) return;
 
