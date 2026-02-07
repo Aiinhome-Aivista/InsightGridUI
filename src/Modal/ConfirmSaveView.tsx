@@ -20,7 +20,13 @@ export default function ConfirmSaveView({
   showConfirmButton = true,
   hideHeaderLabel = false,
 }: ConfirmSaveViewProps) {
-  const { isConfirmSaveModalOpen, setIsConfirmSaveModalOpen, viewName, confirmSave, isSaving } = useAuth();
+  const {
+    isConfirmSaveModalOpen,
+    setIsConfirmSaveModalOpen,
+    viewName,
+    confirmSave,
+    isSaving,
+  } = useAuth();
   const [localActionLoading, setLocalActionLoading] = React.useState(false);
 
   const onCancel = customOnCancel || (() => setIsConfirmSaveModalOpen(false));
@@ -44,11 +50,14 @@ export default function ConfirmSaveView({
 
   const isActionLoading = customOnConfirm ? localActionLoading : isSaving;
   const displayTitle = customTitle || viewName;
-  const displayMessage = customMessage || `Do you want to save the ${type.toLowerCase()}?`;
+  const displayMessage =
+    customMessage || `Do you want to save the ${type.toLowerCase()}?`;
+  // const isDuplicateMessage =
+  //   !!customMessage && customMessage.toLowerCase().includes("already exists");
   const isDuplicateMessage =
     !!customMessage &&
-    customMessage.toLowerCase().includes("already exists");
-
+    (customMessage.toLowerCase().includes("already exists") ||
+      customMessage.toLowerCase().includes("used"));
 
   if (!isConfirmSaveModalOpen) return null;
 
@@ -57,17 +66,33 @@ export default function ConfirmSaveView({
       <div className="w-[550px] bg-[#D9D9D9] rounded-2xl shadow-lg border-[11px] border-white flex flex-col justify-center items-center gap-6 p-8">
         <div className="text-center">
           {!hideHeaderLabel && (
-            <p className="text-gray-600 text-lg">{customTitle ? "File Name" : `${type} Name`}</p>
+            // <p className="text-gray-600 text-lg">{customTitle ? "File Name" : `${type} Name`}</p>
+            // <p className="text-gray-600 text-lg">
+            //   {type === "Email" ? "Email" : "File Name"}
+            // </p>
+            <p className="text-gray-600 text-lg">
+              {type === "Email"
+                ? "Email"
+                : type === "Query"
+                  ? "Query Name"
+                : type === "AddressBook"
+                  ? "Address Book Name"
+                : type === "Report"
+                  ? "Report Name"  
+                  : "File Name"}
+            </p>
           )}
-          <h2 className="text-2xl font-semibold text-gray-700">{displayTitle}</h2>
+          <h2 className="text-2xl font-semibold text-gray-700">
+            {displayTitle}
+          </h2>
         </div>
         <p
-          className={`text-xl whitespace-pre-line text-center ${isDuplicateMessage ? "text-red-600 font-medium" : "text-gray-600"
-            }`}
+          className={`text-xl whitespace-pre-line text-center ${
+            isDuplicateMessage ? "text-red-600 font-medium" : "text-gray-600"
+          }`}
         >
           {displayMessage}
         </p>
-
 
         <div className="flex gap-4">
           {showConfirmButton ? (
@@ -76,7 +101,6 @@ export default function ConfirmSaveView({
                 className="px-6 py-2 rounded-xl border border-gray-400 text-gray-700 bg-white hover:bg-[#7ca1f3] hover:text-white transition disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={onCancel}
                 disabled={!customOnConfirm && isActionLoading}
-
               >
                 Cancel
               </button>
@@ -87,9 +111,24 @@ export default function ConfirmSaveView({
               >
                 {isActionLoading ? (
                   <>
-                    <svg className="animate-spin inline-block h-4 w-4 mr-2" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                    <svg
+                      className="animate-spin inline-block h-4 w-4 mr-2"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
                     </svg>
                     {customOnConfirm ? "Deleting..." : "Saving..."}
                   </>

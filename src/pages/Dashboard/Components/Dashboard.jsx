@@ -64,7 +64,7 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 flex items-center gap-3">
-            Data Insights Hub
+           Data Performance Dashboard
           </h1>
           <p className="text-sm text-slate-500 font-medium ml-1 mt-2 flex items-center gap-2">
             <Activity size={14} className="text-emerald-500" /> Monitoring active sessions for <b>{createdBy}</b>

@@ -7,7 +7,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { useTheme } from "../../../theme";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import ApiServices from "../../../services/ApiServices";
 import { useAuth } from "../../Auth/AuthContext";
 import ConfirmSaveView from "../../../Modal/ConfirmSaveView";
@@ -26,7 +26,9 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
   const { theme } = useTheme();
   const navigate = useNavigate();
-  const [processingProgress, setProcessingProgress] = useState<Record<string, number>>({});
+  const [processingProgress, setProcessingProgress] = useState<
+    Record<string, number>
+  >({});
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -37,7 +39,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     message: string;
     severity: "success" | "error" | "warning" | "info";
   }>({ open: false, message: "", severity: "success" });
-
 
   const ITEMS_PER_PAGE = 10;
 
@@ -71,9 +72,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     }
   };
 
-
-
-
   const formatTo12Hour = (timeStr) => {
     if (!timeStr) return "";
     const [hour, minute, second] = timeStr.split(":");
@@ -87,21 +85,20 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     setCurrentPage(1);
   }, [files]);
 
-
   useEffect(() => {
     const initialProgress: Record<string, number> = {};
 
-    files.forEach(file => {
+    files.forEach((file) => {
       const fileName = file.name || file.file_name;
       let progress = 0;
 
-      if (file.table_extraction_status?.toLowerCase() === 'done') {
+      if (file.table_extraction_status?.toLowerCase() === "done") {
         progress = 1;
       }
-      if (file.column_extraction_status?.toLowerCase() === 'done') {
+      if (file.column_extraction_status?.toLowerCase() === "done") {
         progress = 2;
       }
-      if (file.data_insert_status?.toLowerCase() === 'done') {
+      if (file.data_insert_status?.toLowerCase() === "done") {
         progress = 3;
       }
 
@@ -129,12 +126,12 @@ export default function DataProcessing({ files, onRefresh }: Props) {
     const progress = processingProgress[fileName] || 0;
 
     if (progress >= TOTAL_STEPS) {
-      navigate('/layout/table-insights', {
+      navigate("/layout/table-insights", {
         state: {
           sessionId: file.session_id,
           sessionName: file.session_name,
-          fileName: fileName
-        }
+          fileName: fileName,
+        },
       });
     }
   };
@@ -156,7 +153,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         if (onRefresh) {
           await onRefresh();
         }
-        setSnackbar({ open: true, message: "File deleted successfully", severity: "success" });
+        setSnackbar({
+          open: true,
+          message: "File deleted successfully",
+          severity: "success",
+        });
         return;
       }
 
@@ -180,7 +181,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         return;
       }
 
-
       alert(res?.message || "Unable to delete file");
       setIsConfirmSaveModalOpen(false);
       setIsDetailsModalOpen(false);
@@ -191,7 +191,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       setIsDetailsModalOpen(false);
     }
   };
-
 
   return (
     <div className="mt-6">
@@ -205,10 +204,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
         <Tippy content="Refresh" theme="gray">
           <div
             onClick={handleRefresh}
-            className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${isRefreshing
-              ? "cursor-not-allowed"
-              : "cursor-pointer hover:bg-gray-500/10"
-              }`}
+            className={`relative text-center border rounded-xl w-10 h-10 flex items-center justify-center transition-colors ${
+              isRefreshing
+                ? "cursor-not-allowed"
+                : "cursor-pointer hover:bg-gray-500/10"
+            }`}
             style={{ borderColor: theme.border }}
           >
             {isRefreshing ? (
@@ -231,68 +231,106 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
       {/* Global Column Headers */}
       <div className="mb-3 overflow-x-auto">
-        <div className="flex items-center justify-between gap-4 px-4 py-2 rounded-xl" style={{ backgroundColor: theme.border + '20' }}>
+        <div
+          className="flex items-center justify-between gap-4 px-4 py-2 rounded-xl"
+          style={{ backgroundColor: theme.border + "20" }}
+        >
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold"
+              style={{ color: theme.secondaryText }}
+            >
               File Name
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold"
+              style={{ color: theme.secondaryText }}
+            >
               Table Name
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold"
+              style={{ color: theme.secondaryText }}
+            >
               Rows Affected
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold"
+              style={{ color: theme.secondaryText }}
+            >
               Connected Queries
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold"
+              style={{ color: theme.secondaryText }}
+            >
               Connected Reports
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold text-center"
+              style={{ color: theme.secondaryText }}
+            >
               Table Extraction
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold text-center"
+              style={{ color: theme.secondaryText }}
+            >
               Column Extraction
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold text-center"
+              style={{ color: theme.secondaryText }}
+            >
               Data Insert Status
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold text-center"
+              style={{ color: theme.secondaryText }}
+            >
               File Size
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold text-center"
+              style={{ color: theme.secondaryText }}
+            >
               Created Date
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold text-center"
+              style={{ color: theme.secondaryText }}
+            >
               Uploaded At
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-center" style={{ color: theme.secondaryText }}>
+            <div
+              className="text-xs font-semibold text-center"
+              style={{ color: theme.secondaryText }}
+            >
               Action
             </div>
           </div>
-
         </div>
       </div>
 
@@ -335,7 +373,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     className="text-sm font-medium truncate"
                     style={{ color: theme.primaryText }}
                   >
-                    {file.table_name || 'N/A'}
+                    {file.table_name || "N/A"}
                   </div>
                 </div>
 
@@ -372,11 +410,18 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-center">
                     {extractionFailed ? (
-                      <span className="text-red-500 text-xs font-medium">Failed</span>
-                    ) : file.table_extraction_status?.toLowerCase() === 'done' ? (
-                      <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
+                      <span className="text-red-500 text-xs font-medium">
+                        Failed
+                      </span>
+                    ) : file.table_extraction_status?.toLowerCase() ===
+                      "done" ? (
+                      <CheckCircleIcon
+                        sx={{ fontSize: 20, color: theme.accent }}
+                      />
                     ) : (
-                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: theme.secondaryText }} />
+                      <RadioButtonUncheckedIcon
+                        sx={{ fontSize: 20, color: theme.secondaryText }}
+                      />
                     )}
                   </div>
                 </div>
@@ -384,10 +429,14 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 {/* Column Extraction Status */}
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-center">
-                    {file.column_extraction_status?.toLowerCase() === 'done' ? (
-                      <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
+                    {file.column_extraction_status?.toLowerCase() === "done" ? (
+                      <CheckCircleIcon
+                        sx={{ fontSize: 20, color: theme.accent }}
+                      />
                     ) : (
-                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: theme.secondaryText }} />
+                      <RadioButtonUncheckedIcon
+                        sx={{ fontSize: 20, color: theme.secondaryText }}
+                      />
                     )}
                   </div>
                 </div>
@@ -395,18 +444,28 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                 {/* Data Insert Status */}
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-center">
-                    {file.data_insert_status?.toLowerCase() === 'done' ? (
-                      <CheckCircleIcon sx={{ fontSize: 20, color: theme.accent }} />
+                    {file.data_insert_status?.toLowerCase() === "done" ? (
+                      <CheckCircleIcon
+                        sx={{ fontSize: 20, color: theme.accent }}
+                      />
                     ) : (
-                      <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: theme.secondaryText }} />
+                      <RadioButtonUncheckedIcon
+                        sx={{ fontSize: 20, color: theme.secondaryText }}
+                      />
                     )}
                   </div>
                 </div>
 
                 {/* File Size */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-center" style={{ color: theme.primaryText }}>
-                    {file.file_size_mb || (file.size ? `${(file.size / (1024 * 1024)).toFixed(2)}MB` : 'N/A')}
+                  <div
+                    className="text-sm font-medium text-center"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {file.file_size_mb ||
+                      (file.size
+                        ? `${(file.size / (1024 * 1024)).toFixed(2)}MB`
+                        : "N/A")}
                   </div>
                 </div>
 
@@ -422,8 +481,12 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
                 {/* Uploaded At */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-center" style={{ color: theme.primaryText }}>
-                    {formatTo12Hour(file.created_at) || new Date().toLocaleDateString()}
+                  <div
+                    className="text-sm font-medium text-center"
+                    style={{ color: theme.primaryText }}
+                  >
+                    {formatTo12Hour(file.created_at) ||
+                      new Date().toLocaleDateString()}
                   </div>
                 </div>
 
@@ -448,7 +511,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
                     />
                   </Tippy>
                 </div>
-
               </div>
             </div>
           );
@@ -458,18 +520,20 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       {/* Pagination controls - Always visible */}
       <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-xl mt-4">
         <div className="text-sm text-gray-600">
-          Showing {Math.min(startIndex + 1, files.length)} to {Math.min(endIndex, files.length)} of {files.length} files
+          Showing {Math.min(startIndex + 1, files.length)} to{" "}
+          {Math.min(endIndex, files.length)} of {files.length} files
         </div>
 
         <div className="flex items-center gap-1">
           {/* Previous Button */}
           <button
-            onClick={() => setCurrentPage(p => p - 1)}
+            onClick={() => setCurrentPage((p) => p - 1)}
             disabled={currentPage === 1}
-            className={`px-3 py-1.5 text-sm font-medium rounded-xl transition-all ${currentPage === 1
-              ? 'text-gray-400 cursor-not-allowed'
-              : 'text-gray-700 hover:bg-gray-100'
-              }`}
+            className={`px-3 py-1.5 text-sm font-medium rounded-xl transition-all ${
+              currentPage === 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
           >
             Previous
           </button>
@@ -479,10 +543,11 @@ export default function DataProcessing({ files, onRefresh }: Props) {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`min-w-[32px] h-[32px] text-sm font-medium rounded-xl transition-all ${currentPage === page
-                ? 'bg-gray-200 text-gray-900'
-                : 'text-gray-700 hover:bg-gray-50'
-                }`}
+              className={`min-w-[32px] h-[32px] text-sm font-medium rounded-xl transition-all ${
+                currentPage === page
+                  ? "bg-gray-200 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-50"
+              }`}
             >
               {page}
             </button>
@@ -490,24 +555,23 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
           {/* Next Button */}
           <button
-            onClick={() => setCurrentPage(p => p + 1)}
+            onClick={() => setCurrentPage((p) => p + 1)}
             disabled={currentPage === totalPages}
-            className={`px-3 py-1.5 text-sm font-medium rounded-xl transition-all ${currentPage === totalPages
-              ? 'text-gray-400 cursor-not-allowed'
-              : 'text-gray-700 hover:bg-gray-100'
-              }`}
+            className={`px-3 py-1.5 text-sm font-medium rounded-xl transition-all ${
+              currentPage === totalPages
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
           >
             Next
           </button>
         </div>
       </div>
 
-
       {/* modal for row details */}
       {isDetailsModalOpen && selectedRowDetails && !isConfirmSaveModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="w-[560px] max-h-[80vh] rounded-xl shadow-2xl bg-white flex flex-col">
-
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3 border-b">
               <div>
@@ -533,7 +597,6 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
             {/* Body */}
             <div className="p-5 overflow-y-auto">
-
               {/* File Info */}
               <div className="mb-5 grid grid-cols-2 gap-4 text-xs">
                 <div className="bg-gray-50 rounded-xl p-3">
@@ -564,17 +627,19 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
                 {selectedRowDetails.query_titles.length ? (
                   <div className="space-y-2">
-                    {selectedRowDetails.query_titles.map((q: string, i: number) => (
-                      <div
-                        key={i}
-                        className="flex items-start gap-2 p-3 rounded-xl bg-gray-100 hover:bg-gray-200 transition"
-                      >
-                        <span className="mt-0.5 text-xs text-blue-600 font-semibold">
-                          Q{i + 1}
-                        </span>
-                        <span className="text-xs text-gray-800">{q}</span>
-                      </div>
-                    ))}
+                    {selectedRowDetails.query_titles.map(
+                      (q: string, i: number) => (
+                        <div
+                          key={i}
+                          className="flex items-start gap-2 p-3 rounded-xl bg-gray-100 hover:bg-gray-200 transition"
+                        >
+                          <span className="mt-0.5 text-xs text-blue-600 font-semibold">
+                            Q{i + 1}
+                          </span>
+                          <span className="text-xs text-gray-800">{q}</span>
+                        </div>
+                      ),
+                    )}
                   </div>
                 ) : (
                   <div className="text-xs text-gray-400 italic">
@@ -596,17 +661,19 @@ export default function DataProcessing({ files, onRefresh }: Props) {
 
                 {selectedRowDetails.report_names.length ? (
                   <div className="space-y-2">
-                    {selectedRowDetails.report_names.map((r: string, i: number) => (
-                      <div
-                        key={i}
-                        className="flex items-start gap-2 p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
-                      >
-                        <span className="mt-0.5 text-xs text-green-600 font-semibold">
-                          R{i + 1}
-                        </span>
-                        <span className="text-xs text-gray-800">{r}</span>
-                      </div>
-                    ))}
+                    {selectedRowDetails.report_names.map(
+                      (r: string, i: number) => (
+                        <div
+                          key={i}
+                          className="flex items-start gap-2 p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+                        >
+                          <span className="mt-0.5 text-xs text-green-600 font-semibold">
+                            R{i + 1}
+                          </span>
+                          <span className="text-xs text-gray-800">{r}</span>
+                        </div>
+                      ),
+                    )}
                   </div>
                 ) : (
                   <div className="text-xs text-gray-400 italic">
@@ -631,6 +698,7 @@ export default function DataProcessing({ files, onRefresh }: Props) {
       )}
 
       <ConfirmSaveView
+        type="File"
         customTitle={deleteFile?.name || deleteFile?.file_name}
         customMessage={
           fileDependencies

@@ -47,5 +47,6 @@ export const POST_APIS = {
   address_book_email_remove:`${BASE_URL}address_book_email_remove`,
   reports_dropdown:`${BASE_URL}reports_dropdown`,
   report_schedules_list:`${BASE_URL}report_schedules_list`,
-  save_report_scheduler:`${BASE_URL}save_report_scheduler`
+  save_report_scheduler:`${BASE_URL}save_report_scheduler`,
+  address_book_remove:`${BASE_URL}address_book_remove`,
 };

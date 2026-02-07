@@ -15,7 +15,12 @@ import { useLocation, useParams } from "react-router-dom";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { WEEK_DAYS } from "../../utils/download/helper";
 import { Dropdown } from "primereact/dropdown";
+import ConfirmSaveView from "../../Modal/ConfirmSaveView";
+import { useAuth } from "../Auth/AuthContext";
+
 const ReportSchedulerForm = () => {
+  const { setIsConfirmSaveModalOpen, setViewName } = useAuth();
+
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [addingEmail, setAddingEmail] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
@@ -28,6 +33,15 @@ const ReportSchedulerForm = () => {
   const [isCreatingNewBook, setIsCreatingNewBook] = useState(false);
   const [creatingBook, setCreatingBook] = useState(false);
   const [scheduleNameError, setScheduleNameError] = useState("");
+  const [deletePopup, setDeletePopup] = useState<{
+    bookId: number;
+    email: string;
+    message: string;
+    canConfirm: boolean;
+    type: "Email" | "AddressBook";
+  } | null>(null);
+  const [emailError, setEmailError] = useState("");
+
   const [reportSchedule, setReportSchedule] = useState({
     scheduleId: null, //  ADD করো
     scheduleName: "",
@@ -81,32 +95,6 @@ const ReportSchedulerForm = () => {
   ];
 
   useEffect(() => {
-    // 🔹 EDIT MODE: state দিয়ে আসলে
-    // if (location.state?.schedule) {
-    //   const s = location.state.schedule;
-
-    //   setReportSchedule({
-    //     scheduleId: s.id,
-    //     scheduleName: s.schedule_name || "",
-    //     reportName: s.report_id || "",
-
-    //     to: JSON.parse(s.recipient_to || "[]"),
-    //     cc: JSON.parse(s.recipient_cc || "[]"),
-
-    //     toInput: "",
-    //     ccInput: "",
-    //     toSuggestions: [],
-    //     ccSuggestions: [],
-
-    //     mailTitle: s.mail_title || "",
-    //     mailBody: s.mail_body || "",
-    //     frequency: s.frequency || "",
-    //     selectedDays: s.selected_days || "",
-    //     scheduleTime: s.schedule_time || "",
-    //   });
-
-    //   return;
-    // }
     if (location.state?.schedule) {
       const s = location.state.schedule;
 
@@ -206,6 +194,27 @@ const ReportSchedulerForm = () => {
       book.emails.forEach((email) => allEmails.add(email));
     });
     return Array.from(allEmails);
+  };
+
+  const validateEmail = (email: string): string => {
+    const value = email.trim().toLowerCase();
+
+    const hasAt = value.includes("@");
+    const hasDotCom = value.endsWith(".com");
+
+    if (!hasAt && !hasDotCom) {
+      return "Email must contain @ and end with .com";
+    }
+
+    if (!hasAt) {
+      return "Email must contain @";
+    }
+
+    if (!hasDotCom) {
+      return "Email must end with .com";
+    }
+
+    return ""; // ✅ valid
   };
 
   // Get suggestions including both emails and address books
@@ -318,15 +327,13 @@ const ReportSchedulerForm = () => {
     }
   };
 
-  // Handle removing from recent searches
-  const handleRemoveFromRecentSearches = (email) => {
-    setRecentSearches(recentSearches.filter((e) => e !== email));
-  };
 
   // Handle adding email to selected address book
   const handleAddEmailToBook = async () => {
     if (!newEmailForBook || !selectedAddressBook) return;
 
+    //  valid → clear error
+    setEmailError("");
     try {
       setAddingEmail(true);
 
@@ -403,7 +410,29 @@ const ReportSchedulerForm = () => {
         fetchAddressBooks(); // 🔥 refresh
       }
     } catch (err) {
+      throw err;
       console.error("Remove email failed", err);
+    }
+  };
+
+  // 🔥 Handle removing address book
+  const handleRemoveAddressBook = async (bookId: number) => {
+    try {
+      const user = getUserContext();
+
+      const payload = {
+        address_book_id: bookId,
+        created_by: user.user_id,
+        session_id: user.session_id,
+      };
+
+      const res = await ApiServices.addressBookRemove(payload);
+
+      if (res?.data?.isSuccess) {
+        fetchAddressBooks(); // 🔥 updated list show করবে
+      }
+    } catch (err) {
+      throw err; // 🔥 popup catch করবে
     }
   };
 
@@ -500,6 +529,32 @@ const ReportSchedulerForm = () => {
       ...reportSchedule,
       selectedDays: updatedDays.join(", "),
     });
+  };
+
+  const addressBookItemTemplate = (option: any) => {
+    return (
+      <div className="flex items-center justify-between w-full">
+        <span>{option.label}</span>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // 🔥 dropdown select আটকাবে
+            setDeletePopup({
+              type: "AddressBook",
+              bookId: option.value,
+              email: "",
+              message: "Are you sure you want to delete this address book?",
+              canConfirm: true,
+            });
+            setViewName(option.label);
+            setIsConfirmSaveModalOpen(true);
+          }}
+          className="text-red-500 hover:text-red-700 ml-3"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -599,29 +654,6 @@ const ReportSchedulerForm = () => {
             <p className="text-red-500 text-xs mt-1">{scheduleNameError}</p>
           )}
         </div>
-        {/* Report Name */}
-        {/* <div className="mb-4 mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Report Name
-          </label>
-          <select
-            value={reportSchedule.reportName}
-            onChange={(e) =>
-              setReportSchedule({
-                ...reportSchedule,
-                reportName: e.target.value,
-              })
-            }
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          >
-            <option value="">Select a report</option>
-            {dropdownData.map((reportItem) => (
-              <option key={reportItem.value} value={reportItem.value}>
-                {reportItem.label}
-              </option>
-            ))}
-          </select>
-        </div> */}
         {/* Report Name – Searchable PrimeReact Dropdown */}
         <div className="mb-4 mt-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -894,34 +926,8 @@ const ReportSchedulerForm = () => {
               </div>
             </div>
           </div>
-
-          {/* Frequency */}
-          {/* <div className="col-span-3">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Frequency
-            </label>
-            <select
-              value={reportSchedule.frequency}
-              onChange={(e) => {
-                const value = e.target.value;
-
-                setReportSchedule({
-                  ...reportSchedule,
-                  frequency: value,
-                  selectedDays: value === "daily" ? "" : reportSchedule.selectedDays,
-                });
-              }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-            >
-              <option value="">Select frequency</option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-            </select>
-
-          </div> */}
           {/* Frequency – PrimeReact Dropdown */}
-          <div className="col-span-3">
+          <div className="col-span-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Frequency
             </label>
@@ -989,46 +995,9 @@ const ReportSchedulerForm = () => {
             />
           </div>
 
-          {/* Mail Title */}
-          {/* <div className="col-span-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Mail Title
-            </label>
-            <input
-              type="text"
-              value={reportSchedule.mailTitle}
-              onChange={(e) =>
-                setReportSchedule({
-                  ...reportSchedule,
-                  mailTitle: e.target.value,
-                })
-              }
-              placeholder="Enter mail subject"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-          </div> */}
-
-          {/* Selected Days */}
-          {/* <div className="col-span-3">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Selected Days
-            </label>
-            <input
-              type="text"
-              value={reportSchedule.selectedDays}
-              onChange={(e) =>
-                setReportSchedule({
-                  ...reportSchedule,
-                  selectedDays: e.target.value,
-                })
-              }
-              placeholder="Monday, Thursday"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-          </div> */}
           {/* WEEKLY – Multi-day selector */}
           {reportSchedule.frequency === "weekly" && (
-            <div className="col-span-3">
+            <div className="col-span-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Select Days
               </label>
@@ -1062,7 +1031,7 @@ const ReportSchedulerForm = () => {
 
           {/* MONTHLY – Native Calendar */}
           {reportSchedule.frequency === "monthly" && (
-            <div className="col-span-3">
+            <div className="col-span-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Select Date
               </label>
@@ -1086,7 +1055,7 @@ const ReportSchedulerForm = () => {
           )}
 
           {/* Schedule Time */}
-          <div className="col-span-3">
+          <div className="col-span-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Schedule Time
             </label>
@@ -1151,7 +1120,7 @@ const ReportSchedulerForm = () => {
       {/* Address Book Modal */}
       {isAddressBookOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4  min-h-[60vh] max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between p-6 border-b">
               <h2 className="text-xl font-semibold text-gray-900">
                 Address Book Manager
@@ -1181,6 +1150,7 @@ const ReportSchedulerForm = () => {
                     filterPlaceholder="Search address book..."
                     appendTo="self"
                     onChange={(e) => setSelectedAddressBook(e.value)}
+                    itemTemplate={addressBookItemTemplate}
                     className="
     flex-1 h-10 text-sm
     rounded-xl
@@ -1244,7 +1214,7 @@ const ReportSchedulerForm = () => {
 
                   <button
                     onClick={() => setIsCreatingNewBook(true)}
-                    className="bg-green-500 hover:bg-green-600 text-white rounded-lg px-4 py-2 transition-all flex items-center gap-2"
+                    className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-4 py-2 transition-all flex items-center gap-2"
                   >
                     <Plus size={16} />
                     New
@@ -1273,7 +1243,7 @@ const ReportSchedulerForm = () => {
                       onClick={handleCreateAddressBook}
                       disabled={creatingBook}
                       className={`px-6 py-2 rounded-lg transition-all text-white
-${creatingBook ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"}
+${creatingBook ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}
 `}
                     >
                       {creatingBook ? "Creating..." : "Create"}
@@ -1301,12 +1271,24 @@ ${creatingBook ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green
                     <input
                       type="email"
                       value={newEmailForBook}
-                      onChange={(e) => setNewEmailForBook(e.target.value)}
+                      // onChange={(e) => setNewEmailForBook(e.target.value)}
+                      // onChange={(e) => {
+                      //   setNewEmailForBook(e.target.value);
+                      //   setEmailError(""); //  typing করলে error remove
+                      // }}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setNewEmailForBook(value);
+
+                        const errorMsg = validateEmail(value);
+                        setEmailError(errorMsg);
+                      }}
                       onKeyPress={(e) =>
                         e.key === "Enter" && handleAddEmailToBook()
                       }
                       placeholder="Enter email address"
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                      // className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                      className={`flex-1 px-4 py-2 border rounded-lg outline-none${emailError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"}`}
                     />
                     <button
                       onClick={handleAddEmailToBook}
@@ -1318,20 +1300,19 @@ ${creatingBook ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green
                       {addingEmail ? "Adding..." : "Add"}
                     </button>
                   </div>
+                  {emailError && (
+                    <p className="text-red-500 text-xs mt-1">{emailError}</p>
+                  )}
                 </div>
               )}
 
               {/* Recent Searches */}
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">
+              {recentSearches.length > 0 && (
+                <div className="mb-6">
+                  {/* <h3 className="text-sm font-medium text-gray-700 mb-3">
                   Recent Searches
-                </h3>
-                <div className="border border-gray-200 rounded-lg">
-                  {recentSearches.length === 0 ? (
-                    <div className="p-4 text-center text-gray-500 text-sm">
-                      No recent searches
-                    </div>
-                  ) : (
+                </h3> */}
+                  <div className="border border-gray-200 rounded-lg">
                     <div className="divide-y divide-gray-100">
                       {recentSearches.map((email, idx) => (
                         <div
@@ -1349,7 +1330,7 @@ ${creatingBook ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green
                                 <Plus size={16} />
                               </button>
                             )}
-                            <button
+                            {/* <button
                               onClick={() =>
                                 handleRemoveFromRecentSearches(email)
                               }
@@ -1357,15 +1338,14 @@ ${creatingBook ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green
                               title="Remove from recent searches"
                             >
                               <Trash2 size={16} />
-                            </button>
+                            </button> */}
                           </div>
                         </div>
                       ))}
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-
+              )}
               {/* Selected Address Book Emails */}
               {selectedBook && (
                 <div>
@@ -1391,9 +1371,21 @@ ${creatingBook ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green
                               {email}
                             </span>
                             <button
-                              onClick={() =>
-                                handleRemoveFromBook(selectedBook.id, email)
-                              }
+                              // onClick={() =>
+                              //   handleRemoveFromBook(selectedBook.id, email)
+                              // }
+                              onClick={() => {
+                                setDeletePopup({
+                                  type: "Email",
+                                  bookId: selectedBook.id,
+                                  email,
+                                  message:
+                                    "Are you sure you want to delete this email?",
+                                  canConfirm: true,
+                                });
+                                setViewName(email);
+                                setIsConfirmSaveModalOpen(true); //  THIS IS REQUIRED
+                              }}
                               className="text-red-600 hover:text-red-700"
                             >
                               <Trash2 size={16} />
@@ -1417,6 +1409,44 @@ ${creatingBook ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green
             </div>
           </div>
         </div>
+      )}
+      {deletePopup && (
+        <ConfirmSaveView
+          type={deletePopup.type}
+          customMessage={deletePopup.message}
+          showConfirmButton={deletePopup.canConfirm}
+          customOnCancel={() => {
+            setDeletePopup(null);
+            setIsConfirmSaveModalOpen(false);
+          }}
+          customOnConfirm={async () => {
+            try {
+              if (deletePopup.type === "AddressBook") {
+                // 🔥 ADDRESS BOOK DELETE
+                await handleRemoveAddressBook(deletePopup.bookId);
+              } else {
+                // 🔥 EMAIL DELETE
+                await handleRemoveFromBook(
+                  deletePopup.bookId,
+                  deletePopup.email,
+                );
+              }
+
+              // ✅ success
+              setDeletePopup(null);
+              setIsConfirmSaveModalOpen(false);
+            } catch (err: any) {
+              if (err?.response?.status === 409) {
+                // ❌ blocked → popup stays open
+                setDeletePopup({
+                  ...deletePopup,
+                  message: err.response.data.message,
+                  canConfirm: false, // শুধু OK থাকবে
+                });
+              }
+            }
+          }}
+        />
       )}
     </div>
   );

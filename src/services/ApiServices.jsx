@@ -167,6 +167,9 @@ class ApiServices {
   saveReportScheduler(body) {
     return axios.post(POST_APIS.save_report_scheduler, body);
   }
+  addressBookRemove(body) {
+    return axios.post(POST_APIS.address_book_remove, body);
+  }
 }
 
 export default new ApiServices();
